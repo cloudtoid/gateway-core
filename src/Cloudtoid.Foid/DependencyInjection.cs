@@ -2,7 +2,7 @@
 
 namespace Cloudtoid.Foid
 {
-    public class Class2
+    public class DependencyInjection
     {
     }
 }
