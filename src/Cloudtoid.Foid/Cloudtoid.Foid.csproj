@@ -4,4 +4,8 @@
     <TargetFramework>$(FoidAppDotNetVersion)</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Cloudtoid.Framework\Cloudtoid.Framework.csproj" />
+  </ItemGroup>
+
 </Project>

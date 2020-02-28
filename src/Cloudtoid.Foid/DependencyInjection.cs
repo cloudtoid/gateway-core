@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Cloudtoid.Foid
+﻿namespace Cloudtoid.Foid
 {
     public class DependencyInjection
     {
