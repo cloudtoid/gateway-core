@@ -14,6 +14,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeAnalysis", "CodeAnalysi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cloudtoid.Framework", "Cloudtoid.Framework\Cloudtoid.Framework.csproj", "{37BC5D4C-8ED3-415E-B3DF-EC2C87624FCC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B34B66C7-7A6A-4AAD-935C-7B44462FBF23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cloudtoid.Framework.UnitTests", "Cloudtoid.Framework.UnitTests\Cloudtoid.Framework.UnitTests.csproj", "{063EA129-74A9-4254-9C95-9A640B140721}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -26,9 +30,16 @@ Global
 		{37BC5D4C-8ED3-415E-B3DF-EC2C87624FCC}.Debug|x64.Build.0 = Debug|x64
 		{37BC5D4C-8ED3-415E-B3DF-EC2C87624FCC}.Release|x64.ActiveCfg = Release|x64
 		{37BC5D4C-8ED3-415E-B3DF-EC2C87624FCC}.Release|x64.Build.0 = Release|x64
+		{063EA129-74A9-4254-9C95-9A640B140721}.Debug|x64.ActiveCfg = Debug|x64
+		{063EA129-74A9-4254-9C95-9A640B140721}.Debug|x64.Build.0 = Debug|x64
+		{063EA129-74A9-4254-9C95-9A640B140721}.Release|x64.ActiveCfg = Release|x64
+		{063EA129-74A9-4254-9C95-9A640B140721}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{063EA129-74A9-4254-9C95-9A640B140721} = {B34B66C7-7A6A-4AAD-935C-7B44462FBF23}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0C13DFE5-70DB-4B4D-9144-0E5231A28B5F}
