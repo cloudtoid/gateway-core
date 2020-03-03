@@ -9,16 +9,15 @@
         {
             CheckValue(services, nameof(services));
 
-            if (services.Exists<RegistrationTag>())
+            if (services.Exists<Marker>())
                 return services;
 
             return services
-                .TryAddSingleton<RegistrationTag>();
+                .TryAddSingleton<Marker>();
         }
 
-        private sealed class RegistrationTag
+        private sealed class Marker
         {
-            internal bool IsRegistered { get; set; }
         }
     }
 }

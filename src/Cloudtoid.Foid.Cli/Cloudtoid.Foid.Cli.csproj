@@ -1,11 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>$(FoidAppDotNetVersion)</TargetFramework>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="..\Cloudtoid.Foid\Cloudtoid.Foid.csproj" />
     <ProjectReference Include="..\Cloudtoid.Framework\Cloudtoid.Framework.csproj" />
   </ItemGroup>
 

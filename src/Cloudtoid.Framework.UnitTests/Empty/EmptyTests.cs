@@ -1,6 +1,5 @@
 ﻿namespace Cloudtoid.Framework.UnitTests
 {
-    using Cloudtoid.Framework;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
