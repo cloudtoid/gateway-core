@@ -3,7 +3,6 @@
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http;
     using static Contract;
 
     internal sealed class RequestSender : IRequestSender
@@ -15,14 +14,19 @@
             this.httpClientFactory = CheckValue(httpClientFactory, nameof(httpClientFactory));
         }
 
-        public async Task<HttpResponseMessage> SendAsync(HttpContext context, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage message, CancellationToken cancellationToken)
         {
-            CheckValue(context, nameof(context));
+            CheckValue(message, nameof(message));
 
-            context.RequestAborted.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // TODO:
+            // 1- Need timeout
+            // 2- Need to log errors and so on
+            // 3- Need to log the steps EVERYWHERE as Info/Debug
 
             var client = httpClientFactory.CreateClient();
-            return await client.SendAsync(null, cancellationToken);
+            return await client.SendAsync(message, cancellationToken);
         }
     }
 }

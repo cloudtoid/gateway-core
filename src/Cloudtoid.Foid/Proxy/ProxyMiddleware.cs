@@ -30,8 +30,12 @@
         {
             CheckValue(context, nameof(context));
 
-            await requestCreator.CreateRequestAsync(context);
-            //// await sender.SendAsync();
+            // TODO: Add logging (debug and also errors)
+
+            var request = await requestCreator.CreateRequestAsync(context);
+
+            // Need a better cancellation token here with timeout that is linked to RequestAborted too
+            await sender.SendAsync(request, context.RequestAborted);
 
             await next.Invoke(context);
         }

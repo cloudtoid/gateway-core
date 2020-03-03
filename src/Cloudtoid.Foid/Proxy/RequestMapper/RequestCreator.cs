@@ -53,7 +53,10 @@
                 RequestUri = uri,
             };
 
-            await headerSetter.SetHeadersAsync(context, message);
+            await headerSetter
+                .SetHeadersAsync(context, message)
+                .TraceOnFaulted(logger, "Failed to set the headers", context.RequestAborted);
+
             SetContent(request, message);
             return message;
         }
