@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Cloudtoid.Foid\Cloudtoid.Foid.csproj" />
-    <ProjectReference Include="..\Cloudtoid.Framework\Cloudtoid.Framework.csproj" />
+    <ProjectReference Include="..\..\src\Cloudtoid.Foid\Cloudtoid.Foid.csproj" />
+    <ProjectReference Include="..\..\src\Cloudtoid.Framework\Cloudtoid.Framework.csproj" />
   </ItemGroup>
 
 </Project>

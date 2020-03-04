@@ -3,8 +3,7 @@
   <!-- Paths -->
   <PropertyGroup>
     <FoidRoot>$(MSBuildThisFileDirectory)</FoidRoot>
-    <FoidBuild>$(FoidRoot)Build\</FoidBuild>
-    <FoidCodeAnalysis>$(FoidBuild)CodeAnalysis\</FoidCodeAnalysis>
+    <FoidCodeAnalysis>$(FoidRoot)code-analysis\</FoidCodeAnalysis>
   </PropertyGroup>
 
   <!-- .NET Runtime Versions -->

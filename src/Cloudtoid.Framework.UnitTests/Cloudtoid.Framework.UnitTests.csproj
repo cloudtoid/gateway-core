@@ -1,9 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
-  <Import Project="$(FoidBuild)tests.props" />
-
-  <ItemGroup>
-    <ProjectReference Include="..\Cloudtoid.Framework\Cloudtoid.Framework.csproj" />
-  </ItemGroup>
-
-</Project>

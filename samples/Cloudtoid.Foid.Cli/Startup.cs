@@ -1,5 +1,6 @@
 namespace Cloudtoid.Foid.Cli
 {
+    using Cloudtoid.Foid;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
