@@ -29,8 +29,7 @@ namespace Cloudtoid.Foid.Cli
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
 
-            app.UseHttpsRedirection()
-                .UseRouting();
+            app.UseFoidProxy();
         }
     }
 }

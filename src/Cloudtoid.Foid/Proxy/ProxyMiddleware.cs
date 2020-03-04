@@ -25,7 +25,7 @@
             this.logger = CheckValue(logger, nameof(logger));
         }
 
-        [SuppressMessage("Style", "VSTHRD200:Use \"Async\" suffix for async methods", Justification = "Implementing a delegate that is defined in ASP.NET with this exact signature")]
+        [SuppressMessage("Style", "VSTHRD200:Use Async suffix for async methods", Justification = "Implementing an ASP.NET middleware. This signature cannot be changed.")]
         public async Task Invoke(HttpContext context)
         {
             CheckValue(context, nameof(context));

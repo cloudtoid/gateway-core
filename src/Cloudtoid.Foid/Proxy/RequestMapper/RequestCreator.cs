@@ -42,37 +42,69 @@
 
             context.RequestAborted.ThrowIfCancellationRequested();
 
-            var uri = await uriRewriter
-                .RewriteUriAsync(context)
-                .TraceOnFaulted(logger, "Failed to rewrite a URI", context.RequestAborted);
+            logger.LogDebug("Creating an outgoing HTTP request based on the incoming HTTP request.");
 
             var request = context.Request;
             var message = new HttpRequestMessage
             {
                 Method = GetHttpMethod(request.Method),
-                RequestUri = uri,
+                RequestUri = await RewriteUriAsync(context),
             };
 
-            await headerSetter
-                .SetHeadersAsync(context, message)
-                .TraceOnFaulted(logger, "Failed to set the headers", context.RequestAborted);
-
+            await SetHeadersAsync(context, message);
             SetContent(request, message);
+
+            logger.LogDebug("Creating an outgoing HTTP request based on the incoming HTTP request.");
+
             return message;
         }
 
         private static HttpMethod GetHttpMethod(string method)
             => HttpMethods.TryGetValue(method, out var m) ? m : new HttpMethod(method);
 
+        private async Task<Uri> RewriteUriAsync(HttpContext context)
+        {
+            logger.LogDebug("Rewrote the uri by calling an instance of {0}", uriRewriter.GetType().FullName);
+
+            var uri = await uriRewriter
+                .RewriteUriAsync(context)
+                .TraceOnFaulted(logger, "Failed to rewrite a URI", context.RequestAborted);
+
+            logger.LogDebug("Rewrote the uri by calling an instance of {0}", uriRewriter.GetType().FullName);
+
+            return uri;
+        }
+
+        private async Task SetHeadersAsync(HttpContext context, HttpRequestMessage message)
+        {
+            logger.LogDebug("Appending HTTP headers on the outgoing request");
+
+            await headerSetter
+                .SetHeadersAsync(context, message)
+                .TraceOnFaulted(logger, "Failed to set the headers", context.RequestAborted);
+
+            logger.LogDebug("Appended HTTP headers on the outgoing request");
+        }
+
         private void SetContent(HttpRequest request, HttpRequestMessage message)
         {
-            if (request.Body is null || !request.Body.CanRead || request.ContentLength <= 0)
-                return;
+            logger.LogDebug("Transfering the the content of the incoming request to the outgoing request");
 
-            if (request.Body.CanSeek)
+            if (request.Body is null || !request.Body.CanRead || request.ContentLength <= 0)
+            {
+                logger.LogDebug("The incoming request does not have a body, it is not readable, or its content length is zero.");
+                return;
+            }
+
+            if (request.Body.CanSeek && request.Body.Position != 0)
+            {
+                logger.LogDebug("The incoming request has a seekable body stream. Resetting the stream to the begining.");
                 request.Body.Position = 0;
+            }
 
             message.Content = new StreamContent(request.Body);
+
+            logger.LogDebug("Transfered the the content of the incoming request to the outgoing request");
         }
     }
 }

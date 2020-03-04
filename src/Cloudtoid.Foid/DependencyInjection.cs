@@ -19,8 +19,9 @@
                 .AddFramework()
                 .AddHttpClient()
                 .TryAddSingleton<Proxy.IUriRewriter, Proxy.UriRewriter>()
-                .TryAddSingleton<Proxy.IRequestCreator, Proxy.RequestCreator>()
-                .AddRouting();
+                .TryAddSingleton<Proxy.IHeaderSetter, Proxy.HeaderSetter>()
+                .TryAddSingleton<Proxy.IRequestSender, Proxy.RequestSender>()
+                .TryAddSingleton<Proxy.IRequestCreator, Proxy.RequestCreator>();
         }
 
         public static IApplicationBuilder UseFoidProxy(this IApplicationBuilder builder)
