@@ -22,6 +22,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cloudtoid.Foid.Cli", "sampl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cloudtoid.Framework.UnitTests", "tests\Cloudtoid.Framework.UnitTests\Cloudtoid.Framework.UnitTests.csproj", "{F7A0FE22-BBF9-458E-AEAD-F36E1DC38FF8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cloudtoid.Foid.UnitTests", "tests\Cloudtoid.Foid.UnitTests\Cloudtoid.Foid.UnitTests.csproj", "{7F344450-BA16-4879-B5C5-A45FCAF6CC44}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,12 @@ Global
 		{F7A0FE22-BBF9-458E-AEAD-F36E1DC38FF8}.Release|Any CPU.ActiveCfg = Release|x64
 		{F7A0FE22-BBF9-458E-AEAD-F36E1DC38FF8}.Release|x64.ActiveCfg = Release|x64
 		{F7A0FE22-BBF9-458E-AEAD-F36E1DC38FF8}.Release|x64.Build.0 = Release|x64
+		{7F344450-BA16-4879-B5C5-A45FCAF6CC44}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{7F344450-BA16-4879-B5C5-A45FCAF6CC44}.Debug|x64.ActiveCfg = Debug|x64
+		{7F344450-BA16-4879-B5C5-A45FCAF6CC44}.Debug|x64.Build.0 = Debug|x64
+		{7F344450-BA16-4879-B5C5-A45FCAF6CC44}.Release|Any CPU.ActiveCfg = Release|x64
+		{7F344450-BA16-4879-B5C5-A45FCAF6CC44}.Release|x64.ActiveCfg = Release|x64
+		{7F344450-BA16-4879-B5C5-A45FCAF6CC44}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,6 +68,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{537DD132-4344-48E4-8D34-6B79B0B0E50A} = {40A83D0F-F9B6-4918-99B6-FAE04CBCF6DE}
 		{F7A0FE22-BBF9-458E-AEAD-F36E1DC38FF8} = {B34B66C7-7A6A-4AAD-935C-7B44462FBF23}
+		{7F344450-BA16-4879-B5C5-A45FCAF6CC44} = {B34B66C7-7A6A-4AAD-935C-7B44462FBF23}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0C13DFE5-70DB-4B4D-9144-0E5231A28B5F}
