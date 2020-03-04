@@ -2,6 +2,7 @@
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
     using FluentAssertions;
@@ -45,7 +46,7 @@
         }
 
         [TestMethod]
-        public void TraceOnFaulted_WhenTaskCancelled_ErrorIsLogged()
+        public void TraceOnFaulted_WhenTaskCancelled_ErrorIsNotLogged()
         {
             var logger = Substitute.For<ILogger<object>>();
 
@@ -56,22 +57,7 @@
                 .TraceOnFaulted(logger, "TraceOnFaultedWithException", ts.Token);
 
             Invoking(() => task).Should().ThrowExactly<TaskCanceledException>();
-            logger.LogReceivedThatContains("TraceOnFaultedWithException", 1, LogLevel.Error);
-        }
-
-        [TestMethod]
-        public void TraceOnFaulted_WhenOperationCancelled_ErrorIsLogged()
-        {
-            var logger = Substitute.For<ILogger<object>>();
-
-            var ts = new CancellationTokenSource();
-            ts.Cancel();
-            var task = Task
-                .Run(() => { })
-                .TraceOnFaulted(logger, "TraceOnFaultedWithException", ts.Token);
-
-            Invoking(() => task).Should().ThrowExactly<OperationCanceledException>();
-            logger.LogReceivedThatContains("TraceOnFaultedWithException", 1, LogLevel.Error);
+            logger.LogReceivedThatContains("TraceOnFaultedWithException", 0, LogLevel.Error);
         }
 
         [TestMethod]
@@ -107,7 +93,7 @@
         }
 
         [TestMethod]
-        public void TraceOnFaultedWithResult_WhenTaskCancelled_ErrorIsLogged()
+        public void TraceOnFaultedWithResult_WhenTaskCancelled_ErrorIsNotLogged()
         {
             var logger = Substitute.For<ILogger<object>>();
 
@@ -118,22 +104,7 @@
                 .TraceOnFaulted(logger, "TraceOnFaultedWithException", ts.Token);
 
             Invoking(() => task).Should().ThrowExactly<TaskCanceledException>();
-            logger.LogReceivedThatContains("TraceOnFaultedWithException", 1, LogLevel.Error);
-        }
-
-        [TestMethod]
-        public void TraceOnFaultedWithResult_WhenOperationCancelled_ErrorIsLogged()
-        {
-            var logger = Substitute.For<ILogger<object>>();
-
-            var ts = new CancellationTokenSource();
-            ts.Cancel();
-            var task = Task
-                .Run(() => 10)
-                .TraceOnFaulted(logger, "TraceOnFaultedWithException", ts.Token);
-
-            Invoking(() => task).Should().ThrowExactly<OperationCanceledException>();
-            logger.LogReceivedThatContains("TraceOnFaultedWithException", 1, LogLevel.Error);
+            logger.LogReceivedThatContains("TraceOnFaultedWithException", 0, LogLevel.Error);
         }
     }
 }

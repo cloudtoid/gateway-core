@@ -1,5 +1,6 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
@@ -30,9 +31,11 @@
         {
             CheckValue(context, nameof(context));
 
-            // TODO: Add logging (debug and also errors)
+            logger.LogDebug("Reverse proxy received a new incoming HTTP message.");
 
-            var request = await requestCreator.CreateRequestAsync(context);
+            var request = await requestCreator
+                .CreateRequestAsync(context)
+                .TraceOnFaulted(logger, "Failed to create an outgoing HTTP request message", context.RequestAborted);
 
             // Need a better cancellation token here with timeout that is linked to RequestAborted too
             await sender.SendAsync(request, context.RequestAborted);

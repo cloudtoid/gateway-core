@@ -37,14 +37,14 @@
                 // Remove empty headers
                 if (!headerValuesProvider.AllowHeadersWithEmptyValue && header.Value.Count == 0)
                 {
-                    logger.LogDebug("Removing header '{0}' as its value if empty.", header.Key);
+                    logger.LogInformation("Removing header '{0}' as its value if empty.", header.Key);
                     continue;
                 }
 
                 // Remove headers with underscore in their names
                 if (!headerValuesProvider.AllowHeadersWithUnderscoreInName && header.Key.Contains('_'))
                 {
-                    logger.LogDebug("Removing header '{0}' as headers should not have underscores in their names.", header.Key);
+                    logger.LogInformation("Removing header '{0}' as headers should not have underscores in their names.", header.Key);
                     continue;
                 }
 

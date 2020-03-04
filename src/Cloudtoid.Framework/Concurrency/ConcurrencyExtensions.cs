@@ -56,31 +56,23 @@
             return task.ContinueWith(
                 t =>
                 {
-                    if (task.IsCanceled)
-                    {
-                        var tce = new TaskCanceledException(message, t.Exception);
-                        logger.LogError(tce, message);
-                        throw tce;
-                    }
-
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        var oce = new OperationCanceledException(message, t.Exception, cancellationToken);
-                        logger.LogError(oce, message);
-                        throw oce;
-                    }
-
                     var ex = t.Exception;
                     if (ex is null)
                         return;
 
+                    if (ex.IsFatal())
+                    {
+                        logger.LogCritical(ex, message);
+                        return;
+                    }
+
                     logger.LogError(ex, message);
                     ExceptionDispatchInfo.Capture(ex.GetBaseException()).Throw();
-                    throw new NotSupportedException("Should never get to this line!");
-                });
+                },
+                cancellationToken);
         }
 
-        public static Task<TResult> TraceOnFaulted<TLoggerCategoryName, TResult>(
+        public static async Task<TResult> TraceOnFaulted<TLoggerCategoryName, TResult>(
             this Task<TResult> task,
             ILogger<TLoggerCategoryName> logger,
             string message,
@@ -89,31 +81,27 @@
             CheckValue(task, nameof(task));
             CheckValue(logger, nameof(logger));
 
-            return task.ContinueWith(
+            await task.ContinueWith(
                 t =>
                 {
-                    if (task.IsCanceled)
-                    {
-                        var tce = new TaskCanceledException(message, t.Exception);
-                        logger.LogError(tce, message);
-                        throw tce;
-                    }
-
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        var oce = new OperationCanceledException(message, t.Exception, cancellationToken);
-                        logger.LogError(oce, message);
-                        throw oce;
-                    }
-
                     var ex = t.Exception;
                     if (ex is null)
-                        return t.Result;
+                        return;
+
+                    if (ex.IsFatal())
+                    {
+                        logger.LogCritical(ex, message);
+                        return;
+                    }
 
                     logger.LogError(ex, message);
                     ExceptionDispatchInfo.Capture(ex.GetBaseException()).Throw();
-                    throw new NotSupportedException("Should never get to this line!");
-                });
+                },
+                cancellationToken);
+
+#pragma warning disable VSTHRD003 // Avoid awaiting foreign Tasks
+            return await task;
+#pragma warning restore VSTHRD003 // Avoid awaiting foreign Tasks
         }
 
         public static void FireAndForget<TLoggerCategoryName>(

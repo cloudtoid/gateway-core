@@ -17,6 +17,7 @@
     <Platforms>x64</Platforms>
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <!-- Product Package Versions -->

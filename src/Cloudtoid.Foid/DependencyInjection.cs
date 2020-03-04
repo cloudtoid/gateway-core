@@ -18,6 +18,7 @@
                 .TryAddSingleton<ProxyMarker>()
                 .AddFramework()
                 .AddHttpClient()
+                .TryAddSingleton<Proxy.IProxyConfigProvider, Proxy.ProxyConfigProvider>()
                 .TryAddSingleton<Proxy.IUriRewriter, Proxy.UriRewriter>()
                 .TryAddSingleton<Proxy.IHeaderSetter, Proxy.HeaderSetter>()
                 .TryAddSingleton<Proxy.IHeaderValuesProvider, Proxy.HeaderValuesProvider>()
