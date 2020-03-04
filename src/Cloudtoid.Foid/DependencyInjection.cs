@@ -20,6 +20,7 @@
                 .AddHttpClient()
                 .TryAddSingleton<Proxy.IUriRewriter, Proxy.UriRewriter>()
                 .TryAddSingleton<Proxy.IHeaderSetter, Proxy.HeaderSetter>()
+                .TryAddSingleton<Proxy.IHeaderValuesProvider, Proxy.HeaderValuesProvider>()
                 .TryAddSingleton<Proxy.IRequestSender, Proxy.RequestSender>()
                 .TryAddSingleton<Proxy.IRequestCreator, Proxy.RequestCreator>();
         }
