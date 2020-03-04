@@ -1,31 +1,62 @@
 ﻿namespace Cloudtoid.Foid.UnitTests
 {
-    using System;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Threading.Tasks;
     using Cloudtoid.Foid.Proxy;
     using FluentAssertions;
-    using Microsoft.Extensions.Primitives;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using NSubstitute;
 
     [TestClass]
     public class HeaderValuesProviderTests
     {
         [TestMethod]
-        public void GetHostHeaderValue_WhenHostNameIncludesPortNumber_PortNumberIsRemoved()
+        public async Task SetHeadersAsync_WhenNoHostHeader_HostHeaderIsAddedAsync()
         {
             var provider = new HeaderValuesProvider();
-            provider.TryGetHeaderValues(HeaderNames.Host, new StringValues(new[] { "host:123", "random-value" }), out var values).Should().BeTrue();
-            values.Should().HaveCount(1);
-            values[0].Should().Be("host");
+            var setter = new HeaderSetter(provider, Substitute.For<ILogger<HeaderSetter>>());
+
+            var context = new DefaultHttpContext();
+            var message = new HttpRequestMessage();
+            await setter.SetHeadersAsync(context, message);
+
+            message.Headers.Contains(HeaderNames.Host).Should().BeTrue();
+            message.Headers.GetValues(HeaderNames.Host).FirstOrDefault().Should().Be(provider.GetDefaultHostHeaderValue(context));
         }
 
         [TestMethod]
-        public void GetHostHeaderValue_WhenHostHeaderNotSpecified_HostHeaderIsMachineName()
+        public async Task SetHeadersAsync_WhenHeaderWithUnderscore_HeaderRemovedAsync()
         {
             var provider = new HeaderValuesProvider();
-            provider.TryGetHeaderValues(HeaderNames.Host, default, out var values).Should().BeTrue();
-            values.Should().HaveCount(1);
-            values[0].Should().Be(Environment.MachineName);
+            var setter = new HeaderSetter(provider, Substitute.For<ILogger<HeaderSetter>>());
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add("X-Good-Header", "some-value");
+            context.Request.Headers.Add("X_Bad_Header", "some-value");
+
+            var message = new HttpRequestMessage();
+            await setter.SetHeadersAsync(context, message);
+
+            message.Headers.Should().NotContain("X_Bad_Header");
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenHeaderWithEmptyValue_HeaderRemovedAsync()
+        {
+            var provider = new HeaderValuesProvider();
+            var setter = new HeaderSetter(provider, Substitute.For<ILogger<HeaderSetter>>());
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add("X-Empty-Header", string.Empty);
+
+            var message = new HttpRequestMessage();
+            await setter.SetHeadersAsync(context, message);
+
+            message.Headers.Should().NotContain("X-Empty-Header");
         }
     }
 }

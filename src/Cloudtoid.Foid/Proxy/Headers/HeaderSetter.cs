@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Net.Http.Headers;
     using static Contract;
 
     internal sealed class HeaderSetter : IHeaderSetter
@@ -31,8 +32,6 @@
             if (headers is null)
                 return Task.CompletedTask;
 
-            // TODO: Read about reverse proxy and what headers need to be copied and what headers should be added
-
             foreach (var header in headers)
             {
                 // Remove empty headers
@@ -51,6 +50,9 @@
 
                 message.Headers.TryAddWithoutValidation(header.Key, (IEnumerable<string>)header.Value);
             }
+
+            if (!headers.ContainsKey(HeaderNames.Host))
+                message.Headers.TryAddWithoutValidation(HeaderNames.Host, headerValuesProvider.GetDefaultHostHeaderValue(context));
 
             return Task.CompletedTask;
         }
