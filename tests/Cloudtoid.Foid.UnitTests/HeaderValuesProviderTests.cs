@@ -17,8 +17,8 @@
         [TestMethod]
         public async Task SetHeadersAsync_WhenNoHostHeader_HostHeaderIsAddedAsync()
         {
-            var provider = new HeaderValuesProvider();
-            var setter = new HeaderSetter(provider, Substitute.For<ILogger<HeaderSetter>>());
+            var provider = new RequestHeaderValuesProvider();
+            var setter = new RequestHeaderSetter(provider, Substitute.For<ILogger<RequestHeaderSetter>>());
 
             var context = new DefaultHttpContext();
             var message = new HttpRequestMessage();
@@ -31,8 +31,8 @@
         [TestMethod]
         public async Task SetHeadersAsync_WhenHeaderWithUnderscore_HeaderRemovedAsync()
         {
-            var provider = new HeaderValuesProvider();
-            var setter = new HeaderSetter(provider, Substitute.For<ILogger<HeaderSetter>>());
+            var provider = new RequestHeaderValuesProvider();
+            var setter = new RequestHeaderSetter(provider, Substitute.For<ILogger<RequestHeaderSetter>>());
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add("X-Good-Header", "some-value");
@@ -47,8 +47,8 @@
         [TestMethod]
         public async Task SetHeadersAsync_WhenHeaderWithEmptyValue_HeaderRemovedAsync()
         {
-            var provider = new HeaderValuesProvider();
-            var setter = new HeaderSetter(provider, Substitute.For<ILogger<HeaderSetter>>());
+            var provider = new RequestHeaderValuesProvider();
+            var setter = new RequestHeaderSetter(provider, Substitute.For<ILogger<RequestHeaderSetter>>());
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add("X-Empty-Header", string.Empty);

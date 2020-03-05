@@ -20,10 +20,11 @@
                 .AddHttpClient()
                 .TryAddSingleton<Proxy.IProxyConfigProvider, Proxy.ProxyConfigProvider>()
                 .TryAddSingleton<Proxy.IUriRewriter, Proxy.UriRewriter>()
-                .TryAddSingleton<Proxy.IHeaderSetter, Proxy.HeaderSetter>()
-                .TryAddSingleton<Proxy.IHeaderValuesProvider, Proxy.HeaderValuesProvider>()
+                .TryAddSingleton<Proxy.IRequestHeaderSetter, Proxy.RequestHeaderSetter>()
+                .TryAddSingleton<Proxy.IRequestHeaderValuesProvider, Proxy.RequestHeaderValuesProvider>()
                 .TryAddSingleton<Proxy.IRequestSender, Proxy.RequestSender>()
-                .TryAddSingleton<Proxy.IRequestCreator, Proxy.RequestCreator>();
+                .TryAddSingleton<Proxy.IRequestCreator, Proxy.RequestCreator>()
+                .TryAddSingleton<Proxy.IResponseCreator, Proxy.ResponseCreator>();
         }
 
         public static IApplicationBuilder UseFoidProxy(this IApplicationBuilder builder)

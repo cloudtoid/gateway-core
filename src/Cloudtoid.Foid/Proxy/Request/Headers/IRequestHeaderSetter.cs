@@ -4,7 +4,7 @@
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
 
-    public interface IHeaderSetter
+    public interface IRequestHeaderSetter
     {
         Task SetHeadersAsync(HttpContext context, HttpRequestMessage newMessage);
     }

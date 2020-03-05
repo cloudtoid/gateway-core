@@ -6,7 +6,7 @@
     using Microsoft.Net.Http.Headers;
     using static Contract;
 
-    internal sealed class HeaderValuesProvider : IHeaderValuesProvider
+    internal sealed class RequestHeaderValuesProvider : IRequestHeaderValuesProvider
     {
         public bool AllowHeadersWithEmptyValue => false;
 

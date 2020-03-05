@@ -8,14 +8,14 @@
     using Microsoft.Net.Http.Headers;
     using static Contract;
 
-    internal sealed class HeaderSetter : IHeaderSetter
+    internal sealed class RequestHeaderSetter : IRequestHeaderSetter
     {
-        private readonly IHeaderValuesProvider headerValuesProvider;
-        private readonly ILogger<HeaderSetter> logger;
+        private readonly IRequestHeaderValuesProvider headerValuesProvider;
+        private readonly ILogger<RequestHeaderSetter> logger;
 
-        public HeaderSetter(
-            IHeaderValuesProvider headerValuesProvider,
-            ILogger<HeaderSetter> logger)
+        public RequestHeaderSetter(
+            IRequestHeaderValuesProvider headerValuesProvider,
+            ILogger<RequestHeaderSetter> logger)
         {
             this.headerValuesProvider = CheckValue(headerValuesProvider, nameof(headerValuesProvider));
             this.logger = CheckValue(logger, nameof(logger));
@@ -37,14 +37,14 @@
                 // Remove empty headers
                 if (!headerValuesProvider.AllowHeadersWithEmptyValue && header.Value.Count == 0)
                 {
-                    logger.LogInformation("Removing header '{0}' as its value if empty.", header.Key);
+                    logger.LogInformation("Removing header '{0}' as its value is empty.", header.Key);
                     continue;
                 }
 
                 // Remove headers with underscore in their names
                 if (!headerValuesProvider.AllowHeadersWithUnderscoreInName && header.Key.Contains('_'))
                 {
-                    logger.LogInformation("Removing header '{0}' as headers should not have underscores in their names.", header.Key);
+                    logger.LogInformation("Removing header '{0}' as headers should not have underscores in their name.", header.Key);
                     continue;
                 }
 

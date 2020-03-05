@@ -20,11 +20,6 @@
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            // TODO:
-            // 1- Need timeout
-            // 2- Need to log errors and so on
-            // 3- Need to log the steps EVERYWHERE as Info/Debug
-
             var client = httpClientFactory.CreateClient();
             return await client.SendAsync(upstreamMessage, cancellationToken);
         }

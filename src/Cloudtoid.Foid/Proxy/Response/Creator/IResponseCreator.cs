@@ -6,6 +6,6 @@
 
     public interface IResponseCreator
     {
-        Task<HttpRequestMessage> CreateResponseAsync(HttpContext context, HttpResponseMessage upstreamResponse);
+        Task CreateResponseAsync(HttpContext context, HttpResponseMessage upstreamResponse);
     }
 }

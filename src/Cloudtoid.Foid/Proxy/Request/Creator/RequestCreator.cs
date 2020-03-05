@@ -23,12 +23,12 @@
         };
 
         private readonly IUriRewriter uriRewriter;
-        private readonly IHeaderSetter headerSetter;
+        private readonly IRequestHeaderSetter headerSetter;
         private readonly ILogger<RequestCreator> logger;
 
         public RequestCreator(
             IUriRewriter uriRewriter,
-            IHeaderSetter headerSetter,
+            IRequestHeaderSetter headerSetter,
             ILogger<RequestCreator> logger)
         {
             this.uriRewriter = CheckValue(uriRewriter, nameof(uriRewriter));
@@ -42,7 +42,7 @@
 
             context.RequestAborted.ThrowIfCancellationRequested();
 
-            logger.LogDebug("Creating an outgoing HTTP request based on the incoming HTTP request.");
+            logger.LogDebug("Creating an outgoing upstream HTTP request based on the incoming downstream HTTP request.");
 
             var request = context.Request;
             var message = new HttpRequestMessage
@@ -54,7 +54,7 @@
             await SetHeadersAsync(context, message);
             SetContent(request, message);
 
-            logger.LogDebug("Creating an outgoing HTTP request based on the incoming HTTP request.");
+            logger.LogDebug("Creating an outgoing upstream HTTP request based on the incoming downstream HTTP request.");
 
             return message;
         }
@@ -77,34 +77,34 @@
 
         private async Task SetHeadersAsync(HttpContext context, HttpRequestMessage message)
         {
-            logger.LogDebug("Appending HTTP headers on the outgoing request");
+            logger.LogDebug("Appending HTTP headers to the outgoing upstream request");
 
             await headerSetter
                 .SetHeadersAsync(context, message)
                 .TraceOnFaulted(logger, "Failed to set the headers", context.RequestAborted);
 
-            logger.LogDebug("Appended HTTP headers on the outgoing request");
+            logger.LogDebug("Appended HTTP headers to the outgoing upstream request");
         }
 
         private void SetContent(HttpRequest request, HttpRequestMessage message)
         {
-            logger.LogDebug("Transfering the the content of the incoming request to the outgoing request");
+            logger.LogDebug("Transferring the content of the incoming downstream request to the outgoing upstream request");
 
             if (request.Body is null || !request.Body.CanRead || request.ContentLength <= 0)
             {
-                logger.LogDebug("The incoming request does not have a body, it is not readable, or its content length is zero.");
+                logger.LogDebug("The incoming downstream request does not have a body, it is not readable, or its content length is zero.");
                 return;
             }
 
             if (request.Body.CanSeek && request.Body.Position != 0)
             {
-                logger.LogDebug("The incoming request has a seekable body stream. Resetting the stream to the begining.");
+                logger.LogDebug("The incoming downstream request has a seekable body stream. Resetting the stream to the begining.");
                 request.Body.Position = 0;
             }
 
             message.Content = new StreamContent(request.Body);
 
-            logger.LogDebug("Transfered the the content of the incoming request to the outgoing request");
+            logger.LogDebug("Transferred the content of the incoming downstream request to the outgoing upstream request");
         }
     }
 }

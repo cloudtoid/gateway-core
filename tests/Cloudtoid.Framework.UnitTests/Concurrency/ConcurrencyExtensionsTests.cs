@@ -45,21 +45,6 @@
         }
 
         [TestMethod]
-        public void TraceOnFaulted_WhenTaskCancelled_ErrorIsNotLogged()
-        {
-            var logger = Substitute.For<ILogger<object>>();
-
-            var ts = new CancellationTokenSource();
-            ts.Cancel();
-            var task = Task
-                .Run(() => { }, ts.Token)
-                .TraceOnFaulted(logger, "TraceOnFaultedWithException", ts.Token);
-
-            Invoking(() => task).Should().ThrowExactly<TaskCanceledException>();
-            logger.LogReceivedThatContains("TraceOnFaultedWithException", 0, LogLevel.Error);
-        }
-
-        [TestMethod]
         public void TraceOnFaultedWithResult_WhenTaskThrows_ErrorIsLogged()
         {
             var logger = Substitute.For<ILogger<object>>();
@@ -89,21 +74,6 @@
 
             task.IsCompleted.Should().BeTrue();
             result.Should().Be(10);
-        }
-
-        [TestMethod]
-        public void TraceOnFaultedWithResult_WhenTaskCancelled_ErrorIsNotLogged()
-        {
-            var logger = Substitute.For<ILogger<object>>();
-
-            var ts = new CancellationTokenSource();
-            ts.Cancel();
-            var task = Task
-                .Run(() => 10, ts.Token)
-                .TraceOnFaulted(logger, "TraceOnFaultedWithException", ts.Token);
-
-            Invoking(() => task).Should().ThrowExactly<TaskCanceledException>();
-            logger.LogReceivedThatContains("TraceOnFaultedWithException", 0, LogLevel.Error);
         }
     }
 }

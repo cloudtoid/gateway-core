@@ -36,16 +36,18 @@
 
             logger.LogDebug("Reverse proxy received a new incoming HTTP {0} request.", context.Request.Method);
 
+            // TODO: What error should we send back if any of the stuff below fail?
+
             var cancellationToken = context.RequestAborted;
             cancellationToken.ThrowIfCancellationRequested();
 
             var request = await requestCreator
                 .CreateRequestAsync(context)
-                .TraceOnFaulted(logger, "Failed to create an outgoing HTTP request message", cancellationToken);
+                .TraceOnFaulted(logger, "Failed to create an outgoing upstream HTTP request message", cancellationToken);
 
             var response = await Async
                 .WithTimeout(sender.SendAsync, request, config.GetTotalTimeout(context), cancellationToken)
-                .TraceOnFaulted(logger, "Failed to forward the HTTP request.", cancellationToken);
+                .TraceOnFaulted(logger, "Failed to forward the HTTP request to the upstream system.", cancellationToken);
 
             await next.Invoke(context);
         }
