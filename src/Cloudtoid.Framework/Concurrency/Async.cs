@@ -10,7 +10,7 @@
 
     [SuppressMessage("Microsoft.VisualStudio.Threading.Analyzers", "VSTHRD200", Justification = "Reviewed.")]
     [SuppressMessage("Microsoft.VisualStudio.Threading.Analyzers", "VSTHRD105", Justification = "Reviewed.")]
-    public static class ConcurrencyExtensions
+    public static class Async
     {
         public static async Task<TResult> WithTimeout<TResult>(
             this Func<CancellationToken, Task<TResult>> funcAsync,
@@ -18,12 +18,25 @@
         {
             CheckValue(funcAsync, nameof(funcAsync));
 
-            using (var cancellationSource = new CancellationTokenSource())
+            using (var source = new CancellationTokenSource(timeout))
             {
-                cancellationSource.CancelAfter(timeout);
-                var task = await funcAsync(cancellationSource.Token);
-                cancellationSource.Token.ThrowIfCancellationRequested();
-                return task;
+                return await funcAsync(source.Token);
+            }
+        }
+
+        public static async Task<TResult> WithTimeout<TResult>(
+            this Func<CancellationToken, Task<TResult>> funcAsync,
+            TimeSpan timeout,
+            CancellationToken externalToken)
+        {
+            CheckValue(funcAsync, nameof(funcAsync));
+
+            externalToken.ThrowIfCancellationRequested();
+
+            using (var source = new CancellationTokenSource(timeout))
+            using (var linked = CancellationTokenSource.CreateLinkedTokenSource(source.Token, externalToken))
+            {
+                return await funcAsync(linked.Token);
             }
         }
 
@@ -35,12 +48,12 @@
         {
             CheckValue(funcAsync, nameof(funcAsync));
 
-            using (var cts = new CancellationTokenSource(timeout))
-            using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, externalToken))
+            externalToken.ThrowIfCancellationRequested();
+
+            using (var source = new CancellationTokenSource(timeout))
+            using (var linked = CancellationTokenSource.CreateLinkedTokenSource(source.Token, externalToken))
             {
-                var task = await funcAsync(input, linkedCts.Token);
-                linkedCts.Token.ThrowIfCancellationRequested();
-                return task;
+                return await funcAsync(input, linked.Token);
             }
         }
 
@@ -52,6 +65,8 @@
         {
             CheckValue(task, nameof(task));
             CheckValue(logger, nameof(logger));
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             return task.ContinueWith(
                 t =>
@@ -80,6 +95,8 @@
         {
             CheckValue(task, nameof(task));
             CheckValue(logger, nameof(logger));
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             await task.ContinueWith(
                 t =>

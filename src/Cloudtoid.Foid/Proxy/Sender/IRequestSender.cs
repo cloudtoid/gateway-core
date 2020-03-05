@@ -6,6 +6,6 @@
 
     public interface IRequestSender
     {
-        Task<HttpResponseMessage> SendAsync(HttpRequestMessage message, CancellationToken cancellationToken);
+        Task<HttpResponseMessage> SendAsync(HttpRequestMessage upstreamMessage, CancellationToken cancellationToken);
     }
 }

@@ -14,9 +14,9 @@
             this.httpClientFactory = CheckValue(httpClientFactory, nameof(httpClientFactory));
         }
 
-        public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage message, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage upstreamMessage, CancellationToken cancellationToken)
         {
-            CheckValue(message, nameof(message));
+            CheckValue(upstreamMessage, nameof(upstreamMessage));
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -26,7 +26,7 @@
             // 3- Need to log the steps EVERYWHERE as Info/Debug
 
             var client = httpClientFactory.CreateClient();
-            return await client.SendAsync(message, cancellationToken);
+            return await client.SendAsync(upstreamMessage, cancellationToken);
         }
     }
 }

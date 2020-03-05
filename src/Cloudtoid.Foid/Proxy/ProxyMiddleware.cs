@@ -1,8 +1,8 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
-    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
+    using Cloudtoid;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using static Contract;
@@ -12,17 +12,20 @@
         private readonly RequestDelegate next;
         private readonly IRequestCreator requestCreator;
         private readonly IRequestSender sender;
+        private readonly IProxyConfigProvider config;
         private readonly ILogger<ProxyMiddleware> logger;
 
         public ProxyMiddleware(
             RequestDelegate next,
             IRequestCreator requestCreator,
             IRequestSender sender,
+            IProxyConfigProvider config,
             ILogger<ProxyMiddleware> logger)
         {
             this.next = CheckValue(next, nameof(next));
             this.requestCreator = CheckValue(requestCreator, nameof(requestCreator));
             this.sender = CheckValue(sender, nameof(sender));
+            this.config = CheckValue(config, nameof(config));
             this.logger = CheckValue(logger, nameof(logger));
         }
 
@@ -31,14 +34,18 @@
         {
             CheckValue(context, nameof(context));
 
-            logger.LogDebug("Reverse proxy received a new incoming HTTP message.");
+            logger.LogDebug("Reverse proxy received a new incoming HTTP {0} request.", context.Request.Method);
+
+            var cancellationToken = context.RequestAborted;
+            cancellationToken.ThrowIfCancellationRequested();
 
             var request = await requestCreator
                 .CreateRequestAsync(context)
-                .TraceOnFaulted(logger, "Failed to create an outgoing HTTP request message", context.RequestAborted);
+                .TraceOnFaulted(logger, "Failed to create an outgoing HTTP request message", cancellationToken);
 
-            // Need a better cancellation token here with timeout that is linked to RequestAborted too
-            await sender.SendAsync(request, context.RequestAborted);
+            var response = await Async
+                .WithTimeout(sender.SendAsync, request, config.GetTotalTimeout(context), cancellationToken)
+                .TraceOnFaulted(logger, "Failed to forward the HTTP request.", cancellationToken);
 
             await next.Invoke(context);
         }
