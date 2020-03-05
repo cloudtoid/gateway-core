@@ -9,4 +9,16 @@
     <ProjectReference Include="..\..\src\Cloudtoid.Framework\Cloudtoid.Framework.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Configs\ProxyConfig2.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configs\ProxyConfigEmpty.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Configs\ProxyConfig1.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,7 @@
+{
+  "foid": {
+    "proxy": {
+      "totalTimeoutInMilliseconds": 2000
+    }
+  }
+}
