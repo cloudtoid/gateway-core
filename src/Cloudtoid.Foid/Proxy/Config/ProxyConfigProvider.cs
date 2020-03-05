@@ -4,16 +4,21 @@
     using System.Threading;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
     using static Contract;
 
     internal sealed class ProxyConfigProvider : IProxyConfigProvider
     {
         private readonly IConfiguration config;
+        private readonly ILogger<ProxyConfigProvider> logger;
         private Values values;
 
-        public ProxyConfigProvider(IConfiguration config)
+        public ProxyConfigProvider(
+            IConfiguration config,
+            ILogger<ProxyConfigProvider> logger)
         {
             this.config = CheckValue(config, nameof(config));
+            this.logger = CheckValue(logger, nameof(logger));
             values = new Values(config);
             RegisterChangeCallback();
         }
@@ -27,6 +32,8 @@
 
         private void OnConfigChanged()
         {
+            logger.LogInformation("Proxy config change notification received.");
+
             values = new Values(config);
             RegisterChangeCallback();
             ChangeEvent.Set();
