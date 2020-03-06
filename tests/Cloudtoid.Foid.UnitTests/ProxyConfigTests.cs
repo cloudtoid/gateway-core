@@ -7,7 +7,7 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-    public sealed class ProxyConfigProviderTests
+    public sealed class ProxyConfigTests
     {
         [TestMethod]
         public void InstantiateProvider_FullyPopulatedProxyConfig_AllValuesAreReadCorrectly()
