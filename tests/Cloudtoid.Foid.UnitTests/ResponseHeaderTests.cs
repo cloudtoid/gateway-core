@@ -11,7 +11,7 @@
     using NSubstitute;
 
     [TestClass]
-    public class ResponseHeaderValuesProviderTests
+    public class ResponseHeaderTests
     {
         [TestMethod]
         public async Task SetHeadersAsync_WhenHeaderWithUnderscore_HeaderRemovedAsync()

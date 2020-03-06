@@ -1,5 +1,6 @@
 ﻿namespace Cloudtoid.Foid.UnitTests
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
@@ -13,8 +14,26 @@
     using NSubstitute;
 
     [TestClass]
-    public class RequestHeaderValuesProviderTests
+    public class RequestHeaderTests
     {
+        [TestMethod]
+        public void GetHostHeaderValue_WhenHostNameIncludesPortNumber_PortNumberIsRemoved()
+        {
+            var provider = new RequestHeaderValuesProvider();
+            provider.TryGetHeaderValues(new DefaultHttpContext(), HeaderNames.Host, new[] { "host:123", "random-value" }, out var values).Should().BeTrue();
+            values.Should().HaveCount(1);
+            values[0].Should().Be("host");
+        }
+
+        [TestMethod]
+        public void GetHostHeaderValue_WhenHostHeaderNotSpecified_HostHeaderIsMachineName()
+        {
+            var provider = new RequestHeaderValuesProvider();
+            provider.TryGetHeaderValues(new DefaultHttpContext(), HeaderNames.Host, Array.Empty<string>(), out var values).Should().BeTrue();
+            values.Should().HaveCount(1);
+            values[0].Should().Be(Environment.MachineName);
+        }
+
         [TestMethod]
         public async Task SetHeadersAsync_WhenNoHostHeader_HostHeaderIsAddedAsync()
         {
