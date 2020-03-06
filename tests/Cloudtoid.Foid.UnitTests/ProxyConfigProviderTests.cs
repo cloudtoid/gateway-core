@@ -3,11 +3,8 @@
     using System.IO;
     using Cloudtoid.Foid.Proxy;
     using FluentAssertions;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Logging;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using NSubstitute;
 
     [TestClass]
     public sealed class ProxyConfigProviderTests
@@ -19,8 +16,8 @@
                 .AddJsonFile("Configs\\ProxyConfig1.json", optional: true, reloadOnChange: true)
                 .Build();
 
-            var provider = new ProxyConfigProvider(config, Substitute.For<ILogger<ProxyConfigProvider>>());
-            provider.GetTotalTimeout(new DefaultHttpContext()).TotalMilliseconds.Should().Be(5000);
+            var provider = new ProxyConfig(config);
+            provider.Values.TotalTimeout.TotalMilliseconds.Should().Be(5000);
         }
 
         [TestMethod]
@@ -30,8 +27,8 @@
                 .AddJsonFile("Configs\\ProxyConfigEmpty.json", optional: true, reloadOnChange: true)
                 .Build();
 
-            var provider = new ProxyConfigProvider(config, Substitute.For<ILogger<ProxyConfigProvider>>());
-            provider.GetTotalTimeout(new DefaultHttpContext()).TotalMilliseconds.Should().Be(240000);
+            var provider = new ProxyConfig(config);
+            provider.Values.TotalTimeout.TotalMilliseconds.Should().Be(240000);
         }
 
         [TestMethod]
@@ -45,18 +42,18 @@
                     .AddJsonFile("Configs\\ProxyConfigReload.json", optional: true, reloadOnChange: true)
                     .Build();
 
-                var provider = new ProxyConfigProvider(config, Substitute.For<ILogger<ProxyConfigProvider>>());
-                provider.GetTotalTimeout(new DefaultHttpContext()).TotalMilliseconds.Should().Be(5000);
+                var provider = new ProxyConfig(config);
+                provider.Values.TotalTimeout.TotalMilliseconds.Should().Be(5000);
 
                 File.Copy("Configs\\ProxyConfig2.json", "Configs\\ProxyConfigReload.json", true);
                 provider.ChangeEvent.WaitOne(2000);
 
-                provider.GetTotalTimeout(new DefaultHttpContext()).TotalMilliseconds.Should().Be(2000);
+                provider.Values.TotalTimeout.TotalMilliseconds.Should().Be(2000);
 
                 File.Copy("Configs\\ProxyConfig1.json", "Configs\\ProxyConfigReload.json", true);
                 provider.ChangeEvent.WaitOne(2000);
 
-                provider.GetTotalTimeout(new DefaultHttpContext()).TotalMilliseconds.Should().Be(5000);
+                provider.Values.TotalTimeout.TotalMilliseconds.Should().Be(5000);
             }
             finally
             {

@@ -10,6 +10,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Configs\ProxyConfigUpstreamHeaders.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Configs\ProxyConfig2.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

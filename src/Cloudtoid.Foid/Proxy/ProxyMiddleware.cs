@@ -12,14 +12,14 @@
         private readonly RequestDelegate next;
         private readonly IRequestCreator requestCreator;
         private readonly IRequestSender sender;
-        private readonly IProxyConfigProvider config;
+        private readonly ProxyConfig config;
         private readonly ILogger<ProxyMiddleware> logger;
 
         public ProxyMiddleware(
             RequestDelegate next,
             IRequestCreator requestCreator,
             IRequestSender sender,
-            IProxyConfigProvider config,
+            ProxyConfig config,
             ILogger<ProxyMiddleware> logger)
         {
             this.next = CheckValue(next, nameof(next));
@@ -46,7 +46,7 @@
                 .TraceOnFaulted(logger, "Failed to create an outgoing upstream HTTP request message", cancellationToken);
 
             var response = await Async
-                .WithTimeout(sender.SendAsync, request, config.GetTotalTimeout(context), cancellationToken)
+                .WithTimeout(sender.SendAsync, request, config.Values.TotalTimeout, cancellationToken)
                 .TraceOnFaulted(logger, "Failed to forward the HTTP request to the upstream system.", cancellationToken);
 
             await next.Invoke(context);

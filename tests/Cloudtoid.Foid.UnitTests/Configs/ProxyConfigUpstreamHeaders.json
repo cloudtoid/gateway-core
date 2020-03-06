@@ -1,0 +1,30 @@
+{
+  "foid": {
+    "proxy": {
+      "totalTimeoutInMilliseconds": 5000,
+      "upstreamRequest": {
+        "headers": {
+          "proxyName": "cloudtoid-foid",
+          "defaultHost": "this-machine-name",
+          "allowHeadersWithEmptyValue": false,
+          "allowHeadersWithUnderscoreInName": false,
+          "includeExternalAddress": false,
+          "ignoreClientAddress": false,
+          "ignoreClientProtocol": false,
+          "ignoreRequestId": false,
+          "ignoreCallId": false,
+          "extraHeaders": [
+            {
+              "key": "x-xtra-1",
+              "values": [ "value1", "value2" ]
+            },
+            {
+              "key": "x-xtra-2",
+              "values": [ "value1", "value2" ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

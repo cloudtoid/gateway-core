@@ -1,29 +1,32 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Net.Http.Headers;
     using static Contract;
 
     public class RequestHeaderValuesProvider : IRequestHeaderValuesProvider
     {
-        private const string FoidProxyName = "cloudtoid-foid";
+        private readonly ProxyConfig config;
 
-        public virtual bool AllowHeadersWithEmptyValue => false;
+        public RequestHeaderValuesProvider(ProxyConfig config)
+        {
+            this.config = CheckValue(config, nameof(config));
+        }
 
-        public virtual bool AllowHeadersWithUnderscoreInName => false;
+        public virtual bool AllowHeadersWithEmptyValue => config.Values.UpstreamRequest.Headers.AllowHeadersWithEmptyValue;
 
-        public virtual bool IncludeExternalAddress => false;
+        public virtual bool AllowHeadersWithUnderscoreInName => config.Values.UpstreamRequest.Headers.AllowHeadersWithUnderscoreInName;
 
-        public virtual bool IgnoreClientAddress => false;
+        public virtual bool IncludeExternalAddress => config.Values.UpstreamRequest.Headers.IncludeExternalAddress;
 
-        public virtual bool IgnoreClientProtocol => false;
+        public virtual bool IgnoreClientAddress => config.Values.UpstreamRequest.Headers.IgnoreClientAddress;
 
-        public virtual bool IgnoreRequestId => false;
+        public virtual bool IgnoreClientProtocol => config.Values.UpstreamRequest.Headers.IgnoreClientProtocol;
 
-        public virtual bool IgnoreCallId => false;
+        public virtual bool IgnoreRequestId => config.Values.UpstreamRequest.Headers.IgnoreRequestId;
+
+        public virtual bool IgnoreCallId => config.Values.UpstreamRequest.Headers.IgnoreCallId;
 
         public virtual bool TryGetHeaderValues(
             HttpContext context,
@@ -45,12 +48,11 @@
         }
 
         // TODO: Is this a correct implementation???
-        public virtual string GetDefaultHostHeaderValue(HttpContext context) => Environment.MachineName;
+        public virtual string GetDefaultHostHeaderValue(HttpContext context) => config.Values.UpstreamRequest.Headers.DefaultHost;
 
-        public virtual string? GetProxyNameHeaderValue(HttpContext context) => FoidProxyName;
+        public virtual string? GetProxyNameHeaderValue(HttpContext context) => config.Values.UpstreamRequest.Headers.ProxyName;
 
-        public virtual IEnumerable<(string Key, IEnumerable<string> Values)> GetExtraHeaders(HttpContext context)
-            => Enumerable.Empty<(string Key, IEnumerable<string> Values)>();
+        public virtual IEnumerable<(string Key, IEnumerable<string> Values)> GetExtraHeaders(HttpContext context) => config.Values.UpstreamRequest.Headers.ExtraHeaders;
 
         private string GetHostHeaderValue(HttpContext context, IList<string> downstreamValues)
         {
