@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(FoidAppDotNetVersion)</TargetFrameworks>
@@ -10,18 +10,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Configs\ProxyConfigUpstreamHeaders.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Configs\ProxyConfig2.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Configs\ProxyConfigEmpty.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Configs\ProxyConfig1.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Update="Config\ProxyConfigUpstreamHeaders.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Config\ProxyConfig2.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Config\ConfigEmpty.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Config\ProxyConfig1.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
