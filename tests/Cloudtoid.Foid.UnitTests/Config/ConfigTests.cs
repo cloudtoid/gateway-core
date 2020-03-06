@@ -1,5 +1,6 @@
 ﻿namespace Cloudtoid.Foid.UnitTests
 {
+    using System.Collections.Generic;
     using System.IO;
     using Cloudtoid.Foid.Proxy;
     using FluentAssertions;
@@ -13,11 +14,30 @@
         public void New_FullyPopulatedProxyConfig_AllValuesAreReadCorrectly()
         {
             var builder = new ConfigurationBuilder()
-                .AddJsonFile(@"Config\ProxyConfig1.json", optional: true, reloadOnChange: true)
+                .AddJsonFile(@"Config\ProxyConfigFull.json")
                 .Build();
 
             var config = new Config(builder);
-            config.Value.Upstream.Request.TotalTimeout.TotalMilliseconds.Should().Be(5000);
+
+            var request = config.Value.Upstream.Request;
+            request.TotalTimeout.TotalMilliseconds.Should().Be(5200);
+
+            var requestHeaders = config.Value.Upstream.Request.Headers;
+            requestHeaders.ProxyName.Should().Be("some-proxy-name");
+            requestHeaders.DefaultHost.Should().Be("this-machine-name");
+            requestHeaders.AllowHeadersWithEmptyValue.Should().BeTrue();
+            requestHeaders.AllowHeadersWithUnderscoreInName.Should().BeTrue();
+            requestHeaders.IgnoreCallId.Should().BeTrue();
+            requestHeaders.IgnoreClientAddress.Should().BeTrue();
+            requestHeaders.IgnoreClientProtocol.Should().BeTrue();
+            requestHeaders.IgnoreRequestId.Should().BeTrue();
+            requestHeaders.IncludeExternalAddress.Should().BeTrue();
+            requestHeaders.ExtraHeaders.Should().BeEquivalentTo(
+                new (string Key, IEnumerable<string> Values)[]
+                {
+                    ("x-xtra-1", new[] { "value1_1", "value1_2" }),
+                    ("x-xtra-2", new[] { "value2_1", "value2_2" }),
+                });
         }
 
         [TestMethod]

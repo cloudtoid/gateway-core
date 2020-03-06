@@ -1,0 +1,32 @@
+{
+  "foid": {
+    "proxy": {
+      "upstream": {
+        "request": {
+          "timeoutInMilliseconds": 5200,
+          "headers": {
+            "proxyName": "some-proxy-name",
+            "defaultHost": "this-machine-name",
+            "allowHeadersWithEmptyValue": true,
+            "allowHeadersWithUnderscoreInName": true,
+            "includeExternalAddress": true,
+            "ignoreClientAddress": true,
+            "ignoreClientProtocol": true,
+            "ignoreRequestId": true,
+            "ignoreCallId": true,
+            "extraHeaders": [
+              {
+                "key": "x-xtra-1",
+                "values": [ "value1_1", "value1_2" ]
+              },
+              {
+                "key": "x-xtra-2",
+                "values": [ "value2_1", "value2_2" ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

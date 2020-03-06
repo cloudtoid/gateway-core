@@ -5,7 +5,7 @@
     using Microsoft.Extensions.Configuration;
     using static Contract;
 
-    [DebuggerStepThrough]
+    ////[DebuggerStepThrough]
     public static class ConfigurationExtensions
     {
         public static T GetValueSafe<T>(this IConfiguration configuration, string key, T defaultValue)
