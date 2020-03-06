@@ -1,7 +1,11 @@
 {
   "foid": {
     "proxy": {
-      "totalTimeoutInMilliseconds": 5000
+      "upstream": {
+        "request": {
+          "timeoutInMilliseconds": 5000
+        }
+      }
     }
   }
 }

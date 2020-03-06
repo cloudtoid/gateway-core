@@ -20,7 +20,7 @@
         [TestMethod]
         public void GetHostHeaderValue_WhenHostNameIncludesPortNumber_PortNumberIsRemoved()
         {
-            var provider = new RequestHeaderValuesProvider(new ProxyConfig(Substitute.For<IConfiguration>()));
+            var provider = new RequestHeaderValuesProvider(new Config(Substitute.For<IConfiguration>()));
             provider.TryGetHeaderValues(new DefaultHttpContext(), HeaderNames.Host, new[] { "host:123", "random-value" }, out var values).Should().BeTrue();
             values.Should().HaveCount(1);
             values[0].Should().Be("host");
@@ -29,7 +29,7 @@
         [TestMethod]
         public void GetHostHeaderValue_WhenHostHeaderNotSpecified_HostHeaderIsMachineName()
         {
-            var provider = new RequestHeaderValuesProvider(new ProxyConfig(Substitute.For<IConfiguration>()));
+            var provider = new RequestHeaderValuesProvider(new Config(Substitute.For<IConfiguration>()));
             provider.TryGetHeaderValues(new DefaultHttpContext(), HeaderNames.Host, Array.Empty<string>(), out var values).Should().BeTrue();
             values.Should().HaveCount(1);
             values[0].Should().Be(Environment.MachineName);
@@ -38,7 +38,7 @@
         [TestMethod]
         public async Task SetHeadersAsync_WhenNoHostHeader_HostHeaderIsAddedAsync()
         {
-            var provider = new RequestHeaderValuesProvider(new ProxyConfig(Substitute.For<IConfiguration>()));
+            var provider = new RequestHeaderValuesProvider(new Config(Substitute.For<IConfiguration>()));
             var setter = new RequestHeaderSetter(provider, GuidProvider.Instance, Substitute.For<ILogger<RequestHeaderSetter>>());
 
             var context = new DefaultHttpContext();
@@ -52,7 +52,7 @@
         [TestMethod]
         public async Task SetHeadersAsync_WhenHeaderWithUnderscore_HeaderRemovedAsync()
         {
-            var provider = new RequestHeaderValuesProvider(new ProxyConfig(Substitute.For<IConfiguration>()));
+            var provider = new RequestHeaderValuesProvider(new Config(Substitute.For<IConfiguration>()));
             var setter = new RequestHeaderSetter(provider, GuidProvider.Instance, Substitute.For<ILogger<RequestHeaderSetter>>());
 
             var context = new DefaultHttpContext();
@@ -69,7 +69,7 @@
         [TestMethod]
         public async Task SetHeadersAsync_WhenHeaderWithEmptyValue_HeaderRemovedAsync()
         {
-            var provider = new RequestHeaderValuesProvider(new ProxyConfig(Substitute.For<IConfiguration>()));
+            var provider = new RequestHeaderValuesProvider(new Config(Substitute.For<IConfiguration>()));
             var setter = new RequestHeaderSetter(provider, GuidProvider.Instance, Substitute.For<ILogger<RequestHeaderSetter>>());
 
             var context = new DefaultHttpContext();

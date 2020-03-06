@@ -12,23 +12,23 @@
         [TestMethod]
         public void InstantiateProvider_FullyPopulatedProxyConfig_AllValuesAreReadCorrectly()
         {
-            var config = new ConfigurationBuilder()
+            var builder = new ConfigurationBuilder()
                 .AddJsonFile("Configs\\ProxyConfig1.json", optional: true, reloadOnChange: true)
                 .Build();
 
-            var provider = new ProxyConfig(config);
-            provider.Values.TotalTimeout.TotalMilliseconds.Should().Be(5000);
+            var config = new Config(builder);
+            config.Value.Upstream.Request.TotalTimeout.TotalMilliseconds.Should().Be(5000);
         }
 
         [TestMethod]
         public void InstantiateProvider_NotFullyPopulatedProxyConfig_AllValuesHaveADefault()
         {
-            var config = new ConfigurationBuilder()
+            var builder = new ConfigurationBuilder()
                 .AddJsonFile("Configs\\ProxyConfigEmpty.json", optional: true, reloadOnChange: true)
                 .Build();
 
-            var provider = new ProxyConfig(config);
-            provider.Values.TotalTimeout.TotalMilliseconds.Should().Be(240000);
+            var config = new Config(builder);
+            config.Value.Upstream.Request.TotalTimeout.TotalMilliseconds.Should().Be(240000);
         }
 
         [TestMethod]
@@ -38,22 +38,22 @@
             {
                 File.Copy("Configs\\ProxyConfig1.json", "Configs\\ProxyConfigReload.json", true);
 
-                var config = new ConfigurationBuilder()
+                var builder = new ConfigurationBuilder()
                     .AddJsonFile("Configs\\ProxyConfigReload.json", optional: true, reloadOnChange: true)
                     .Build();
 
-                var provider = new ProxyConfig(config);
-                provider.Values.TotalTimeout.TotalMilliseconds.Should().Be(5000);
+                var config = new Config(builder);
+                config.Value.Upstream.Request.TotalTimeout.TotalMilliseconds.Should().Be(5000);
 
                 File.Copy("Configs\\ProxyConfig2.json", "Configs\\ProxyConfigReload.json", true);
-                provider.ChangeEvent.WaitOne(2000);
+                config.ChangeEvent.WaitOne(2000);
 
-                provider.Values.TotalTimeout.TotalMilliseconds.Should().Be(2000);
+                config.Value.Upstream.Request.TotalTimeout.TotalMilliseconds.Should().Be(2000);
 
                 File.Copy("Configs\\ProxyConfig1.json", "Configs\\ProxyConfigReload.json", true);
-                provider.ChangeEvent.WaitOne(2000);
+                config.ChangeEvent.WaitOne(2000);
 
-                provider.Values.TotalTimeout.TotalMilliseconds.Should().Be(5000);
+                config.Value.Upstream.Request.TotalTimeout.TotalMilliseconds.Should().Be(5000);
             }
             finally
             {

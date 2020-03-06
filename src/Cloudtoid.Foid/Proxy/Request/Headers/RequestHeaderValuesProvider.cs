@@ -7,26 +7,26 @@
 
     public class RequestHeaderValuesProvider : IRequestHeaderValuesProvider
     {
-        private readonly ProxyConfig config;
+        private readonly Config config;
 
-        public RequestHeaderValuesProvider(ProxyConfig config)
+        public RequestHeaderValuesProvider(Config config)
         {
             this.config = CheckValue(config, nameof(config));
         }
 
-        public virtual bool AllowHeadersWithEmptyValue => config.Values.UpstreamRequest.Headers.AllowHeadersWithEmptyValue;
+        public virtual bool AllowHeadersWithEmptyValue => config.Value.Upstream.Request.Headers.AllowHeadersWithEmptyValue;
 
-        public virtual bool AllowHeadersWithUnderscoreInName => config.Values.UpstreamRequest.Headers.AllowHeadersWithUnderscoreInName;
+        public virtual bool AllowHeadersWithUnderscoreInName => config.Value.Upstream.Request.Headers.AllowHeadersWithUnderscoreInName;
 
-        public virtual bool IncludeExternalAddress => config.Values.UpstreamRequest.Headers.IncludeExternalAddress;
+        public virtual bool IncludeExternalAddress => config.Value.Upstream.Request.Headers.IncludeExternalAddress;
 
-        public virtual bool IgnoreClientAddress => config.Values.UpstreamRequest.Headers.IgnoreClientAddress;
+        public virtual bool IgnoreClientAddress => config.Value.Upstream.Request.Headers.IgnoreClientAddress;
 
-        public virtual bool IgnoreClientProtocol => config.Values.UpstreamRequest.Headers.IgnoreClientProtocol;
+        public virtual bool IgnoreClientProtocol => config.Value.Upstream.Request.Headers.IgnoreClientProtocol;
 
-        public virtual bool IgnoreRequestId => config.Values.UpstreamRequest.Headers.IgnoreRequestId;
+        public virtual bool IgnoreRequestId => config.Value.Upstream.Request.Headers.IgnoreRequestId;
 
-        public virtual bool IgnoreCallId => config.Values.UpstreamRequest.Headers.IgnoreCallId;
+        public virtual bool IgnoreCallId => config.Value.Upstream.Request.Headers.IgnoreCallId;
 
         public virtual bool TryGetHeaderValues(
             HttpContext context,
@@ -48,11 +48,11 @@
         }
 
         // TODO: Is this a correct implementation???
-        public virtual string GetDefaultHostHeaderValue(HttpContext context) => config.Values.UpstreamRequest.Headers.DefaultHost;
+        public virtual string GetDefaultHostHeaderValue(HttpContext context) => config.Value.Upstream.Request.Headers.DefaultHost;
 
-        public virtual string? GetProxyNameHeaderValue(HttpContext context) => config.Values.UpstreamRequest.Headers.ProxyName;
+        public virtual string? GetProxyNameHeaderValue(HttpContext context) => config.Value.Upstream.Request.Headers.ProxyName;
 
-        public virtual IEnumerable<(string Key, IEnumerable<string> Values)> GetExtraHeaders(HttpContext context) => config.Values.UpstreamRequest.Headers.ExtraHeaders;
+        public virtual IEnumerable<(string Key, IEnumerable<string> Values)> GetExtraHeaders(HttpContext context) => config.Value.Upstream.Request.Headers.ExtraHeaders;
 
         private string GetHostHeaderValue(HttpContext context, IList<string> downstreamValues)
         {
