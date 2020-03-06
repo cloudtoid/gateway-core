@@ -1,10 +1,12 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using Cloudtoid;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using static Contract;
 
     internal sealed class ProxyMiddleware
@@ -12,20 +14,20 @@
         private readonly RequestDelegate next;
         private readonly IRequestCreator requestCreator;
         private readonly IRequestSender sender;
-        private readonly Config config;
+        private readonly IOptionsMonitor<FoidOptions> options;
         private readonly ILogger<ProxyMiddleware> logger;
 
         public ProxyMiddleware(
             RequestDelegate next,
             IRequestCreator requestCreator,
             IRequestSender sender,
-            Config config,
+            IOptionsMonitor<FoidOptions> options,
             ILogger<ProxyMiddleware> logger)
         {
             this.next = CheckValue(next, nameof(next));
             this.requestCreator = CheckValue(requestCreator, nameof(requestCreator));
             this.sender = CheckValue(sender, nameof(sender));
-            this.config = CheckValue(config, nameof(config));
+            this.options = CheckValue(options, nameof(options));
             this.logger = CheckValue(logger, nameof(logger));
         }
 
@@ -45,8 +47,9 @@
                 .CreateRequestAsync(context)
                 .TraceOnFaulted(logger, "Failed to create an outgoing upstream HTTP request message", cancellationToken);
 
+            var timeout = TimeSpan.FromMilliseconds(options.CurrentValue.Proxy.Upstream.Request.TimeoutInMilliseconds);
             var response = await Async
-                .WithTimeout(sender.SendAsync, request, config.Value.Upstream.Request.TotalTimeout, cancellationToken)
+                .WithTimeout(sender.SendAsync, request, timeout, cancellationToken)
                 .TraceOnFaulted(logger, "Failed to forward the HTTP request to the upstream system.", cancellationToken);
 
             await next.Invoke(context);

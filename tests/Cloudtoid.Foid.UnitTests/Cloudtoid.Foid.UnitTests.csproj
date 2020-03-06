@@ -10,10 +10,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Config\ProxyConfigFull.json" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="Config\ProxyConfig2.json" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="Config\ConfigEmpty.json" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="Config\ProxyConfig1.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Options\OptionsFull.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Options\Options2.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Options\OptionsEmpty.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Options\Options1.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

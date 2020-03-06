@@ -2,31 +2,35 @@
 {
     using System.Collections.Generic;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Options;
     using Microsoft.Net.Http.Headers;
     using static Contract;
 
     public class RequestHeaderValuesProvider : IRequestHeaderValuesProvider
     {
-        private readonly Config config;
-
-        public RequestHeaderValuesProvider(Config config)
+        public RequestHeaderValuesProvider(IOptionsMonitor<FoidOptions> options)
         {
-            this.config = CheckValue(config, nameof(config));
+            Options = CheckValue(options, nameof(options));
         }
 
-        public virtual bool AllowHeadersWithEmptyValue => config.Value.Upstream.Request.Headers.AllowHeadersWithEmptyValue;
+        public virtual bool AllowHeadersWithEmptyValue => HeaderOptions.AllowHeadersWithEmptyValue;
 
-        public virtual bool AllowHeadersWithUnderscoreInName => config.Value.Upstream.Request.Headers.AllowHeadersWithUnderscoreInName;
+        public virtual bool AllowHeadersWithUnderscoreInName => HeaderOptions.AllowHeadersWithUnderscoreInName;
 
-        public virtual bool IncludeExternalAddress => config.Value.Upstream.Request.Headers.IncludeExternalAddress;
+        public virtual bool IncludeExternalAddress => HeaderOptions.IncludeExternalAddress;
 
-        public virtual bool IgnoreClientAddress => config.Value.Upstream.Request.Headers.IgnoreClientAddress;
+        public virtual bool IgnoreClientAddress => HeaderOptions.IgnoreClientAddress;
 
-        public virtual bool IgnoreClientProtocol => config.Value.Upstream.Request.Headers.IgnoreClientProtocol;
+        public virtual bool IgnoreClientProtocol => HeaderOptions.IgnoreClientProtocol;
 
-        public virtual bool IgnoreRequestId => config.Value.Upstream.Request.Headers.IgnoreRequestId;
+        public virtual bool IgnoreRequestId => HeaderOptions.IgnoreRequestId;
 
-        public virtual bool IgnoreCallId => config.Value.Upstream.Request.Headers.IgnoreCallId;
+        public virtual bool IgnoreCallId => HeaderOptions.IgnoreCallId;
+
+        protected IOptionsMonitor<FoidOptions> Options { get; }
+
+        private FoidOptions.ProxyOptions.UpstreamOptions.RequestOptions.HeadersOptions HeaderOptions
+            => Options.CurrentValue.Proxy.Upstream.Request.Headers;
 
         public virtual bool TryGetHeaderValues(
             HttpContext context,
@@ -47,12 +51,14 @@
             return true;
         }
 
-        // TODO: Is this a correct implementation???
-        public virtual string GetDefaultHostHeaderValue(HttpContext context) => config.Value.Upstream.Request.Headers.DefaultHost;
+        public virtual string GetDefaultHostHeaderValue(HttpContext context)
+            => HeaderOptions.DefaultHost;
 
-        public virtual string? GetProxyNameHeaderValue(HttpContext context) => config.Value.Upstream.Request.Headers.ProxyName;
+        public virtual string? GetProxyNameHeaderValue(HttpContext context)
+            => HeaderOptions.ProxyName;
 
-        public virtual IEnumerable<(string Key, IEnumerable<string> Values)> GetExtraHeaders(HttpContext context) => config.Value.Upstream.Request.Headers.ExtraHeaders;
+        public virtual IEnumerable<ExtraHeader> GetExtraHeaders(HttpContext context)
+            => HeaderOptions.ExtraHeaders;
 
         private string GetHostHeaderValue(HttpContext context, IList<string> downstreamValues)
         {

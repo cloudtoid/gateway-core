@@ -8,8 +8,8 @@
     using Cloudtoid.Foid.Proxy;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using NSubstitute;
@@ -17,10 +17,18 @@
     [TestClass]
     public class RequestHeaderTests
     {
+        private readonly RequestHeaderValuesProvider provider;
+
+        public RequestHeaderTests()
+        {
+            var options = Substitute.For<IOptionsMonitor<FoidOptions>>();
+            options.CurrentValue.Returns(new FoidOptions());
+            provider = new RequestHeaderValuesProvider(options);
+        }
+
         [TestMethod]
         public void GetHostHeaderValue_WhenHostNameIncludesPortNumber_PortNumberIsRemoved()
         {
-            var provider = new RequestHeaderValuesProvider(new Config(Substitute.For<IConfiguration>()));
             provider.TryGetHeaderValues(new DefaultHttpContext(), HeaderNames.Host, new[] { "host:123", "random-value" }, out var values).Should().BeTrue();
             values.Should().HaveCount(1);
             values[0].Should().Be("host");
@@ -29,7 +37,6 @@
         [TestMethod]
         public void GetHostHeaderValue_WhenHostHeaderNotSpecified_HostHeaderIsMachineName()
         {
-            var provider = new RequestHeaderValuesProvider(new Config(Substitute.For<IConfiguration>()));
             provider.TryGetHeaderValues(new DefaultHttpContext(), HeaderNames.Host, Array.Empty<string>(), out var values).Should().BeTrue();
             values.Should().HaveCount(1);
             values[0].Should().Be(Environment.MachineName);
@@ -38,7 +45,6 @@
         [TestMethod]
         public async Task SetHeadersAsync_WhenNoHostHeader_HostHeaderIsAddedAsync()
         {
-            var provider = new RequestHeaderValuesProvider(new Config(Substitute.For<IConfiguration>()));
             var setter = new RequestHeaderSetter(provider, GuidProvider.Instance, Substitute.For<ILogger<RequestHeaderSetter>>());
 
             var context = new DefaultHttpContext();
@@ -52,7 +58,6 @@
         [TestMethod]
         public async Task SetHeadersAsync_WhenHeaderWithUnderscore_HeaderRemovedAsync()
         {
-            var provider = new RequestHeaderValuesProvider(new Config(Substitute.For<IConfiguration>()));
             var setter = new RequestHeaderSetter(provider, GuidProvider.Instance, Substitute.For<ILogger<RequestHeaderSetter>>());
 
             var context = new DefaultHttpContext();
@@ -69,7 +74,6 @@
         [TestMethod]
         public async Task SetHeadersAsync_WhenHeaderWithEmptyValue_HeaderRemovedAsync()
         {
-            var provider = new RequestHeaderValuesProvider(new Config(Substitute.For<IConfiguration>()));
             var setter = new RequestHeaderSetter(provider, GuidProvider.Instance, Substitute.For<ILogger<RequestHeaderSetter>>());
 
             var context = new DefaultHttpContext();

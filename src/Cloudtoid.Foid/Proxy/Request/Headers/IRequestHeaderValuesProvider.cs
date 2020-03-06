@@ -64,6 +64,6 @@
         /// <summary>
         /// You can append other headers to the outgoing upstream request
         /// </summary>
-        IEnumerable<(string Key, IEnumerable<string> Values)> GetExtraHeaders(HttpContext context);
+        IEnumerable<ExtraHeader> GetExtraHeaders(HttpContext context);
     }
 }

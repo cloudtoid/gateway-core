@@ -1,0 +1,9 @@
+{
+  "proxy": {
+    "upstream": {
+      "request": {
+        "timeoutInMilliseconds": 5000
+      }
+    }
+  }
+}
