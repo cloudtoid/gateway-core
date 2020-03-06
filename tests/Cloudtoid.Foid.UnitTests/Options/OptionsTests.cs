@@ -1,5 +1,6 @@
 ﻿namespace Cloudtoid.Foid.UnitTests
 {
+    using System;
     using System.IO;
     using System.Threading;
     using FluentAssertions;
@@ -57,10 +58,10 @@
         }
 
         [TestMethod]
-        public void New_NotFullyPopulatedOptions_AllValuesHaveADefault()
+        public void New_OptionsEmpty_AllValuesSetToDefault()
         {
             var config = new ConfigurationBuilder()
-                .AddJsonFile(@"Options\ConfigEmpty.json", optional: false, reloadOnChange: true)
+                .AddJsonFile(@"Options\OptionsEmpty.json", optional: false)
                 .Build();
 
             var services = new ServiceCollection()
@@ -71,11 +72,24 @@
                 .BuildServiceProvider()
                 .GetRequiredService<IOptionsMonitor<FoidOptions>>();
 
-            options.CurrentValue.Proxy.Upstream.Request.TimeoutInMilliseconds.Should().Be(240000);
+            var request = options.CurrentValue.Proxy.Upstream.Request;
+            request.TimeoutInMilliseconds.Should().Be(240000);
+
+            var requestHeaders = request.Headers;
+            requestHeaders.ProxyName.Should().Be("cloudtoid-foid");
+            requestHeaders.DefaultHost.Should().Be(Environment.MachineName);
+            requestHeaders.AllowHeadersWithEmptyValue.Should().BeFalse();
+            requestHeaders.AllowHeadersWithUnderscoreInName.Should().BeFalse();
+            requestHeaders.IgnoreCallId.Should().BeFalse();
+            requestHeaders.IgnoreClientAddress.Should().BeFalse();
+            requestHeaders.IgnoreClientProtocol.Should().BeFalse();
+            requestHeaders.IgnoreRequestId.Should().BeFalse();
+            requestHeaders.IncludeExternalAddress.Should().BeFalse();
+            requestHeaders.ExtraHeaders.Should().BeEmpty();
         }
 
         [TestMethod]
-        public void New_ConfigFileModified_FileIsReloaded()
+        public void New_OptionsgFileModified_FileIsReloaded()
         {
             try
             {
