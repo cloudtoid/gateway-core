@@ -179,6 +179,52 @@
         }
 
         [TestMethod]
+        public async Task SetHeadersAsync_WhenIgnoreAllDownstreamHeadersAndRequestId_NewRequestIdIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-request-id";
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamHeaders = true;
+            options.Proxy.Upstream.Request.Headers.IgnoreRequestId = false;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(HeaderName, "abc");
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers
+                .GetValues(HeaderName)
+                .SingleOrDefault()
+                .Should()
+                .Be(GuidProvider.Value.ToStringInvariant("N"));
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenNotIgnoreAllDownstreamHeadersAndRequestId_ExistingRequestIdIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-request-id";
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamHeaders = false;
+            options.Proxy.Upstream.Request.Headers.IgnoreRequestId = false;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(HeaderName, "abc");
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers
+                .GetValues(HeaderName)
+                .SingleOrDefault()
+                .Should()
+                .Be("abc");
+        }
+
+        [TestMethod]
         public async Task SetHeadersAsync_WhenNotIgnoreAllDownstreamHeaders_DownstreamHeadersAreIncludedAsync()
         {
             // Arrange

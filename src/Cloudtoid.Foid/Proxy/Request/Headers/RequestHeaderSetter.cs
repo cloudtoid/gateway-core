@@ -93,7 +93,7 @@
 
         private void AddHostHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            if (context.Request.Headers.ContainsKey(HeaderNames.Host))
+            if (upstreamRequest.Headers.Contains(HeaderNames.Host))
                 return;
 
             upstreamRequest.Headers.TryAddWithoutValidation(
@@ -150,7 +150,7 @@
             if (provider.IgnoreRequestId)
                 return;
 
-            if (context.Request.Headers.ContainsKey(Request.Constants.Headers.RequestId))
+            if (upstreamRequest.Headers.Contains(Request.Constants.Headers.RequestId))
                 return;
 
             AddUpstreamHeaderValuesIfAllowed(
