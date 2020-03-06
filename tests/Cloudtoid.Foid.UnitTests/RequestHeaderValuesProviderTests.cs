@@ -13,7 +13,7 @@
     using NSubstitute;
 
     [TestClass]
-    public class HeaderValuesProviderTests
+    public class RequestHeaderValuesProviderTests
     {
         [TestMethod]
         public async Task SetHeadersAsync_WhenNoHostHeader_HostHeaderIsAddedAsync()
@@ -42,6 +42,7 @@
             var message = new HttpRequestMessage();
             await setter.SetHeadersAsync(context, message);
 
+            message.Headers.Contains("X-Good-Header").Should().BeTrue();
             message.Headers.Contains("X_Bad_Header").Should().BeFalse();
         }
 
