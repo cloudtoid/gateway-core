@@ -46,25 +46,30 @@
 
             foreach (var header in headers)
             {
+                var key = header.Key;
+
                 // Remove empty headers
                 if (!provider.AllowHeadersWithEmptyValue && header.Value.All(s => string.IsNullOrEmpty(s)))
                 {
-                    logger.LogInformation("Removing header '{0}' as its value is empty.", header.Key);
+                    logger.LogInformation("Removing header '{0}' as its value is empty.", key);
                     continue;
                 }
 
                 // Remove headers with underscore in their names
-                if (!provider.AllowHeadersWithUnderscoreInName && header.Key.Contains('_'))
+                if (!provider.AllowHeadersWithUnderscoreInName && key.Contains('_'))
                 {
                     logger.LogInformation("Removing header '{0}' as headers should not have underscores in their name.", header.Key);
                     continue;
                 }
 
-                // If blacklisted, we will not trasnfer its value
-                if (HeaderTransferBlacklist.Contains(header.Key))
+                if (provider.IgnoreRequestId && key.EqualsOrdinalIgnoreCase(Request.Constants.Headers.RequestId))
                     continue;
 
-                AddUpstreamHeaderValuesIfAllowed(context, upstreamRequest, header.Key, header.Value);
+                // If blacklisted, we will not trasnfer its value
+                if (HeaderTransferBlacklist.Contains(key))
+                    continue;
+
+                AddUpstreamHeaderValuesIfAllowed(context, upstreamRequest, key, header.Value);
             }
 
             AddHostHeader(context, upstreamRequest);
@@ -72,7 +77,7 @@
             AddClientAddressHeader(context, upstreamRequest);
             AddClientProtocolHeader(context, upstreamRequest);
             AddRequestIdHeader(context, upstreamRequest);
-            AddCallIdHeader(upstreamRequest);
+            AddCallIdHeader(context, upstreamRequest);
             AddProxyNameHeader(context, upstreamRequest);
             AddExtraHeaders(context, upstreamRequest);
 
@@ -126,27 +131,36 @@
             if (provider.IgnoreClientProtocol)
                 return;
 
-            upstreamRequest.Headers.TryAddWithoutValidation(
+            AddUpstreamHeaderValuesIfAllowed(
+                context,
+                upstreamRequest,
                 Request.Constants.Headers.ClientProtocol,
                 context.Request.Scheme);
         }
 
         private void AddRequestIdHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            if (!provider.IgnoreRequestId && !context.Request.Headers.ContainsKey(Request.Constants.Headers.RequestId))
-            {
-                upstreamRequest.Headers.TryAddWithoutValidation(
-                    Request.Constants.Headers.RequestId,
-                    guideProvider.NewGuid().ToStringInvariant("N"));
-            }
+            if (provider.IgnoreRequestId)
+                return;
+
+            if (context.Request.Headers.ContainsKey(Request.Constants.Headers.RequestId))
+                return;
+
+            AddUpstreamHeaderValuesIfAllowed(
+                context,
+                upstreamRequest,
+                Request.Constants.Headers.RequestId,
+                guideProvider.NewGuid().ToStringInvariant("N"));
         }
 
-        private void AddCallIdHeader(HttpRequestMessage upstreamRequest)
+        private void AddCallIdHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
             if (provider.IgnoreCallId)
                 return;
 
-            upstreamRequest.Headers.TryAddWithoutValidation(
+            AddUpstreamHeaderValuesIfAllowed(
+                context,
+                upstreamRequest,
                 Request.Constants.Headers.CallId,
                 guideProvider.NewGuid().ToStringInvariant("N"));
         }

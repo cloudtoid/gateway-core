@@ -47,7 +47,7 @@
 
             // Assert
             message.Headers.Contains(HeaderNames.Host).Should().BeTrue();
-            message.Headers.GetValues(HeaderNames.Host).FirstOrDefault().Should().Be(Environment.MachineName);
+            message.Headers.GetValues(HeaderNames.Host).SingleOrDefault().Should().Be(Environment.MachineName);
         }
 
         [TestMethod]
@@ -138,7 +138,7 @@
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(HeaderName).FirstOrDefault().Should().Be("0.1.2.3");
+            message.Headers.GetValues(HeaderName).SingleOrDefault().Should().Be("0.1.2.3");
         }
 
         [TestMethod]
@@ -148,6 +148,24 @@
             const string HeaderName = "x-foid-external-address";
             var options = new FoidOptions();
             options.Proxy.Upstream.Request.Headers.IncludeExternalAddress = false;
+
+            var context = new DefaultHttpContext();
+            context.Connection.RemoteIpAddress = new IPAddress(new byte[] { 0, 1, 2, 3 });
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.Contains(HeaderName).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenIgnoreClientAddress_HeaderNotIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-forwarded-for";
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.IgnoreClientAddress = true;
 
             var context = new DefaultHttpContext();
             context.Connection.RemoteIpAddress = new IPAddress(new byte[] { 0, 1, 2, 3 });
@@ -174,7 +192,7 @@
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(HeaderName).FirstOrDefault().Should().Be("0.1.2.3");
+            message.Headers.GetValues(HeaderName).SingleOrDefault().Should().Be("0.1.2.3");
         }
 
         [TestMethod]
@@ -195,6 +213,191 @@
 
             // Assert
             message.Headers.GetValues(HeaderName).Should().BeEquivalentTo(new[] { "3.2.1.0", "0.1.2.3" });
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenIgnoreClientProtocol_HeaderNotIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-forwarded-proto";
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.IgnoreClientProtocol = true;
+
+            var context = new DefaultHttpContext();
+            context.Request.Scheme = "HTTPS";
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.Contains(HeaderName).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenNotIgnoreClientProtocol_HeaderIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-forwarded-proto";
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.IgnoreClientProtocol = false;
+
+            var context = new DefaultHttpContext();
+            context.Request.Scheme = "HTTPS";
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(HeaderName).SingleOrDefault().Should().Be("HTTPS");
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenIgnoreRequestId_HeaderNotIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-request-id";
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.IgnoreRequestId = true;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(HeaderName, "abc");
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.Contains(HeaderName).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenNotIgnoreRequestId_HeaderIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-request-id";
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.IgnoreRequestId = false;
+
+            var context = new DefaultHttpContext();
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers
+                .GetValues(HeaderName)
+                .SingleOrDefault()
+                .Should()
+                .Be(GuidProvider.Value.ToStringInvariant("N"));
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenNotIgnoreRequestIdWithExistingId_HeaderIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-request-id";
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.IgnoreRequestId = false;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(HeaderName, "abc");
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(HeaderName).SingleOrDefault().Should().Be("abc");
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenIgnoreCallId_HeaderNotIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-call-id";
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.IgnoreCallId = true;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(HeaderName, "abc");
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.Contains(HeaderName).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenNotIgnoreCallId_HeaderIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-call-id";
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.IgnoreCallId = false;
+
+            var context = new DefaultHttpContext();
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers
+                .GetValues(HeaderName)
+                .SingleOrDefault()
+                .Should()
+                .Be(GuidProvider.Value.ToStringInvariant("N"));
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenProxyNameNull_HeaderNotIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-foid-proxy-name";
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.ProxyName = null;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(HeaderName, "abc");
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.Contains(HeaderName).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenProxyNameSpecified_HeaderNotIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-foid-proxy-name";
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.ProxyName = "edge";
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(HeaderName, "abc");
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(HeaderName).SingleOrDefault().Should().Be("edge");
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenProxyNameDefault_HeaderNotIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-foid-proxy-name";
+            var options = new FoidOptions();
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(HeaderName, "abc");
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(HeaderName).SingleOrDefault().Should().Be("cloudtoid-foid");
         }
 
         private static async Task<HttpRequestMessage> SetHeadersAsync(HttpContext context, FoidOptions? options = null)
