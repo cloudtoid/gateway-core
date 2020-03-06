@@ -1,8 +1,8 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
     using System;
+    using System.Collections.Generic;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Primitives;
     using Microsoft.Net.Http.Headers;
     using static Contract;
 
@@ -15,15 +15,15 @@
         public bool TryGetHeaderValues(
             HttpContext context,
             string name,
-            StringValues downstreamValues,
-            out StringValues upstreamValues)
+            IList<string> downstreamValues,
+            out IList<string> upstreamValues)
         {
             CheckValue(context, nameof(context));
             CheckNonEmpty(name, nameof(name));
 
             if (name.EqualsOrdinalIgnoreCase(HeaderNames.Host))
             {
-                upstreamValues = GetHostHeaderValue(context, downstreamValues);
+                upstreamValues = new[] { GetHostHeaderValue(context, downstreamValues) };
                 return true;
             }
 
@@ -34,7 +34,7 @@
         // TODO: Is this a correct implementation???
         public string GetDefaultHostHeaderValue(HttpContext context) => Environment.MachineName;
 
-        private string GetHostHeaderValue(HttpContext context, StringValues downstreamValues)
+        private string GetHostHeaderValue(HttpContext context, IList<string> downstreamValues)
         {
             // No value, just return the machine name as the host name
             if (downstreamValues.Count == 0)

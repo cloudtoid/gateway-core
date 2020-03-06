@@ -24,7 +24,7 @@
         public void GetHostHeaderValue_WhenHostHeaderNotSpecified_HostHeaderIsMachineName()
         {
             var provider = new RequestHeaderValuesProvider();
-            provider.TryGetHeaderValues(new DefaultHttpContext(), HeaderNames.Host, default, out var values).Should().BeTrue();
+            provider.TryGetHeaderValues(new DefaultHttpContext(), HeaderNames.Host, Array.Empty<string>(), out var values).Should().BeTrue();
             values.Should().HaveCount(1);
             values[0].Should().Be(Environment.MachineName);
         }

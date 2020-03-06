@@ -1,7 +1,7 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
+    using System.Collections.Generic;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Primitives;
 
     public interface IRequestHeaderValuesProvider
     {
@@ -19,7 +19,7 @@
         /// By implementing this method, one can change the values of a given header.
         /// Return false, if the header should be dropped.
         /// </summary>
-        bool TryGetHeaderValues(HttpContext context, string name, StringValues downstreamValues, out StringValues upstreamValues);
+        bool TryGetHeaderValues(HttpContext context, string name, IList<string> downstreamValues, out IList<string> upstreamValues);
 
         /// <summary>
         /// If the incoming downstream request does not have a HOST header, the value provided here will be used.

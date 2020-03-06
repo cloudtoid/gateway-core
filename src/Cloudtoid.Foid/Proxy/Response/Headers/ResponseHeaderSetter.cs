@@ -1,13 +1,10 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
-    using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Primitives;
-    using Microsoft.Net.Http.Headers;
     using static Contract;
 
     internal sealed class ResponseHeaderSetter : IResponseHeaderSetter
@@ -34,7 +31,7 @@
             foreach (var header in upstreamResponse.Headers)
             {
                 // Remove empty headers
-                if (!headerValuesProvider.AllowHeadersWithEmptyValue && !header.Value.Any())
+                if (!headerValuesProvider.AllowHeadersWithEmptyValue && header.Value.All(s => string.IsNullOrEmpty(s)))
                 {
                     logger.LogInformation("Removing header '{0}' as its value is empty.", header.Key);
                     continue;
@@ -47,7 +44,17 @@
                     continue;
                 }
 
-                responseHeaders[header.Key] = header.Value.AsArray();
+                if (!headerValuesProvider.TryGetHeaderValues(context, header.Key, header.Value.AsList(), out var downstreamValues) || downstreamValues is null)
+                {
+                    logger.LogInformation(
+                        "Removing header '{0}' as was instructed by the {1}.",
+                        header.Key,
+                        nameof(IResponseHeaderValuesProvider));
+
+                    continue;
+                }
+
+                responseHeaders[header.Key] = downstreamValues.AsArray();
             }
 
             return Task.CompletedTask;

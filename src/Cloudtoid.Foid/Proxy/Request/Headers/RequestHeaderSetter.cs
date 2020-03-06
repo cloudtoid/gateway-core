@@ -49,7 +49,7 @@
                     continue;
                 }
 
-                if (!headerValuesProvider.TryGetHeaderValues(context, header.Key, header.Value, out var upstreamHeaderValues))
+                if (!headerValuesProvider.TryGetHeaderValues(context, header.Key, header.Value, out var upstreamValues) || upstreamValues is null)
                 {
                     logger.LogInformation(
                         "Removing header '{0}' as was instructed by the {1}.",
@@ -59,9 +59,7 @@
                     continue;
                 }
 
-                upstreamRequest.Headers.TryAddWithoutValidation(
-                    header.Key,
-                    (IEnumerable<string>)upstreamHeaderValues);
+                upstreamRequest.Headers.TryAddWithoutValidation(header.Key, upstreamValues);
             }
 
             if (!headers.ContainsKey(HeaderNames.Host))

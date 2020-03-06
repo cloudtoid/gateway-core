@@ -1,5 +1,6 @@
 ﻿namespace Cloudtoid.Foid.UnitTests
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
@@ -7,7 +8,6 @@
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Primitives;
     using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using NSubstitute;
@@ -68,28 +68,33 @@
                 .TryGetHeaderValues(
                     Arg.Any<HttpContext>(),
                     Arg.Is("X-Keep-Header"),
-                    Arg.Any<StringValues>(),
-                    out Arg.Any<StringValues>())
-                .Returns(true);
+                    Arg.Any<IList<string>>(),
+                    out Arg.Any<IList<string>>())
+                .Returns(x =>
+                {
+                    x[3] = new[] { "keep-value" };
+                    return true;
+                });
 
             provider
                 .TryGetHeaderValues(
                     Arg.Any<HttpContext>(),
                     Arg.Is("X-Drop-Header"),
-                    Arg.Any<StringValues>(),
-                    out Arg.Any<StringValues>())
+                    Arg.Any<IList<string>>(),
+                    out Arg.Any<IList<string>>())
                 .Returns(false);
 
             var setter = new RequestHeaderSetter(provider, Substitute.For<ILogger<RequestHeaderSetter>>());
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add("X-Keep-Header", "some-value");
-            context.Request.Headers.Add("X-Drop-Header", "some-value");
+            context.Request.Headers.Add("X-Keep-Header", "keep-value");
+            context.Request.Headers.Add("X-Drop-Header", "drop-value");
 
             var message = new HttpRequestMessage();
             await setter.SetHeadersAsync(context, message);
 
             message.Headers.Contains("X-Keep-Header").Should().BeTrue();
+            message.Headers.GetValues("X-Keep-Header").Should().BeEquivalentTo(new[] { "keep-value" });
             message.Headers.Contains("X-Drop-Header").Should().BeFalse();
         }
     }

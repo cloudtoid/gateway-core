@@ -1,7 +1,7 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
+    using System.Collections.Generic;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Primitives;
     using static Contract;
 
     internal sealed class ResponseHeaderValuesProvider : IResponseHeaderValuesProvider
@@ -13,8 +13,8 @@
         public bool TryGetHeaderValues(
             HttpContext context,
             string name,
-            StringValues upstreamHeaders,
-            out StringValues downstreamHeaders)
+            IList<string> upstreamHeaders,
+            out IList<string> downstreamHeaders)
         {
             CheckValue(context, nameof(context));
             CheckNonEmpty(name, nameof(name));
