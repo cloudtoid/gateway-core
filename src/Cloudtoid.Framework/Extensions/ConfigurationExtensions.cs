@@ -16,9 +16,6 @@
             if (section is null || string.IsNullOrEmpty(section.Key))
                 return defaultValue;
 
-            if (section.Value is null)
-                return defaultValue;
-
             try
             {
                 return configuration.GetValue(key, defaultValue) ?? defaultValue;
@@ -36,9 +33,6 @@
 
             var section = configuration.GetSection(key);
             if (section is null || string.IsNullOrEmpty(section.Key))
-                return defaultValue;
-
-            if (section.Value is null)
                 return defaultValue;
 
             return section.Value;
