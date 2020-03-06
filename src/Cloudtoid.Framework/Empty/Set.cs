@@ -3,7 +3,9 @@
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics;
 
+    [DebuggerStepThrough]
     public static class Set
     {
         public static ISet<T> Empty<T>() => EmptySet<T>.Instance;

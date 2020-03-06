@@ -1,11 +1,13 @@
 ﻿namespace Cloudtoid
 {
     using System;
+    using System.Diagnostics;
     using System.Linq;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
     // Added this class so that the extensions all return the service collection
+    [DebuggerStepThrough]
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection TryAddScoped<TService>(this IServiceCollection services, Func<IServiceProvider, TService> implementationFactory) where TService : class

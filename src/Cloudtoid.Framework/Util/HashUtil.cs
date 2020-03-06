@@ -7,6 +7,7 @@
     /// <summary>
     /// Utility methods for generating and combining hash codes.
     /// </summary>
+    [DebuggerStepThrough]
     public static class HashUtil
     {
         // A fallback hash code to use for null values.  Avoid zero just to give a better distribution.
@@ -15,19 +16,16 @@
         /// <summary>
         /// Combines the hashcodes and creates a new hashcode
         /// </summary>
-        [DebuggerStepThrough]
         public static uint Combine(uint u1, uint u2) => ((u1 << 7) | (u1 >> 25)) ^ u2;
 
         /// <summary>
         /// Combines the hashcodes and creates a new hashcode
         /// </summary>
-        [DebuggerStepThrough]
         public static int Combine(int n1, int n2) => (int)Combine((uint)n1, (uint)n2);
 
         /// <summary>
         /// Combines the hashcodes and creates a new hashcode
         /// </summary>
-        [DebuggerStepThrough]
         public static int Combine(int n1, int n2, int n3)
         {
             var hash = Combine((uint)n1, (uint)n2);
@@ -37,7 +35,6 @@
         /// <summary>
         /// Combines the hashcodes and creates a new hashcode
         /// </summary>
-        [DebuggerStepThrough]
         public static int Combine(int n1, int n2, int n3, int n4)
         {
             uint hash;
@@ -50,7 +47,6 @@
         /// <summary>
         /// Combines the hashcodes and creates a new hashcode
         /// </summary>
-        [DebuggerStepThrough]
         public static int Combine(int n1, int n2, int n3, int n4, int n5)
         {
             uint hash;
@@ -64,7 +60,6 @@
         /// <summary>
         /// Combines the hashcodes and creates a new hashcode
         /// </summary>
-        [DebuggerStepThrough]
         public static int Combine(int n1, int n2, int n3, int n4, int n5, int n6)
         {
             uint hash;
@@ -79,7 +74,6 @@
         /// <summary>
         /// Combines the hashcodes and creates a new hashcode
         /// </summary>
-        [DebuggerStepThrough]
         public static int Combine(int n1, int n2, int n3, int n4, int n5, int n6, int n7)
         {
             uint hash;
@@ -95,7 +89,6 @@
         /// <summary>
         /// Combines the hashcodes and creates a new hashcode
         /// </summary>
-        [DebuggerStepThrough]
         public static int Combine(int n1, int n2, int n3, int n4, int n5, int n6, int n7, int n8)
         {
             uint hash;
@@ -112,7 +105,6 @@
         /// <summary>
         /// Combines the hashcodes and creates a new hashcode
         /// </summary>
-        [DebuggerStepThrough]
         public static int Combine(int n1, int n2, int n3, int n4, int n5, int n6, int n7, int n8, int n9)
         {
             uint hash;
@@ -132,7 +124,6 @@
         /// is used to generate the hash code.  The position of each value is reflected in the resulting
         /// hash code.
         /// </summary>
-        [DebuggerStepThrough]
         public static int Combine<T>(IList<T> values, IEqualityComparer<T>? comparer = null)
         {
             CheckValue(values, nameof(values));
@@ -163,7 +154,6 @@
         /// is used to generate the hash code.  The position of each value is reflected in the resulting
         /// hash code.
         /// </summary>
-        [DebuggerStepThrough]
         public static int Combine<T>(IEnumerable<T> values, int count, IEqualityComparer<T>? comparer = null)
         {
             CheckValue(values, nameof(values));
@@ -194,7 +184,6 @@
         /// <remarks>
         /// This implementation is found in <see cref="HashSetEqualityComparer"/> implementation in .NET framework
         /// </remarks>
-        [DebuggerStepThrough]
         public static int Combine<T>(ISet<T> values, IEqualityComparer<T>? comparer = null)
         {
             CheckValue(values, nameof(values));
@@ -216,7 +205,6 @@
         /// 1) this implementation is slow, please be aware while using it with Big dictionaries
         /// 2) always pass the same key comparer that is used in the dictionary.
         /// </remarks>
-        [DebuggerStepThrough]
         public static int Combine<TKey, TValue>(IDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey>? keyComparer = null, IEqualityComparer<TValue>? valueComparer = null) where TKey : notnull
         {
             CheckValue(dictionary, nameof(dictionary));
@@ -235,7 +223,6 @@
         /// This method used to compute the impact of one element's hash code on the parent collection hash code
         /// The order of the element in the collection is irrelevant
         /// </summary>
-        [DebuggerStepThrough]
         public static int CombineCommutative(int elementHashcode) => elementHashcode ^ int.MaxValue;
 
         /// <summary>
@@ -243,7 +230,6 @@
         /// Avoids calling <paramref name="comparer"/> if <paramref name="value"/> is null, because most comparers
         /// do not support this.
         /// </summary>
-        [DebuggerStepThrough]
         private static int GetHashCode<T>(T value, IEqualityComparer<T>? comparer)
         {
             if (value is null)

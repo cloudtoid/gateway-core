@@ -1,6 +1,7 @@
 ﻿namespace Cloudtoid
 {
     using System;
+    using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
     using System.Runtime.InteropServices;
@@ -8,6 +9,7 @@
     using System.Threading.Tasks;
     using static Contract;
 
+    [DebuggerStepThrough]
     public static class ExceptionExtensions
     {
         public static bool IsFatal(this Exception exception)
@@ -84,6 +86,7 @@
             return false;
         }
 
-        public static bool IsFatalOrCancelOrTimeout(this Exception ex) => IsFatal(ex) || IsCancelOrTimeout(ex);
+        public static bool IsFatalOrCancelOrTimeout(this Exception ex)
+            => IsFatal(ex) || IsCancelOrTimeout(ex);
     }
 }

@@ -10,6 +10,7 @@
     using static Contract;
 
     [SuppressMessage("BannedApiAnalyzer", "RS0030", Justification = "Reviewed.")]
+    [DebuggerStepThrough]
     public static class StringUtil
     {
         /// <summary>
@@ -18,7 +19,6 @@
         /// <param name="format">Format string with a single argument.</param>
         /// <param name="arg">Format argument.</param>
         /// <returns>A string formatted using the <see cref="CultureInfo.InvariantCulture"/>.</returns>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string FormatInvariant<TArg>(this string format, TArg arg) => string.Format(CultureInfo.InvariantCulture, format, new object?[] { arg });
 
@@ -29,7 +29,6 @@
         /// <param name="arg0">First format argument.</param>
         /// <param name="arg1">Second format argument.</param>
         /// <returns>A string formatted using the <see cref="CultureInfo.InvariantCulture"/>.</returns>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string FormatInvariant<TArg0, TArg1>(this string format, TArg0 arg0, TArg1 arg1) => string.Format(CultureInfo.InvariantCulture, format, arg0, arg1);
 
@@ -41,7 +40,6 @@
         /// <param name="arg1">Second format argument.</param>
         /// <param name="arg2">Third format argument.</param>
         /// <returns>A string formatted using the <see cref="CultureInfo.InvariantCulture"/>.</returns>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string FormatInvariant<TArg0, TArg1, TArg2>(this string format, TArg0 arg0, TArg1 arg1, TArg2 arg2) => string.Format(CultureInfo.InvariantCulture, format, arg0, arg1, arg2);
 
@@ -51,21 +49,18 @@
         /// <param name="format">Format string.</param>
         /// <param name="args">Format arguments.</param>
         /// <returns>A string formatted using the <see cref="CultureInfo.InvariantCulture"/>.</returns>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string FormatInvariant(this string format, params object?[] args) => string.Format(CultureInfo.InvariantCulture, format, args);
 
         /// <summary>
         /// Determines whether two specified String objects have the same value using the <see cref="StringComparison.OrdinalIgnoreCase"/> comparison.
         /// </summary>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EqualsOrdinalIgnoreCase(this string? arg0, string? arg1) => string.Equals(arg0, arg1, StringComparison.OrdinalIgnoreCase);
 
         /// <summary>
         /// Determines whether two specified String objects have the same value using the <see cref="StringComparison.Ordinal"/> comparison.
         /// </summary>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EqualsOrdinal(this string? arg0, string? arg1) => string.Equals(arg0, arg1, StringComparison.Ordinal);
 
@@ -74,7 +69,6 @@
         /// </summary>
         /// <param name="str">The original string.</param>
         /// <param name="value">The string to compare.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool StartsWithOrdinalIgnoreCase(this string str, string value) => CheckValue(str, nameof(str)).StartsWith(value, StringComparison.OrdinalIgnoreCase);
 
@@ -83,7 +77,6 @@
         /// </summary>
         /// <param name="str">The original string.</param>
         /// <param name="value">The string to compare.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool StartsWithOrdinal(this string str, string value) => CheckValue(str, nameof(str)).StartsWith(value, StringComparison.Ordinal);
 
@@ -92,7 +85,6 @@
         /// </summary>
         /// <param name="str">The original string.</param>
         /// <param name="value">The string to compare.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EndsWithOrdinalIgnoreCase(this string str, string value) => CheckValue(str, nameof(str)).EndsWith(value, StringComparison.OrdinalIgnoreCase);
 
@@ -101,21 +93,18 @@
         /// </summary>
         /// <param name="str">The original string.</param>
         /// <param name="value">The string to compare.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool EndsWithOrdinal(this string str, string value) => CheckValue(str, nameof(str)).EndsWith(value, StringComparison.Ordinal);
 
         /// <summary>
         /// Determines if the search string is contained in original string using <see cref="StringComparison.OrdinalIgnoreCase"/> comparison
         /// </summary>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool ContainsOrdinalIgnoreCase(this string str, string value) => CheckValue(str, nameof(str)).IndexOf(value, StringComparison.OrdinalIgnoreCase) != -1;
 
         /// <summary>
         /// Determines if the search string is contained in original string using <see cref="StringComparison.Ordinal"/> comparison
         /// </summary>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool ContainsOrdinal(this string str, string value) => CheckValue(str, nameof(str)).IndexOf(value, StringComparison.Ordinal) != -1;
 
@@ -124,7 +113,6 @@
         /// </summary>
         /// <param name="str">The original string.</param>
         /// <param name="value">The string to seek.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfOrdinalIgnoreCase(this string str, string value) => CheckValue(str, nameof(str)).IndexOf(value, StringComparison.OrdinalIgnoreCase);
 
@@ -134,7 +122,6 @@
         /// <param name="str">The original string.</param>
         /// <param name="value">The string to seek.</param>
         /// <param name="startIndex">The search starting position.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfOrdinalIgnoreCase(this string str, string value, int startIndex) => CheckValue(str, nameof(str)).IndexOf(value, startIndex, StringComparison.OrdinalIgnoreCase);
 
@@ -143,7 +130,6 @@
         /// </summary>
         /// <param name="str">The original string.</param>
         /// <param name="value">The string to seek.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfOrdinal(this string str, string value) => CheckValue(str, nameof(str)).IndexOf(value, StringComparison.Ordinal);
 
@@ -152,7 +138,6 @@
         /// </summary>
         /// <param name="str">The original string.</param>
         /// <param name="value">The char to seek.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfOrdinal(this string str, char value)
         {
@@ -169,7 +154,6 @@
         /// <param name="str">The original string.</param>
         /// <param name="value">The string to seek.</param>
         /// <param name="startIndex">The search starting position.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfOrdinal(this string str, string value, int startIndex) => CheckValue(str, nameof(str)).IndexOf(value, startIndex, StringComparison.Ordinal);
 
@@ -179,7 +163,6 @@
         /// <param name="str">The original string.</param>
         /// <param name="oldValue">The string to be replaced.</param>
         /// <param name="newValue">The string to replace all occurrences of oldValue.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ReplaceOrdinal(this string str, string oldValue, string newValue)
         {
@@ -193,7 +176,6 @@
         /// <summary>
         /// Returns the hash code for this string using <see cref="StringComparison.InvariantCulture"/>.
         /// </summary>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int GetHashCodeInvariant(this string str)
         {
@@ -209,7 +191,6 @@
         /// </summary>
         /// <param name="s">A string which may be a CLS-compliant identifier.</param>
         /// <returns>Returns <c>true</c> if the specified string is a CLS compliant identifier; otherwise, <c>false</c>.</returns>
-        [DebuggerStepThrough]
         public static bool IsClsCompliantIdentifier(string? s)
         {
             if (string.IsNullOrEmpty(s))
@@ -233,7 +214,6 @@
         /// <param name="c">A character value.</param>
         /// <param name="firstChar">Indicates whether the character is the first character in an identifier. Different rules govern CLS-compliance for the initial character in an identifier.</param>
         /// <returns>Returns <c>true</c> if the specified character is a CLS-compliant identifier character; otherwise, <c>false</c>.</returns>
-        [DebuggerStepThrough]
         public static bool IsClsCompliantIdentifierChar(char c, bool firstChar)
         {
             // CLS-compliant language compilers must follow the rules of Annex 7 of Technical Report 15 of the
@@ -272,7 +252,6 @@
         /// </summary>
         /// <param name="s">Input string which may include any characters.</param>
         /// <param name="fallbackName">CLS-compliant fallback name to use if no allowed characters present in <paramref name="s"/>.</param>
-        [DebuggerStepThrough]
         public static string DeriveClsCompliantName(string s, string fallbackName)
         {
             CheckNonEmpty(s, nameof(s));
@@ -309,7 +288,6 @@
         /// <param name="candidateName">Candidate name to use.</param>
         /// <param name="namesInUse">List of all the names that are used now.</param>
         /// <returns>Candidate name or a derived name which is not currently in use.</returns>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string MakeUniqueName(string candidateName, ISet<string> namesInUse) => MakeUniqueName(candidateName, CheckValue(namesInUse, nameof(namesInUse)).Contains);
 
@@ -319,7 +297,6 @@
         /// <param name="candidateName">Candidate name to use.</param>
         /// <param name="isUsedPredicate">A predicate indicating if the name is in use.</param>
         /// <returns>Candidate name or a derived name which is not currently in use.</returns>
-        [DebuggerStepThrough]
         public static string MakeUniqueName(string candidateName, Func<string, bool> isUsedPredicate)
         {
             CheckValue(isUsedPredicate, nameof(isUsedPredicate));
@@ -335,7 +312,6 @@
             return candidateName;
         }
 
-        [DebuggerStepThrough]
         public static string ToCommaDelimitedText<TKey, TValue>(
             this IReadOnlyDictionary<TKey, TValue> dictionary,
             string? pairsDelimiter = null,
@@ -366,7 +342,6 @@
             return builder.ToString();
         }
 
-        [DebuggerStepThrough]
         public static string Trim(this string text, ref int startIndex, ref int endIndex)
         {
             CheckValue(text, nameof(text));

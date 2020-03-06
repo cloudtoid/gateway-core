@@ -1,6 +1,7 @@
 ﻿namespace Cloudtoid
 {
     using System;
+    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.ExceptionServices;
     using System.Threading;
@@ -10,6 +11,7 @@
 
     [SuppressMessage("Microsoft.VisualStudio.Threading.Analyzers", "VSTHRD200", Justification = "Reviewed.")]
     [SuppressMessage("Microsoft.VisualStudio.Threading.Analyzers", "VSTHRD105", Justification = "Reviewed.")]
+    [DebuggerStepThrough]
     public static class Async
     {
         public static async Task<TResult> WithTimeout<TResult>(

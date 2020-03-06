@@ -6,41 +6,33 @@
     using System.Runtime.CompilerServices;
     using static Contract;
 
+    [DebuggerStepThrough]
     public static class CollectionExtensions
     {
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsEmpty<T>(this ICollection<T> value) => value.Count == 0;
 
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsEmpty<T>(this IReadOnlyCollection<T> value) => value.Count == 0;
 
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsEmpty<T>(this T[] value) => value.Length == 0;
 
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNullOrEmpty<T>(this ICollection<T>? value) => value is null || value.Count == 0;
 
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNullOrEmpty<T>(this IReadOnlyCollection<T>? value) => value is null || value.Count == 0;
 
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNullOrEmpty<T>(this T[]? value) => value is null || value.Length == 0;
 
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IReadOnlyList<T>? AsReadOnlyListOrDefault<T>(this IEnumerable<T>? items) => items?.AsReadOnlyList();
 
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IList<T>? AsListOrDefault<T>(this IEnumerable<T>? items) => items?.AsList();
 
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IReadOnlyList<T> AsReadOnlyList<T>(this IEnumerable<T> items)
         {
@@ -53,7 +45,6 @@
             return items as IReadOnlyList<T> ?? items.ToArray();
         }
 
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IList<T> AsList<T>(this IEnumerable<T> items)
         {
@@ -61,7 +52,6 @@
             return items as IList<T> ?? items.ToList();
         }
 
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T[] AsArray<T>(this IEnumerable<T> items)
         {
@@ -69,7 +59,6 @@
             return items as T[] ?? items.ToArray();
         }
 
-        [DebuggerStepThrough]
         public static void AddRange<TKey, TValue>(this ICollection<KeyValuePair<TKey, TValue>> destination, IEnumerable<KeyValuePair<TKey, TValue>>? source)
         {
             CheckValue(destination, nameof(destination));

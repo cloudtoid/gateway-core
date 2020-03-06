@@ -10,6 +10,7 @@
     /// <summary>
     /// Execution contract assertions also known as Code Contracts
     /// </summary>
+    [DebuggerStepThrough]
     public static class Contract
     {
         /// <summary>
@@ -19,7 +20,6 @@
         /// <param name="condition">The condition to check.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static bool Check(bool condition, string message, params object?[] args)
         {
             if (!condition)
@@ -34,7 +34,6 @@
         /// </summary>
         /// <param name="condition">The condition to check.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CheckParam(bool condition, string paramName) => CheckParam(condition, paramName, null, Array.Empty<object>());
 
@@ -46,7 +45,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static bool CheckParam(bool condition, string paramName, string? message, params object?[] args)
         {
             if (!condition)
@@ -62,7 +60,6 @@
         /// <typeparam name="T">The type of the value being tested.</typeparam>
         /// <param name="val">The value being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T CheckValue<T>(T? val, string paramName) where T : class => CheckValue(val, paramName, null, Array.Empty<object>());
 
@@ -75,7 +72,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="format">The exception message format with 1 argument only.</param>
         /// <param name="arg">The argument for message format.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T CheckValue<T, TArg>(T? val, string paramName, string format, TArg arg) where T : class => CheckValue(val, paramName, format, new object?[] { arg });
 
@@ -89,7 +85,6 @@
         /// <param name="format">The exception message format with 2 arguments.</param>
         /// <param name="arg0">The first argument for message format.</param>
         /// <param name="arg1">The second argument for message format.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T CheckValue<T, TArg0, TArg1>(T? val, string paramName, string format, TArg0 arg0, TArg1 arg1) where T : class => CheckValue(val, paramName, format, new object?[] { arg0, arg1 });
 
@@ -104,7 +99,6 @@
         /// <param name="arg0">The first argument for message format.</param>
         /// <param name="arg1">The second argument for message format.</param>
         /// <param name="arg2">The third argument for message format.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T CheckValue<T, TArg0, TArg1, TArg2>(T? val, string paramName, string format, TArg0 arg0, TArg1 arg1, TArg2 arg2) where T : class => CheckValue(val, paramName, format, new object?[] { arg0, arg1, arg2 });
 
@@ -117,7 +111,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static T CheckValue<T>(T? val, string paramName, string? message, params object?[] args) where T : class
         {
             if (val is null)
@@ -133,7 +126,6 @@
         /// <typeparam name="T">The type of the value being tested.</typeparam>
         /// <param name="val">The value being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T CheckValue<T>(T? val, string paramName) where T : struct
             => CheckValue(val, paramName, null, Array.Empty<object>());
@@ -147,7 +139,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="format">The exception message format with 1 argument only.</param>
         /// <param name="arg">The argument for message format.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T CheckValue<T, TArg>(T? val, string paramName, string format, TArg arg) where T : struct
             => CheckValue(val, paramName, format, new object?[] { arg });
@@ -162,7 +153,6 @@
         /// <param name="format">The exception message format with 2 arguments.</param>
         /// <param name="arg0">The first argument for message format.</param>
         /// <param name="arg1">The second argument for message format.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T CheckValue<T, TArg0, TArg1>(T? val, string paramName, string format, TArg0 arg0, TArg1 arg1) where T : struct
             => CheckValue(val, paramName, format, new object?[] { arg0, arg1 });
@@ -178,7 +168,6 @@
         /// <param name="arg0">The first argument for message format.</param>
         /// <param name="arg1">The second argument for message format.</param>
         /// <param name="arg2">The third argument for message format.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T CheckValue<T, TArg0, TArg1, TArg2>(T? val, string paramName, string format, TArg0 arg0, TArg1 arg1, TArg2 arg2) where T : struct
             => CheckValue(val, paramName, format, new object?[] { arg0, arg1, arg2 });
@@ -192,7 +181,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static T CheckValue<T>(T? val, string paramName, string? message, params object?[] args) where T : struct
         {
             if (val is null)
@@ -210,7 +198,6 @@
         /// <typeparam name="T">The type of the value being tested.</typeparam>
         /// <param name="task">The value being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CheckValue<T>(Task<T>? task, string paramName) => CheckValue(task, paramName, null, Array.Empty<object>());
 
@@ -223,7 +210,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="format">The exception message format with 1 argument only.</param>
         /// <param name="arg">The argument for message format.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CheckValue<T, TArg>(Task<T>? task, string paramName, string format, TArg arg) => CheckValue(task, paramName, format, new object?[] { arg });
 
@@ -237,7 +223,6 @@
         /// <param name="format">The exception message format with 2 arguments.</param>
         /// <param name="arg0">The first argument for message format.</param>
         /// <param name="arg1">The second argument for message format.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CheckValue<T, TArg0, TArg1>(Task<T>? task, string paramName, string format, TArg0 arg0, TArg1 arg1) => CheckValue(task, paramName, format, new object?[] { arg0, arg1 });
 
@@ -252,7 +237,6 @@
         /// <param name="arg0">The first argument for message format.</param>
         /// <param name="arg1">The second argument for message format.</param>
         /// <param name="arg2">The third argument for message format.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CheckValue<T, TArg0, TArg1, TArg2>(Task<T>? task, string paramName, string format, TArg0 arg0, TArg1 arg1, TArg2 arg2) => CheckValue(task, paramName, format, new object?[] { arg0, arg1, arg2 });
 
@@ -265,7 +249,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static void CheckValue<T>(Task<T>? task, string paramName, string? message, params object?[] args)
         {
             if (task is null)
@@ -279,7 +262,6 @@
         /// <typeparam name="T">The type of the value being tested.</typeparam>
         /// <param name="val">The value being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CheckValue(Task? val, string paramName) => CheckValue(val, paramName, null, Array.Empty<object>());
 
@@ -291,7 +273,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="format">The exception message format with 1 argument only.</param>
         /// <param name="arg">The argument for message format.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CheckValue<TArg>(Task? val, string paramName, string format, TArg arg) => CheckValue(val, paramName, format, new object?[] { arg });
 
@@ -304,7 +285,6 @@
         /// <param name="format">The exception message format with 2 arguments.</param>
         /// <param name="arg0">The first argument for message format.</param>
         /// <param name="arg1">The second argument for message format.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CheckValue<TArg0, TArg1>(Task? val, string paramName, string format, TArg0 arg0, TArg1 arg1) => CheckValue(val, paramName, format, new object?[] { arg0, arg1 });
 
@@ -318,7 +298,6 @@
         /// <param name="arg0">The first argument for message format.</param>
         /// <param name="arg1">The second argument for message format.</param>
         /// <param name="arg2">The third argument for message format.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void CheckValue<TArg0, TArg1, TArg2>(Task? val, string paramName, string format, TArg0 arg0, TArg1 arg1, TArg2 arg2) => CheckValue(val, paramName, format, new object?[] { arg0, arg1, arg2 });
 
@@ -331,7 +310,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static void CheckValue(Task? val, string paramName, string? message, params object?[] args)
         {
             if (val is null)
@@ -347,7 +325,6 @@
         /// <typeparam name="T">The type of the value being tested.</typeparam>
         /// <param name="val">The value being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T? CheckNonValue<T>(T? val, string paramName) where T : class => CheckNonValue(val, paramName, null, Array.Empty<object>());
 
@@ -360,7 +337,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static T? CheckNonValue<T>(T? val, string paramName, string? message, params object?[] args) where T : class
         {
             if (val is null)
@@ -376,7 +352,6 @@
         /// <exception cref="ArgumentNullException"> is thrown is <paramref name="s"/> is null.</exception>
         /// <param name="s">The string to check.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string CheckNonEmpty(string? s, string paramName) => CheckNonEmpty(s, paramName, null, Array.Empty<object>());
 
@@ -389,7 +364,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="format">The exception message format with 1 argument only.</param>
         /// <param name="arg">The argument for message format.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string CheckNonEmpty<TArg>(string? s, string paramName, string format, TArg arg) => CheckNonEmpty(s, paramName, format, new object?[] { arg });
 
@@ -403,7 +377,6 @@
         /// <param name="format">The exception message format with 2 arguments.</param>
         /// <param name="arg0">The first argument for message format.</param>
         /// <param name="arg1">The second argument for message format.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string CheckNonEmpty<TArg0, TArg1>(string? s, string paramName, string format, TArg0 arg0, TArg1 arg1) => CheckNonEmpty(s, paramName, format, new object?[] { arg0, arg1 });
 
@@ -418,7 +391,6 @@
         /// <param name="arg0">The first argument for message format.</param>
         /// <param name="arg1">The second argument for message format.</param>
         /// <param name="arg2">The third argument for message format.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string CheckNonEmpty<TArg0, TArg1, TArg2>(string? s, string paramName, string format, TArg0 arg0, TArg1 arg1, TArg2 arg2) => CheckNonEmpty(s, paramName, format, new object?[] { arg0, arg1, arg2 });
 
@@ -431,7 +403,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static string CheckNonEmpty(string? s, string paramName, string? message, params object?[] args)
         {
             var ns = CheckValue(s, paramName, message, args);
@@ -450,7 +421,6 @@
         /// <exception cref="ArgumentException"> is thrown on failure.</exception>
         /// <param name="val">The Guid to test.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Guid CheckNonEmpty(Guid val, string paramName) => CheckNonEmpty(val, paramName, null, Array.Empty<object>());
 
@@ -464,7 +434,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static Guid CheckNonEmpty(Guid val, string paramName, string? message, params object?[] args)
         {
             if (val.CompareTo(Guid.Empty) == 0)
@@ -479,7 +448,6 @@
         /// <exception cref="ArgumentException"> is thrown on failure.</exception>
         /// <param name="val">The <see cref="CancellationToken"/> to test.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #pragma warning disable CA1068 // CancellationToken parameters must come last
         public static CancellationToken CheckNonEmpty(CancellationToken val, string paramName) => CheckNonEmpty(val, paramName, null, Array.Empty<object>());
@@ -493,7 +461,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
 #pragma warning disable CA1068 // CancellationToken parameters must come last
         public static CancellationToken CheckNonEmpty(CancellationToken val, string paramName, string? message, params object?[] args)
 #pragma warning restore CA1068 // CancellationToken parameters must come last
@@ -512,7 +479,6 @@
         /// <typeparam name="T">The type of the items being tested.</typeparam>
         /// <param name="arguments">The collection being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ICollection<T> CheckNonEmpty<T>(ICollection<T>? arguments, string paramName) => CheckNonEmpty(arguments, paramName, null, Array.Empty<object>());
 
@@ -526,7 +492,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static ICollection<T> CheckNonEmpty<T>(ICollection<T>? arguments, string paramName, string? message, params object?[] args)
         {
             var items = CheckValue(arguments, paramName, message, args);
@@ -545,7 +510,6 @@
         /// <typeparam name="T">The type of the items being tested.</typeparam>
         /// <param name="arguments">The collection being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IReadOnlyCollection<T> CheckNonEmpty<T>(IReadOnlyCollection<T>? arguments, string paramName) => CheckNonEmpty(arguments, paramName, null, Array.Empty<object>());
 
@@ -559,7 +523,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static IReadOnlyCollection<T> CheckNonEmpty<T>(IReadOnlyCollection<T>? arguments, string paramName, string? message, params object?[] args)
         {
             var items = CheckValue(arguments, paramName, message, args);
@@ -578,7 +541,6 @@
         /// <typeparam name="T">The type of the items being tested.</typeparam>
         /// <param name="arguments">The collection being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IList<T> CheckNonEmpty<T>(IList<T>? arguments, string paramName) => CheckNonEmpty(arguments, paramName, null, Array.Empty<object>());
 
@@ -592,7 +554,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static IList<T> CheckNonEmpty<T>(IList<T>? arguments, string paramName, string? message, params object?[] args)
         {
             var items = CheckValue(arguments, paramName, message, args);
@@ -611,7 +572,6 @@
         /// <typeparam name="T">The type of the items being tested.</typeparam>
         /// <param name="arguments">The collection being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IReadOnlyList<T> CheckNonEmpty<T>(IReadOnlyList<T>? arguments, string paramName) => CheckNonEmpty(arguments, paramName, null, Array.Empty<object>());
 
@@ -625,7 +585,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static IReadOnlyList<T> CheckNonEmpty<T>(IReadOnlyList<T>? arguments, string paramName, string? message, params object?[] args)
         {
             var items = CheckValue(arguments, paramName, message, args);
@@ -645,7 +604,6 @@
         /// <typeparam name="TValue">The type of dictionary entry value being tested.</typeparam>
         /// <param name="arguments">The dictionary being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IDictionary<TKey, TValue> CheckNonEmpty<TKey, TValue>(IDictionary<TKey, TValue>? arguments, string paramName) where TKey : notnull => CheckNonEmpty(arguments, paramName, null, Array.Empty<object>());
 
@@ -660,7 +618,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static IDictionary<TKey, TValue> CheckNonEmpty<TKey, TValue>(IDictionary<TKey, TValue>? arguments, string paramName, string? message, params object?[] args) where TKey : notnull
         {
             var items = CheckValue(arguments, paramName, message, args);
@@ -680,7 +637,6 @@
         /// <typeparam name="TValue">The type of dictionary entry value being tested.</typeparam>
         /// <param name="arguments">The dictionary being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IReadOnlyDictionary<TKey, TValue> CheckNonEmpty<TKey, TValue>(IReadOnlyDictionary<TKey, TValue>? arguments, string paramName) where TKey : notnull => CheckNonEmpty(arguments, paramName, null, Array.Empty<object>());
 
@@ -695,7 +651,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static IReadOnlyDictionary<TKey, TValue> CheckNonEmpty<TKey, TValue>(IReadOnlyDictionary<TKey, TValue>? arguments, string paramName, string? message, params object?[] args) where TKey : notnull
         {
             var items = CheckValue(arguments, paramName, message, args);
@@ -713,7 +668,6 @@
         /// <exception cref="ArgumentNullException"> is thrown is <paramref name="arguments"/> or any of its items is null.</exception>
         /// <param name="s">The string to check.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string CheckNonWhitespace(string? s, string paramName) => CheckNonWhitespace(s, paramName, null, Array.Empty<object>());
 
@@ -726,7 +680,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static string CheckNonWhitespace(string? s, string paramName, string? message, params object?[] args)
         {
             CheckValue(s, paramName, message, args);
@@ -746,7 +699,6 @@
         /// <param name="min">The absolute minimum - inclusive.</param>
         /// <param name="max">The absolute maximum - inclusive.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T CheckRange<T>(T value, T min, T max, string paramName) where T : IComparable<T> => CheckRange(value, min, max, paramName, null, Array.Empty<object>());
 
@@ -761,7 +713,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static T CheckRange<T>(T value, T min, T max, string paramName, string? message, params object?[] args) where T : IComparable<T>
         {
             if (value.CompareTo(min) < 0 || value.CompareTo(max) > 0)
@@ -776,7 +727,6 @@
         /// <exception cref="ArgumentOutOfRangeException"> is thrown on failure.</exception>
         /// <param name="value">The actual condition.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int CheckNonNegative(int value, string paramName)
             => CheckGreaterThanOrEqual(value, 0, paramName);
@@ -789,7 +739,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static int CheckNonNegative(int value, string paramName, string? message, params object?[] args)
             => CheckGreaterThanOrEqual(value, 0, paramName, message, args);
 
@@ -800,7 +749,6 @@
         /// <param name="value">The actual condition.</param>
         /// <param name="min">The absolute minimum - inclusive.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T CheckGreaterThanOrEqual<T>(T value, T min, string paramName) where T : IComparable<T>
             => CheckGreaterThanOrEqual(value, min, paramName, null, Array.Empty<object>());
@@ -814,7 +762,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static T CheckGreaterThanOrEqual<T>(T value, T min, string paramName, string? message, params object?[] args) where T : IComparable<T>
             => value.CompareTo(min) >= 0 ? value : throw ExceptGreaterThanOrEqual(paramName, min, message, args);
 
@@ -825,7 +772,6 @@
         /// <param name="value">The actual condition.</param>
         /// <param name="max">The absolute maximum - inclusive.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T CheckLessThanOrEqual<T>(T value, T max, string paramName) where T : IComparable<T>
             => CheckLessThanOrEqual(value, max, paramName, null, Array.Empty<object>());
@@ -839,7 +785,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static T CheckLessThanOrEqual<T>(T value, T max, string paramName, string? message, params object?[] args) where T : IComparable<T>
             => value.CompareTo(max) <= 0 ? value : throw ExceptLessThanOrEqual(paramName, max, message, args);
 
@@ -851,7 +796,6 @@
         /// <exception cref="ArgumentNullException"> is thrown is <paramref name="arguments"/> is null.</exception>
         /// <param name="arguments">The collection being tested. It cannot be null but can be empty.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IList<string> CheckAllNonEmpty(IList<string?>? arguments, string paramName) => CheckAllNonEmpty(arguments, paramName, null, Array.Empty<object>());
 
@@ -865,7 +809,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static IList<string> CheckAllNonEmpty(IList<string?>? arguments, string paramName, string? message, params object?[] args)
         {
             var items = CheckValue(arguments, paramName, message, args);
@@ -933,7 +876,6 @@
         /// <exception cref="ArgumentNullException"> is thrown is <paramref name="arguments"/> or any of its items is null.</exception>
         /// <param name="arguments">The collection being tested. It cannot be null but can be empty.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ISet<string> CheckAllNonEmpty(ISet<string?>? arguments, string paramName) => CheckAllNonEmpty(arguments, paramName, null, Array.Empty<object>());
 
@@ -947,7 +889,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static ISet<string> CheckAllNonEmpty(ISet<string?>? arguments, string paramName, string? message, params object?[] args)
         {
             var items = CheckValue(arguments, paramName, message, args);
@@ -971,7 +912,6 @@
         /// <typeparam name="T">The item type.</typeparam>
         /// <param name="arguments">The collection being tested. It cannot be null but can be empty.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IList<T> CheckAllValues<T>(IList<T>? arguments, string paramName) => CheckAllValues(arguments, paramName, null, Array.Empty<object>());
 
@@ -984,7 +924,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static IList<T> CheckAllValues<T>(IList<T>? arguments, string paramName, string? message, params object?[] args)
         {
             var items = CheckValue(arguments, paramName, message, args);
@@ -1006,7 +945,6 @@
         /// <typeparam name="T">The item type.</typeparam>
         /// <param name="arguments">The collection being tested. It cannot be null but can be empty.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IReadOnlyList<T> CheckAllValues<T>(IReadOnlyList<T>? arguments, string paramName) => CheckAllValues(arguments, paramName, null, Array.Empty<object>());
 
@@ -1019,7 +957,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static IReadOnlyList<T> CheckAllValues<T>(IReadOnlyList<T>? arguments, string paramName, string? message, params object?[] args)
         {
             var items = CheckValue(arguments, paramName, message, args);
@@ -1041,7 +978,6 @@
         /// <typeparam name="T">The item type.</typeparam>
         /// <param name="arguments">The collection being tested. It cannot be null but can be empty.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ICollection<T> CheckAllValues<T>(ICollection<T>? arguments, string paramName) => CheckAllValues(arguments, paramName, null, Array.Empty<object>());
 
@@ -1054,7 +990,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static ICollection<T> CheckAllValues<T>(ICollection<T>? arguments, string paramName, string? message, params object?[] args)
         {
             var items = CheckValue(arguments, paramName, message, args);
@@ -1075,7 +1010,6 @@
         /// <typeparam name="T">The item type.</typeparam>
         /// <param name="arguments">The collection being tested. It cannot be null but can be empty.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IReadOnlyCollection<T> CheckAllValues<T>(IReadOnlyCollection<T>? arguments, string paramName) => CheckAllValues(arguments, paramName, null, Array.Empty<object>());
 
@@ -1088,7 +1022,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static IReadOnlyCollection<T> CheckAllValues<T>(IReadOnlyCollection<T>? arguments, string paramName, string? message, params object?[] args)
         {
             var items = CheckValue(arguments, paramName, message, args);
@@ -1109,7 +1042,6 @@
         /// <typeparam name="T">The item type.</typeparam>
         /// <param name="arguments">The set being tested. It cannot be null but can be empty.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ISet<T> CheckAllValues<T>(ISet<T>? arguments, string paramName) => CheckAllValues(arguments, paramName, null, Array.Empty<object>());
 
@@ -1122,7 +1054,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static ISet<T> CheckAllValues<T>(ISet<T>? arguments, string paramName, string? message, params object?[] args)
         {
             var items = CheckValue(arguments, paramName, message, args);
@@ -1143,7 +1074,6 @@
         /// <exception cref="ArgumentNullException"> is thrown is <paramref name="arguments"/> is null.</exception>
         /// <param name="arguments">The collection being tested. It cannot be null but can be empty.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IDictionary<TKey, TValue> CheckAllValues<TKey, TValue>(IDictionary<TKey, TValue>? arguments, string paramName) where TKey : notnull => CheckAllValues(arguments, paramName, null, Array.Empty<object>());
 
@@ -1155,7 +1085,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static IDictionary<TKey, TValue> CheckAllValues<TKey, TValue>(IDictionary<TKey, TValue>? arguments, string paramName, string? message, params object?[] args) where TKey : notnull
         {
             var items = CheckValue(arguments, paramName, message, args);
@@ -1177,7 +1106,6 @@
         /// <typeparam name="TType">The type of the value to test.</typeparam>
         /// <param name="val">The value to test.</param>
         /// <param name="paramName">parameter name</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TType CheckIsOfType<TType>(object? val, string paramName) where TType : class => CheckIsOfType<TType>(val, paramName, null, Array.Empty<object>());
 
@@ -1191,7 +1119,6 @@
         /// <param name="paramName">parameter name</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static TType CheckIsOfType<TType>(object? val, string paramName, string? message, params object?[] args) where TType : class
         {
             CheckValue(val, paramName, message, args);
@@ -1210,7 +1137,6 @@
         /// <typeparam name="TType">The type of the value to test.</typeparam>
         /// <param name="val">The value to test.</param>
         /// <param name="paramName">parameter name</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static object CheckIsNotOfType<TType>(object? val, string paramName) where TType : class => CheckIsNotOfType<TType>(val, paramName, null, Array.Empty<object>());
 
@@ -1224,7 +1150,6 @@
         /// <param name="paramName">parameter name</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static object CheckIsNotOfType<TType>(object? val, string paramName, string? message, params object?[] args) where TType : class
         {
             var value = CheckValue(val, paramName, message, args);
@@ -1243,7 +1168,6 @@
         /// <typeparam name="TType">The type of the value to test.</typeparam>
         /// <param name="val">The value to test.</param>
         /// <param name="paramName">parameter name</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TType CheckIsExactType<TType>(object? val, string paramName) where TType : class => CheckIsExactType<TType>(val, paramName, null, Array.Empty<object>());
 
@@ -1257,7 +1181,6 @@
         /// <param name="paramName">parameter name</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static TType CheckIsExactType<TType>(object? val, string paramName, string? message, params object?[] args) where TType : class
         {
             CheckValue(val, paramName, message, args);
@@ -1276,7 +1199,6 @@
         /// <param name="val">The value being tested.</param>
         /// <param name="expected">The comparand that <paramref name="val"/> is compared to.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T CheckEqual<T>(T val, T expected, string paramName) => CheckEqual(val, expected, paramName, null, Array.Empty<object>());
 
@@ -1290,7 +1212,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static T CheckEqual<T>(T val, T expected, string paramName, string? message, params object?[] args)
         {
             if (!Equals(val, expected))
@@ -1307,7 +1228,6 @@
         /// <param name="val">The value being tested.</param>
         /// <param name="expected">The comparand that <paramref name="val"/> is compared to.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
-        [DebuggerStepThrough]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T CheckNotEqual<T>(T val, T expected, string paramName) => CheckNotEqual(val, expected, paramName, null, Array.Empty<object>());
 
@@ -1321,7 +1241,6 @@
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
         /// <param name="args">The arguments for message format.</param>
-        [DebuggerStepThrough]
         public static T CheckNotEqual<T>(T val, T notExpected, string paramName, string? message, params object?[] args)
         {
             if (Equals(val, notExpected))
