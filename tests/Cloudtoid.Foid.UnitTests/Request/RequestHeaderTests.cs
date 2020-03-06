@@ -14,6 +14,7 @@
     using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using NSubstitute;
+    using static Cloudtoid.Foid.FoidOptions.ProxyOptions.UpstreamOptions.RequestOptions.HeadersOptions;
 
     [TestClass]
     public class RequestHeaderTests
@@ -388,16 +389,44 @@
         {
             // Arrange
             const string HeaderName = "x-foid-proxy-name";
-            var options = new FoidOptions();
-
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, "abc");
+
+            // Act
+            var message = await SetHeadersAsync(context);
+
+            // Assert
+            message.Headers.GetValues(HeaderName).SingleOrDefault().Should().Be("cloudtoid-foid");
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenExtraHeaders_HeadersIncludedAsync()
+        {
+            // Arrange
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.ExtraHeaders = new[]
+            {
+                new ExtraHeader
+                {
+                    Key = "x-xtra-1",
+                    Values = new[] { "value1_1", "value1_2" }
+                },
+                new ExtraHeader
+                {
+                    Key = "x-xtra-2",
+                    Values = new[] { "value2_1", "value2_2" }
+                },
+            };
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add("x-xtra-2", "value2_0");
 
             // Act
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(HeaderName).SingleOrDefault().Should().Be("cloudtoid-foid");
+            message.Headers.GetValues("x-xtra-1").Should().BeEquivalentTo(new[] { "value1_1", "value1_2" });
+            message.Headers.GetValues("x-xtra-2").Should().BeEquivalentTo(new[] { "value2_0", "value2_1", "value2_2" });
         }
 
         private static async Task<HttpRequestMessage> SetHeadersAsync(HttpContext context, FoidOptions? options = null)
