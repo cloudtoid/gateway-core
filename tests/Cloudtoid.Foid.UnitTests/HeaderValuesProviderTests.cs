@@ -7,6 +7,7 @@
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Primitives;
     using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using NSubstitute;
@@ -41,7 +42,7 @@
             var message = new HttpRequestMessage();
             await setter.SetHeadersAsync(context, message);
 
-            message.Headers.Should().NotContain("X_Bad_Header");
+            message.Headers.Contains("X_Bad_Header").Should().BeFalse();
         }
 
         [TestMethod]
@@ -56,7 +57,40 @@
             var message = new HttpRequestMessage();
             await setter.SetHeadersAsync(context, message);
 
-            message.Headers.Should().NotContain("X-Empty-Header");
+            message.Headers.Contains("X-Empty-Header").Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenHeaderValuesProviderDropsHeaders_HeadersAreNotIncludedAsync()
+        {
+            var provider = Substitute.For<IRequestHeaderValuesProvider>();
+            provider
+                .TryGetHeaderValues(
+                    Arg.Any<HttpContext>(),
+                    Arg.Is("X-Keep-Header"),
+                    Arg.Any<StringValues>(),
+                    out Arg.Any<StringValues>())
+                .Returns(true);
+
+            provider
+                .TryGetHeaderValues(
+                    Arg.Any<HttpContext>(),
+                    Arg.Is("X-Drop-Header"),
+                    Arg.Any<StringValues>(),
+                    out Arg.Any<StringValues>())
+                .Returns(false);
+
+            var setter = new RequestHeaderSetter(provider, Substitute.For<ILogger<RequestHeaderSetter>>());
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add("X-Keep-Header", "some-value");
+            context.Request.Headers.Add("X-Drop-Header", "some-value");
+
+            var message = new HttpRequestMessage();
+            await setter.SetHeadersAsync(context, message);
+
+            message.Headers.Contains("X-Keep-Header").Should().BeTrue();
+            message.Headers.Contains("X-Drop-Header").Should().BeFalse();
         }
     }
 }

@@ -3,7 +3,7 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Primitives;
 
-    public interface IRequestHeaderValuesProvider
+    public interface IResponseHeaderValuesProvider
     {
         /// <summary>
         /// By default, headers with an empty value are dropped.
@@ -19,11 +19,6 @@
         /// By implementing this method, one can change the values of a given header.
         /// Return false, if the header should be dropped.
         /// </summary>
-        bool TryGetHeaderValues(HttpContext context, string name, StringValues downstreamValues, out StringValues upstreamValues);
-
-        /// <summary>
-        /// If the incoming downstream request does not have a HOST header, the value provided here will be used.
-        /// </summary>
-        string GetDefaultHostHeaderValue(HttpContext context);
+        bool TryGetHeaderValues(HttpContext context, string name, StringValues upstreamValues, out StringValues downstreamValues);
     }
 }

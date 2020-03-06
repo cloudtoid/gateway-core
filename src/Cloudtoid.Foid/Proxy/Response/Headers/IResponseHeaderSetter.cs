@@ -4,8 +4,8 @@
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
 
-    public interface IRequestHeaderSetter
+    public interface IResponseHeaderSetter
     {
-        Task SetHeadersAsync(HttpContext context, HttpRequestMessage upstreamRequest);
+        Task SetHeadersAsync(HttpContext context, HttpResponseMessage upstreamResponse);
     }
 }

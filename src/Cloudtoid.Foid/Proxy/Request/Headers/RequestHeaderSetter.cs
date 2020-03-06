@@ -1,6 +1,7 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
@@ -21,10 +22,10 @@
             this.logger = CheckValue(logger, nameof(logger));
         }
 
-        public Task SetHeadersAsync(HttpContext context, HttpRequestMessage message)
+        public Task SetHeadersAsync(HttpContext context, HttpRequestMessage upstreamRequest)
         {
             CheckValue(context, nameof(context));
-            CheckValue(message, nameof(message));
+            CheckValue(upstreamRequest, nameof(upstreamRequest));
 
             context.RequestAborted.ThrowIfCancellationRequested();
 
@@ -35,7 +36,7 @@
             foreach (var header in headers)
             {
                 // Remove empty headers
-                if (!headerValuesProvider.AllowHeadersWithEmptyValue && header.Value.Count == 0)
+                if (!headerValuesProvider.AllowHeadersWithEmptyValue && header.Value.All(s => string.IsNullOrEmpty(s)))
                 {
                     logger.LogInformation("Removing header '{0}' as its value is empty.", header.Key);
                     continue;
@@ -48,11 +49,27 @@
                     continue;
                 }
 
-                message.Headers.TryAddWithoutValidation(header.Key, (IEnumerable<string>)header.Value);
+                if (!headerValuesProvider.TryGetHeaderValues(context, header.Key, header.Value, out var upstreamHeaderValues))
+                {
+                    logger.LogInformation(
+                        "Removing header '{0}' as was instructed by the {1}.",
+                        header.Key,
+                        nameof(IRequestHeaderValuesProvider));
+
+                    continue;
+                }
+
+                upstreamRequest.Headers.TryAddWithoutValidation(
+                    header.Key,
+                    (IEnumerable<string>)upstreamHeaderValues);
             }
 
             if (!headers.ContainsKey(HeaderNames.Host))
-                message.Headers.TryAddWithoutValidation(HeaderNames.Host, headerValuesProvider.GetDefaultHostHeaderValue(context));
+            {
+                upstreamRequest.Headers.TryAddWithoutValidation(
+                    HeaderNames.Host,
+                    headerValuesProvider.GetDefaultHostHeaderValue(context));
+            }
 
             return Task.CompletedTask;
         }

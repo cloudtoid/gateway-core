@@ -62,6 +62,14 @@
         }
 
         [DebuggerStepThrough]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T[] AsArray<T>(this IEnumerable<T> items)
+        {
+            CheckValue(items, nameof(items));
+            return items as T[] ?? items.ToArray();
+        }
+
+        [DebuggerStepThrough]
         public static void AddRange<TKey, TValue>(this ICollection<KeyValuePair<TKey, TValue>> destination, IEnumerable<KeyValuePair<TKey, TValue>>? source)
         {
             CheckValue(destination, nameof(destination));
