@@ -1,17 +1,24 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Primitives;
     using Microsoft.Net.Http.Headers;
     using static Contract;
 
     internal sealed class RequestHeaderSetter : IRequestHeaderSetter
     {
+        private static readonly HashSet<string> HeaderTransferBlacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            Request.Constants.Headers.ExternalAddress,
+            Request.Constants.Headers.CallId,
+            Request.Constants.Headers.ProxyName,
+        };
+
         private readonly IRequestHeaderValuesProvider provider;
         private readonly IGuidProvider guideProvider;
         private readonly ILogger<RequestHeaderSetter> logger;
@@ -53,17 +60,11 @@
                     continue;
                 }
 
-                if (!provider.TryGetHeaderValues(context, header.Key, header.Value, out var upstreamValues) || upstreamValues is null)
-                {
-                    logger.LogInformation(
-                        "Removing header '{0}' as was instructed by the {1}.",
-                        header.Key,
-                        nameof(IRequestHeaderValuesProvider));
-
+                // If blacklisted, we will not trasnfer its value
+                if (HeaderTransferBlacklist.Contains(header.Key))
                     continue;
-                }
 
-                upstreamRequest.Headers.TryAddWithoutValidation(header.Key, upstreamValues);
+                AddUpstreamHeaderValuesIfAllowed(context, upstreamRequest, header.Key, header.Value);
             }
 
             AddHostHeader(context, upstreamRequest);
@@ -97,7 +98,9 @@
             if (clientAddress is null)
                 return;
 
-            upstreamRequest.Headers.TryAddWithoutValidation(
+            AddUpstreamHeaderValuesIfAllowed(
+                context,
+                upstreamRequest,
                 Request.Constants.Headers.ExternalAddress,
                 clientAddress);
         }
@@ -111,18 +114,11 @@
             if (clientAddress is null)
                 return;
 
-            if (context.Request.Headers.TryGetValue(Request.Constants.Headers.ClientAddress, out var values))
-            {
-                values = StringValues.Concat(values, clientAddress);
-            }
-            else
-            {
-                values = clientAddress;
-            }
-
-            upstreamRequest.Headers.TryAddWithoutValidation(
+            AddUpstreamHeaderValuesIfAllowed(
+                context,
+                upstreamRequest,
                 Request.Constants.Headers.ClientAddress,
-                (IEnumerable<string>)values);
+                clientAddress);
         }
 
         private void AddClientProtocolHeader(HttpContext context, HttpRequestMessage upstreamRequest)
@@ -161,7 +157,9 @@
             if (string.IsNullOrWhiteSpace(name))
                 return;
 
-            upstreamRequest.Headers.TryAddWithoutValidation(
+            AddUpstreamHeaderValuesIfAllowed(
+                context,
+                upstreamRequest,
                 Request.Constants.Headers.ProxyName,
                 name);
         }
@@ -170,6 +168,25 @@
         {
             foreach (var (key, values) in provider.GetExtraHeaders(context))
                 upstreamRequest.Headers.TryAddWithoutValidation(key, values);
+        }
+
+        private void AddUpstreamHeaderValuesIfAllowed(
+            HttpContext context,
+            HttpRequestMessage upstreamRequest,
+            string key,
+            params string[] downstreamValues)
+        {
+            if (provider.TryGetHeaderValues(context, key, downstreamValues, out var upstreamValues) && upstreamValues != null)
+            {
+                upstreamRequest.Headers.TryAddWithoutValidation(key, upstreamValues);
+                return;
+            }
+
+            logger.LogInformation(
+                "Header '{0}' is not added. This was was instructed by the {1}.{2}.",
+                key,
+                nameof(IRequestHeaderValuesProvider),
+                nameof(IRequestHeaderValuesProvider.TryGetHeaderValues));
         }
 
         private static string? GetRemoteIpAddressOrDefault(HttpContext context)
