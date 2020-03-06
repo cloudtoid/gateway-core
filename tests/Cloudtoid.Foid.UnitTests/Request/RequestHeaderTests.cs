@@ -396,7 +396,7 @@
             var message = await SetHeadersAsync(context);
 
             // Assert
-            message.Headers.GetValues(HeaderName).SingleOrDefault().Should().Be("cloudtoid-foid");
+            message.Headers.GetValues(HeaderName).SingleOrDefault().Should().Be("foid");
         }
 
         [TestMethod]

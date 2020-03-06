@@ -73,7 +73,7 @@
                         /// <summary>
                         /// If this is not null, an "x-foid-proxy-name" header with this value is added to the outgoing upstream call.
                         /// </summary>
-                        public string? ProxyName { get; set; } = "cloudtoid-foid";
+                        public string? ProxyName { get; set; } = "foid";
 
                         /// <summary>
                         /// Extra headers to be appended to the outgoing upstream request

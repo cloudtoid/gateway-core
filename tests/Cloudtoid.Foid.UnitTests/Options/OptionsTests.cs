@@ -76,7 +76,7 @@
             request.TimeoutInMilliseconds.Should().Be(240000);
 
             var requestHeaders = request.Headers;
-            requestHeaders.ProxyName.Should().Be("cloudtoid-foid");
+            requestHeaders.ProxyName.Should().Be("foid");
             requestHeaders.DefaultHost.Should().Be(Environment.MachineName);
             requestHeaders.AllowHeadersWithEmptyValue.Should().BeFalse();
             requestHeaders.AllowHeadersWithUnderscoreInName.Should().BeFalse();
