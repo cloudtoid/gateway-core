@@ -168,8 +168,8 @@
 
         private void AddExtraHeaders(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            foreach (var header in provider.GetExtraHeaders(context))
-                upstreamRequest.Headers.TryAddWithoutValidation(header.Key, header.Values);
+            foreach (var (key, values) in provider.GetExtraHeaders(context))
+                upstreamRequest.Headers.TryAddWithoutValidation(key, values);
         }
 
         private static string? GetRemoteIpAddressOrDefault(HttpContext context)

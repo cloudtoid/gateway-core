@@ -1,6 +1,7 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Options;
     using Microsoft.Net.Http.Headers;
@@ -57,8 +58,8 @@
         public virtual string? GetProxyNameHeaderValue(HttpContext context)
             => HeaderOptions.ProxyName;
 
-        public virtual IEnumerable<ExtraHeader> GetExtraHeaders(HttpContext context)
-            => HeaderOptions.ExtraHeaders;
+        public virtual IEnumerable<(string Key, string[] Values)> GetExtraHeaders(HttpContext context)
+            => HeaderOptions.ExtraHeaders.Select(h => (h.Key, h.Values));
 
         private string GetHostHeaderValue(HttpContext context, IList<string> downstreamValues)
         {

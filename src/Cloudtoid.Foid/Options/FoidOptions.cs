@@ -79,6 +79,13 @@
                         /// Extra headers to be appended to the outgoing upstream request
                         /// </summary>
                         public ExtraHeader[] ExtraHeaders { get; set; } = Array.Empty<ExtraHeader>();
+
+                        public class ExtraHeader
+                        {
+                            public string Key { get; set; } = string.Empty;
+
+                            public string[] Values { get; set; } = Array.Empty<string>();
+                        }
                     }
                 }
             }

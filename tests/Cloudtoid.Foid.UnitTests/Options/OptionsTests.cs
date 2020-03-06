@@ -7,6 +7,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using static Cloudtoid.Foid.FoidOptions.ProxyOptions.UpstreamOptions.RequestOptions.HeadersOptions;
 
     [TestClass]
     public sealed class OptionsTests
@@ -59,7 +60,7 @@
         public void New_NotFullyPopulatedOptions_AllValuesHaveADefault()
         {
             var config = new ConfigurationBuilder()
-                .AddJsonFile(@"Options\ConfigEmpty.json", optional: true, reloadOnChange: true)
+                .AddJsonFile(@"Options\ConfigEmpty.json", optional: false, reloadOnChange: true)
                 .Build();
 
             var services = new ServiceCollection()
@@ -81,7 +82,7 @@
                 File.Copy(@"Options\Options1.json", @"Options\OptionsReload.json", true);
 
                 var config = new ConfigurationBuilder()
-                    .AddJsonFile(@"Options\OptionsReload.json", optional: true, reloadOnChange: true)
+                    .AddJsonFile(@"Options\OptionsReload.json", optional: false, reloadOnChange: true)
                     .Build();
 
                 var services = new ServiceCollection()
