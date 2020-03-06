@@ -42,6 +42,12 @@
                         public bool IncludeExternalAddress { get; set; } = false;
 
                         /// <summary>
+                        /// If false, it will copy all the headers from the incoming donstream request to the outgoing upstream request.
+                        /// The default value is false.
+                        /// </summary>
+                        public bool IgnoreAllDownstreamHeaders { get; set; } = false;
+
+                        /// <summary>
                         /// If false, it will append the IP address of the nearest client to the "x-forwarded-for" header.
                         /// The default value is false.
                         /// </summary>

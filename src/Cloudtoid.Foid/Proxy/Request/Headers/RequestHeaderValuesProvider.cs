@@ -20,6 +20,8 @@
 
         public virtual bool IncludeExternalAddress => HeaderOptions.IncludeExternalAddress;
 
+        public virtual bool IgnoreAllDownstreamHeaders => HeaderOptions.IgnoreAllDownstreamHeaders;
+
         public virtual bool IgnoreClientAddress => HeaderOptions.IgnoreClientAddress;
 
         public virtual bool IgnoreClientProtocol => HeaderOptions.IgnoreClientProtocol;

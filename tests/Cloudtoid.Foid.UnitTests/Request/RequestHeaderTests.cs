@@ -161,6 +161,42 @@
         }
 
         [TestMethod]
+        public async Task SetHeadersAsync_WhenIgnoreAllDownstreamHeaders_NoDownstreamHeaderIsIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-custom-test";
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamHeaders = true;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(HeaderName, "abc");
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.Contains(HeaderName).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenNotIgnoreAllDownstreamHeaders_DownstreamHeadersAreIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-custom-test";
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamHeaders = false;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(HeaderName, new[] { "abc", "efg" });
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(HeaderName).Should().BeEquivalentTo(new[] { "abc", "efg" });
+        }
+
+        [TestMethod]
         public async Task SetHeadersAsync_WhenIgnoreClientAddress_HeaderNotIncludedAsync()
         {
             // Arrange

@@ -40,9 +40,27 @@
 
             context.RequestAborted.ThrowIfCancellationRequested();
 
+            AddDownstreamHeadersToUpstream(context, upstreamRequest);
+            AddHostHeader(context, upstreamRequest);
+            AddExternalAddressHeader(context, upstreamRequest);
+            AddClientAddressHeader(context, upstreamRequest);
+            AddClientProtocolHeader(context, upstreamRequest);
+            AddRequestIdHeader(context, upstreamRequest);
+            AddCallIdHeader(context, upstreamRequest);
+            AddProxyNameHeader(context, upstreamRequest);
+            AddExtraHeaders(context, upstreamRequest);
+
+            return Task.CompletedTask;
+        }
+
+        private void AddDownstreamHeadersToUpstream(HttpContext context, HttpRequestMessage upstreamRequest)
+        {
+            if (provider.IgnoreAllDownstreamHeaders)
+                return;
+
             var headers = context.Request.Headers;
             if (headers is null)
-                return Task.CompletedTask;
+                return;
 
             foreach (var header in headers)
             {
@@ -71,17 +89,6 @@
 
                 AddUpstreamHeaderValuesIfAllowed(context, upstreamRequest, key, header.Value);
             }
-
-            AddHostHeader(context, upstreamRequest);
-            AddExternalAddressHeader(context, upstreamRequest);
-            AddClientAddressHeader(context, upstreamRequest);
-            AddClientProtocolHeader(context, upstreamRequest);
-            AddRequestIdHeader(context, upstreamRequest);
-            AddCallIdHeader(context, upstreamRequest);
-            AddProxyNameHeader(context, upstreamRequest);
-            AddExtraHeaders(context, upstreamRequest);
-
-            return Task.CompletedTask;
         }
 
         private void AddHostHeader(HttpContext context, HttpRequestMessage upstreamRequest)

@@ -8,6 +8,7 @@
           "defaultHost": "this-machine-name",
           "allowHeadersWithEmptyValue": true,
           "allowHeadersWithUnderscoreInName": true,
+          "ignoreAllDownstreamHeaders": true,
           "includeExternalAddress": true,
           "ignoreClientAddress": true,
           "ignoreClientProtocol": true,
