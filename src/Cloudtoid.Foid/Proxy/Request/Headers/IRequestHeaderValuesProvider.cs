@@ -16,6 +16,36 @@
         bool AllowHeadersWithUnderscoreInName { get; }
 
         /// <summary>
+        /// If true, an "x-foid-external-address" header with the immediate downstream IP address is added to the outgoing upstream call.
+        /// The default value is false.
+        /// </summary>
+        bool IncludeExternalAddress { get; }
+
+        /// <summary>
+        /// If false, it will append the IP address of the nearest client to the "x-forwarded-for" header.
+        /// The default value is false.
+        /// </summary>
+        bool IgnoreClientAddress { get; }
+
+        /// <summary>
+        /// If false, it will append the client protocol (HTTP or HTTPS) to the "x-forwarded-proto" header.
+        /// The default value is false.
+        /// </summary>
+        bool IgnoreClientProtocol { get; }
+
+        /// <summary>
+        /// If false, it will append a "x-request-id" header if not present.
+        /// The default value is false.
+        /// </summary>
+        bool IgnoreRequestId { get; }
+
+        /// <summary>
+        /// If false, it will append a "x-call-id" header. This is a guid that is always new for each call.
+        /// The default value is false.
+        /// </summary>
+        bool IgnoreCallId { get; }
+
+        /// <summary>
         /// By implementing this method, one can change the values of a given header.
         /// Return false, if the header should be dropped.
         /// </summary>
@@ -25,5 +55,15 @@
         /// If the incoming downstream request does not have a HOST header, the value provided here will be used.
         /// </summary>
         string GetDefaultHostHeaderValue(HttpContext context);
+
+        /// <summary>
+        /// If this is not null, an "x-foid-proxy-name" header with this value is added to the outgoing upstream call.
+        /// </summary>
+        string? GetProxyNameHeaderValue(HttpContext context);
+
+        /// <summary>
+        /// You can append other headers to the outgoing upstream request
+        /// </summary>
+        IEnumerable<(string Key, IEnumerable<string> Values)> GetExtraHeaders(HttpContext context);
     }
 }

@@ -38,7 +38,7 @@
         public async Task SetHeadersAsync_WhenNoHostHeader_HostHeaderIsAddedAsync()
         {
             var provider = new RequestHeaderValuesProvider();
-            var setter = new RequestHeaderSetter(provider, Substitute.For<ILogger<RequestHeaderSetter>>());
+            var setter = new RequestHeaderSetter(provider, GuidProvider.Instance, Substitute.For<ILogger<RequestHeaderSetter>>());
 
             var context = new DefaultHttpContext();
             var message = new HttpRequestMessage();
@@ -52,7 +52,7 @@
         public async Task SetHeadersAsync_WhenHeaderWithUnderscore_HeaderRemovedAsync()
         {
             var provider = new RequestHeaderValuesProvider();
-            var setter = new RequestHeaderSetter(provider, Substitute.For<ILogger<RequestHeaderSetter>>());
+            var setter = new RequestHeaderSetter(provider, GuidProvider.Instance, Substitute.For<ILogger<RequestHeaderSetter>>());
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add("X-Good-Header", "some-value");
@@ -69,7 +69,7 @@
         public async Task SetHeadersAsync_WhenHeaderWithEmptyValue_HeaderRemovedAsync()
         {
             var provider = new RequestHeaderValuesProvider();
-            var setter = new RequestHeaderSetter(provider, Substitute.For<ILogger<RequestHeaderSetter>>());
+            var setter = new RequestHeaderSetter(provider, GuidProvider.Instance, Substitute.For<ILogger<RequestHeaderSetter>>());
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add("X-Empty-Header", string.Empty);
@@ -104,7 +104,7 @@
                     out Arg.Any<IList<string>>())
                 .Returns(false);
 
-            var setter = new RequestHeaderSetter(provider, Substitute.For<ILogger<RequestHeaderSetter>>());
+            var setter = new RequestHeaderSetter(provider, GuidProvider.Instance, Substitute.For<ILogger<RequestHeaderSetter>>());
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add("X-Keep-Header", "keep-value");

@@ -13,7 +13,10 @@
                 return services;
 
             return services
-                .TryAddSingleton<Marker>();
+                .TryAddSingleton<Marker>()
+                .TryAddSingleton<IDateTimeProvider, DateTimeProvider>()
+                .TryAddSingleton<IDateTimeOffsetProvider, DateTimeOffsetProvider>()
+                .TryAddSingleton<IGuidProvider, GuidProvider>();
         }
 
         private sealed class Marker

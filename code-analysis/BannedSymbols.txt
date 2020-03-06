@@ -123,12 +123,12 @@ M:System.DateTimeOffset.ToString(System.String,System.IFormatProvider); Don't us
 M:System.TimeSpan.ToString(); Don't use TimeSpan.ToString, use ToStringExtensions.ToStringInvariant instead.
 M:System.TimeSpan.ToString(System.String); Don't use TimeSpan.ToString, use ToStringExtensions.ToStringInvariant instead.
 M:System.TimeSpan.ToString(System.String,System.IFormatProvider); Don't use TimeSpan.ToString, use ToStringExtensions.ToStringInvariant instead.
-M:System.Guid.NewGuid(); This method is nondeterministic and thus hard to use in tests, use IGuidProvider through dependency injection instead.
 M:System.Guid.ToString(); Don't use Guid.ToString, use ToStringExtensions.ToStringInvariant instead.
 M:System.Guid.ToString(System.String); Don't use Guid.ToString, use ToStringExtensions.ToStringInvariant instead.
 M:System.Guid.ToString(System.String,System.IFormatProvider); Don't use Guid.ToString, use ToStringExtensions.ToStringInvariant instead.
 
-#Nondeterministic Properties
+#Nondeterministic Methods and Properties
+M:System.Guid.NewGuid(); This method is nondeterministic and thus hard to use in tests, use IGuidProvider through dependency injection instead.
 P:System.DateTime.Now; This property is nondeterministic and thus hard to use in tests, use IDateTimeProvider through dependency injection instead.
 P:System.DateTime.UtcNow; This property is nondeterministic and thus hard to use in tests, use IDateTimeProvider through dependency injection instead.
 P:System.DateTime.Today; This property is nondeterministic and thus hard to use in tests, use IDateTimeProvider through dependency injection instead.

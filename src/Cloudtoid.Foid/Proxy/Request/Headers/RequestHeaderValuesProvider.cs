@@ -2,17 +2,30 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Net.Http.Headers;
     using static Contract;
 
-    internal sealed class RequestHeaderValuesProvider : IRequestHeaderValuesProvider
+    public class RequestHeaderValuesProvider : IRequestHeaderValuesProvider
     {
-        public bool AllowHeadersWithEmptyValue => false;
+        private const string FoidProxyName = "cloudtoid-foid";
 
-        public bool AllowHeadersWithUnderscoreInName => false;
+        public virtual bool AllowHeadersWithEmptyValue => false;
 
-        public bool TryGetHeaderValues(
+        public virtual bool AllowHeadersWithUnderscoreInName => false;
+
+        public virtual bool IncludeExternalAddress => false;
+
+        public virtual bool IgnoreClientAddress => false;
+
+        public virtual bool IgnoreClientProtocol => false;
+
+        public virtual bool IgnoreRequestId => false;
+
+        public virtual bool IgnoreCallId => false;
+
+        public virtual bool TryGetHeaderValues(
             HttpContext context,
             string name,
             IList<string> downstreamValues,
@@ -32,7 +45,12 @@
         }
 
         // TODO: Is this a correct implementation???
-        public string GetDefaultHostHeaderValue(HttpContext context) => Environment.MachineName;
+        public virtual string GetDefaultHostHeaderValue(HttpContext context) => Environment.MachineName;
+
+        public virtual string? GetProxyNameHeaderValue(HttpContext context) => FoidProxyName;
+
+        public virtual IEnumerable<(string Key, IEnumerable<string> Values)> GetExtraHeaders(HttpContext context)
+            => Enumerable.Empty<(string Key, IEnumerable<string> Values)>();
 
         private string GetHostHeaderValue(HttpContext context, IList<string> downstreamValues)
         {
