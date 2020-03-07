@@ -431,12 +431,30 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenProxyNameNull_HeaderNotIncludedAsync()
+        public async Task SetHeadersAsync_WhenProxyNameIsNull_HeaderNotIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-foid-proxy-name";
             var options = new FoidOptions();
             options.Proxy.Upstream.Request.Headers.ProxyName = null;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(HeaderName, "abc");
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.Contains(HeaderName).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenProxyNameIsEmpty_HeaderNotIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-foid-proxy-name";
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.ProxyName = string.Empty;
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, "abc");

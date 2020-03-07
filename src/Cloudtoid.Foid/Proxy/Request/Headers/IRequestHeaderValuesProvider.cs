@@ -63,7 +63,7 @@
         string GetDefaultHostHeaderValue(HttpContext context);
 
         /// <summary>
-        /// If this is not null, an "x-foid-proxy-name" header with this value is added to the outgoing upstream call.
+        /// If this is not null or empty, an "x-foid-proxy-name" header with this value is added to the outgoing upstream call.
         /// </summary>
         string? GetProxyNameHeaderValue(HttpContext context);
 
