@@ -1,7 +1,5 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
-    using System;
-    using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
@@ -10,18 +8,6 @@
 
     internal sealed class RequestCreator : IRequestCreator
     {
-        private static readonly IReadOnlyDictionary<string, HttpMethod> HttpMethods = new Dictionary<string, HttpMethod>(StringComparer.OrdinalIgnoreCase)
-        {
-            { HttpMethod.Get.Method, HttpMethod.Get },
-            { HttpMethod.Post.Method, HttpMethod.Post },
-            { HttpMethod.Options.Method, HttpMethod.Options },
-            { HttpMethod.Head.Method, HttpMethod.Head },
-            { HttpMethod.Delete.Method, HttpMethod.Delete },
-            { HttpMethod.Patch.Method, HttpMethod.Patch },
-            { HttpMethod.Put.Method, HttpMethod.Put },
-            { HttpMethod.Trace.Method, HttpMethod.Trace },
-        };
-
         private readonly IUriRewriter uriRewriter;
         private readonly IRequestHeaderSetter headerSetter;
         private readonly ILogger<RequestCreator> logger;
@@ -44,35 +30,32 @@
 
             logger.LogDebug("Creating an outgoing upstream HTTP request based on the incoming downstream HTTP request.");
 
-            var request = context.Request;
-            var message = new HttpRequestMessage
-            {
-                Method = GetHttpMethod(request.Method),
-                RequestUri = await RewriteUriAsync(context),
-            };
+            var message = new HttpRequestMessage();
 
+            SetHttpMethod(context, message);
+            await SetUriAsync(context, message);
             await SetHeadersAsync(context, message);
-            SetContent(request, message);
+            SetContent(context.Request, message);
 
             logger.LogDebug("Creating an outgoing upstream HTTP request based on the incoming downstream HTTP request.");
 
             return message;
         }
 
-        private static HttpMethod GetHttpMethod(string method)
-            => HttpMethods.TryGetValue(method, out var m) ? m : new HttpMethod(method);
-
-        private async Task<Uri> RewriteUriAsync(HttpContext context)
+        private void SetHttpMethod(HttpContext context, HttpRequestMessage message)
         {
-            logger.LogDebug("Rewrote the uri by calling an instance of {0}", uriRewriter.GetType().FullName);
+            message.Method = HttpUtil.GetHttpMethod(context.Request.Method);
+        }
 
-            var uri = await uriRewriter
+        private async Task SetUriAsync(HttpContext context, HttpRequestMessage message)
+        {
+            logger.LogDebug("Rewriting the uri by calling an instance of {0}", uriRewriter.GetType().FullName);
+
+            message.RequestUri = await uriRewriter
                 .RewriteUriAsync(context)
                 .TraceOnFaulted(logger, "Failed to rewrite a URI", context.RequestAborted);
 
             logger.LogDebug("Rewrote the uri by calling an instance of {0}", uriRewriter.GetType().FullName);
-
-            return uri;
         }
 
         private async Task SetHeadersAsync(HttpContext context, HttpRequestMessage message)
