@@ -22,8 +22,13 @@
         [TestMethod]
         public void GetHostHeaderValue_WhenHostNameIncludesPortNumber_PortNumberIsRemoved()
         {
+            // Arrange
             var provider = GetProvider();
+
+            // Act
             provider.TryGetHeaderValues(new DefaultHttpContext(), HeaderNames.Host, new[] { "host:123", "random-value" }, out var values).Should().BeTrue();
+
+            // Assert
             values.Should().HaveCount(1);
             values[0].Should().Be("host");
         }
@@ -31,8 +36,13 @@
         [TestMethod]
         public void GetHostHeaderValue_WhenHostHeaderNotSpecified_HostHeaderIsMachineName()
         {
+            // Arrange
             var provider = GetProvider();
+
+            // Act
             provider.TryGetHeaderValues(new DefaultHttpContext(), HeaderNames.Host, Array.Empty<string>(), out var values).Should().BeTrue();
+
+            // Assert
             values.Should().HaveCount(1);
             values[0].Should().Be(Environment.MachineName);
         }
@@ -52,6 +62,21 @@
         }
 
         [TestMethod]
+        public async Task SetHeadersAsync_WhenHostHeaderIncluded_HostHeaderIsNotAddedAsync()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(HeaderNames.Host, "myhost");
+
+            // Act
+            var message = await SetHeadersAsync(context);
+
+            // Assert
+            message.Headers.Contains(HeaderNames.Host).Should().BeTrue();
+            message.Headers.GetValues(HeaderNames.Host).SingleOrDefault().Should().Be("myhost");
+        }
+
+        [TestMethod]
         public async Task SetHeadersAsync_WhenHeaderWithUnderscore_HeaderRemovedAsync()
         {
             // Arrange
@@ -68,6 +93,25 @@
         }
 
         [TestMethod]
+        public async Task SetHeadersAsync_WhenAllowHeadersWithUnderscore_HeaderKeptAsync()
+        {
+            // Arrange
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.AllowHeadersWithUnderscoreInName = true;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add("X-Good-Header", "some-value");
+            context.Request.Headers.Add("X_Bad_Header", "some-value");
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.Contains("X-Good-Header").Should().BeTrue();
+            message.Headers.Contains("X_Bad_Header").Should().BeTrue();
+        }
+
+        [TestMethod]
         public async Task SetHeadersAsync_WhenHeaderWithEmptyValue_HeaderRemovedAsync()
         {
             // Arrange
@@ -79,6 +123,23 @@
 
             // Assert
             message.Headers.Contains("X-Empty-Header").Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenAllowHeaderWithEmptyValue_HeaderIsKeptAsync()
+        {
+            // Arrange
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.AllowHeadersWithEmptyValue = true;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add("X-Empty-Header", string.Empty);
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.Contains("X-Empty-Header").Should().BeTrue();
         }
 
         [TestMethod]
