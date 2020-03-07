@@ -240,6 +240,24 @@
         }
 
         [TestMethod]
+        public async Task SetHeadersAsync_WhenNotIgnoreAllDownstreamHeaders_DownstreamHeadersAreIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-custom-test";
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamRequestHeaders = false;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(HeaderName, new[] { "abc", "efg" });
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(HeaderName).Should().BeEquivalentTo(new[] { "abc", "efg" });
+        }
+
+        [TestMethod]
         public async Task SetHeadersAsync_WhenIgnoreAllDownstreamHeadersAndRequestId_NewRequestIdIncludedAsync()
         {
             // Arrange
@@ -283,24 +301,6 @@
                 .SingleOrDefault()
                 .Should()
                 .Be("abc");
-        }
-
-        [TestMethod]
-        public async Task SetHeadersAsync_WhenNotIgnoreAllDownstreamHeaders_DownstreamHeadersAreIncludedAsync()
-        {
-            // Arrange
-            const string HeaderName = "x-custom-test";
-            var options = new FoidOptions();
-            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamRequestHeaders = false;
-
-            var context = new DefaultHttpContext();
-            context.Request.Headers.Add(HeaderName, new[] { "abc", "efg" });
-
-            // Act
-            var message = await SetHeadersAsync(context, options);
-
-            // Assert
-            message.Headers.GetValues(HeaderName).Should().BeEquivalentTo(new[] { "abc", "efg" });
         }
 
         [TestMethod]
@@ -601,9 +601,9 @@
 
         private static RequestHeaderValuesProvider GetProvider(FoidOptions? options = null)
         {
-            var mo = Substitute.For<IOptionsMonitor<FoidOptions>>();
-            mo.CurrentValue.Returns(options ?? new FoidOptions());
-            return new RequestHeaderValuesProvider(mo);
+            var monitor = Substitute.For<IOptionsMonitor<FoidOptions>>();
+            monitor.CurrentValue.Returns(options ?? new FoidOptions());
+            return new RequestHeaderValuesProvider(monitor);
         }
     }
 }

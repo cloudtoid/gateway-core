@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Primitives;
     using static Contract;
 
     internal sealed class ResponseHeaderSetter : IResponseHeaderSetter
@@ -28,6 +29,7 @@
             context.RequestAborted.ThrowIfCancellationRequested();
 
             AddUpstreamHeadersToDownstream(context, upstreamResponse);
+            AddExtraHeaders(context);
 
             return Task.CompletedTask;
         }
@@ -63,6 +65,14 @@
             }
         }
 
+        private void AddExtraHeaders(HttpContext context)
+        {
+            var headers = context.Response.Headers;
+
+            foreach (var (key, values) in provider.GetExtraHeaders(context))
+                headers.AddOrAppendHeaderValues(key, values);
+        }
+
         private void AddHeaderValues(
             HttpContext context,
             HttpResponseMessage upstreamResponse,
@@ -71,7 +81,7 @@
         {
             if (provider.TryGetHeaderValues(context, key, upstreamValues, out var downstreamValues) && downstreamValues != null)
             {
-                context.Response.Headers[key] = downstreamValues;
+                context.Response.Headers.AddOrAppendHeaderValues(key, downstreamValues);
                 return;
             }
 
