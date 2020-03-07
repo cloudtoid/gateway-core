@@ -44,10 +44,10 @@
                         public bool IncludeExternalAddress { get; set; } = false;
 
                         /// <summary>
-                        /// If false, it will copy all the headers from the incoming donstream request to the outgoing upstream request.
+                        /// If false, it will copy all the headers from the incoming downstream request to the outgoing upstream request.
                         /// The default value is false.
                         /// </summary>
-                        public bool IgnoreAllDownstreamHeaders { get; set; } = false;
+                        public bool IgnoreAllDownstreamRequestHeaders { get; set; } = false;
 
                         /// <summary>
                         /// If false, it will append the IP address of the nearest client to the "x-forwarded-for" header.
@@ -110,6 +110,12 @@
                         /// By default, headers with an underscore in their names are dropped.
                         /// </summary>
                         public bool AllowHeadersWithUnderscoreInName { get; set; } = false;
+
+                        /// <summary>
+                        /// If false, it will copy all headers from the incoming upstream response to the outgoing downstream response.
+                        /// The default value is false.
+                        /// </summary>
+                        public bool IgnoreAllUpstreamResponseHeaders { get; set; } = false;
 
                         /// <summary>
                         /// Extra headers to be appended to the outgoing downstream response

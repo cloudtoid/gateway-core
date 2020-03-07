@@ -21,7 +21,7 @@
 
         public virtual bool IncludeExternalAddress => HeaderOptions.IncludeExternalAddress;
 
-        public virtual bool IgnoreAllDownstreamHeaders => HeaderOptions.IgnoreAllDownstreamHeaders;
+        public virtual bool IgnoreAllDownstreamRequestHeaders => HeaderOptions.IgnoreAllDownstreamRequestHeaders;
 
         public virtual bool IgnoreClientAddress => HeaderOptions.IgnoreClientAddress;
 

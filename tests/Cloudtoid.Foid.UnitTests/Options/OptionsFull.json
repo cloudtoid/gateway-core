@@ -8,7 +8,7 @@
           "defaultHost": "this-machine-name",
           "allowHeadersWithEmptyValue": true,
           "allowHeadersWithUnderscoreInName": true,
-          "ignoreAllDownstreamHeaders": true,
+          "ignoreAllDownstreamRequestHeaders": true,
           "includeExternalAddress": true,
           "ignoreClientAddress": true,
           "ignoreClientProtocol": true,
@@ -32,6 +32,7 @@
         "headers": {
           "allowHeadersWithEmptyValue": true,
           "allowHeadersWithUnderscoreInName": true,
+          "ignoreAllUpstreamResponseHeaders": true,
           "extraHeaders": [
             {
               "key": "x-xtra-1",

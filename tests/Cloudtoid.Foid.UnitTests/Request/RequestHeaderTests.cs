@@ -227,7 +227,7 @@
             // Arrange
             const string HeaderName = "x-custom-test";
             var options = new FoidOptions();
-            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamHeaders = true;
+            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamRequestHeaders = true;
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, "abc");
@@ -245,7 +245,7 @@
             // Arrange
             const string HeaderName = "x-request-id";
             var options = new FoidOptions();
-            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamHeaders = true;
+            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamRequestHeaders = true;
             options.Proxy.Upstream.Request.Headers.IgnoreRequestId = false;
 
             var context = new DefaultHttpContext();
@@ -268,7 +268,7 @@
             // Arrange
             const string HeaderName = "x-request-id";
             var options = new FoidOptions();
-            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamHeaders = false;
+            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamRequestHeaders = false;
             options.Proxy.Upstream.Request.Headers.IgnoreRequestId = false;
 
             var context = new DefaultHttpContext();
@@ -291,7 +291,7 @@
             // Arrange
             const string HeaderName = "x-custom-test";
             var options = new FoidOptions();
-            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamHeaders = false;
+            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamRequestHeaders = false;
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, new[] { "abc", "efg" });

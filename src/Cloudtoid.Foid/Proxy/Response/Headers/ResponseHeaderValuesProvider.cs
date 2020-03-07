@@ -18,6 +18,8 @@
 
         public virtual bool AllowHeadersWithUnderscoreInName => HeaderOptions.AllowHeadersWithUnderscoreInName;
 
+        public virtual bool IgnoreAllUpstreamResponseHeaders => HeaderOptions.IgnoreAllUpstreamResponseHeaders;
+
         protected virtual IOptionsMonitor<FoidOptions> Options { get; }
 
         protected HeadersOptions HeaderOptions => Options.CurrentValue.Proxy.Downstream.Response.Headers;
@@ -25,8 +27,8 @@
         public virtual bool TryGetHeaderValues(
             HttpContext context,
             string name,
-            IList<string> upstreamHeaders,
-            out IList<string> downstreamHeaders)
+            string[] upstreamHeaders,
+            out string[] downstreamHeaders)
         {
             CheckValue(context, nameof(context));
             CheckNonEmpty(name, nameof(name));

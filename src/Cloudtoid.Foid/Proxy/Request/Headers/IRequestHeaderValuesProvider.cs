@@ -25,7 +25,7 @@
         /// If false, it will copy all the headers from the incoming donstream request to the outgoing upstream request.
         /// The default value is false.
         /// </summary>
-        bool IgnoreAllDownstreamHeaders { get; }
+        bool IgnoreAllDownstreamRequestHeaders { get; }
 
         /// <summary>
         /// If false, it will append the IP address of the nearest client to the "x-forwarded-for" header.

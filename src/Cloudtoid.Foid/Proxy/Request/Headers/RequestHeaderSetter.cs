@@ -55,7 +55,7 @@
 
         private void AddDownstreamHeadersToUpstream(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            if (provider.IgnoreAllDownstreamHeaders)
+            if (provider.IgnoreAllDownstreamRequestHeaders)
                 return;
 
             var headers = context.Request.Headers;
@@ -87,7 +87,7 @@
                 if (HeaderTransferBlacklist.Contains(key))
                     continue;
 
-                AddUpstreamHeaderValuesIfAllowed(context, upstreamRequest, key, header.Value);
+                AddHeaderValues(context, upstreamRequest, key, header.Value);
             }
         }
 
@@ -110,7 +110,7 @@
             if (clientAddress is null)
                 return;
 
-            AddUpstreamHeaderValuesIfAllowed(
+            AddHeaderValues(
                 context,
                 upstreamRequest,
                 Request.Constants.Headers.ExternalAddress,
@@ -126,7 +126,7 @@
             if (clientAddress is null)
                 return;
 
-            AddUpstreamHeaderValuesIfAllowed(
+            AddHeaderValues(
                 context,
                 upstreamRequest,
                 Request.Constants.Headers.ClientAddress,
@@ -138,7 +138,7 @@
             if (provider.IgnoreClientProtocol)
                 return;
 
-            AddUpstreamHeaderValuesIfAllowed(
+            AddHeaderValues(
                 context,
                 upstreamRequest,
                 Request.Constants.Headers.ClientProtocol,
@@ -153,7 +153,7 @@
             if (upstreamRequest.Headers.Contains(Request.Constants.Headers.RequestId))
                 return;
 
-            AddUpstreamHeaderValuesIfAllowed(
+            AddHeaderValues(
                 context,
                 upstreamRequest,
                 Request.Constants.Headers.RequestId,
@@ -165,7 +165,7 @@
             if (provider.IgnoreCallId)
                 return;
 
-            AddUpstreamHeaderValuesIfAllowed(
+            AddHeaderValues(
                 context,
                 upstreamRequest,
                 Request.Constants.Headers.CallId,
@@ -178,7 +178,7 @@
             if (string.IsNullOrWhiteSpace(name))
                 return;
 
-            AddUpstreamHeaderValuesIfAllowed(
+            AddHeaderValues(
                 context,
                 upstreamRequest,
                 Request.Constants.Headers.ProxyName,
@@ -191,7 +191,7 @@
                 upstreamRequest.Headers.TryAddWithoutValidation(key, values);
         }
 
-        private void AddUpstreamHeaderValuesIfAllowed(
+        private void AddHeaderValues(
             HttpContext context,
             HttpRequestMessage upstreamRequest,
             string key,

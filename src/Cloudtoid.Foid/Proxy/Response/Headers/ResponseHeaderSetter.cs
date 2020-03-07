@@ -9,14 +9,14 @@
 
     internal sealed class ResponseHeaderSetter : IResponseHeaderSetter
     {
-        private readonly IResponseHeaderValuesProvider headerValuesProvider;
+        private readonly IResponseHeaderValuesProvider provider;
         private readonly ILogger<ResponseHeaderSetter> logger;
 
         public ResponseHeaderSetter(
-            IResponseHeaderValuesProvider headerValuesProvider,
+            IResponseHeaderValuesProvider provider,
             ILogger<ResponseHeaderSetter> logger)
         {
-            this.headerValuesProvider = CheckValue(headerValuesProvider, nameof(headerValuesProvider));
+            this.provider = CheckValue(provider, nameof(provider));
             this.logger = CheckValue(logger, nameof(logger));
         }
 
@@ -27,37 +27,59 @@
 
             context.RequestAborted.ThrowIfCancellationRequested();
 
-            var responseHeaders = context.Response.Headers;
-            foreach (var header in upstreamResponse.Headers)
+            AddUpstreamHeadersToDownstream(context, upstreamResponse);
+
+            return Task.CompletedTask;
+        }
+
+        private void AddUpstreamHeadersToDownstream(HttpContext context, HttpResponseMessage upstreamResponse)
+        {
+            if (provider.IgnoreAllUpstreamResponseHeaders)
+                return;
+
+            var headers = upstreamResponse.Headers;
+            if (headers is null)
+                return;
+
+            foreach (var header in headers)
             {
+                var key = header.Key;
+
                 // Remove empty headers
-                if (!headerValuesProvider.AllowHeadersWithEmptyValue && header.Value.All(s => string.IsNullOrEmpty(s)))
+                if (!provider.AllowHeadersWithEmptyValue && header.Value.All(s => string.IsNullOrEmpty(s)))
                 {
-                    logger.LogInformation("Removing header '{0}' as its value is empty.", header.Key);
+                    logger.LogInformation("Removing header '{0}' as its value is empty.", key);
                     continue;
                 }
 
                 // Remove headers with underscore in their names
-                if (!headerValuesProvider.AllowHeadersWithUnderscoreInName && header.Key.Contains('_'))
+                if (!provider.AllowHeadersWithUnderscoreInName && key.Contains('_'))
                 {
                     logger.LogInformation("Removing header '{0}' as headers should not have underscores in their name.", header.Key);
                     continue;
                 }
 
-                if (!headerValuesProvider.TryGetHeaderValues(context, header.Key, header.Value.AsList(), out var downstreamValues) || downstreamValues is null)
-                {
-                    logger.LogInformation(
-                        "Removing header '{0}' as was instructed by the {1}.",
-                        header.Key,
-                        nameof(IResponseHeaderValuesProvider));
+                AddHeaderValues(context, upstreamResponse, key, header.Value.AsArray());
+            }
+        }
 
-                    continue;
-                }
-
-                responseHeaders[header.Key] = downstreamValues.AsArray();
+        private void AddHeaderValues(
+            HttpContext context,
+            HttpResponseMessage upstreamResponse,
+            string key,
+            params string[] upstreamValues)
+        {
+            if (provider.TryGetHeaderValues(context, key, upstreamValues, out var downstreamValues) && downstreamValues != null)
+            {
+                context.Response.Headers[key] = downstreamValues;
+                return;
             }
 
-            return Task.CompletedTask;
+            logger.LogInformation(
+                "Header '{0}' is not added. This was was instructed by the {1}.{2}.",
+                key,
+                nameof(IResponseHeaderValuesProvider),
+                nameof(IResponseHeaderValuesProvider.TryGetHeaderValues));
         }
     }
 }
