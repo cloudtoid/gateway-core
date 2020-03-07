@@ -14,9 +14,9 @@
     {
         private static readonly HashSet<string> HeaderTransferBlacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            Request.Constants.Headers.ExternalAddress,
-            Request.Constants.Headers.CallId,
-            Request.Constants.Headers.ProxyName,
+            Headers.Names.ExternalAddress,
+            Headers.Names.CallId,
+            Headers.Names.ProxyName,
         };
 
         private readonly IRequestHeaderValuesProvider provider;
@@ -80,7 +80,7 @@
                     continue;
                 }
 
-                if (provider.IgnoreRequestId && key.EqualsOrdinalIgnoreCase(Request.Constants.Headers.RequestId))
+                if (provider.IgnoreRequestId && key.EqualsOrdinalIgnoreCase(Headers.Names.RequestId))
                     continue;
 
                 // If blacklisted, we will not trasnfer its value
@@ -113,7 +113,7 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                Request.Constants.Headers.ExternalAddress,
+                Headers.Names.ExternalAddress,
                 clientAddress);
         }
 
@@ -129,7 +129,7 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                Request.Constants.Headers.ClientAddress,
+                Headers.Names.ClientAddress,
                 clientAddress);
         }
 
@@ -141,7 +141,7 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                Request.Constants.Headers.ClientProtocol,
+                Headers.Names.ClientProtocol,
                 context.Request.Scheme);
         }
 
@@ -150,13 +150,13 @@
             if (provider.IgnoreRequestId)
                 return;
 
-            if (upstreamRequest.Headers.Contains(Request.Constants.Headers.RequestId))
+            if (upstreamRequest.Headers.Contains(Headers.Names.RequestId))
                 return;
 
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                Request.Constants.Headers.RequestId,
+                Headers.Names.RequestId,
                 traceIdProvider.GetRequestId(context));
         }
 
@@ -168,7 +168,7 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                Request.Constants.Headers.CallId,
+                Headers.Names.CallId,
                 traceIdProvider.GetCallId(context));
         }
 
@@ -181,7 +181,7 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                Request.Constants.Headers.ProxyName,
+                Headers.Names.ProxyName,
                 name);
         }
 

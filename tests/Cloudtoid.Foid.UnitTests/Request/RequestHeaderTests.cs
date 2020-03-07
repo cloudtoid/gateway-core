@@ -147,6 +147,7 @@
         {
             // Arrange
             var provider = Substitute.For<IRequestHeaderValuesProvider>();
+
             provider
                 .TryGetHeaderValues(
                     Arg.Any<HttpContext>(),
@@ -167,9 +168,12 @@
                     out Arg.Any<IList<string>>())
                 .Returns(false);
 
+            var monitor = Substitute.For<IOptionsMonitor<FoidOptions>>();
+            monitor.CurrentValue.Returns(new FoidOptions());
+
             var setter = new RequestHeaderSetter(
                 provider,
-                new TraceIdProvider(GuidProvider.Instance),
+                new TraceIdProvider(GuidProvider.Instance, monitor),
                 Substitute.For<ILogger<RequestHeaderSetter>>());
 
             var context = new DefaultHttpContext();
@@ -595,10 +599,13 @@
 
         private static async Task<HttpRequestMessage> SetHeadersAsync(HttpContext context, FoidOptions? options = null)
         {
-            var provider = GetProvider(options);
+            var monitor = Substitute.For<IOptionsMonitor<FoidOptions>>();
+            monitor.CurrentValue.Returns(options ?? new FoidOptions());
+            var provider = new RequestHeaderValuesProvider(monitor);
+
             var setter = new RequestHeaderSetter(
                 provider,
-                new TraceIdProvider(GuidProvider.Instance),
+                new TraceIdProvider(GuidProvider.Instance, monitor),
                 Substitute.For<ILogger<RequestHeaderSetter>>());
 
             var message = new HttpRequestMessage();
