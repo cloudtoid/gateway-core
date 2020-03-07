@@ -14,7 +14,7 @@
     using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using NSubstitute;
-    using static Cloudtoid.Foid.FoidOptions.ProxyOptions.UpstreamOptions.RequestOptions.HeadersOptions;
+    using static FoidOptions.ProxyOptions;
 
     [TestClass]
     public class RequestHeaderTests

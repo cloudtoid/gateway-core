@@ -8,7 +8,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using static Cloudtoid.Foid.FoidOptions.ProxyOptions.UpstreamOptions.RequestOptions.HeadersOptions;
+    using static FoidOptions.ProxyOptions;
 
     [TestClass]
     public sealed class OptionsTests
@@ -56,6 +56,25 @@
                         Values = new[] { "value2_1", "value2_2" }
                     },
                 });
+
+            var response = options.CurrentValue.Proxy.Downstream.Response;
+            var responseHeaders = response.Headers;
+            responseHeaders.AllowHeadersWithEmptyValue.Should().BeTrue();
+            responseHeaders.AllowHeadersWithUnderscoreInName.Should().BeTrue();
+            responseHeaders.ExtraHeaders.Should().BeEquivalentTo(
+                new[]
+                {
+                    new ExtraHeader
+                    {
+                        Key = "x-xtra-1",
+                        Values = new[] { "value1_1", "value1_2" }
+                    },
+                    new ExtraHeader
+                    {
+                        Key = "x-xtra-2",
+                        Values = new[] { "value2_1", "value2_2" }
+                    },
+                });
         }
 
         [TestMethod]
@@ -88,6 +107,12 @@
             requestHeaders.IgnoreRequestId.Should().BeFalse();
             requestHeaders.IncludeExternalAddress.Should().BeFalse();
             requestHeaders.ExtraHeaders.Should().BeEmpty();
+
+            var response = options.CurrentValue.Proxy.Downstream.Response;
+            var responseHeaders = response.Headers;
+            responseHeaders.AllowHeadersWithEmptyValue.Should().BeFalse();
+            responseHeaders.AllowHeadersWithUnderscoreInName.Should().BeFalse();
+            responseHeaders.ExtraHeaders.Should().BeEmpty();
         }
 
         [TestMethod]

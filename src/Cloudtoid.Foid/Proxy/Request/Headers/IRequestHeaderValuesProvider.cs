@@ -53,7 +53,7 @@
 
         /// <summary>
         /// By implementing this method, one can change the values of a given header.
-        /// Return false, if the header should be dropped.
+        /// Return false, if the header should be omitted.
         /// </summary>
         bool TryGetHeaderValues(HttpContext context, string name, IList<string> downstreamValues, out IList<string> upstreamValues);
 
@@ -63,12 +63,12 @@
         string GetDefaultHostHeaderValue(HttpContext context);
 
         /// <summary>
-        /// If this is not null or empty, an "x-foid-proxy-name" header with this value is added to the outgoing upstream call.
+        /// If this is not null or empty, an "x-foid-proxy-name" header with this value is added to the outgoing upstream request.
         /// </summary>
         string? GetProxyNameHeaderValue(HttpContext context);
 
         /// <summary>
-        /// You can append other headers to the outgoing upstream request
+        /// Extra headers to be appended to the outgoing upstream request.
         /// </summary>
         IEnumerable<(string Key, string[] Values)> GetExtraHeaders(HttpContext context);
     }

@@ -10,6 +10,8 @@
         {
             public UpstreamOptions Upstream { get; set; } = new UpstreamOptions();
 
+            public DownstreamOptions Downstream { get; set; } = new DownstreamOptions();
+
             public sealed partial class UpstreamOptions
             {
                 public RequestOptions Request { get; set; } = new RequestOptions();
@@ -85,15 +87,43 @@
                         /// Extra headers to be appended to the outgoing upstream request
                         /// </summary>
                         public ExtraHeader[] ExtraHeaders { get; set; } = Array.Empty<ExtraHeader>();
-
-                        public class ExtraHeader
-                        {
-                            public string Key { get; set; } = string.Empty;
-
-                            public string[] Values { get; set; } = Array.Empty<string>();
-                        }
                     }
                 }
+            }
+
+            public sealed partial class DownstreamOptions
+            {
+                public ResponseOptions Response { get; set; } = new ResponseOptions();
+
+                public sealed partial class ResponseOptions
+                {
+                    public HeadersOptions Headers { get; set; } = new HeadersOptions();
+
+                    public sealed partial class HeadersOptions
+                    {
+                        /// <summary>
+                        /// By default, headers with an empty value are dropped.
+                        /// </summary>
+                        public bool AllowHeadersWithEmptyValue { get; set; } = false;
+
+                        /// <summary>
+                        /// By default, headers with an underscore in their names are dropped.
+                        /// </summary>
+                        public bool AllowHeadersWithUnderscoreInName { get; set; } = false;
+
+                        /// <summary>
+                        /// Extra headers to be appended to the outgoing downstream response
+                        /// </summary>
+                        public ExtraHeader[] ExtraHeaders { get; set; } = Array.Empty<ExtraHeader>();
+                    }
+                }
+            }
+
+            public class ExtraHeader
+            {
+                public string Key { get; set; } = string.Empty;
+
+                public string[] Values { get; set; } = Array.Empty<string>();
             }
         }
     }

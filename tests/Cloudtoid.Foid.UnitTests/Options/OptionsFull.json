@@ -26,6 +26,24 @@
           ]
         }
       }
+    },
+    "downstream": {
+      "response": {
+        "headers": {
+          "allowHeadersWithEmptyValue": true,
+          "allowHeadersWithUnderscoreInName": true,
+          "extraHeaders": [
+            {
+              "key": "x-xtra-1",
+              "values": [ "value1_1", "value1_2" ]
+            },
+            {
+              "key": "x-xtra-2",
+              "values": [ "value2_1", "value2_2" ]
+            }
+          ]
+        }
+      }
     }
   }
 }

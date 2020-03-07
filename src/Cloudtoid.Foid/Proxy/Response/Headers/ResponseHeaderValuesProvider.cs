@@ -1,16 +1,28 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Options;
     using static Contract;
+    using static FoidOptions.ProxyOptions.DownstreamOptions.ResponseOptions;
 
-    internal sealed class ResponseHeaderValuesProvider : IResponseHeaderValuesProvider
+    public class ResponseHeaderValuesProvider : IResponseHeaderValuesProvider
     {
-        public bool AllowHeadersWithEmptyValue => false;
+        public ResponseHeaderValuesProvider(IOptionsMonitor<FoidOptions> options)
+        {
+            Options = CheckValue(options, nameof(options));
+        }
 
-        public bool AllowHeadersWithUnderscoreInName => false;
+        public virtual bool AllowHeadersWithEmptyValue => HeaderOptions.AllowHeadersWithEmptyValue;
 
-        public bool TryGetHeaderValues(
+        public virtual bool AllowHeadersWithUnderscoreInName => HeaderOptions.AllowHeadersWithUnderscoreInName;
+
+        protected virtual IOptionsMonitor<FoidOptions> Options { get; }
+
+        protected HeadersOptions HeaderOptions => Options.CurrentValue.Proxy.Downstream.Response.Headers;
+
+        public virtual bool TryGetHeaderValues(
             HttpContext context,
             string name,
             IList<string> upstreamHeaders,
@@ -22,5 +34,8 @@
             downstreamHeaders = upstreamHeaders;
             return true;
         }
+
+        public virtual IEnumerable<(string Key, string[] Values)> GetExtraHeaders(HttpContext context)
+            => HeaderOptions.ExtraHeaders.Select(h => (h.Key, h.Values));
     }
 }

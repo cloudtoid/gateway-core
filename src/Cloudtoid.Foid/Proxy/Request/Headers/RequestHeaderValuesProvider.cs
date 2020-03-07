@@ -6,6 +6,7 @@
     using Microsoft.Extensions.Options;
     using Microsoft.Net.Http.Headers;
     using static Contract;
+    using static FoidOptions.ProxyOptions.UpstreamOptions.RequestOptions;
 
     public class RequestHeaderValuesProvider : IRequestHeaderValuesProvider
     {
@@ -30,10 +31,9 @@
 
         public virtual bool IgnoreCallId => HeaderOptions.IgnoreCallId;
 
-        protected IOptionsMonitor<FoidOptions> Options { get; }
+        protected virtual IOptionsMonitor<FoidOptions> Options { get; }
 
-        private FoidOptions.ProxyOptions.UpstreamOptions.RequestOptions.HeadersOptions HeaderOptions
-            => Options.CurrentValue.Proxy.Upstream.Request.Headers;
+        protected HeadersOptions HeaderOptions => Options.CurrentValue.Proxy.Upstream.Request.Headers;
 
         public virtual bool TryGetHeaderValues(
             HttpContext context,
