@@ -20,16 +20,16 @@
         };
 
         private readonly IRequestHeaderValuesProvider provider;
-        private readonly IGuidProvider guideProvider;
+        private readonly ITraceIdProvider traceIdProvider;
         private readonly ILogger<RequestHeaderSetter> logger;
 
         public RequestHeaderSetter(
             IRequestHeaderValuesProvider provider,
-            IGuidProvider guideProvider,
+            ITraceIdProvider traceIdProvider,
             ILogger<RequestHeaderSetter> logger)
         {
             this.provider = CheckValue(provider, nameof(provider));
-            this.guideProvider = CheckValue(guideProvider, nameof(guideProvider));
+            this.traceIdProvider = CheckValue(traceIdProvider, nameof(traceIdProvider));
             this.logger = CheckValue(logger, nameof(logger));
         }
 
@@ -157,7 +157,7 @@
                 context,
                 upstreamRequest,
                 Request.Constants.Headers.RequestId,
-                guideProvider.NewGuid().ToStringInvariant("N"));
+                traceIdProvider.GetRequestId(context));
         }
 
         private void AddCallIdHeader(HttpContext context, HttpRequestMessage upstreamRequest)
@@ -169,7 +169,7 @@
                 context,
                 upstreamRequest,
                 Request.Constants.Headers.CallId,
-                guideProvider.NewGuid().ToStringInvariant("N"));
+                traceIdProvider.GetCallId(context));
         }
 
         private void AddProxyNameHeader(HttpContext context, HttpRequestMessage upstreamRequest)

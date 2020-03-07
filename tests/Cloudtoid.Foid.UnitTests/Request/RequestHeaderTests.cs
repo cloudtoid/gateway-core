@@ -167,7 +167,10 @@
                     out Arg.Any<IList<string>>())
                 .Returns(false);
 
-            var setter = new RequestHeaderSetter(provider, GuidProvider.Instance, Substitute.For<ILogger<RequestHeaderSetter>>());
+            var setter = new RequestHeaderSetter(
+                provider,
+                new TraceIdProvider(GuidProvider.Instance),
+                Substitute.For<ILogger<RequestHeaderSetter>>());
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add("X-Keep-Header", "keep-value");
@@ -593,7 +596,11 @@
         private static async Task<HttpRequestMessage> SetHeadersAsync(HttpContext context, FoidOptions? options = null)
         {
             var provider = GetProvider(options);
-            var setter = new RequestHeaderSetter(provider, GuidProvider.Instance, Substitute.For<ILogger<RequestHeaderSetter>>());
+            var setter = new RequestHeaderSetter(
+                provider,
+                new TraceIdProvider(GuidProvider.Instance),
+                Substitute.For<ILogger<RequestHeaderSetter>>());
+
             var message = new HttpRequestMessage();
             await setter.SetHeadersAsync(context, message);
             return message;
