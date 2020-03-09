@@ -39,39 +39,45 @@
 
                         /// <summary>
                         /// If true, an "x-foid-external-address" header with the immediate downstream IP address is added to the outgoing upstream call.
-                        /// The default value is false.
+                        /// The default value if <c>false</c>.
                         /// </summary>
                         public bool IncludeExternalAddress { get; set; } = false;
 
                         /// <summary>
                         /// If false, it will copy all the headers from the incoming downstream request to the outgoing upstream request.
-                        /// The default value is false.
+                        /// The default value if <c>false</c>.
                         /// </summary>
                         public bool IgnoreAllDownstreamRequestHeaders { get; set; } = false;
 
                         /// <summary>
                         /// If false, it will append the IP address of the nearest client to the "x-forwarded-for" header.
-                        /// The default value is false.
+                        /// The default value if <c>false</c>.
                         /// </summary>
                         public bool IgnoreClientAddress { get; set; } = false;
 
                         /// <summary>
                         /// If false, it will append the client protocol (HTTP or HTTPS) to the "x-forwarded-proto" header.
-                        /// The default value is false.
+                        /// The default value if <c>false</c>.
                         /// </summary>
                         public bool IgnoreClientProtocol { get; set; } = false;
 
                         /// <summary>
-                        /// If false, it will append a "x-request-id" header if not present.
-                        /// The default value is false.
+                        /// If false, it will append a correlation identifier header if not present. The actual header name if defined by <see cref="CorrelationIdHeader"/>
+                        /// The default value if <c>false</c>.
                         /// </summary>
-                        public bool IgnoreRequestId { get; set; } = false;
+                        public bool IgnoreCorrelationId { get; set; } = false;
 
                         /// <summary>
                         /// If false, it will append a "x-call-id" header. This is a guid that is always new for each call.
-                        /// The default value is false.
+                        /// The default value if <c>false</c>.
                         /// </summary>
                         public bool IgnoreCallId { get; set; } = false;
+
+                        /// <summary>
+                        /// Header name for request/correlation identifier.
+                        /// The default value is "x-correlation-id".
+                        /// </summary>
+                        public string CorrelationIdHeader { get; set; } = Foid.Headers.Names.CorrelationId;
 
                         /// <summary>
                         /// If the incoming downstream request does not have a HOST header, the value provided here will be used.
@@ -113,7 +119,7 @@
 
                         /// <summary>
                         /// If false, it will copy all headers from the incoming upstream response to the outgoing downstream response.
-                        /// The default value is false.
+                        /// The default value if <c>false</c>.
                         /// </summary>
                         public bool IgnoreAllUpstreamResponseHeaders { get; set; } = false;
 

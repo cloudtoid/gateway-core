@@ -265,13 +265,13 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenIgnoreAllDownstreamHeadersAndRequestId_NewRequestIdIncludedAsync()
+        public async Task SetHeadersAsync_WhenIgnoreAllDownstreamHeadersAndCorrelationId_NewCorrelationIdIncludedAsync()
         {
             // Arrange
-            const string HeaderName = "x-request-id";
+            const string HeaderName = "x-correlation-id";
             var options = new FoidOptions();
             options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamRequestHeaders = true;
-            options.Proxy.Upstream.Request.Headers.IgnoreRequestId = false;
+            options.Proxy.Upstream.Request.Headers.IgnoreCorrelationId = false;
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, "abc");
@@ -288,13 +288,13 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenNotIgnoreAllDownstreamHeadersAndRequestId_ExistingRequestIdIncludedAsync()
+        public async Task SetHeadersAsync_WhenNotIgnoreAllDownstreamHeadersAndCorrelationId_ExistingCorrelationIdIncludedAsync()
         {
             // Arrange
-            const string HeaderName = "x-request-id";
+            const string HeaderName = "x-correlation-id";
             var options = new FoidOptions();
             options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamRequestHeaders = false;
-            options.Proxy.Upstream.Request.Headers.IgnoreRequestId = false;
+            options.Proxy.Upstream.Request.Headers.IgnoreCorrelationId = false;
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, "abc");
@@ -403,12 +403,12 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenIgnoreRequestId_HeaderNotIncludedAsync()
+        public async Task SetHeadersAsync_WhenIgnoreCorrelationId_HeaderNotIncludedAsync()
         {
             // Arrange
-            const string HeaderName = "x-request-id";
+            const string HeaderName = "x-correlation-id";
             var options = new FoidOptions();
-            options.Proxy.Upstream.Request.Headers.IgnoreRequestId = true;
+            options.Proxy.Upstream.Request.Headers.IgnoreCorrelationId = true;
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, "abc");
@@ -421,12 +421,12 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenNotIgnoreRequestId_HeaderIncludedAsync()
+        public async Task SetHeadersAsync_WhenNotIgnoreCorrelationId_HeaderIncludedAsync()
         {
             // Arrange
-            const string HeaderName = "x-request-id";
+            const string HeaderName = "x-correlation-id";
             var options = new FoidOptions();
-            options.Proxy.Upstream.Request.Headers.IgnoreRequestId = false;
+            options.Proxy.Upstream.Request.Headers.IgnoreCorrelationId = false;
 
             var context = new DefaultHttpContext();
 
@@ -442,12 +442,12 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenNotIgnoreRequestIdWithExistingId_HeaderIncludedAsync()
+        public async Task SetHeadersAsync_WhenNotIgnoreCorrelationIdWithExistingId_HeaderIncludedAsync()
         {
             // Arrange
-            const string HeaderName = "x-request-id";
+            const string HeaderName = "x-correlation-id";
             var options = new FoidOptions();
-            options.Proxy.Upstream.Request.Headers.IgnoreRequestId = false;
+            options.Proxy.Upstream.Request.Headers.IgnoreCorrelationId = false;
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, "abc");

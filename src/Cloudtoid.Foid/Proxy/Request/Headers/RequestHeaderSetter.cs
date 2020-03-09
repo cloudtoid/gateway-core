@@ -45,7 +45,7 @@
             AddExternalAddressHeader(context, upstreamRequest);
             AddClientAddressHeader(context, upstreamRequest);
             AddClientProtocolHeader(context, upstreamRequest);
-            AddRequestIdHeader(context, upstreamRequest);
+            AddCorrelationIdHeader(context, upstreamRequest);
             AddCallIdHeader(context, upstreamRequest);
             AddProxyNameHeader(context, upstreamRequest);
             AddExtraHeaders(context, upstreamRequest);
@@ -80,7 +80,7 @@
                     continue;
                 }
 
-                if (provider.IgnoreRequestId && key.EqualsOrdinalIgnoreCase(Headers.Names.RequestId))
+                if (key.EqualsOrdinalIgnoreCase(provider.CorrelationIdHeader))
                     continue;
 
                 // If blacklisted, we will not trasnfer its value
@@ -145,19 +145,16 @@
                 context.Request.Scheme);
         }
 
-        private void AddRequestIdHeader(HttpContext context, HttpRequestMessage upstreamRequest)
+        private void AddCorrelationIdHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            if (provider.IgnoreRequestId)
-                return;
-
-            if (upstreamRequest.Headers.Contains(Headers.Names.RequestId))
+            if (provider.IgnoreCorrelationId)
                 return;
 
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                Headers.Names.RequestId,
-                traceIdProvider.GetRequestId(context));
+                provider.CorrelationIdHeader,
+                traceIdProvider.GetCorrelationId(context));
         }
 
         private void AddCallIdHeader(HttpContext context, HttpRequestMessage upstreamRequest)

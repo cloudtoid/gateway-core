@@ -12,8 +12,9 @@
           "includeExternalAddress": true,
           "ignoreClientAddress": true,
           "ignoreClientProtocol": true,
-          "ignoreRequestId": true,
+          "ignoreCorrelationId": true,
           "ignoreCallId": true,
+          "correlationIdHeader": "x-request-id",
           "extraHeaders": [
             {
               "key": "x-xtra-1",

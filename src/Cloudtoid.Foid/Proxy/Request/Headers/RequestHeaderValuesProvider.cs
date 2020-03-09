@@ -27,9 +27,11 @@
 
         public virtual bool IgnoreClientProtocol => HeaderOptions.IgnoreClientProtocol;
 
-        public virtual bool IgnoreRequestId => HeaderOptions.IgnoreRequestId;
+        public virtual bool IgnoreCorrelationId => HeaderOptions.IgnoreCorrelationId;
 
         public virtual bool IgnoreCallId => HeaderOptions.IgnoreCallId;
+
+        public virtual string CorrelationIdHeader => HeaderOptions.CorrelationIdHeader;
 
         protected virtual IOptionsMonitor<FoidOptions> Options { get; }
 

@@ -4,7 +4,7 @@
 
     public interface ITraceIdProvider
     {
-        string GetRequestId(HttpContext context);
+        string GetCorrelationId(HttpContext context);
 
         string GetCallId(HttpContext context);
     }

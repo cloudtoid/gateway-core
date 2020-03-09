@@ -17,39 +17,45 @@
 
         /// <summary>
         /// If true, an "x-foid-external-address" header with the immediate downstream IP address is added to the outgoing upstream call.
-        /// The default value is false.
+        /// The default value if <c>false</c>.
         /// </summary>
         bool IncludeExternalAddress { get; }
 
         /// <summary>
         /// If false, it will copy all the headers from the incoming donstream request to the outgoing upstream request.
-        /// The default value is false.
+        /// The default value if <c>false</c>.
         /// </summary>
         bool IgnoreAllDownstreamRequestHeaders { get; }
 
         /// <summary>
         /// If false, it will append the IP address of the nearest client to the "x-forwarded-for" header.
-        /// The default value is false.
+        /// The default value if <c>false</c>.
         /// </summary>
         bool IgnoreClientAddress { get; }
 
         /// <summary>
         /// If false, it will append the client protocol (HTTP or HTTPS) to the "x-forwarded-proto" header.
-        /// The default value is false.
+        /// The default value if <c>false</c>.
         /// </summary>
         bool IgnoreClientProtocol { get; }
 
         /// <summary>
-        /// If false, it will append a "x-request-id" header if not present.
-        /// The default value is false.
+        /// If false, it will append a correlation identifier header if not present. The actual header name if defined by <see cref="CorrelationIdHeader"/>
+        /// The default value if <c>false</c>.
         /// </summary>
-        bool IgnoreRequestId { get; }
+        bool IgnoreCorrelationId { get; }
 
         /// <summary>
         /// If false, it will append a "x-call-id" header. This is a guid that is always new for each call.
-        /// The default value is false.
+        /// The default value if <c>false</c>.
         /// </summary>
         bool IgnoreCallId { get; }
+
+        /// <summary>
+        /// Header name for correlation identifier.
+        /// The default value is "x-correlation-id".
+        /// </summary>
+        string CorrelationIdHeader { get; }
 
         /// <summary>
         /// By implementing this method, one can change the values of a given header.

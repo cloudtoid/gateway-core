@@ -40,8 +40,9 @@
             requestHeaders.IgnoreCallId.Should().BeTrue();
             requestHeaders.IgnoreClientAddress.Should().BeTrue();
             requestHeaders.IgnoreClientProtocol.Should().BeTrue();
-            requestHeaders.IgnoreRequestId.Should().BeTrue();
+            requestHeaders.IgnoreCorrelationId.Should().BeTrue();
             requestHeaders.IncludeExternalAddress.Should().BeTrue();
+            requestHeaders.CorrelationIdHeader.Should().Be("x-request-id");
             requestHeaders.ExtraHeaders.Should().BeEquivalentTo(
                 new[]
                 {
@@ -104,7 +105,7 @@
             requestHeaders.IgnoreCallId.Should().BeFalse();
             requestHeaders.IgnoreClientAddress.Should().BeFalse();
             requestHeaders.IgnoreClientProtocol.Should().BeFalse();
-            requestHeaders.IgnoreRequestId.Should().BeFalse();
+            requestHeaders.IgnoreCorrelationId.Should().BeFalse();
             requestHeaders.IncludeExternalAddress.Should().BeFalse();
             requestHeaders.ExtraHeaders.Should().BeEmpty();
 
