@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Http.Extensions;
     using static Contract;
 
     internal sealed class ExpressionEvaluator : IExpressionEvaluator
@@ -14,12 +15,14 @@
             { VariableNames.CorrelationId,  GetCorrelationId },
             { VariableNames.CallId,  GetCallId },
             { VariableNames.Host,  GetHost },
-            { VariableNames.QueryString,  GetQueryString },
-            { VariableNames.RequestUri,  GetRequestUri },
+            { VariableNames.RequestMethod,  GetRequestMethod },
+            { VariableNames.RequestScheme,  GetRequestScheme },
+            { VariableNames.RequestPathBase,  GetRequestPathBase },
+            { VariableNames.RequestPath,  GetRequestPath },
+            { VariableNames.RequestQueryString,  GetRequestQueryString },
+            { VariableNames.RequestEncodedUri,  GetRequestEncodedUri },
             { VariableNames.RemoteAddress,  GetRemoteAddress },
             { VariableNames.RemotePort,  GetRemotePort },
-            { VariableNames.RequestMethod,  GetRequestMethod },
-            { VariableNames.Scheme,  GetScheme },
             { VariableNames.ServerAddress,  GetServerAddress },
             { VariableNames.ServerName,  GetServerName },
             { VariableNames.ServerPort,  GetServerPort },
@@ -111,16 +114,45 @@
             => context.HostProvider.GetHost(context.HttpContext);
 
         /// <summary>
-        /// The escaped query string with the leading '?' character
+        /// The HTTP method of the incoming downstream request
         /// </summary>
-        private static string? GetQueryString(Context context)
+        private static string? GetRequestMethod(Context context)
+            => context.Request.Method;
+
+        /// <summary>
+        /// The shceme (HTTP or HTTPS) used by the incoming downstream request
+        /// </summary>
+        private static string? GetRequestScheme(Context context)
+            => context.Request.Scheme;
+
+        /// <summary>
+        /// The unscaped path base value.
+        /// This is identical to <see cref="HttpRequest.PathBase"/>
+        /// </summary>
+        private static string? GetRequestPathBase(Context context)
+            => context.Request.PathBase.Value;
+
+        /// <summary>
+        /// The unscaped path value.
+        /// This is identical to <see cref="HttpRequest.Path"/>
+        /// </summary>
+        private static string? GetRequestPath(Context context)
+            => context.Request.Path.Value;
+
+        /// <summary>
+        /// The escaped query string with the leading '?' character.
+        /// This is identical to <see cref="HttpRequest.QueryString"/>
+        /// </summary>
+        private static string? GetRequestQueryString(Context context)
             => context.Request.QueryString.Value;
 
         /// <summary>
-        /// The full original escaped request URI without the query string portion.
+        /// The original escaped request URI including the query string portion.
+        /// scheme + host + path-base + path + query-string
+        /// This is identical to <see cref="UriHelper.GetEncodedUrl(HttpRequest)"/>.
         /// </summary>
-        private static string? GetRequestUri(Context context)
-            => context.Request.Path.Value;
+        private static string? GetRequestEncodedUri(Context context)
+            => context.Request.GetEncodedUrl();
 
         /// <summary>
         /// The IP address of the client
@@ -133,18 +165,6 @@
         /// </summary>
         private static string? GetRemotePort(Context context)
             => context.HttpContext.Connection?.RemotePort.ToStringInvariant();
-
-        /// <summary>
-        /// The HTTP method of the incoming downstream request
-        /// </summary>
-        private static string? GetRequestMethod(Context context)
-            => context.Request.Method;
-
-        /// <summary>
-        /// The shceme (HTTP or HTTPS) used by the incoming downstream request
-        /// </summary>
-        private static string? GetScheme(Context context)
-            => context.Request.Scheme;
 
         /// <summary>
         /// The IP address of the server which accepted the request
