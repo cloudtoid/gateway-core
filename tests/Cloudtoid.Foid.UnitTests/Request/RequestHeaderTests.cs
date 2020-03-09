@@ -20,31 +20,69 @@
     public class RequestHeaderTests
     {
         [TestMethod]
-        public void GetHostHeaderValue_WhenHostNameIncludesPortNumber_PortNumberIsRemoved()
+        public async Task GetHostHeaderValue_WhenIgnoreHost_HostHeaderNotIncludedAsync()
         {
             // Arrange
-            var provider = GetProvider();
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamRequestHeaders = false;
+            options.Proxy.Upstream.Request.Headers.IgnoreHost = true;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(HeaderNames.Host, new[] { "test-host" });
 
             // Act
-            provider.TryGetHeaderValues(new DefaultHttpContext(), HeaderNames.Host, new[] { "host:123", "random-value" }, out var values).Should().BeTrue();
+            var message = await SetHeadersAsync(context, options);
 
             // Assert
-            values.Should().HaveCount(1);
-            values[0].Should().Be("host");
+            message.Headers.Contains(HeaderNames.Host).Should().BeFalse();
         }
 
         [TestMethod]
-        public void GetHostHeaderValue_WhenHostHeaderNotSpecified_HostHeaderIsMachineName()
+        public async Task GetHostHeaderValue_WhenNotIgnoreHostButIgnoreAll_DefaultHostHeaderIncludedAsync()
         {
             // Arrange
-            var provider = GetProvider();
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamRequestHeaders = true;
+            options.Proxy.Upstream.Request.Headers.IgnoreHost = false;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(HeaderNames.Host, new[] { "test-host" });
 
             // Act
-            provider.TryGetHeaderValues(new DefaultHttpContext(), HeaderNames.Host, Array.Empty<string>(), out var values).Should().BeTrue();
+            var message = await SetHeadersAsync(context, options);
 
             // Assert
-            values.Should().HaveCount(1);
-            values[0].Should().Be(Environment.MachineName);
+            message.Headers.GetValues(HeaderNames.Host).SingleOrDefault().Should().Be(Environment.MachineName);
+        }
+
+        [TestMethod]
+        public async Task GetHostHeaderValue_WhenHostNameIncludesPortNumber_PortNumberIsRemovedAsync()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(HeaderNames.Host, new[] { "host:123", "random-value" });
+
+            // Act
+            var message = await SetHeadersAsync(context);
+
+            // Assert
+            message.Headers.Contains(HeaderNames.Host).Should().BeTrue();
+            message.Headers.GetValues(HeaderNames.Host).SingleOrDefault().Should().Be("host");
+        }
+
+        [TestMethod]
+        public async Task GetHostHeaderValue_WhenHostHeaderNotSpecified_HostHeaderIsMachineNameAsync()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(HeaderNames.Host, Array.Empty<string>());
+
+            // Act
+            var message = await SetHeadersAsync(context);
+
+            // Assert
+            message.Headers.Contains(HeaderNames.Host).Should().BeTrue();
+            message.Headers.GetValues(HeaderNames.Host).SingleOrDefault().Should().Be(Environment.MachineName);
         }
 
         [TestMethod]
@@ -174,6 +212,7 @@
             var setter = new RequestHeaderSetter(
                 provider,
                 new TraceIdProvider(GuidProvider.Instance, monitor),
+                new HostProvider(monitor),
                 Substitute.For<ILogger<RequestHeaderSetter>>());
 
             var context = new DefaultHttpContext();
@@ -499,24 +538,6 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenProxyNameIsNull_HeaderNotIncludedAsync()
-        {
-            // Arrange
-            const string HeaderName = "x-foid-proxy-name";
-            var options = new FoidOptions();
-            options.Proxy.Upstream.Request.Headers.ProxyName = null;
-
-            var context = new DefaultHttpContext();
-            context.Request.Headers.Add(HeaderName, "abc");
-
-            // Act
-            var message = await SetHeadersAsync(context, options);
-
-            // Assert
-            message.Headers.Contains(HeaderName).Should().BeFalse();
-        }
-
-        [TestMethod]
         public async Task SetHeadersAsync_WhenProxyNameIsEmpty_HeaderNotIncludedAsync()
         {
             // Arrange
@@ -606,18 +627,12 @@
             var setter = new RequestHeaderSetter(
                 provider,
                 new TraceIdProvider(GuidProvider.Instance, monitor),
+                new HostProvider(monitor),
                 Substitute.For<ILogger<RequestHeaderSetter>>());
 
             var message = new HttpRequestMessage();
             await setter.SetHeadersAsync(context, message);
             return message;
-        }
-
-        private static RequestHeaderValuesProvider GetProvider(FoidOptions? options = null)
-        {
-            var monitor = Substitute.For<IOptionsMonitor<FoidOptions>>();
-            monitor.CurrentValue.Returns(options ?? new FoidOptions());
-            return new RequestHeaderValuesProvider(monitor);
         }
     }
 }

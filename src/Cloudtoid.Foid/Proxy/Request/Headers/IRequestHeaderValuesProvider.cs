@@ -28,6 +28,12 @@
         bool IgnoreAllDownstreamRequestHeaders { get; }
 
         /// <summary>
+        /// If false, it will append a host header to the outgoing upstream request.
+        /// The default value if <c>false</c>.
+        /// </summary>
+        bool IgnoreHost { get; }
+
+        /// <summary>
         /// If false, it will append the IP address of the nearest client to the "x-forwarded-for" header.
         /// The default value if <c>false</c>.
         /// </summary>
@@ -58,20 +64,15 @@
         string CorrelationIdHeader { get; }
 
         /// <summary>
+        /// If this is not null or empty, an "x-foid-proxy-name" header with this value is added to the outgoing upstream request.
+        /// </summary>
+        string ProxyNameHeaderValue { get; }
+
+        /// <summary>
         /// By implementing this method, one can change the values of a given header.
         /// Return false, if the header should be omitted.
         /// </summary>
         bool TryGetHeaderValues(HttpContext context, string name, IList<string> downstreamValues, out IList<string> upstreamValues);
-
-        /// <summary>
-        /// If the incoming downstream request does not have a HOST header, the value provided here will be used.
-        /// </summary>
-        string GetDefaultHostHeaderValue(HttpContext context);
-
-        /// <summary>
-        /// If this is not null or empty, an "x-foid-proxy-name" header with this value is added to the outgoing upstream request.
-        /// </summary>
-        string? GetProxyNameHeaderValue(HttpContext context);
 
         /// <summary>
         /// Extra headers to be appended to the outgoing upstream request.

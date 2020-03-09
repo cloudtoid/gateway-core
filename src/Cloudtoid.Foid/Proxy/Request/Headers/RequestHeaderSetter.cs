@@ -15,21 +15,25 @@
         private static readonly HashSet<string> HeaderTransferBlacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             Headers.Names.ExternalAddress,
+            HeaderNames.Host,
             Headers.Names.CallId,
             Headers.Names.ProxyName,
         };
 
         private readonly IRequestHeaderValuesProvider provider;
         private readonly ITraceIdProvider traceIdProvider;
+        private readonly IHostProvider hostProvider;
         private readonly ILogger<RequestHeaderSetter> logger;
 
         public RequestHeaderSetter(
             IRequestHeaderValuesProvider provider,
             ITraceIdProvider traceIdProvider,
+            IHostProvider hostProvider,
             ILogger<RequestHeaderSetter> logger)
         {
             this.provider = CheckValue(provider, nameof(provider));
             this.traceIdProvider = CheckValue(traceIdProvider, nameof(traceIdProvider));
+            this.hostProvider = CheckValue(hostProvider, nameof(hostProvider));
             this.logger = CheckValue(logger, nameof(logger));
         }
 
@@ -93,12 +97,12 @@
 
         private void AddHostHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            if (upstreamRequest.Headers.Contains(HeaderNames.Host))
+            if (provider.IgnoreHost)
                 return;
 
             upstreamRequest.Headers.TryAddWithoutValidation(
                 HeaderNames.Host,
-                provider.GetDefaultHostHeaderValue(context));
+                hostProvider.GetHost(context));
         }
 
         private void AddExternalAddressHeader(HttpContext context, HttpRequestMessage upstreamRequest)
@@ -171,7 +175,7 @@
 
         private void AddProxyNameHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            var name = provider.GetProxyNameHeaderValue(context);
+            var name = provider.ProxyNameHeaderValue;
             if (string.IsNullOrWhiteSpace(name))
                 return;
 

@@ -50,6 +50,12 @@
                         public bool IgnoreAllDownstreamRequestHeaders { get; set; } = false;
 
                         /// <summary>
+                        /// If false, it will append a host header to the outgoing upstream request.
+                        /// The default value if <c>false</c>.
+                        /// </summary>
+                        public bool IgnoreHost { get; set; } = false;
+
+                        /// <summary>
                         /// If false, it will append the IP address of the nearest client to the "x-forwarded-for" header.
                         /// The default value if <c>false</c>.
                         /// </summary>
@@ -74,7 +80,7 @@
                         public bool IgnoreCallId { get; set; } = false;
 
                         /// <summary>
-                        /// Header name for request/correlation identifier.
+                        /// Header name for correlation identifier.
                         /// The default value is "x-correlation-id".
                         /// </summary>
                         public string CorrelationIdHeader { get; set; } = Foid.Headers.Names.CorrelationId;
@@ -87,7 +93,7 @@
                         /// <summary>
                         /// If this is not null or empty, an "x-foid-proxy-name" header with this value is added to the outgoing upstream call.
                         /// </summary>
-                        public string? ProxyName { get; set; } = "foid";
+                        public string ProxyName { get; set; } = "foid";
 
                         /// <summary>
                         /// Extra headers to be appended to the outgoing upstream request
