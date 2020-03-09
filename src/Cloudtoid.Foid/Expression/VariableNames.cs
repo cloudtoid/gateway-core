@@ -9,12 +9,12 @@
         public const string CallId = "call_id";
         public const string Host = "host";
         public const string QueryString = "query_string";
-        public const string RequestUri = "request_uri";
-        public const string RemoteAddress = "remote_addr";
-        public const string RemotePort = "remote_port";
         public const string RequestMethod = "request_method";
+        public const string RequestUri = "request_uri";
+        public const string RemoteAddress = "remote_address";
+        public const string RemotePort = "remote_port";
         public const string Scheme = "scheme";
-        public const string ServerAddress = "server_addr";
+        public const string ServerAddress = "server_address";
         public const string ServerName = "server_name";
         public const string ServerPort = "server_port";
         public const string ServerProtocol = "server_protocol";

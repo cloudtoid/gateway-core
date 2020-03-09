@@ -21,6 +21,7 @@
                 .AddHttpClient()
                 .TryAddSingleton<ITraceIdProvider, TraceIdProvider>()
                 .TryAddSingleton<IHostProvider, HostProvider>()
+                .TryAddSingleton<IExpressionEvaluator, ExpressionEvaluator>()
                 .TryAddSingleton<Proxy.IUriRewriter, Proxy.UriRewriter>()
                 .TryAddSingleton<Proxy.IRequestHeaderSetter, Proxy.RequestHeaderSetter>()
                 .TryAddSingleton<Proxy.IRequestHeaderValuesProvider, Proxy.RequestHeaderValuesProvider>()

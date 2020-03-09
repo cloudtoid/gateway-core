@@ -56,9 +56,13 @@
 
             int i = 0;
             var len = expr.Length;
-            while (i++ < len && IsValidVariableChar(expr[i]))
+            while (i < len && IsValidVariableChar(expr[i]))
             {
+                i++;
             }
+
+            if (i == 0)
+                return expression;
 
             expr = expr.Substring(0, i);
             if (!Actions.TryGetValue(expr, out var action))
