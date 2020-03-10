@@ -39,43 +39,43 @@
 
                         /// <summary>
                         /// If true, an "x-foid-external-address" header with the immediate downstream IP address is added to the outgoing upstream call.
-                        /// The default value if <c>false</c>.
+                        /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IncludeExternalAddress { get; set; }
 
                         /// <summary>
                         /// If false, it will copy all the headers from the incoming downstream request to the outgoing upstream request.
-                        /// The default value if <c>false</c>.
+                        /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IgnoreAllDownstreamRequestHeaders { get; set; }
 
                         /// <summary>
                         /// If false, it will append a host header to the outgoing upstream request.
-                        /// The default value if <c>false</c>.
+                        /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IgnoreHost { get; set; }
 
                         /// <summary>
                         /// If false, it will append the IP address of the nearest client to the "x-forwarded-for" header.
-                        /// The default value if <c>false</c>.
+                        /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IgnoreClientAddress { get; set; }
 
                         /// <summary>
                         /// If false, it will append the client protocol (HTTP or HTTPS) to the "x-forwarded-proto" header.
-                        /// The default value if <c>false</c>.
+                        /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IgnoreClientProtocol { get; set; }
 
                         /// <summary>
-                        /// If false, it will append a correlation identifier header if not present. The actual header name if defined by <see cref="CorrelationIdHeader"/>
-                        /// The default value if <c>false</c>.
+                        /// If false, it will append a correlation identifier header if not present. The actual header name is defined by <see cref="CorrelationIdHeader"/>
+                        /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IgnoreCorrelationId { get; set; }
 
                         /// <summary>
                         /// If false, it will append a "x-call-id" header. This is a guid that is always new for each call.
-                        /// The default value if <c>false</c>.
+                        /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IgnoreCallId { get; set; }
 
@@ -125,7 +125,7 @@
 
                         /// <summary>
                         /// If false, it will copy all headers from the incoming upstream response to the outgoing downstream response.
-                        /// The default value if <c>false</c>.
+                        /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IgnoreAllUpstreamResponseHeaders { get; set; }
 

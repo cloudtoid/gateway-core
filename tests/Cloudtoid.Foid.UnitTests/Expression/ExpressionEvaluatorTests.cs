@@ -20,12 +20,6 @@
         }
 
         [TestMethod]
-        public void Evaluate_NullExpression_NothingToEvaluate()
-        {
-            Evaluate(null).Should().Be(null);
-        }
-
-        [TestMethod]
         public void Evaluate_WhiteSpaceExpression_NothingToEvaluate()
         {
             Evaluate("  ").Should().Be("  ");
@@ -255,7 +249,7 @@
 
         private static string GetVarName(string varName) => $"${varName}";
 
-        private static string? Evaluate(string? expression, HttpContext? context = null, FoidOptions? options = null)
+        private static string Evaluate(string expression, HttpContext? context = null, FoidOptions? options = null)
         {
             var monitor = Substitute.For<IOptionsMonitor<FoidOptions>>();
             monitor.CurrentValue.Returns(options ?? new FoidOptions());

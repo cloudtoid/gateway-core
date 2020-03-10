@@ -9,70 +9,46 @@
     using Microsoft.AspNetCore.Http.Extensions;
     using Microsoft.Extensions.DependencyInjection;
     using static Contract;
-    using Cache = System.Collections.Generic.IReadOnlyDictionary<string, ExpressionEvaluator.ValueBuilder>;
+    using Cache = System.Collections.Generic.IReadOnlyDictionary<string, ExpressionEvaluator.ParsedExpression>;
     using VariableEvaluator = System.Func<ExpressionEvaluator.Context, string?>;
 
     internal sealed class ExpressionEvaluator : IExpressionEvaluator
     {
-        private static readonly VariableTrieNode<VariableEvaluator> VariableEvaluatorTrie;
-
+        private static readonly VariableTrie<VariableEvaluator> VariableEvaluatorTrie = BuildTrie();
         private readonly IServiceProvider serviceProvider;
         private ITraceIdProvider? traceIdProvider;
         private IHostProvider? hostProvider;
         private Cache cache;
 
-        static ExpressionEvaluator()
-        {
-            var trie = VariableEvaluatorTrie = new VariableTrieNode<VariableEvaluator>();
-            trie.AddValue(VariableNames.ContentLength, GetContentLength);
-            trie.AddValue(VariableNames.ContentType, GetContentType);
-            trie.AddValue(VariableNames.CorrelationId, GetCorrelationId);
-            trie.AddValue(VariableNames.CallId, GetCallId);
-            trie.AddValue(VariableNames.Host, GetHost);
-            trie.AddValue(VariableNames.RequestMethod, GetRequestMethod);
-            trie.AddValue(VariableNames.RequestScheme, GetRequestScheme);
-            trie.AddValue(VariableNames.RequestPathBase, GetRequestPathBase);
-            trie.AddValue(VariableNames.RequestPath, GetRequestPath);
-            trie.AddValue(VariableNames.RequestQueryString, GetRequestQueryString);
-            trie.AddValue(VariableNames.RequestEncodedUri, GetRequestEncodedUri);
-            trie.AddValue(VariableNames.RemoteAddress, GetRemoteAddress);
-            trie.AddValue(VariableNames.RemotePort, GetRemotePort);
-            trie.AddValue(VariableNames.ServerAddress, GetServerAddress);
-            trie.AddValue(VariableNames.ServerName, GetServerName);
-            trie.AddValue(VariableNames.ServerPort, GetServerPort);
-            trie.AddValue(VariableNames.ServerProtocol, GetServerProtocol);
-        }
-
         public ExpressionEvaluator(IServiceProvider serviceProvider)
         {
             this.serviceProvider = CheckValue(serviceProvider, nameof(serviceProvider));
-            cache = new Dictionary<string, ValueBuilder>(0, StringComparer.Ordinal);
+            cache = new Dictionary<string, ParsedExpression>(0, StringComparer.Ordinal);
         }
 
-        public string? Evaluate(HttpContext context, string? expression)
+        public string Evaluate(HttpContext context, string expression)
         {
-            if (expression is null)
-                return null;
-
+            CheckValue(context, nameof(context));
+            CheckValue(expression, nameof(expression));
             return EvaluateCore(context, expression);
         }
 
         private string EvaluateCore(HttpContext context, string expression)
         {
-            if (!cache.TryGetValue(expression, out var valueBuilder))
+            if (!cache.TryGetValue(expression, out var parsedExpression))
             {
                 Cache snapshot, newCache;
 
-                valueBuilder = CreateValueBuilder(expression);
+                parsedExpression = Parse(expression);
                 do
                 {
                     snapshot = cache;
                     if (snapshot.ContainsKey(expression))
                         break;
 
-                    newCache = new Dictionary<string, ValueBuilder>(snapshot, StringComparer.Ordinal)
+                    newCache = new Dictionary<string, ParsedExpression>(snapshot, StringComparer.Ordinal)
                     {
-                        { expression, valueBuilder }
+                        { expression, parsedExpression }
                     };
                 }
                 while (Interlocked.CompareExchange(ref cache, newCache, snapshot) != snapshot);
@@ -85,7 +61,7 @@
                 HostProvider = hostProvider ?? (hostProvider = serviceProvider.GetRequiredService<IHostProvider>()),
             };
 
-            return valueBuilder.Evaluate(c);
+            return parsedExpression.Evaluate(c);
         }
 
         /// <summary>
@@ -197,7 +173,7 @@
         private static string? GetServerProtocol(Context context)
             => context.Request.Protocol;
 
-        private static ValueBuilder CreateValueBuilder(string expression)
+        private static ParsedExpression Parse(string expression)
         {
             var instructions = new List<dynamic>();
             int index = 0;
@@ -253,7 +229,29 @@
                 instructions.Add(str);
             }
 
-            return new ValueBuilder(instructions);
+            return new ParsedExpression(instructions);
+        }
+
+        private static VariableTrie<VariableEvaluator> BuildTrie()
+        {
+            return new VariableTrie<VariableEvaluator>()
+                .AddValue(VariableNames.ContentLength, GetContentLength)
+                .AddValue(VariableNames.ContentType, GetContentType)
+                .AddValue(VariableNames.CorrelationId, GetCorrelationId)
+                .AddValue(VariableNames.CallId, GetCallId)
+                .AddValue(VariableNames.Host, GetHost)
+                .AddValue(VariableNames.RequestMethod, GetRequestMethod)
+                .AddValue(VariableNames.RequestScheme, GetRequestScheme)
+                .AddValue(VariableNames.RequestPathBase, GetRequestPathBase)
+                .AddValue(VariableNames.RequestPath, GetRequestPath)
+                .AddValue(VariableNames.RequestQueryString, GetRequestQueryString)
+                .AddValue(VariableNames.RequestEncodedUri, GetRequestEncodedUri)
+                .AddValue(VariableNames.RemoteAddress, GetRemoteAddress)
+                .AddValue(VariableNames.RemotePort, GetRemotePort)
+                .AddValue(VariableNames.ServerAddress, GetServerAddress)
+                .AddValue(VariableNames.ServerName, GetServerName)
+                .AddValue(VariableNames.ServerPort, GetServerPort)
+                .AddValue(VariableNames.ServerProtocol, GetServerProtocol);
         }
 
         internal struct Context
@@ -267,11 +265,11 @@
             internal HttpRequest Request => HttpContext.Request;
         }
 
-        internal struct ValueBuilder
+        internal struct ParsedExpression
         {
             private readonly IList<dynamic> instructions;
 
-            internal ValueBuilder(IList<dynamic> instructions)
+            internal ParsedExpression(IList<dynamic> instructions)
             {
                 this.instructions = instructions;
             }

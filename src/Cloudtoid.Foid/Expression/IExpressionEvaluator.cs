@@ -4,6 +4,6 @@
 
     public interface IExpressionEvaluator
     {
-        string? Evaluate(HttpContext context, string? expression);
+        string Evaluate(HttpContext context, string expression);
     }
 }

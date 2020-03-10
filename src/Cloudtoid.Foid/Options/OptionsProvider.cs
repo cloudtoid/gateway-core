@@ -43,7 +43,7 @@
             public IEnumerable<string> GetValues(HttpContext httpContext)
             {
                 var c = context;
-                return values.Select(v => c.Evaluate(httpContext, v)).WhereNotNull();
+                return values.Select(v => c.Evaluate(httpContext, v));
             }
         }
 
@@ -83,7 +83,7 @@
                     public TimeSpan GetTimeout(HttpContext httpContext)
                     {
                         var result = context.Evaluate(httpContext, context.UpstreamRequest.TimeoutInMilliseconds);
-                        return long.TryParse(result, out var timeout)
+                        return long.TryParse(result, out var timeout) && timeout > 0
                             ? TimeSpan.FromMilliseconds(timeout)
                             : Defaults.Proxy.Upstream.Request.Timeout;
                     }
@@ -250,8 +250,9 @@
 
             internal FoidOptions.ProxyOptions.DownstreamOptions.ResponseOptions.HeadersOptions DownstreamResponseHeaders => DownstreamResponse.Headers;
 
+            [return: NotNullIfNotNull("expression")]
             internal string? Evaluate(HttpContext context, string? expression)
-                => evaluator.Evaluate(context, expression);
+                => expression is null ? null : evaluator.Evaluate(context, expression);
         }
     }
 }

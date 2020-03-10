@@ -49,6 +49,8 @@
             if (headers is null)
                 return;
 
+            var headersWithOverride = HeaderOptions.HeaderNames;
+
             foreach (var header in headers)
             {
                 var name = header.Key;
@@ -68,7 +70,7 @@
                 }
 
                 // If it has an override, we will not trasnfer its value
-                if (HeaderOptions.HeaderNames.Contains(name))
+                if (headersWithOverride.Contains(name))
                     continue;
 
                 AddHeaderValues(context, upstreamResponse, name, header.Value.AsArray());

@@ -5,10 +5,6 @@
 
     public class RequestHeaderValuesProvider : IRequestHeaderValuesProvider
     {
-        public RequestHeaderValuesProvider()
-        {
-        }
-
         public virtual bool TryGetHeaderValues(
             HttpContext context,
             string name,

@@ -44,6 +44,7 @@
             return builder.UseMiddleware<Proxy.ProxyMiddleware>();
         }
 
+        // prevents multiple registrations of this library with DI
         private sealed class ProxyMarker
         {
         }

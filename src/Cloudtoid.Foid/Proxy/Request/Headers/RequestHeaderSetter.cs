@@ -51,13 +51,12 @@
 
             context.RequestAborted.ThrowIfCancellationRequested();
 
-            var correlationIdHeader = HeaderOptions.GetCorrelationIdHeader(context);
-            AddDownstreamHeadersToUpstream(context, correlationIdHeader, upstreamRequest);
+            AddDownstreamHeadersToUpstream(context, upstreamRequest);
             AddHostHeader(context, upstreamRequest);
             AddExternalAddressHeader(context, upstreamRequest);
             AddClientAddressHeader(context, upstreamRequest);
             AddClientProtocolHeader(context, upstreamRequest);
-            AddCorrelationIdHeader(context, correlationIdHeader, upstreamRequest);
+            AddCorrelationIdHeader(context, upstreamRequest);
             AddCallIdHeader(context, upstreamRequest);
             AddProxyNameHeader(context, upstreamRequest);
             AddExtraHeaders(context, upstreamRequest);
@@ -67,7 +66,6 @@
 
         private void AddDownstreamHeadersToUpstream(
             HttpContext context,
-            string correlationIdHeader,
             HttpRequestMessage upstreamRequest)
         {
             if (HeaderOptions.IgnoreAllDownstreamRequestHeaders)
@@ -77,12 +75,15 @@
             if (headers is null)
                 return;
 
+            var correlationIdHeader = traceIdProvider.GetCorrelationIdHeader(context);
+            var headersWithOverride = HeaderOptions.HeaderNames;
+
             foreach (var header in headers)
             {
                 var name = header.Key;
 
                 // Remove empty headers
-                if (!HeaderOptions.AllowHeadersWithEmptyValue && header.Value.All(s => string.IsNullOrEmpty(s)))
+                if (!HeaderOptions.AllowHeadersWithEmptyValue && header.Value.All(string.IsNullOrEmpty))
                 {
                     logger.LogInformation("Removing header '{0}' as its value is empty.", name);
                     continue;
@@ -103,7 +104,7 @@
                     continue;
 
                 // If it has an override, we will not trasnfer its value
-                if (HeaderOptions.HeaderNames.Contains(name))
+                if (headersWithOverride.Contains(name))
                     continue;
 
                 AddHeaderValues(context, upstreamRequest, name, header.Value);
@@ -164,7 +165,7 @@
                 context.Request.Scheme);
         }
 
-        private void AddCorrelationIdHeader(HttpContext context, string correlationIdHeader, HttpRequestMessage upstreamRequest)
+        private void AddCorrelationIdHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
             if (HeaderOptions.IgnoreCorrelationId)
                 return;
@@ -172,7 +173,7 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                correlationIdHeader,
+                traceIdProvider.GetCorrelationIdHeader(context),
                 traceIdProvider.GetCorrelationId(context));
         }
 

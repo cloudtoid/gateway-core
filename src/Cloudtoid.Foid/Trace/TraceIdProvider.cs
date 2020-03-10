@@ -5,6 +5,7 @@
 
     internal sealed class TraceIdProvider : ITraceIdProvider
     {
+        private static readonly object CorrelationIdHeaderKey = new object();
         private static readonly object CorrelationIdKey = new object();
         private static readonly object CallIdKey = new object();
         private readonly IGuidProvider guidProvider;
@@ -18,6 +19,16 @@
             this.options = CheckValue(options, nameof(options));
         }
 
+        public string GetCorrelationIdHeader(HttpContext context)
+        {
+            if (context.Items.TryGetValue(CorrelationIdHeaderKey, out var existingHeader))
+                return (string)existingHeader;
+
+            var header = options.Proxy.Upstream.Request.Headers.GetCorrelationIdHeader(context);
+            context.Items.Add(CorrelationIdHeaderKey, header);
+            return header;
+        }
+
         public string GetCorrelationId(HttpContext context)
         {
             if (context.Items.TryGetValue(CorrelationIdKey, out var existingId))
@@ -27,7 +38,7 @@
             if (headersOptions.IgnoreAllDownstreamRequestHeaders)
                 return CreateCorrelationId(context);
 
-            var correlationIdHeader = headersOptions.GetCorrelationIdHeader(context);
+            var correlationIdHeader = GetCorrelationIdHeader(context);
             if (!context.Request.Headers.TryGetValue(correlationIdHeader, out var values) || values.Count == 0)
                 return CreateCorrelationId(context);
 

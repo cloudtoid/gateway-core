@@ -12,7 +12,7 @@
         [TestMethod]
         public void Create_WhenSupportedCharacters_DoesNotThrow()
         {
-            var trie = new VariableTrieNode<string>();
+            var trie = new VariableTrie<string>();
             trie.AddValue("_", "_");
 
             foreach (char c in Enumerable.Range('a', 26))
@@ -22,15 +22,15 @@
                 trie.AddValue(c.ToString(), c.ToString());
 
             foreach (char c in Enumerable.Range('a', 26))
-                trie.GetValues(c.ToString()).Should().HaveCount(1);
+                trie.GetMatches(c.ToString()).Should().HaveCount(1);
 
-            trie.GetValues("_").Should().HaveCount(1);
+            trie.GetMatches("_").Should().HaveCount(1);
         }
 
         [TestMethod]
         public void Create_WhenNotSupportedCharacters_Throws()
         {
-            var trie = new VariableTrieNode<string>();
+            var trie = new VariableTrie<string>();
             Action act = () => trie.AddValue("*", "throws");
             act.Should().ThrowExactly<InvalidOperationException>();
         }
@@ -61,16 +61,19 @@
             };
 
             // Act
-            var trie = new VariableTrieNode<string>();
+            var trie = new VariableTrie<string>();
             for (int i = 0; i < items.Length; i++)
                 trie.AddValue(items[i], items[i]);
 
             // Assert
-            trie.GetValues("content").Should().BeEmpty();
-            trie.GetValues(string.Empty).Should().BeEmpty();
-            trie.GetValues("*&-").Should().BeEmpty();
+            trie.GetMatches("content").Should().BeEmpty();
+            trie.GetMatches(string.Empty).Should().BeEmpty();
+            trie.GetMatches("*&-").Should().BeEmpty();
+            trie.TryGetBestMatch("content", out _, out _).Should().BeFalse();
+            trie.TryGetBestMatch(string.Empty, out _, out _).Should().BeFalse();
+            trie.TryGetBestMatch("*&-", out _, out _).Should().BeFalse();
 
-            trie.GetValues(VariableNames.RequestPathBase)
+            trie.GetMatches(VariableNames.RequestPathBase)
                 .Should()
                 .BeEquivalentTo(
                     new[]

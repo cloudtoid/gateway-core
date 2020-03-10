@@ -4,10 +4,6 @@
 
     public class ResponseHeaderValuesProvider : IResponseHeaderValuesProvider
     {
-        public ResponseHeaderValuesProvider()
-        {
-        }
-
         public virtual bool TryGetHeaderValues(
             HttpContext context,
             string name,
