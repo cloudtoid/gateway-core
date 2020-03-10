@@ -3,13 +3,16 @@
     using System;
     using System.Collections.Generic;
     using System.Text;
+    using System.Threading;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Http.Extensions;
+    using Microsoft.Extensions.DependencyInjection;
     using static Contract;
+    using Cache = System.Collections.Generic.IReadOnlyDictionary<string, ExpressionEvaluator.ValueBuilder>;
 
     internal sealed class ExpressionEvaluator : IExpressionEvaluator
     {
-        private static readonly Dictionary<string, Func<Context, string?>> Actions = new Dictionary<string, Func<Context, string?>>(StringComparer.OrdinalIgnoreCase)
+        private static readonly Dictionary<string, Func<Context, string?>> ValueProviders = new Dictionary<string, Func<Context, string?>>(StringComparer.OrdinalIgnoreCase)
         {
             { VariableNames.ContentLength,  GetContentLength },
             { VariableNames.ContentType,  GetContentType },
@@ -30,15 +33,15 @@
             { VariableNames.ServerProtocol,  GetServerProtocol },
         };
 
-        private readonly ITraceIdProvider traceIdProvider;
-        private readonly IHostProvider hostProvider;
+        private readonly IServiceProvider serviceProvider;
+        private ITraceIdProvider? traceIdProvider;
+        private IHostProvider? hostProvider;
+        private Cache cache;
 
-        public ExpressionEvaluator(
-            ITraceIdProvider traceIdProvider,
-            IHostProvider hostProvider)
+        public ExpressionEvaluator(IServiceProvider serviceProvider)
         {
-            this.traceIdProvider = CheckValue(traceIdProvider, nameof(traceIdProvider));
-            this.hostProvider = CheckValue(hostProvider, nameof(hostProvider));
+            this.serviceProvider = CheckValue(serviceProvider, nameof(serviceProvider));
+            cache = new Dictionary<string, ValueBuilder>(0, StringComparer.Ordinal);
         }
 
         public string? Evaluate(HttpContext context, string? expression)
@@ -51,66 +54,33 @@
 
         private string EvaluateCore(HttpContext context, string expression)
         {
-            var sb = new StringBuilder();
-
-            int index = 0;
-            int len = expression.Length;
-
-            while (index < len)
+            if (!cache.TryGetValue(expression, out var valueBuilder))
             {
-                var c = expression[index++];
+                Cache snapshot, newCache;
 
-                if (c != '$')
+                valueBuilder = CreateValueBuilder(expression);
+                do
                 {
-                    sb.Append(c);
-                    continue;
-                }
-
-                int varNameStartIndex = index;
-                while (index < len)
-                {
-                    if (!IsValidVariableChar(expression[index]))
+                    snapshot = cache;
+                    if (snapshot.ContainsKey(expression))
                         break;
 
-                    index++;
+                    newCache = new Dictionary<string, ValueBuilder>(snapshot, StringComparer.Ordinal)
+                    {
+                        { expression, valueBuilder }
+                    };
                 }
-
-                if (varNameStartIndex == index)
-                {
-                    sb.AppendDollar();
-                    continue;
-                }
-
-                var varName = expression[varNameStartIndex..index];
-                if (!TryEvaluateVariable(context, varName, out var varEvalResult))
-                {
-                    sb.AppendDollar().Append(varName);
-                    continue;
-                }
-
-                sb.Append(varEvalResult);
-            }
-
-            return sb.ToString();
-        }
-
-        private bool TryEvaluateVariable(HttpContext context, string name, out string? result)
-        {
-            if (!Actions.TryGetValue(name, out var action))
-            {
-                result = null;
-                return false;
+                while (Interlocked.CompareExchange(ref cache, newCache, snapshot) != snapshot);
             }
 
             var c = new Context
             {
                 HttpContext = context,
-                TraceIdProvider = traceIdProvider,
-                HostProvider = hostProvider,
+                TraceIdProvider = traceIdProvider ?? (traceIdProvider = serviceProvider.GetRequiredService<ITraceIdProvider>()),
+                HostProvider = hostProvider ?? (hostProvider = serviceProvider.GetRequiredService<IHostProvider>()),
             };
 
-            result = action(c);
-            return true;
+            return valueBuilder.Evaluate(c);
         }
 
         /// <summary>
@@ -228,6 +198,64 @@
             return (a > 64 && a < 91) || (a > 96 && a < 123) || a == 95;
         }
 
+        private static ValueBuilder CreateValueBuilder(string expression)
+        {
+            var instructions = new List<dynamic>();
+            int index = 0;
+            int len = expression.Length;
+            var sb = new StringBuilder(expression.Length);
+
+            while (index < len)
+            {
+                var c = expression[index++];
+
+                if (c != '$')
+                {
+                    sb.Append(c);
+                    continue;
+                }
+
+                int varNameStartIndex = index;
+                while (index < len)
+                {
+                    if (!IsValidVariableChar(expression[index]))
+                        break;
+
+                    index++;
+                }
+
+                if (varNameStartIndex == index)
+                {
+                    sb.AppendDollar();
+                    continue;
+                }
+
+                var varName = expression[varNameStartIndex..index];
+                if (!ValueProviders.TryGetValue(varName, out var action))
+                {
+                    sb.AppendDollar().Append(varName);
+                    continue;
+                }
+
+                if (sb.Length > 0)
+                {
+                    var str = sb.ToString();
+                    instructions.Add(str);
+                    sb.Clear();
+                }
+
+                instructions.Add(action);
+            }
+
+            if (sb.Length > 0)
+            {
+                var str = sb.ToString();
+                instructions.Add(str);
+            }
+
+            return new ValueBuilder(instructions);
+        }
+
         internal struct Context
         {
             internal HttpContext HttpContext { get; set; }
@@ -237,6 +265,36 @@
             internal IHostProvider HostProvider { get; set; }
 
             internal HttpRequest Request => HttpContext.Request;
+        }
+
+        internal struct ValueBuilder
+        {
+            private readonly IList<dynamic> instructions;
+
+            internal ValueBuilder(IList<dynamic> instructions)
+            {
+                this.instructions = instructions;
+            }
+
+            internal string Evaluate(Context context)
+            {
+                if (instructions.Count == 0)
+                    return string.Empty;
+
+                var sb = new StringBuilder();
+                foreach (var instruction in instructions)
+                {
+                    if (instruction is string value)
+                    {
+                        sb.Append(value);
+                        continue;
+                    }
+
+                    sb.Append(instruction(context));
+                }
+
+                return sb.ToString();
+            }
         }
     }
 }

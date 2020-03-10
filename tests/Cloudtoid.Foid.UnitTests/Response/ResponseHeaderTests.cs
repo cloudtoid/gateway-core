@@ -5,6 +5,7 @@
     using Cloudtoid.Foid.Proxy;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -105,7 +106,14 @@
                     out Arg.Any<string[]>())
                 .Returns(false);
 
-            var setter = new ResponseHeaderSetter(provider, Substitute.For<ILogger<ResponseHeaderSetter>>());
+            var services = new ServiceCollection()
+                .AddSingleton(GuidProvider.Instance)
+                .AddSingleton(provider)
+                .AddLogging()
+                .AddFoidProxy();
+
+            var serviceProvider = services.BuildServiceProvider();
+            var setter = serviceProvider.GetRequiredService<IResponseHeaderSetter>();
 
             var message = new HttpResponseMessage();
             message.Headers.Add("X-Keep-Header", "keep-value");
@@ -163,17 +171,32 @@
         {
             // Arrange
             var options = new FoidOptions();
-            options.Proxy.Downstream.Response.Headers.ExtraHeaders = new[]
+            options.Proxy.Downstream.Response.Headers.Headers = new[]
             {
                 new ExtraHeader
                 {
-                    Key = "x-xtra-1",
+                    Name = "x-xtra-1",
                     Values = new[] { "value1_1", "value1_2" }
                 },
                 new ExtraHeader
                 {
-                    Key = "x-xtra-2",
+                    Name = "x-xtra-2",
                     Values = new[] { "value2_1", "value2_2" }
+                },
+                new ExtraHeader
+                {
+                    Name = "x-xtra-3",
+                    Values = new string[0]
+                },
+                new ExtraHeader
+                {
+                    Name = "x-xtra-4",
+                    Values = null
+                },
+                new ExtraHeader
+                {
+                    Name = null,
+                    Values = null
                 },
             };
 
@@ -185,23 +208,28 @@
 
             // Assert
             response.Headers["x-xtra-1"].Should().BeEquivalentTo(new[] { "value1_1", "value1_2" });
-            response.Headers["x-xtra-2"].Should().BeEquivalentTo(new[] { "value2_0", "value2_1", "value2_2" });
+            response.Headers["x-xtra-2"].Should().BeEquivalentTo(new[] { "value2_1", "value2_2" });
+            response.Headers.ContainsKey("x-xtra-3").Should().BeFalse();
+            response.Headers.ContainsKey("x-xtra-4").Should().BeFalse();
         }
 
         private static async Task<HttpResponse> SetHeadersAsync(HttpResponseMessage message, FoidOptions? options = null)
         {
-            var provider = GetProvider(options);
-            var setter = new ResponseHeaderSetter(provider, Substitute.For<ILogger<ResponseHeaderSetter>>());
+            var monitor = Substitute.For<IOptionsMonitor<FoidOptions>>();
+            monitor.CurrentValue.Returns(options ?? new FoidOptions());
+
+            var services = new ServiceCollection()
+                .AddSingleton(GuidProvider.Instance)
+                .AddSingleton(monitor)
+                .AddLogging()
+                .AddFoidProxy();
+
+            var serviceProvider = services.BuildServiceProvider();
+            var setter = serviceProvider.GetRequiredService<IResponseHeaderSetter>();
+
             var context = new DefaultHttpContext();
             await setter.SetHeadersAsync(context, message);
             return context.Response;
-        }
-
-        private static ResponseHeaderValuesProvider GetProvider(FoidOptions? options = null)
-        {
-            var monitor = Substitute.For<IOptionsMonitor<FoidOptions>>();
-            monitor.CurrentValue.Returns(options ?? new FoidOptions());
-            return new ResponseHeaderValuesProvider(monitor);
         }
     }
 }

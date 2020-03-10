@@ -9,11 +9,11 @@
         private static readonly object CorrelationIdKey = new object();
         private static readonly object CallIdKey = new object();
         private readonly IGuidProvider guidProvider;
-        private readonly IOptionsMonitor<FoidOptions> options;
+        private readonly OptionsProvider options;
 
         public TraceIdProvider(
             IGuidProvider guidProvider,
-            IOptionsMonitor<FoidOptions> options)
+            OptionsProvider options)
         {
             this.guidProvider = CheckValue(guidProvider, nameof(guidProvider));
             this.options = CheckValue(options, nameof(options));
@@ -24,11 +24,12 @@
             if (context.Items.TryGetValue(CorrelationIdKey, out var existingId))
                 return (string)existingId;
 
-            var headersOptions = options.CurrentValue.Proxy.Upstream.Request.Headers;
+            var headersOptions = options.Proxy.Upstream.Request.Headers;
             if (headersOptions.IgnoreAllDownstreamRequestHeaders)
                 return CreateCorrelationId(context);
 
-            if (!context.Request.Headers.TryGetValue(headersOptions.CorrelationIdHeader, out var values) || values.Count == 0)
+            var correlationIdHeader = headersOptions.GetCorrelationIdHeader(context);
+            if (!context.Request.Headers.TryGetValue(correlationIdHeader, out var values) || values.Count == 0)
                 return CreateCorrelationId(context);
 
             context.Items.Add(CorrelationIdKey, values[0]);

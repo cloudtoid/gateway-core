@@ -9,6 +9,7 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.Net.Http.Headers;
     using static Contract;
+    using Options = OptionsProvider.ProxyOptions.UpstreamOptions.RequestOptions.HeadersOptions;
 
     internal sealed class RequestHeaderSetter : IRequestHeaderSetter
     {
@@ -23,19 +24,25 @@
         private readonly IRequestHeaderValuesProvider provider;
         private readonly ITraceIdProvider traceIdProvider;
         private readonly IHostProvider hostProvider;
+        private readonly OptionsProvider options;
         private readonly ILogger<RequestHeaderSetter> logger;
 
         public RequestHeaderSetter(
             IRequestHeaderValuesProvider provider,
             ITraceIdProvider traceIdProvider,
             IHostProvider hostProvider,
+            OptionsProvider options,
             ILogger<RequestHeaderSetter> logger)
         {
             this.provider = CheckValue(provider, nameof(provider));
             this.traceIdProvider = CheckValue(traceIdProvider, nameof(traceIdProvider));
             this.hostProvider = CheckValue(hostProvider, nameof(hostProvider));
+            this.options = CheckValue(options, nameof(options));
             this.logger = CheckValue(logger, nameof(logger));
         }
+
+        // Do NOT cache this value. Options react to changes.
+        internal Options HeaderOptions => options.Proxy.Upstream.Request.Headers;
 
         public Task SetHeadersAsync(HttpContext context, HttpRequestMessage upstreamRequest)
         {
@@ -44,12 +51,13 @@
 
             context.RequestAborted.ThrowIfCancellationRequested();
 
-            AddDownstreamHeadersToUpstream(context, upstreamRequest);
+            var correlationIdHeader = HeaderOptions.GetCorrelationIdHeader(context);
+            AddDownstreamHeadersToUpstream(context, correlationIdHeader, upstreamRequest);
             AddHostHeader(context, upstreamRequest);
             AddExternalAddressHeader(context, upstreamRequest);
             AddClientAddressHeader(context, upstreamRequest);
             AddClientProtocolHeader(context, upstreamRequest);
-            AddCorrelationIdHeader(context, upstreamRequest);
+            AddCorrelationIdHeader(context, correlationIdHeader, upstreamRequest);
             AddCallIdHeader(context, upstreamRequest);
             AddProxyNameHeader(context, upstreamRequest);
             AddExtraHeaders(context, upstreamRequest);
@@ -57,9 +65,12 @@
             return Task.CompletedTask;
         }
 
-        private void AddDownstreamHeadersToUpstream(HttpContext context, HttpRequestMessage upstreamRequest)
+        private void AddDownstreamHeadersToUpstream(
+            HttpContext context,
+            string correlationIdHeader,
+            HttpRequestMessage upstreamRequest)
         {
-            if (provider.IgnoreAllDownstreamRequestHeaders)
+            if (HeaderOptions.IgnoreAllDownstreamRequestHeaders)
                 return;
 
             var headers = context.Request.Headers;
@@ -68,36 +79,40 @@
 
             foreach (var header in headers)
             {
-                var key = header.Key;
+                var name = header.Key;
 
                 // Remove empty headers
-                if (!provider.AllowHeadersWithEmptyValue && header.Value.All(s => string.IsNullOrEmpty(s)))
+                if (!HeaderOptions.AllowHeadersWithEmptyValue && header.Value.All(s => string.IsNullOrEmpty(s)))
                 {
-                    logger.LogInformation("Removing header '{0}' as its value is empty.", key);
+                    logger.LogInformation("Removing header '{0}' as its value is empty.", name);
                     continue;
                 }
 
                 // Remove headers with underscore in their names
-                if (!provider.AllowHeadersWithUnderscoreInName && key.Contains('_'))
+                if (!HeaderOptions.AllowHeadersWithUnderscoreInName && name.Contains('_'))
                 {
                     logger.LogInformation("Removing header '{0}' as headers should not have underscores in their name.", header.Key);
                     continue;
                 }
 
-                if (key.EqualsOrdinalIgnoreCase(provider.CorrelationIdHeader))
+                if (name.EqualsOrdinalIgnoreCase(correlationIdHeader))
                     continue;
 
                 // If blacklisted, we will not trasnfer its value
-                if (HeaderTransferBlacklist.Contains(key))
+                if (HeaderTransferBlacklist.Contains(name))
                     continue;
 
-                AddHeaderValues(context, upstreamRequest, key, header.Value);
+                // If it has an override, we will not trasnfer its value
+                if (HeaderOptions.HeaderNames.Contains(name))
+                    continue;
+
+                AddHeaderValues(context, upstreamRequest, name, header.Value);
             }
         }
 
         private void AddHostHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            if (provider.IgnoreHost)
+            if (HeaderOptions.IgnoreHost)
                 return;
 
             upstreamRequest.Headers.TryAddWithoutValidation(
@@ -107,7 +122,7 @@
 
         private void AddExternalAddressHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            if (!provider.IncludeExternalAddress)
+            if (!HeaderOptions.IncludeExternalAddress)
                 return;
 
             var clientAddress = GetRemoteIpAddressOrDefault(context);
@@ -123,7 +138,7 @@
 
         private void AddClientAddressHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            if (provider.IgnoreClientAddress)
+            if (HeaderOptions.IgnoreClientAddress)
                 return;
 
             var clientAddress = GetRemoteIpAddressOrDefault(context);
@@ -139,7 +154,7 @@
 
         private void AddClientProtocolHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            if (provider.IgnoreClientProtocol)
+            if (HeaderOptions.IgnoreClientProtocol)
                 return;
 
             AddHeaderValues(
@@ -149,21 +164,21 @@
                 context.Request.Scheme);
         }
 
-        private void AddCorrelationIdHeader(HttpContext context, HttpRequestMessage upstreamRequest)
+        private void AddCorrelationIdHeader(HttpContext context, string correlationIdHeader, HttpRequestMessage upstreamRequest)
         {
-            if (provider.IgnoreCorrelationId)
+            if (HeaderOptions.IgnoreCorrelationId)
                 return;
 
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                provider.CorrelationIdHeader,
+                correlationIdHeader,
                 traceIdProvider.GetCorrelationId(context));
         }
 
         private void AddCallIdHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            if (provider.IgnoreCallId)
+            if (HeaderOptions.IgnoreCallId)
                 return;
 
             AddHeaderValues(
@@ -175,8 +190,7 @@
 
         private void AddProxyNameHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            var name = provider.ProxyNameHeaderValue;
-            if (string.IsNullOrWhiteSpace(name))
+            if (!HeaderOptions.TryGetProxyName(context, out var name))
                 return;
 
             AddHeaderValues(
@@ -188,25 +202,25 @@
 
         private void AddExtraHeaders(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            foreach (var (key, values) in provider.GetExtraHeaders(context))
-                upstreamRequest.Headers.TryAddWithoutValidation(key, values);
+            foreach (var header in HeaderOptions.Headers)
+                upstreamRequest.Headers.TryAddWithoutValidation(header.Name, header.GetValues(context));
         }
 
         private void AddHeaderValues(
             HttpContext context,
             HttpRequestMessage upstreamRequest,
-            string key,
+            string name,
             params string[] downstreamValues)
         {
-            if (provider.TryGetHeaderValues(context, key, downstreamValues, out var upstreamValues) && upstreamValues != null)
+            if (provider.TryGetHeaderValues(context, name, downstreamValues, out var upstreamValues) && upstreamValues != null)
             {
-                upstreamRequest.Headers.TryAddWithoutValidation(key, upstreamValues);
+                upstreamRequest.Headers.TryAddWithoutValidation(name, upstreamValues);
                 return;
             }
 
             logger.LogInformation(
                 "Header '{0}' is not added. This was was instructed by the {1}.{2}.",
-                key,
+                name,
                 nameof(IRequestHeaderValuesProvider),
                 nameof(IRequestHeaderValuesProvider.TryGetHeaderValues));
         }

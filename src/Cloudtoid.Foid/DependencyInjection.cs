@@ -19,6 +19,7 @@
                 .AddFramework()
                 .AddOptions()
                 .AddHttpClient()
+                .TryAddSingleton<OptionsProvider>()
                 .TryAddSingleton<ITraceIdProvider, TraceIdProvider>()
                 .TryAddSingleton<IHostProvider, HostProvider>()
                 .TryAddSingleton<IExpressionEvaluator, ExpressionEvaluator>()
@@ -27,7 +28,9 @@
                 .TryAddSingleton<Proxy.IRequestHeaderValuesProvider, Proxy.RequestHeaderValuesProvider>()
                 .TryAddSingleton<Proxy.IRequestSender, Proxy.RequestSender>()
                 .TryAddSingleton<Proxy.IRequestCreator, Proxy.RequestCreator>()
-                .TryAddSingleton<Proxy.IResponseCreator, Proxy.ResponseCreator>();
+                .TryAddSingleton<Proxy.IResponseCreator, Proxy.ResponseCreator>()
+                .TryAddSingleton<Proxy.IResponseHeaderSetter, Proxy.ResponseHeaderSetter>()
+                .TryAddSingleton<Proxy.IResponseHeaderValuesProvider, Proxy.ResponseHeaderValuesProvider>();
         }
 
         public static IApplicationBuilder UseFoidProxy(this IApplicationBuilder builder)

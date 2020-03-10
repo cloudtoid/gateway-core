@@ -1,16 +1,15 @@
 ﻿namespace Cloudtoid.Foid
 {
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Options;
     using Microsoft.Net.Http.Headers;
     using static Contract;
 
     internal sealed class HostProvider : IHostProvider
     {
         private static readonly object HostKey = new object();
-        private readonly IOptionsMonitor<FoidOptions> options;
+        private readonly OptionsProvider options;
 
-        public HostProvider(IOptionsMonitor<FoidOptions> options)
+        public HostProvider(OptionsProvider options)
         {
             this.options = CheckValue(options, nameof(options));
         }
@@ -20,7 +19,7 @@
             if (context.Items.TryGetValue(HostKey, out var existingHost))
                 return (string)existingHost;
 
-            var headersOptions = options.CurrentValue.Proxy.Upstream.Request.Headers;
+            var headersOptions = options.Proxy.Upstream.Request.Headers;
             if (headersOptions.IgnoreAllDownstreamRequestHeaders)
                 return CreateHost(context);
 
@@ -36,7 +35,7 @@
 
         private string CreateHost(HttpContext context)
         {
-            var host = options.CurrentValue.Proxy.Upstream.Request.Headers.DefaultHost;
+            var host = options.Proxy.Upstream.Request.Headers.GetDefaultHost(context);
             context.Items.Add(HostKey, host);
             return host;
         }

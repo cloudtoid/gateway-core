@@ -4,6 +4,7 @@
     using System.Net;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
     using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -238,9 +239,15 @@
         {
             var monitor = Substitute.For<IOptionsMonitor<FoidOptions>>();
             monitor.CurrentValue.Returns(options ?? new FoidOptions());
-            var evaluator = new ExpressionEvaluator(
-                new TraceIdProvider(GuidProvider.Instance, monitor),
-                new HostProvider(monitor));
+
+            var services = new ServiceCollection()
+                .AddSingleton(monitor)
+                .AddSingleton(GuidProvider.Instance)
+                .AddLogging()
+                .AddFoidProxy();
+
+            var serviceProvider = services.BuildServiceProvider();
+            var evaluator = serviceProvider.GetRequiredService<IExpressionEvaluator>();
 
             context ??= new DefaultHttpContext();
             return evaluator.Evaluate(context, expression);

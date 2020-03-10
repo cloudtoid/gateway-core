@@ -15,13 +15,13 @@
           "ignoreCorrelationId": true,
           "ignoreCallId": true,
           "correlationIdHeader": "x-request-id",
-          "extraHeaders": [
+          "headers": [
             {
-              "key": "x-xtra-1",
+              "name": "x-xtra-1",
               "values": [ "value1_1", "value1_2" ]
             },
             {
-              "key": "x-xtra-2",
+              "name": "x-xtra-2",
               "values": [ "value2_1", "value2_2" ]
             }
           ]
@@ -34,13 +34,13 @@
           "allowHeadersWithEmptyValue": true,
           "allowHeadersWithUnderscoreInName": true,
           "ignoreAllUpstreamResponseHeaders": true,
-          "extraHeaders": [
+          "headers": [
             {
-              "key": "x-xtra-1",
+              "name": "x-xtra-1",
               "values": [ "value1_1", "value1_2" ]
             },
             {
-              "key": "x-xtra-2",
+              "name": "x-xtra-2",
               "values": [ "value2_1", "value2_2" ]
             }
           ]

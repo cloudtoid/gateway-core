@@ -12,7 +12,7 @@
         internal static Guid Value { get; } = Guid.NewGuid();
 #pragma warning restore RS0030 // Do not used banned APIs
 
-        internal static GuidProvider Instance { get; } = new GuidProvider();
+        internal static IGuidProvider Instance { get; } = new GuidProvider();
 
         public Guid NewGuid() => Value;
     }

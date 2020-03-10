@@ -1,12 +1,10 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
-    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using Cloudtoid;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
     using static Contract;
 
     internal sealed class ProxyMiddleware
@@ -14,14 +12,14 @@
         private readonly RequestDelegate next;
         private readonly IRequestCreator requestCreator;
         private readonly IRequestSender sender;
-        private readonly IOptionsMonitor<FoidOptions> options;
+        private readonly OptionsProvider options;
         private readonly ILogger<ProxyMiddleware> logger;
 
         public ProxyMiddleware(
             RequestDelegate next,
             IRequestCreator requestCreator,
             IRequestSender sender,
-            IOptionsMonitor<FoidOptions> options,
+            OptionsProvider options,
             ILogger<ProxyMiddleware> logger)
         {
             this.next = CheckValue(next, nameof(next));
@@ -47,7 +45,7 @@
                 .CreateRequestAsync(context)
                 .TraceOnFaulted(logger, "Failed to create an outgoing upstream HTTP request message", cancellationToken);
 
-            var timeout = TimeSpan.FromMilliseconds(options.CurrentValue.Proxy.Upstream.Request.TimeoutInMilliseconds);
+            var timeout = options.Proxy.Upstream.Request.GetTimeout(context);
             var response = await Async
                 .WithTimeout(sender.SendAsync, request, timeout, cancellationToken)
                 .TraceOnFaulted(logger, "Failed to forward the HTTP request to the upstream system.", cancellationToken);

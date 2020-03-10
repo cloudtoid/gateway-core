@@ -29,6 +29,12 @@
             return Enumerable.Concat(first, second);
         }
 
+        public static IEnumerable<string> WhereNotNullOrEmpty(this IEnumerable<string?> items)
+        {
+            var result = items.Where(s => !string.IsNullOrEmpty(s));
+            return result!;
+        }
+
         public static IEnumerable<TItem> WhereNotNull<TItem>(this IEnumerable<TItem?> items) where TItem : class
         {
             var result = items.Where(i => !(i is null));

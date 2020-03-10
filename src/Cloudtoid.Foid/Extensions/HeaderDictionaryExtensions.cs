@@ -1,21 +1,22 @@
 ﻿namespace Cloudtoid.Foid
 {
+    using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Primitives;
 
     [DebuggerStepThrough]
     internal static class HeaderDictionaryExtensions
     {
-        public static void AddOrAppendHeaderValues(this IHeaderDictionary headers, string key, params string[] values)
+        public static void AddOrAppendHeaderValues(this IHeaderDictionary headers, string name, IEnumerable<string> values)
         {
-            if (!headers.TryGetValue(key, out var currentValues))
+            if (!headers.TryGetValue(name, out var currentValues))
             {
-                headers.Add(key, values);
+                headers.Add(name, values.AsArray());
                 return;
             }
 
-            headers[key] = StringValues.Concat(currentValues, values);
+            headers[name] = currentValues.Concat(values).ToArray();
         }
     }
 }

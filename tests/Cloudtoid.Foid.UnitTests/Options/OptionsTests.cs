@@ -2,8 +2,10 @@
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Threading;
     using FluentAssertions;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
@@ -22,18 +24,23 @@
 
             var services = new ServiceCollection()
                 .AddOptions()
+                .AddSingleton(GuidProvider.Instance)
+                .AddFoidProxy()
                 .Configure<FoidOptions>(config);
 
             var options = services
                 .BuildServiceProvider()
-                .GetRequiredService<IOptionsMonitor<FoidOptions>>();
+                .GetRequiredService<OptionsProvider>();
 
-            var request = options.CurrentValue.Proxy.Upstream.Request;
-            request.TimeoutInMilliseconds.Should().Be(5200);
+            var context = new DefaultHttpContext();
+
+            var request = options.Proxy.Upstream.Request;
+            request.GetTimeout(context).TotalMilliseconds.Should().Be(5200);
 
             var requestHeaders = request.Headers;
-            requestHeaders.ProxyName.Should().Be("some-proxy-name");
-            requestHeaders.DefaultHost.Should().Be("this-machine-name");
+            requestHeaders.TryGetProxyName(context, out var proxyName).Should().BeTrue();
+            proxyName.Should().Be("some-proxy-name");
+            requestHeaders.GetDefaultHost(context).Should().Be("this-machine-name");
             requestHeaders.AllowHeadersWithEmptyValue.Should().BeTrue();
             requestHeaders.AllowHeadersWithUnderscoreInName.Should().BeTrue();
             requestHeaders.IgnoreAllDownstreamRequestHeaders.Should().BeTrue();
@@ -42,40 +49,54 @@
             requestHeaders.IgnoreClientProtocol.Should().BeTrue();
             requestHeaders.IgnoreCorrelationId.Should().BeTrue();
             requestHeaders.IncludeExternalAddress.Should().BeTrue();
-            requestHeaders.CorrelationIdHeader.Should().Be("x-request-id");
-            requestHeaders.ExtraHeaders.Should().BeEquivalentTo(
-                new[]
+            requestHeaders.GetCorrelationIdHeader(context).Should().Be("x-request-id");
+            requestHeaders.Headers.Select(
+                h => new ExtraHeader
                 {
-                    new ExtraHeader
+                    Name = h.Name,
+                    Values = h.GetValues(context).ToArray()
+                })
+                .Should()
+                .BeEquivalentTo(
+                    new[]
                     {
-                        Key = "x-xtra-1",
-                        Values = new[] { "value1_1", "value1_2" }
-                    },
-                    new ExtraHeader
-                    {
-                        Key = "x-xtra-2",
-                        Values = new[] { "value2_1", "value2_2" }
-                    },
-                });
+                        new ExtraHeader
+                        {
+                            Name = "x-xtra-1",
+                            Values = new[] { "value1_1", "value1_2" }
+                        },
+                        new ExtraHeader
+                        {
+                            Name = "x-xtra-2",
+                            Values = new[] { "value2_1", "value2_2" }
+                        },
+                    });
 
-            var response = options.CurrentValue.Proxy.Downstream.Response;
+            var response = options.Proxy.Downstream.Response;
             var responseHeaders = response.Headers;
             responseHeaders.AllowHeadersWithEmptyValue.Should().BeTrue();
             responseHeaders.AllowHeadersWithUnderscoreInName.Should().BeTrue();
-            responseHeaders.ExtraHeaders.Should().BeEquivalentTo(
-                new[]
+            responseHeaders.Headers.Select(
+                h => new ExtraHeader
                 {
-                    new ExtraHeader
+                    Name = h.Name,
+                    Values = h.GetValues(context).ToArray()
+                })
+                .Should()
+                .BeEquivalentTo(
+                    new[]
                     {
-                        Key = "x-xtra-1",
-                        Values = new[] { "value1_1", "value1_2" }
-                    },
-                    new ExtraHeader
-                    {
-                        Key = "x-xtra-2",
-                        Values = new[] { "value2_1", "value2_2" }
-                    },
-                });
+                        new ExtraHeader
+                        {
+                            Name = "x-xtra-1",
+                            Values = new[] { "value1_1", "value1_2" }
+                        },
+                        new ExtraHeader
+                        {
+                            Name = "x-xtra-2",
+                            Values = new[] { "value2_1", "value2_2" }
+                        },
+                    });
         }
 
         [TestMethod]
@@ -87,18 +108,23 @@
 
             var services = new ServiceCollection()
                 .AddOptions()
+                .AddSingleton(GuidProvider.Instance)
+                .AddFoidProxy()
                 .Configure<FoidOptions>(config);
 
             var options = services
                 .BuildServiceProvider()
-                .GetRequiredService<IOptionsMonitor<FoidOptions>>();
+                .GetRequiredService<OptionsProvider>();
 
-            var request = options.CurrentValue.Proxy.Upstream.Request;
-            request.TimeoutInMilliseconds.Should().Be(240000);
+            var context = new DefaultHttpContext();
+
+            var request = options.Proxy.Upstream.Request;
+            request.GetTimeout(context).TotalMilliseconds.Should().Be(240000);
 
             var requestHeaders = request.Headers;
-            requestHeaders.ProxyName.Should().Be("foid");
-            requestHeaders.DefaultHost.Should().Be(Environment.MachineName);
+            requestHeaders.TryGetProxyName(context, out var proxyName).Should().BeTrue();
+            proxyName.Should().Be("foid");
+            requestHeaders.GetDefaultHost(context).Should().Be(Environment.MachineName);
             requestHeaders.AllowHeadersWithEmptyValue.Should().BeFalse();
             requestHeaders.AllowHeadersWithUnderscoreInName.Should().BeFalse();
             requestHeaders.IgnoreAllDownstreamRequestHeaders.Should().BeFalse();
@@ -107,13 +133,13 @@
             requestHeaders.IgnoreClientProtocol.Should().BeFalse();
             requestHeaders.IgnoreCorrelationId.Should().BeFalse();
             requestHeaders.IncludeExternalAddress.Should().BeFalse();
-            requestHeaders.ExtraHeaders.Should().BeEmpty();
+            requestHeaders.Headers.Should().BeEmpty();
 
-            var response = options.CurrentValue.Proxy.Downstream.Response;
+            var response = options.Proxy.Downstream.Response;
             var responseHeaders = response.Headers;
             responseHeaders.AllowHeadersWithEmptyValue.Should().BeFalse();
             responseHeaders.AllowHeadersWithUnderscoreInName.Should().BeFalse();
-            responseHeaders.ExtraHeaders.Should().BeEmpty();
+            responseHeaders.Headers.Should().BeEmpty();
         }
 
         [TestMethod]
@@ -129,33 +155,37 @@
 
                 var services = new ServiceCollection()
                     .AddOptions()
+                    .AddSingleton(GuidProvider.Instance)
+                    .AddFoidProxy()
                     .Configure<FoidOptions>(config);
 
-                var options = services
-                    .BuildServiceProvider()
-                    .GetRequiredService<IOptionsMonitor<FoidOptions>>();
+                var serviceProvider = services.BuildServiceProvider();
+                var options = serviceProvider.GetRequiredService<OptionsProvider>();
+                var monitor = serviceProvider.GetRequiredService<IOptionsMonitor<FoidOptions>>();
+
+                var context = new DefaultHttpContext();
 
                 var changeEvent = new AutoResetEvent(false);
 
                 void Reset(object o)
                 {
                     changeEvent.Set();
-                    options.OnChange(Reset);
+                    monitor.OnChange(Reset);
                 }
 
-                options.OnChange(Reset);
+                monitor.OnChange(Reset);
 
-                options.CurrentValue.Proxy.Upstream.Request.TimeoutInMilliseconds.Should().Be(5000);
+                options.Proxy.Upstream.Request.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
 
                 File.Copy(@"Options\Options2.json", @"Options\OptionsReload.json", true);
                 changeEvent.WaitOne(2000);
 
-                options.CurrentValue.Proxy.Upstream.Request.TimeoutInMilliseconds.Should().Be(2000);
+                options.Proxy.Upstream.Request.GetTimeout(context).TotalMilliseconds.Should().Be(2000);
 
                 File.Copy(@"Options\Options1.json", @"Options\OptionsReload.json", true);
                 changeEvent.WaitOne(2000);
 
-                options.CurrentValue.Proxy.Upstream.Request.TimeoutInMilliseconds.Should().Be(5000);
+                options.Proxy.Upstream.Request.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
             }
             finally
             {
