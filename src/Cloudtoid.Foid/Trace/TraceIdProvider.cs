@@ -1,7 +1,6 @@
 ﻿namespace Cloudtoid.Foid
 {
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Options;
     using static Contract;
 
     internal sealed class TraceIdProvider : ITraceIdProvider
