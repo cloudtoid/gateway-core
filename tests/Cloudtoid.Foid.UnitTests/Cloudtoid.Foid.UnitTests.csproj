@@ -11,9 +11,10 @@
 
   <ItemGroup>
     <None Update="Options\OptionsFull.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Options\OptionsWithExpressions.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Options\Options1.json" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Options\Options2.json" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Options\OptionsEmpty.json" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="Options\Options1.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

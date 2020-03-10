@@ -20,5 +20,11 @@
         public const string ServerAddress = "server_address";
         public const string ServerPort = "server_port";
         public const string ServerProtocol = "server_protocol";
+
+        public static bool IsValidVariableChar(char c)
+        {
+            int a = c;
+            return (a > 64 && a < 91) || (a > 96 && a < 123) || a == 95;
+        }
     }
 }

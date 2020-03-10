@@ -233,6 +233,26 @@
                 .Be("url = https://cloudtoid.com/api/repos?a=10&b=20&c=30");
         }
 
+        [TestMethod]
+        public void Evaluate_WhenVariableNameAttachedToText_VariableIsEvaluatedAndExtraTextIsKept()
+        {
+            var context = new DefaultHttpContext();
+            context.Request.Scheme = "https";
+            Evaluate($"${VariableNames.RequestScheme}test", context)
+                .Should()
+                .Be("httpstest");
+        }
+
+        [TestMethod]
+        public void Evaluate_WhenVariableNameAttachedToTextAndAnotherVariable_VariablesAreEvaluatedAndExtraTextIsKept()
+        {
+            var context = new DefaultHttpContext();
+            context.Request.Scheme = "https";
+            Evaluate($"${VariableNames.RequestScheme}test${VariableNames.RequestScheme}", context)
+                .Should()
+                .Be("httpstesthttps");
+        }
+
         private static string GetVarName(string varName) => $"${varName}";
 
         private static string? Evaluate(string? expression, HttpContext? context = null, FoidOptions? options = null)

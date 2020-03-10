@@ -4,39 +4,44 @@
     using System.Collections.Generic;
     using System.Text;
     using System.Threading;
+    using Cloudtoid.Foid.Expression;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Http.Extensions;
     using Microsoft.Extensions.DependencyInjection;
     using static Contract;
     using Cache = System.Collections.Generic.IReadOnlyDictionary<string, ExpressionEvaluator.ValueBuilder>;
+    using VariableEvaluator = System.Func<ExpressionEvaluator.Context, string?>;
 
     internal sealed class ExpressionEvaluator : IExpressionEvaluator
     {
-        private static readonly Dictionary<string, Func<Context, string?>> ValueProviders = new Dictionary<string, Func<Context, string?>>(StringComparer.OrdinalIgnoreCase)
-        {
-            { VariableNames.ContentLength,  GetContentLength },
-            { VariableNames.ContentType,  GetContentType },
-            { VariableNames.CorrelationId,  GetCorrelationId },
-            { VariableNames.CallId,  GetCallId },
-            { VariableNames.Host,  GetHost },
-            { VariableNames.RequestMethod,  GetRequestMethod },
-            { VariableNames.RequestScheme,  GetRequestScheme },
-            { VariableNames.RequestPathBase,  GetRequestPathBase },
-            { VariableNames.RequestPath,  GetRequestPath },
-            { VariableNames.RequestQueryString,  GetRequestQueryString },
-            { VariableNames.RequestEncodedUri,  GetRequestEncodedUri },
-            { VariableNames.RemoteAddress,  GetRemoteAddress },
-            { VariableNames.RemotePort,  GetRemotePort },
-            { VariableNames.ServerAddress,  GetServerAddress },
-            { VariableNames.ServerName,  GetServerName },
-            { VariableNames.ServerPort,  GetServerPort },
-            { VariableNames.ServerProtocol,  GetServerProtocol },
-        };
+        private static readonly VariableTrieNode<VariableEvaluator> VariableEvaluatorTrie;
 
         private readonly IServiceProvider serviceProvider;
         private ITraceIdProvider? traceIdProvider;
         private IHostProvider? hostProvider;
         private Cache cache;
+
+        static ExpressionEvaluator()
+        {
+            var trie = VariableEvaluatorTrie = new VariableTrieNode<VariableEvaluator>();
+            trie.AddValue(VariableNames.ContentLength, GetContentLength);
+            trie.AddValue(VariableNames.ContentType, GetContentType);
+            trie.AddValue(VariableNames.CorrelationId, GetCorrelationId);
+            trie.AddValue(VariableNames.CallId, GetCallId);
+            trie.AddValue(VariableNames.Host, GetHost);
+            trie.AddValue(VariableNames.RequestMethod, GetRequestMethod);
+            trie.AddValue(VariableNames.RequestScheme, GetRequestScheme);
+            trie.AddValue(VariableNames.RequestPathBase, GetRequestPathBase);
+            trie.AddValue(VariableNames.RequestPath, GetRequestPath);
+            trie.AddValue(VariableNames.RequestQueryString, GetRequestQueryString);
+            trie.AddValue(VariableNames.RequestEncodedUri, GetRequestEncodedUri);
+            trie.AddValue(VariableNames.RemoteAddress, GetRemoteAddress);
+            trie.AddValue(VariableNames.RemotePort, GetRemotePort);
+            trie.AddValue(VariableNames.ServerAddress, GetServerAddress);
+            trie.AddValue(VariableNames.ServerName, GetServerName);
+            trie.AddValue(VariableNames.ServerPort, GetServerPort);
+            trie.AddValue(VariableNames.ServerProtocol, GetServerProtocol);
+        }
 
         public ExpressionEvaluator(IServiceProvider serviceProvider)
         {
@@ -192,12 +197,6 @@
         private static string? GetServerProtocol(Context context)
             => context.Request.Protocol;
 
-        private static bool IsValidVariableChar(char c)
-        {
-            int a = c;
-            return (a > 64 && a < 91) || (a > 96 && a < 123) || a == 95;
-        }
-
         private static ValueBuilder CreateValueBuilder(string expression)
         {
             var instructions = new List<dynamic>();
@@ -218,7 +217,7 @@
                 int varNameStartIndex = index;
                 while (index < len)
                 {
-                    if (!IsValidVariableChar(expression[index]))
+                    if (!VariableNames.IsValidVariableChar(expression[index]))
                         break;
 
                     index++;
@@ -231,12 +230,13 @@
                 }
 
                 var varName = expression[varNameStartIndex..index];
-                if (!ValueProviders.TryGetValue(varName, out var action))
+                if (!VariableEvaluatorTrie.TryGetBestMatch(varName, out var varEvaluator, out var lengthMatched))
                 {
                     sb.AppendDollar().Append(varName);
                     continue;
                 }
 
+                index -= varName.Length - lengthMatched;
                 if (sb.Length > 0)
                 {
                     var str = sb.ToString();
@@ -244,7 +244,7 @@
                     sb.Clear();
                 }
 
-                instructions.Add(action);
+                instructions.Add(varEvaluator);
             }
 
             if (sb.Length > 0)
