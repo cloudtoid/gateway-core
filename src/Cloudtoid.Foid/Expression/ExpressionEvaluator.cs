@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Text;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Http.Extensions;
     using static Contract;
@@ -42,34 +43,64 @@
 
         public string? Evaluate(HttpContext context, string? expression)
         {
-            var expr = expression;
-            if (expr is null)
+            if (expression is null)
                 return null;
 
-            expr = expr.Trim();
-            if (expr.Length == 0)
-                return expression;
+            return EvaluateCore(context, expression);
+        }
 
-            if (!expr.StartsWith('$'))
-                return expression;
+        private string EvaluateCore(HttpContext context, string expression)
+        {
+            var sb = new StringBuilder();
 
-            expr = expr.Substring(1);
-            if (expr.Length == 0)
-                return expression;
+            int index = 0;
+            int len = expression.Length;
 
-            int i = 0;
-            var len = expr.Length;
-            while (i < len && IsValidVariableChar(expr[i]))
+            while (index < len)
             {
-                i++;
+                var c = expression[index++];
+
+                if (c != '$')
+                {
+                    sb.Append(c);
+                    continue;
+                }
+
+                int varNameStartIndex = index;
+                while (index < len)
+                {
+                    if (!IsValidVariableChar(expression[index]))
+                        break;
+
+                    index++;
+                }
+
+                if (varNameStartIndex == index)
+                {
+                    sb.AppendDollar();
+                    continue;
+                }
+
+                var varName = expression[varNameStartIndex..index];
+                if (!TryEvaluateVariable(context, varName, out var varEvalResult))
+                {
+                    sb.AppendDollar().Append(varName);
+                    continue;
+                }
+
+                sb.Append(varEvalResult);
             }
 
-            if (i == 0)
-                return expression;
+            return sb.ToString();
+        }
 
-            expr = expr.Substring(0, i);
-            if (!Actions.TryGetValue(expr, out var action))
-                return expression;
+        private bool TryEvaluateVariable(HttpContext context, string name, out string? result)
+        {
+            if (!Actions.TryGetValue(name, out var action))
+            {
+                result = null;
+                return false;
+            }
 
             var c = new Context
             {
@@ -78,7 +109,8 @@
                 HostProvider = hostProvider,
             };
 
-            return action(c);
+            result = action(c);
+            return true;
         }
 
         /// <summary>

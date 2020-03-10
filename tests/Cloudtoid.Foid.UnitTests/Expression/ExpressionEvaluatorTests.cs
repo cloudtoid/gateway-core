@@ -35,7 +35,7 @@
         {
             var context = new DefaultHttpContext();
             context.Request.ContentLength = 100;
-            Evaluate(" " + GetVarName(VariableNames.ContentLength) + " ", context).Should().Be("100");
+            Evaluate(" " + GetVarName(VariableNames.ContentLength) + " ", context).Should().Be(" 100 ");
         }
 
         [TestMethod]
@@ -63,12 +63,12 @@
         }
 
         [TestMethod]
-        public void Evaluate_InvalidCharAfterVariableName_ReturnsOriginalExpression()
+        public void Evaluate_WhenVariableNameGreaterThanValue_PartialEval()
         {
             var context = new DefaultHttpContext();
             context.Request.ContentLength = 100;
             var expr = GetVarName(VariableNames.ContentLength + ">10");
-            Evaluate(expr, context).Should().Be("100");
+            Evaluate(expr, context).Should().Be("100>10");
         }
 
         [TestMethod]
@@ -216,6 +216,20 @@
             var context = new DefaultHttpContext();
             context.Request.Protocol = value;
             Evaluate(GetVarName(VariableNames.ServerProtocol), context).Should().Be(value);
+        }
+
+        [TestMethod]
+        public void Evaluate_WhenMultipleVariable_Evaluated()
+        {
+            var context = new DefaultHttpContext();
+            context.Request.Scheme = "https";
+            context.Request.Host = new HostString("cloudtoid.com");
+            context.Request.PathBase = new PathString("/api");
+            context.Request.Path = new PathString("/repos");
+            context.Request.QueryString = new QueryString("?a=10&b=20");
+            Evaluate($"url = ${VariableNames.RequestScheme}://${VariableNames.Host}${VariableNames.RequestPathBase}${VariableNames.RequestPath}${VariableNames.RequestQueryString}&c=30", context)
+                .Should()
+                .Be("url = https://cloudtoid.com/api/repos?a=10&b=20&c=30");
         }
 
         private static string GetVarName(string varName) => $"${varName}";
