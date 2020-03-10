@@ -100,6 +100,81 @@
         }
 
         [TestMethod]
+        public void New_AllOptionsThatAllowExpressions_AllValuesAreEvaluatedCorrectly()
+        {
+            var config = new ConfigurationBuilder()
+                .AddJsonFile(@"Options\OptionsWithExpressions.json", optional: false)
+                .Build();
+
+            var services = new ServiceCollection()
+                .AddOptions()
+                .AddSingleton(GuidProvider.Instance)
+                .AddFoidProxy()
+                .Configure<FoidOptions>(config);
+
+            var options = services
+                .BuildServiceProvider()
+                .GetRequiredService<OptionsProvider>();
+
+            var context = new DefaultHttpContext();
+
+            var request = options.Proxy.Upstream.Request;
+            request.GetTimeout(context).TotalMilliseconds.Should().Be(5200);
+            var expressionValue = Environment.MachineName;
+
+            var requestHeaders = request.Headers;
+            requestHeaders.TryGetProxyName(context, out var proxyName).Should().BeTrue();
+            proxyName.Should().Be("ProxyName:" + expressionValue);
+            requestHeaders.GetDefaultHost(context).Should().Be("DefaultHost:" + expressionValue);
+            requestHeaders.GetCorrelationIdHeader(context).Should().Be("CorrelationIdHeader:" + expressionValue);
+            requestHeaders.Headers.Select(
+                h => new ExtraHeader
+                {
+                    Name = h.Name,
+                    Values = h.GetValues(context).ToArray()
+                })
+                .Should()
+                .BeEquivalentTo(
+                    new[]
+                    {
+                        new ExtraHeader
+                        {
+                            Name = "x-xtra-1",
+                            Values = new[] { "x-xtra-1:v1:" + expressionValue, "x-xtra-1:v2:" + expressionValue }
+                        },
+                        new ExtraHeader
+                        {
+                            Name = "x-xtra-2",
+                            Values = new[] { "x-xtra-2:v1:" + expressionValue, "x-xtra-2:v2:" + expressionValue }
+                        },
+                    });
+
+            var response = options.Proxy.Downstream.Response;
+            var responseHeaders = response.Headers;
+            responseHeaders.Headers.Select(
+                h => new ExtraHeader
+                {
+                    Name = h.Name,
+                    Values = h.GetValues(context).ToArray()
+                })
+                .Should()
+                .BeEquivalentTo(
+                    new[]
+                    {
+                        new ExtraHeader
+                        {
+                            Name = "x-xtra-1",
+                            Values = new[] { "x-xtra-1:v1:" + expressionValue, "x-xtra-1:v2:" + expressionValue }
+                        },
+                        new ExtraHeader
+                        {
+                            Name = "x-xtra-2",
+                            Values = new[] { "x-xtra-2:v1:" + expressionValue, "x-xtra-2:v2:" + expressionValue }
+                        },
+                    });
+        }
+
+        [TestMethod]
         public void New_OptionsEmpty_AllValuesSetToDefault()
         {
             var config = new ConfigurationBuilder()
