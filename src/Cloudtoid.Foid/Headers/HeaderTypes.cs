@@ -111,8 +111,6 @@
             HeaderNames.WWWAuthenticate,
         };
 
-        ////private static readonly
-
         internal static bool IsContentHeader(string headerName)
                 => ContentHeaders.Contains(headerName);
     }
