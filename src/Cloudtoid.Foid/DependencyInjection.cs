@@ -26,6 +26,8 @@
                 .TryAddSingleton<Proxy.IUriRewriter, Proxy.UriRewriter>()
                 .TryAddSingleton<Proxy.IRequestHeaderSetter, Proxy.RequestHeaderSetter>()
                 .TryAddSingleton<Proxy.IRequestHeaderValuesProvider, Proxy.RequestHeaderValuesProvider>()
+                .TryAddSingleton<Proxy.IRequestContentSetter, Proxy.RequestContentSetter>()
+                .TryAddSingleton<Proxy.IRequestContentHeaderValuesProvider, Proxy.RequestContentHeaderValuesProvider>()
                 .TryAddSingleton<Proxy.IRequestSender, Proxy.RequestSender>()
                 .TryAddSingleton<Proxy.IRequestCreator, Proxy.RequestCreator>()
                 .TryAddSingleton<Proxy.IResponseCreator, Proxy.ResponseCreator>()

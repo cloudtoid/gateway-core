@@ -11,7 +11,18 @@
     using static Contract;
     using Options = OptionsProvider.ProxyOptions.UpstreamOptions.RequestOptions.HeadersOptions;
 
-    internal sealed class RequestHeaderSetter : IRequestHeaderSetter
+    /// <summary>
+    /// By inheriting from this class, one can have full control over the outbound upstream request headers. Please consider the following extensibility points:
+    /// 1. Inherit from <see cref="RequestHeaderValuesProvider"/>, override its methods, and register it with DI; or
+    /// 2. Implement <see cref="IRequestHeaderValuesProvider"/> and register it with DI; or
+    /// 3. Inherit from <see cref="RequestHeaderSetter"/>, override its methods, and register it with DI; or
+    /// 4. Implement <see cref="IRequestHeaderSetter"/> and register it with DI.
+    ///
+    /// Dependency Injection registrations:
+    /// 1. <c>TryAddSingleton<IRequestHeaderValuesProvider, MyRequestHeaderValuesProvider>()</c>
+    /// 2. <c>TryAddSingleton<IRequestHeaderSetter, MyRequestHeaderSetter>()</c>
+    /// </summary>
+    public class RequestHeaderSetter : IRequestHeaderSetter
     {
         private static readonly ISet<string> HeaderTransferBlacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -21,12 +32,6 @@
             Headers.Names.ProxyName,
         };
 
-        private readonly IRequestHeaderValuesProvider provider;
-        private readonly ITraceIdProvider traceIdProvider;
-        private readonly IHostProvider hostProvider;
-        private readonly OptionsProvider options;
-        private readonly ILogger<RequestHeaderSetter> logger;
-
         public RequestHeaderSetter(
             IRequestHeaderValuesProvider provider,
             ITraceIdProvider traceIdProvider,
@@ -34,17 +39,27 @@
             OptionsProvider options,
             ILogger<RequestHeaderSetter> logger)
         {
-            this.provider = CheckValue(provider, nameof(provider));
-            this.traceIdProvider = CheckValue(traceIdProvider, nameof(traceIdProvider));
-            this.hostProvider = CheckValue(hostProvider, nameof(hostProvider));
-            this.options = CheckValue(options, nameof(options));
-            this.logger = CheckValue(logger, nameof(logger));
+            Provider = CheckValue(provider, nameof(provider));
+            TraceIdProvider = CheckValue(traceIdProvider, nameof(traceIdProvider));
+            HostProvider = CheckValue(hostProvider, nameof(hostProvider));
+            Options = CheckValue(options, nameof(options));
+            Logger = CheckValue(logger, nameof(logger));
         }
 
-        // Do NOT cache this value. Options react to changes.
-        internal Options HeaderOptions => options.Proxy.Upstream.Request.Headers;
+        protected IRequestHeaderValuesProvider Provider { get; }
 
-        public Task SetHeadersAsync(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected ITraceIdProvider TraceIdProvider { get; }
+
+        protected IHostProvider HostProvider { get; }
+
+        protected OptionsProvider Options { get; }
+
+        protected ILogger<RequestHeaderSetter> Logger { get; }
+
+        // Do NOT cache this value. Options react to changes.
+        private Options HeaderOptions => Options.Proxy.Upstream.Request.Headers;
+
+        public virtual Task SetHeadersAsync(HttpContext context, HttpRequestMessage upstreamRequest)
         {
             CheckValue(context, nameof(context));
             CheckValue(upstreamRequest, nameof(upstreamRequest));
@@ -64,7 +79,7 @@
             return Task.CompletedTask;
         }
 
-        private void AddDownstreamRequestHeadersToUpstreamRequest(
+        protected virtual void AddDownstreamRequestHeadersToUpstreamRequest(
             HttpContext context,
             HttpRequestMessage upstreamRequest)
         {
@@ -75,7 +90,7 @@
             if (headers is null)
                 return;
 
-            var correlationIdHeader = traceIdProvider.GetCorrelationIdHeader(context);
+            var correlationIdHeader = TraceIdProvider.GetCorrelationIdHeader(context);
             var headersWithOverride = HeaderOptions.HeaderNames;
 
             foreach (var header in headers)
@@ -85,14 +100,14 @@
                 // Remove empty headers
                 if (!HeaderOptions.AllowHeadersWithEmptyValue && header.Value.All(string.IsNullOrEmpty))
                 {
-                    logger.LogInformation("Removing header '{0}' as its value is empty.", name);
+                    Logger.LogInformation("Removing header '{0}' as its value is empty.", name);
                     continue;
                 }
 
                 // Remove headers with underscore in their names
                 if (!HeaderOptions.AllowHeadersWithUnderscoreInName && name.Contains('_'))
                 {
-                    logger.LogInformation("Removing header '{0}' as headers should not have underscores in their name.", header.Key);
+                    Logger.LogInformation("Removing header '{0}' as headers should not have underscores in their name.", header.Key);
                     continue;
                 }
 
@@ -111,17 +126,17 @@
             }
         }
 
-        private void AddHostHeader(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected virtual void AddHostHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
             if (HeaderOptions.IgnoreHost)
                 return;
 
             upstreamRequest.Headers.TryAddWithoutValidation(
                 HeaderNames.Host,
-                hostProvider.GetHost(context));
+                HostProvider.GetHost(context));
         }
 
-        private void AddExternalAddressHeader(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected virtual void AddExternalAddressHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
             if (!HeaderOptions.IncludeExternalAddress)
                 return;
@@ -137,7 +152,7 @@
                 clientAddress);
         }
 
-        private void AddClientAddressHeader(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected virtual void AddClientAddressHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
             if (HeaderOptions.IgnoreClientAddress)
                 return;
@@ -153,7 +168,7 @@
                 clientAddress);
         }
 
-        private void AddClientProtocolHeader(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected virtual void AddClientProtocolHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
             if (HeaderOptions.IgnoreClientProtocol)
                 return;
@@ -165,7 +180,7 @@
                 context.Request.Scheme);
         }
 
-        private void AddCorrelationIdHeader(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected virtual void AddCorrelationIdHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
             if (HeaderOptions.IgnoreCorrelationId)
                 return;
@@ -173,11 +188,11 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                traceIdProvider.GetCorrelationIdHeader(context),
-                traceIdProvider.GetCorrelationId(context));
+                TraceIdProvider.GetCorrelationIdHeader(context),
+                TraceIdProvider.GetCorrelationId(context));
         }
 
-        private void AddCallIdHeader(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected virtual void AddCallIdHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
             if (HeaderOptions.IgnoreCallId)
                 return;
@@ -186,10 +201,10 @@
                 context,
                 upstreamRequest,
                 Headers.Names.CallId,
-                traceIdProvider.GetCallId(context));
+                TraceIdProvider.GetCallId(context));
         }
 
-        private void AddProxyNameHeader(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected virtual void AddProxyNameHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
             if (!HeaderOptions.TryGetProxyName(context, out var name))
                 return;
@@ -201,25 +216,25 @@
                 name);
         }
 
-        private void AddExtraHeaders(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected virtual void AddExtraHeaders(HttpContext context, HttpRequestMessage upstreamRequest)
         {
             foreach (var header in HeaderOptions.Headers)
                 upstreamRequest.Headers.TryAddWithoutValidation(header.Name, header.GetValues(context));
         }
 
-        private void AddHeaderValues(
+        protected virtual void AddHeaderValues(
             HttpContext context,
             HttpRequestMessage upstreamRequest,
             string name,
             params string[] downstreamValues)
         {
-            if (provider.TryGetHeaderValues(context, name, downstreamValues, out var upstreamValues) && upstreamValues != null)
+            if (Provider.TryGetHeaderValues(context, name, downstreamValues, out var upstreamValues) && upstreamValues != null)
             {
                 upstreamRequest.Headers.TryAddWithoutValidation(name, upstreamValues);
                 return;
             }
 
-            logger.LogInformation(
+            Logger.LogInformation(
                 "Header '{0}' is not added. This was was instructed by the {1}.{2}.",
                 name,
                 nameof(IRequestHeaderValuesProvider),

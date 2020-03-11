@@ -4,21 +4,21 @@
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
-    /// By implementing this interface, one can have some control over the outbound upstream request headers. Please consider the following extensibility points:
-    /// 1. Inherit from <see cref="RequestHeaderValuesProvider"/>, override its methods, and register it with DI; or
-    /// 2. Implement <see cref="IRequestHeaderValuesProvider"/> and register it with DI; or
-    /// 3. Inherit from <see cref="RequestHeaderSetter"/>, override its methods, and register it with DI; or
-    /// 4. Implement <see cref="IRequestHeaderSetter"/> and register it with DI.
+    /// By implementing this interface, one can fully control the outbound upstream content headers. Please, consider the following extensibility points:
+    /// 1. Inherit from <see cref="RequestContentHeaderValuesProvider"/>, override its methods, and register it with DI; or
+    /// 2. Implement <see cref="IRequestContentHeaderValuesProvider"/> and register it with DI; or
+    /// 3. Inherit from <see cref="RequestContentSetter"/>, override its methods, and register it with DI; or
+    /// 4. Finally, you can implement <see cref="IRequestContentSetter"/> and register it with DI; or
     ///
     /// Dependency Injection registrations:
     /// 1. <c>TryAddSingleton<IRequestHeaderValuesProvider, MyRequestHeaderValuesProvider>()</c>
     /// 2. <c>TryAddSingleton<IRequestHeaderSetter, MyRequestHeaderSetter>()</c>
     /// </summary>
-    public interface IRequestHeaderValuesProvider
+    public interface IRequestContentHeaderValuesProvider
     {
         /// <summary>
         /// By implementing this method, one can change the values of a given request header.
-        /// This interface is only used for request headers. See <see cref="IRequestContentHeaderValuesProvider"/> for content headers.
+        /// This interface is only used for content headers. See <see cref="IRequestHeaderValuesProvider"/> for request headers.
         /// Return <c>false</c> if the header should be omitted.
         /// </summary>
         bool TryGetHeaderValues(

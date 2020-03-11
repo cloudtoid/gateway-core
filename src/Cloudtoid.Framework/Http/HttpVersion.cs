@@ -23,8 +23,8 @@
             { "HTTP/3.0", Version30 },
             { "HTTP/4", Version40 },
             { "HTTP/4.0", Version40 },
-            { "HTTP/4", Version50 },
-            { "HTTP/4.0", Version50 },
+            { "HTTP/5", Version50 },
+            { "HTTP/5.0", Version50 },
         };
 
         public static Version? ParseOrDefault(string? protocol)
