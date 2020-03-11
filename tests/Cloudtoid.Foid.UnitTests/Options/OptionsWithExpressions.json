@@ -3,6 +3,7 @@
     "correlationIdHeader": "CorrelationIdHeader:$server_name",
     "upstream": {
       "request": {
+        "httpVersion": "$server_name/1.1",
         "timeoutInMilliseconds": "5200",
         "headers": {
           "proxyName": "ProxyName:$server_name",

@@ -36,6 +36,7 @@
             options.Proxy.GetCorrelationIdHeader(context).Should().Be("x-request-id");
 
             var request = options.Proxy.Upstream.Request;
+            request.GetHttpVersion(context).Should().Be(HttpVersion.Version30);
             request.GetTimeout(context).TotalMilliseconds.Should().Be(5200);
 
             var requestHeaders = request.Headers;
@@ -121,6 +122,7 @@
             options.Proxy.GetCorrelationIdHeader(context).Should().Be("CorrelationIdHeader:" + expressionValue);
 
             var request = options.Proxy.Upstream.Request;
+            request.GetHttpVersion(context).Should().Be(HttpVersion.Version11);
             request.GetTimeout(context).TotalMilliseconds.Should().Be(5200);
 
             var requestHeaders = request.Headers;
@@ -194,6 +196,7 @@
             var context = new DefaultHttpContext();
 
             var request = options.Proxy.Upstream.Request;
+            request.GetHttpVersion(context).Should().Be(HttpVersion.Version20);
             request.GetTimeout(context).TotalMilliseconds.Should().Be(240000);
 
             var requestHeaders = request.Headers;

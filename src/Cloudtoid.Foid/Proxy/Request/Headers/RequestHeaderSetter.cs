@@ -51,7 +51,7 @@
 
             context.RequestAborted.ThrowIfCancellationRequested();
 
-            AddDownstreamHeadersToUpstream(context, upstreamRequest);
+            AddDownstreamRequestHeadersToUpstreamRequest(context, upstreamRequest);
             AddHostHeader(context, upstreamRequest);
             AddExternalAddressHeader(context, upstreamRequest);
             AddClientAddressHeader(context, upstreamRequest);
@@ -64,7 +64,7 @@
             return Task.CompletedTask;
         }
 
-        private void AddDownstreamHeadersToUpstream(
+        private void AddDownstreamRequestHeadersToUpstreamRequest(
             HttpContext context,
             HttpRequestMessage upstreamRequest)
         {

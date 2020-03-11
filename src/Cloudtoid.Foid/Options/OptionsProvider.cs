@@ -91,6 +91,12 @@
 
                     public HeadersOptions Headers { get; }
 
+                    public Version GetHttpVersion(HttpContext httpContext)
+                    {
+                        var result = context.Evaluate(httpContext, context.UpstreamRequest.HttpVersion);
+                        return HttpVersion.ParseOrDefault(result) ?? Defaults.Proxy.Upstream.Request.HttpVersion;
+                    }
+
                     public TimeSpan GetTimeout(HttpContext httpContext)
                     {
                         var result = context.Evaluate(httpContext, context.UpstreamRequest.TimeoutInMilliseconds);

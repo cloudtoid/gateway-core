@@ -4,7 +4,7 @@
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
-    /// By implementing this interface, one can have more control over the outgoing upstream request headers.
+    /// By implementing this interface, one can have more control over the outbound upstream request headers.
     /// </summary>
     public interface IRequestHeaderValuesProvider
     {

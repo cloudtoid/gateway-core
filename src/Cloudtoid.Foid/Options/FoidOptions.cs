@@ -25,7 +25,13 @@
                 public sealed class RequestOptions
                 {
                     /// <summary>
-                    /// This is the total timeout in milliseconds to wait for the outbound upstream proxy call to complete
+                    /// This is the HTTP protocol for the outbound upstream request.
+                    /// The default value if HTTP/2.0
+                    /// </summary>
+                    public string? HttpVersion { get; set; }
+
+                    /// <summary>
+                    /// This is the total timeout in milliseconds to wait for the outbound upstream request to complete
                     /// </summary>
                     public string? TimeoutInMilliseconds { get; set; }
 
@@ -44,19 +50,19 @@
                         public bool AllowHeadersWithUnderscoreInName { get; set; }
 
                         /// <summary>
-                        /// If true, an "x-foid-external-address" header with the immediate downstream IP address is added to the outgoing upstream call.
+                        /// If true, an "x-foid-external-address" header with the immediate downstream IP address is added to the outbound upstream call.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IncludeExternalAddress { get; set; }
 
                         /// <summary>
-                        /// If false, it will copy all the headers from the incoming downstream request to the outgoing upstream request.
+                        /// If false, it will copy all the headers from the inbound downstream request to the outbound upstream request.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IgnoreAllDownstreamRequestHeaders { get; set; }
 
                         /// <summary>
-                        /// If false, it will append a host header to the outgoing upstream request.
+                        /// If false, it will append a host header to the outbound upstream request.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IgnoreHost { get; set; }
@@ -86,17 +92,17 @@
                         public bool IgnoreCallId { get; set; }
 
                         /// <summary>
-                        /// If the incoming downstream request does not have a HOST header, the value provided here will be used.
+                        /// If the inbound downstream request does not have a HOST header, the value provided here will be used.
                         /// </summary>
                         public string? DefaultHost { get; set; }
 
                         /// <summary>
-                        /// If this is not empty, an "x-foid-proxy-name" header with this value is added to the outgoing upstream call.
+                        /// If this is not empty, an "x-foid-proxy-name" header with this value is added to the outbound upstream call.
                         /// </summary>
                         public string? ProxyName { get; set; }
 
                         /// <summary>
-                        /// Extra headers to be appended to the outgoing downstream response. If a header already exists, it is replaced with the new value.
+                        /// Extra headers to be appended to the outbound downstream response. If a header already exists, it is replaced with the new value.
                         /// </summary>
                         public ExtraHeader[] Headers { get; set; } = Array.Empty<ExtraHeader>();
                     }
@@ -124,13 +130,13 @@
                         public bool AllowHeadersWithUnderscoreInName { get; set; }
 
                         /// <summary>
-                        /// If false, it will copy all headers from the incoming upstream response to the outgoing downstream response.
+                        /// If false, it will copy all headers from the inbound upstream response to the outbound downstream response.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IgnoreAllUpstreamResponseHeaders { get; set; }
 
                         /// <summary>
-                        /// If true, it will append a correlation identifier header to the outgoing downstream response. The actual header name is defined by <see cref="CorrelationIdHeader"/>
+                        /// If true, it will append a correlation identifier header to the outbound downstream response. The actual header name is defined by <see cref="CorrelationIdHeader"/>
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IncludeCorrelationId { get; set; }
@@ -142,7 +148,7 @@
                         public bool IncludeCallId { get; set; }
 
                         /// <summary>
-                        /// Extra headers to be appended to the outgoing downstream response. If a header already exists, it is replaced with the new value.
+                        /// Extra headers to be appended to the outbound downstream response. If a header already exists, it is replaced with the new value.
                         /// </summary>
                         public ExtraHeader[] Headers { get; set; } = Array.Empty<ExtraHeader>();
                     }

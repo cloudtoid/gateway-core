@@ -91,19 +91,19 @@
             => context.TraceIdProvider.GetCallId(context.HttpContext);
 
         /// <summary>
-        /// The value that should be used as the HOST header on the outgoing upstream request.
+        /// The value that should be used as the HOST header on the outbound upstream request.
         /// </summary>
         private static string? GetHost(Context context)
             => context.HostProvider.GetHost(context.HttpContext);
 
         /// <summary>
-        /// The HTTP method of the incoming downstream request
+        /// The HTTP method of the inbound downstream request
         /// </summary>
         private static string? GetRequestMethod(Context context)
             => context.Request.Method;
 
         /// <summary>
-        /// The shceme (HTTP or HTTPS) used by the incoming downstream request
+        /// The shceme (HTTP or HTTPS) used by the inbound downstream request
         /// </summary>
         private static string? GetRequestScheme(Context context)
             => context.Request.Scheme;
@@ -168,7 +168,7 @@
             => Environment.MachineName;
 
         /// <summary>
-        /// The protocol of the incoming downstream request, usually “HTTP/1.0”, “HTTP/1.1”, or “HTTP/2.0”
+        /// The protocol of the inbound downstream request, usually “HTTP/1.0”, “HTTP/1.1”, or “HTTP/2.0”
         /// </summary>
         private static string? GetServerProtocol(Context context)
             => context.Request.Protocol;

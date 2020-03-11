@@ -17,7 +17,7 @@
 
         /// <summary>
         /// Returns the call-id of this particular call.
-        /// Please note that the call-id is always new and unique per each incoming downstream HTTP request. This cannot be specified by the client.
+        /// Please note that the call-id is always new and unique per each inbound downstream request. This cannot be specified by the client.
         /// </summary>
         string GetCallId(HttpContext context);
     }

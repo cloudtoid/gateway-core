@@ -3,7 +3,7 @@
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
-    /// By implementing this interface, one can have more control over the outgoing downstream response headers.
+    /// By implementing this interface, one can have more control over the outbound downstream response headers.
     /// </summary>
     public interface IResponseHeaderValuesProvider
     {

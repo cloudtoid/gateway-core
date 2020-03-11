@@ -3,6 +3,7 @@
     "correlationIdHeader": "x-request-id",
     "upstream": {
       "request": {
+        "httpVersion": "3.0",
         "timeoutInMilliseconds": 5200,
         "headers": {
           "proxyName": "some-proxy-name",

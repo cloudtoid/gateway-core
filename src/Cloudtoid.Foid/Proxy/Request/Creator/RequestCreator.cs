@@ -10,15 +10,18 @@
     {
         private readonly IUriRewriter uriRewriter;
         private readonly IRequestHeaderSetter headerSetter;
+        private readonly OptionsProvider options;
         private readonly ILogger<RequestCreator> logger;
 
         public RequestCreator(
             IUriRewriter uriRewriter,
             IRequestHeaderSetter headerSetter,
+            OptionsProvider options,
             ILogger<RequestCreator> logger)
         {
             this.uriRewriter = CheckValue(uriRewriter, nameof(uriRewriter));
             this.headerSetter = CheckValue(headerSetter, nameof(headerSetter));
+            this.options = CheckValue(options, nameof(options));
             this.logger = CheckValue(logger, nameof(logger));
         }
 
@@ -28,23 +31,29 @@
 
             context.RequestAborted.ThrowIfCancellationRequested();
 
-            logger.LogDebug("Creating an outgoing upstream HTTP request based on the incoming downstream HTTP request.");
+            logger.LogDebug("Creating an outbound upstream HTTP request based on the inbound downstream request.");
 
             var upstreamRequest = new HttpRequestMessage();
 
             SetHttpMethod(context, upstreamRequest);
+            SetHttpVersion(context, upstreamRequest);
             await SetUriAsync(context, upstreamRequest);
             await SetHeadersAsync(context, upstreamRequest);
             SetContent(context, upstreamRequest);
 
-            logger.LogDebug("Creating an outgoing upstream HTTP request based on the incoming downstream HTTP request.");
+            logger.LogDebug("Creating an outbound upstream HTTP request based on the inbound downstream request.");
 
             return upstreamRequest;
         }
 
         private void SetHttpMethod(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            upstreamRequest.Method = HttpUtil.GetHttpMethod(context.Request.Method);
+            upstreamRequest.Method = Cloudtoid.HttpMethod.Parse(context.Request.Method);
+        }
+
+        private void SetHttpVersion(HttpContext context, HttpRequestMessage upstreamRequest)
+        {
+            upstreamRequest.Version = options.Proxy.Upstream.Request.GetHttpVersion(context);
         }
 
         private async Task SetUriAsync(HttpContext context, HttpRequestMessage upstreamRequest)
@@ -60,35 +69,35 @@
 
         private async Task SetHeadersAsync(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            logger.LogDebug("Appending HTTP headers to the outgoing upstream request");
+            logger.LogDebug("Appending HTTP headers to the outbound upstream request");
 
             await headerSetter
                 .SetHeadersAsync(context, upstreamRequest)
                 .TraceOnFaulted(logger, "Failed to set the headers", context.RequestAborted);
 
-            logger.LogDebug("Appended HTTP headers to the outgoing upstream request");
+            logger.LogDebug("Appended HTTP headers to the outbound upstream request");
         }
 
         private void SetContent(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            logger.LogDebug("Transferring the content of the incoming downstream request to the outgoing upstream request");
+            logger.LogDebug("Transferring the content of the inbound downstream request to the outbound upstream request");
 
             var body = context.Request.Body;
             if (body is null || !body.CanRead || context.Request.ContentLength <= 0)
             {
-                logger.LogDebug("The incoming downstream request does not have a body, it is not readable, or its content length is zero.");
+                logger.LogDebug("The inbound downstream request does not have a body, it is not readable, or its content length is zero.");
                 return;
             }
 
             if (body.CanSeek && body.Position != 0)
             {
-                logger.LogDebug("The incoming downstream request has a seekable body stream. Resetting the stream to the begining.");
+                logger.LogDebug("The inbound downstream request has a seekable body stream. Resetting the stream to the begining.");
                 body.Position = 0;
             }
 
             upstreamRequest.Content = new StreamContent(body);
 
-            logger.LogDebug("Transferred the content of the incoming downstream request to the outgoing upstream request");
+            logger.LogDebug("Transferred the content of the inbound downstream request to the outbound upstream request");
         }
     }
 }

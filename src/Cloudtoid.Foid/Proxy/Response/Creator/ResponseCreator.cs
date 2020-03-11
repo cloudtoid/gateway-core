@@ -44,7 +44,7 @@
         {
             if (context.Response.HasStarted)
             {
-                logger.LogError("It is not possible to transfer the HTTP status code from the incoming upstream response to the outgoing downstream response. This should never happen!");
+                logger.LogError("It is not possible to transfer the HTTP status code from the inbound upstream response to the outbound downstream response. This should never happen!");
                 return;
             }
 
@@ -53,8 +53,9 @@
 
         private void SetReasonPhrase(HttpContext context, HttpResponseMessage upstreamResponse)
         {
-            if (context.Request.GetHttpVersion() >= HttpProtocolVersion.Http20)
-                return; // ReasonPhrase is no longer supported by HTTP/2.0 and above.
+            var httpVersion = HttpVersion.ParseOrDefault(context.Request.Protocol);
+            if (httpVersion is null || httpVersion >= HttpVersion.Version20)
+                return; // Reason phrase is not supported by HTTP/2.0 and higher
 
             var responseFeature = context.Features.Get<IHttpResponseFeature>();
             if (responseFeature is null || responseFeature.ReasonPhrase is null)
@@ -65,13 +66,13 @@
 
         private async Task SetHeadersAsync(HttpContext context, HttpResponseMessage upstreamResponse)
         {
-            logger.LogDebug("Appending HTTP headers to the outgoing downstream response");
+            logger.LogDebug("Appending HTTP headers to the outbound downstream response");
 
             await headerSetter
                 .SetHeadersAsync(context, upstreamResponse)
                 .TraceOnFaulted(logger, "Failed to set the headers", context.RequestAborted);
 
-            logger.LogDebug("Appended HTTP headers to the outgoing downstream response");
+            logger.LogDebug("Appended HTTP headers to the outbound downstream response");
         }
 
         private async Task SetContentAsync(HttpContext context, HttpResponseMessage upstreamResponse)
@@ -79,11 +80,11 @@
             if (upstreamResponse.Content is null)
                 return;
 
-            logger.LogDebug("Transferring the content of the incoming upstream response to the outgoing downstream response");
+            logger.LogDebug("Transferring the content of the inbound upstream response to the outbound downstream response");
 
             await upstreamResponse.Content.CopyToAsync(context.Response.Body);
 
-            logger.LogDebug("Transferred the content of the incoming upstream response to the outgoing downstream response");
+            logger.LogDebug("Transferred the content of the inbound upstream response to the outbound downstream response");
         }
     }
 }

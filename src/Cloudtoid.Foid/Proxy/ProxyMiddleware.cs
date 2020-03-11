@@ -34,7 +34,7 @@
         {
             CheckValue(context, nameof(context));
 
-            logger.LogDebug("Reverse proxy received a new incoming HTTP {0} request.", context.Request.Method);
+            logger.LogDebug("Reverse proxy received a new inbound downstream {0} request.", context.Request.Method);
 
             // TODO: What error should we send back if any of the stuff below fail?
 
@@ -43,7 +43,7 @@
 
             var request = await requestCreator
                 .CreateRequestAsync(context)
-                .TraceOnFaulted(logger, "Failed to create an outgoing upstream HTTP request message", cancellationToken);
+                .TraceOnFaulted(logger, "Failed to create an outbound upstream HTTP request message", cancellationToken);
 
             var timeout = options.Proxy.Upstream.Request.GetTimeout(context);
             var response = await Async

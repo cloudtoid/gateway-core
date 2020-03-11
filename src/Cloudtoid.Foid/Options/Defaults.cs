@@ -10,6 +10,8 @@
             {
                 internal static class Request
                 {
+                    internal static Version HttpVersion { get; } = Foid.HttpVersion.Version20;
+
                     internal static TimeSpan Timeout { get; } = TimeSpan.FromMinutes(4);
 
                     internal static class Headers
