@@ -30,62 +30,63 @@
 
             logger.LogDebug("Creating an outgoing upstream HTTP request based on the incoming downstream HTTP request.");
 
-            var message = new HttpRequestMessage();
+            var upstreamRequest = new HttpRequestMessage();
 
-            SetHttpMethod(context, message);
-            await SetUriAsync(context, message);
-            await SetHeadersAsync(context, message);
-            SetContent(context.Request, message);
+            SetHttpMethod(context, upstreamRequest);
+            await SetUriAsync(context, upstreamRequest);
+            await SetHeadersAsync(context, upstreamRequest);
+            SetContent(context, upstreamRequest);
 
             logger.LogDebug("Creating an outgoing upstream HTTP request based on the incoming downstream HTTP request.");
 
-            return message;
+            return upstreamRequest;
         }
 
-        private void SetHttpMethod(HttpContext context, HttpRequestMessage message)
+        private void SetHttpMethod(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            message.Method = HttpUtil.GetHttpMethod(context.Request.Method);
+            upstreamRequest.Method = HttpUtil.GetHttpMethod(context.Request.Method);
         }
 
-        private async Task SetUriAsync(HttpContext context, HttpRequestMessage message)
+        private async Task SetUriAsync(HttpContext context, HttpRequestMessage upstreamRequest)
         {
             logger.LogDebug("Rewriting the uri by calling an instance of {0}", uriRewriter.GetType().FullName);
 
-            message.RequestUri = await uriRewriter
+            upstreamRequest.RequestUri = await uriRewriter
                 .RewriteUriAsync(context)
                 .TraceOnFaulted(logger, "Failed to rewrite a URI", context.RequestAborted);
 
             logger.LogDebug("Rewrote the uri by calling an instance of {0}", uriRewriter.GetType().FullName);
         }
 
-        private async Task SetHeadersAsync(HttpContext context, HttpRequestMessage message)
+        private async Task SetHeadersAsync(HttpContext context, HttpRequestMessage upstreamRequest)
         {
             logger.LogDebug("Appending HTTP headers to the outgoing upstream request");
 
             await headerSetter
-                .SetHeadersAsync(context, message)
+                .SetHeadersAsync(context, upstreamRequest)
                 .TraceOnFaulted(logger, "Failed to set the headers", context.RequestAborted);
 
             logger.LogDebug("Appended HTTP headers to the outgoing upstream request");
         }
 
-        private void SetContent(HttpRequest request, HttpRequestMessage message)
+        private void SetContent(HttpContext context, HttpRequestMessage upstreamRequest)
         {
             logger.LogDebug("Transferring the content of the incoming downstream request to the outgoing upstream request");
 
-            if (request.Body is null || !request.Body.CanRead || request.ContentLength <= 0)
+            var body = context.Request.Body;
+            if (body is null || !body.CanRead || context.Request.ContentLength <= 0)
             {
                 logger.LogDebug("The incoming downstream request does not have a body, it is not readable, or its content length is zero.");
                 return;
             }
 
-            if (request.Body.CanSeek && request.Body.Position != 0)
+            if (body.CanSeek && body.Position != 0)
             {
                 logger.LogDebug("The incoming downstream request has a seekable body stream. Resetting the stream to the begining.");
-                request.Body.Position = 0;
+                body.Position = 0;
             }
 
-            message.Content = new StreamContent(request.Body);
+            upstreamRequest.Content = new StreamContent(body);
 
             logger.LogDebug("Transferred the content of the incoming downstream request to the outgoing upstream request");
         }
