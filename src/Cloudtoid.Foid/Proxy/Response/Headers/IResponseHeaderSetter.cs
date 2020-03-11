@@ -5,8 +5,15 @@
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
-    /// By implementing this interface, one can be fully in control of setting the outbound downstream response headers.
-    /// First consider implementing <see cref="IResponseHeaderValuesProvider"./>. If that does not meet your needs then implement <see cref="IResponseHeaderSetter"/>.
+    /// By implementing this interface, one can have full control over the outbound downstream response headers. However, a fully functioning implementation is nontrivial. Therefore, before implementing this interface, consider the following extensibility points:
+    /// 1. Inherit from <see cref="ResponseHeaderValuesProvider"/>, override its methods, and register it with DI; or
+    /// 2. Implement <see cref="IResponseHeaderValuesProvider"/> and register it with DI; or
+    /// 3. Inherit from <see cref="ResponseHeaderSetter"/>, override its methods, and register it with DI; or
+    /// 4. Implement <see cref="IResponseHeaderSetter"/> and register it with DI.
+    ///
+    /// Dependency Injection registrations:
+    /// 1. <c>TryAddSingleton<IResponseHeaderValuesProvider, MyResponseHeaderValuesProvider>()</c>
+    /// 2. <c>TryAddSingleton<IResponseHeaderSetter, MyResponseHeaderSetter>()</c>
     /// </summary>
     public interface IResponseHeaderSetter
     {

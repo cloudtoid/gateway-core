@@ -66,7 +66,7 @@
 
             context.RequestAborted.ThrowIfCancellationRequested();
 
-            AddDownstreamRequestHeadersToUpstreamRequest(context, upstreamRequest);
+            AddDownstreamRequestHeadersToUpstream(context, upstreamRequest);
             AddHostHeader(context, upstreamRequest);
             AddExternalAddressHeader(context, upstreamRequest);
             AddClientAddressHeader(context, upstreamRequest);
@@ -79,7 +79,7 @@
             return Task.CompletedTask;
         }
 
-        protected virtual void AddDownstreamRequestHeadersToUpstreamRequest(
+        protected virtual void AddDownstreamRequestHeadersToUpstream(
             HttpContext context,
             HttpRequestMessage upstreamRequest)
         {
