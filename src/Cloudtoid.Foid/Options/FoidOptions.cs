@@ -12,6 +12,12 @@
 
             public DownstreamOptions Downstream { get; set; } = new DownstreamOptions();
 
+            /// <summary>
+            /// Header name for correlation identifier.
+            /// The default value is "x-correlation-id".
+            /// </summary>
+            public string? CorrelationIdHeader { get; set; }
+
             public sealed class UpstreamOptions
             {
                 public RequestOptions Request { get; set; } = new RequestOptions();
@@ -80,12 +86,6 @@
                         public bool IgnoreCallId { get; set; }
 
                         /// <summary>
-                        /// Header name for correlation identifier.
-                        /// The default value is "x-correlation-id".
-                        /// </summary>
-                        public string? CorrelationIdHeader { get; set; }
-
-                        /// <summary>
                         /// If the incoming downstream request does not have a HOST header, the value provided here will be used.
                         /// </summary>
                         public string? DefaultHost { get; set; }
@@ -128,6 +128,18 @@
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IgnoreAllUpstreamResponseHeaders { get; set; }
+
+                        /// <summary>
+                        /// If true, it will append a correlation identifier header to the outgoing downstream response. The actual header name is defined by <see cref="CorrelationIdHeader"/>
+                        /// The default value is <c>false</c>.
+                        /// </summary>
+                        public bool IncludeCorrelationId { get; set; }
+
+                        /// <summary>
+                        /// If true, it will append a "x-call-id" header. This is a guid that is always new for each call.
+                        /// The default value is <c>false</c>.
+                        /// </summary>
+                        public bool IncludeCallId { get; set; }
 
                         /// <summary>
                         /// Extra headers to be appended to the outgoing downstream response. If a header already exists, it is replaced with the new value.

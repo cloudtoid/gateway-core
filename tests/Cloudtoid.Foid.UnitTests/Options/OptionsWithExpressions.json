@@ -1,12 +1,12 @@
 {
   "proxy": {
+    "correlationIdHeader": "CorrelationIdHeader:$server_name",
     "upstream": {
       "request": {
         "timeoutInMilliseconds": "5200",
         "headers": {
           "proxyName": "ProxyName:$server_name",
           "defaultHost": "DefaultHost:$server_name",
-          "correlationIdHeader": "CorrelationIdHeader:$server_name",
           "headers": [
             {
               "name": "x-xtra-1",

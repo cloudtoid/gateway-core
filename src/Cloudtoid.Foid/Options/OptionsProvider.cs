@@ -49,8 +49,11 @@
 
         public sealed class ProxyOptions
         {
+            private readonly Context context;
+
             internal ProxyOptions(Context context)
             {
+                this.context = context;
                 Upstream = new UpstreamOptions(context);
                 Downstream = new DownstreamOptions(context);
             }
@@ -58,6 +61,14 @@
             public UpstreamOptions Upstream { get; }
 
             public DownstreamOptions Downstream { get; }
+
+            public string GetCorrelationIdHeader(HttpContext httpContext)
+            {
+                var eval = context.Evaluate(httpContext, context.Proxy.CorrelationIdHeader);
+                return string.IsNullOrWhiteSpace(eval)
+                    ? Defaults.Proxy.Upstream.Request.Headers.CorrelationIdHeader
+                    : eval;
+            }
 
             public sealed class UpstreamOptions
             {
@@ -134,14 +145,6 @@
                             .Where(h => !string.IsNullOrEmpty(h.Name) && !h.Values.IsNullOrEmpty())
                             .Select(h => new ExtraHeader(context, h.Name!, h.Values!));
 
-                        public string GetCorrelationIdHeader(HttpContext httpContext)
-                        {
-                            var eval = context.Evaluate(httpContext, context.UpstreamRequestHeaders.CorrelationIdHeader);
-                            return string.IsNullOrWhiteSpace(eval)
-                                ? Defaults.Proxy.Upstream.Request.Headers.CorrelationIdHeader
-                                : eval;
-                        }
-
                         public string GetDefaultHost(HttpContext httpContext)
                         {
                             var eval = context.Evaluate(httpContext, context.UpstreamRequestHeaders.DefaultHost);
@@ -211,6 +214,12 @@
 
                         public bool IgnoreAllUpstreamResponseHeaders
                             => context.DownstreamResponseHeaders.IgnoreAllUpstreamResponseHeaders;
+
+                        public bool IncludeCorrelationId
+                            => context.DownstreamResponseHeaders.IncludeCorrelationId;
+
+                        public bool IncludeCallId
+                            => context.DownstreamResponseHeaders.IncludeCallId;
 
                         public ISet<string> HeaderNames { get; }
 

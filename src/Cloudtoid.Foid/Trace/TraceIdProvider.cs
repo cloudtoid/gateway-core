@@ -24,7 +24,7 @@
             if (context.Items.TryGetValue(CorrelationIdHeaderKey, out var existingHeader))
                 return (string)existingHeader;
 
-            var header = options.Proxy.Upstream.Request.Headers.GetCorrelationIdHeader(context);
+            var header = options.Proxy.GetCorrelationIdHeader(context);
             context.Items.Add(CorrelationIdHeaderKey, header);
             return header;
         }

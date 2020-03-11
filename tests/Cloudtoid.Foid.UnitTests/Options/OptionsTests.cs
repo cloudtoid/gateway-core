@@ -33,6 +33,7 @@
                 .GetRequiredService<OptionsProvider>();
 
             var context = new DefaultHttpContext();
+            options.Proxy.GetCorrelationIdHeader(context).Should().Be("x-request-id");
 
             var request = options.Proxy.Upstream.Request;
             request.GetTimeout(context).TotalMilliseconds.Should().Be(5200);
@@ -49,7 +50,6 @@
             requestHeaders.IgnoreClientProtocol.Should().BeTrue();
             requestHeaders.IgnoreCorrelationId.Should().BeTrue();
             requestHeaders.IncludeExternalAddress.Should().BeTrue();
-            requestHeaders.GetCorrelationIdHeader(context).Should().Be("x-request-id");
             requestHeaders.Headers.Select(
                 h => new ExtraHeader
                 {
@@ -116,17 +116,17 @@
                 .BuildServiceProvider()
                 .GetRequiredService<OptionsProvider>();
 
+            var expressionValue = Environment.MachineName;
             var context = new DefaultHttpContext();
+            options.Proxy.GetCorrelationIdHeader(context).Should().Be("CorrelationIdHeader:" + expressionValue);
 
             var request = options.Proxy.Upstream.Request;
             request.GetTimeout(context).TotalMilliseconds.Should().Be(5200);
-            var expressionValue = Environment.MachineName;
 
             var requestHeaders = request.Headers;
             requestHeaders.TryGetProxyName(context, out var proxyName).Should().BeTrue();
             proxyName.Should().Be("ProxyName:" + expressionValue);
             requestHeaders.GetDefaultHost(context).Should().Be("DefaultHost:" + expressionValue);
-            requestHeaders.GetCorrelationIdHeader(context).Should().Be("CorrelationIdHeader:" + expressionValue);
             requestHeaders.Headers.Select(
                 h => new ExtraHeader
                 {
