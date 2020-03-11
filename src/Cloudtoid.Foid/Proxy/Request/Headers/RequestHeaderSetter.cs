@@ -13,7 +13,7 @@
 
     internal sealed class RequestHeaderSetter : IRequestHeaderSetter
     {
-        private static readonly HashSet<string> HeaderTransferBlacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly ISet<string> HeaderTransferBlacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             Headers.Names.ExternalAddress,
             HeaderNames.Host,

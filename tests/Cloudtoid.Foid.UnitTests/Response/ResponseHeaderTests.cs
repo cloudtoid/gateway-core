@@ -166,6 +166,97 @@
         }
 
         [TestMethod]
+        public async Task SetHeadersAsync_WhenIncludeCorrelationId_HeaderIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-correlation-id";
+            var options = new FoidOptions();
+            options.Proxy.Downstream.Response.Headers.IncludeCorrelationId = true;
+
+            var message = new HttpResponseMessage();
+            message.Headers.Add(HeaderName, "old-value");
+
+            // Act
+            var response = await SetHeadersAsync(message, options);
+
+            // Assert
+            response.Headers[HeaderName].Should().BeEquivalentTo(GuidProvider.StringValue);
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenNotIncludeCorrelationId_HeaderNotIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-correlation-id";
+            var options = new FoidOptions();
+            options.Proxy.Downstream.Response.Headers.IncludeCorrelationId = false;
+
+            var message = new HttpResponseMessage();
+            message.Headers.Add(HeaderName, "old-value");
+
+            // Act
+            var response = await SetHeadersAsync(message, options);
+
+            // Assert
+            response.Headers[HeaderName].Should().BeEmpty();
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenIncludeCorrelationIdWithNonDefaultHeaderName_HeaderIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-test-id";
+            var options = new FoidOptions();
+            options.Proxy.CorrelationIdHeader = HeaderName;
+            options.Proxy.Downstream.Response.Headers.IncludeCorrelationId = true;
+
+            var message = new HttpResponseMessage();
+            message.Headers.Add(HeaderName, "old-value");
+
+            // Act
+            var response = await SetHeadersAsync(message, options);
+
+            // Assert
+            response.Headers[HeaderName].Should().BeEquivalentTo(GuidProvider.StringValue);
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenIncludeCallId_HeaderIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-call-id";
+            var options = new FoidOptions();
+            options.Proxy.Downstream.Response.Headers.IncludeCallId = true;
+
+            var message = new HttpResponseMessage();
+            message.Headers.Add(HeaderName, "old-value");
+
+            // Act
+            var response = await SetHeadersAsync(message, options);
+
+            // Assert
+            response.Headers[HeaderName].Should().BeEquivalentTo(GuidProvider.StringValue);
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenNotIncludeCallId_HeaderNotIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-call-id";
+            var options = new FoidOptions();
+            options.Proxy.Downstream.Response.Headers.IncludeCallId = false;
+
+            var message = new HttpResponseMessage();
+            message.Headers.Add(HeaderName, "old-value");
+
+            // Act
+            var response = await SetHeadersAsync(message, options);
+
+            // Assert
+            response.Headers[HeaderName].Should().BeEmpty();
+        }
+
+        [TestMethod]
         public async Task SetHeadersAsync_WhenExtraHeaders_HeadersIncludedAsync()
         {
             // Arrange

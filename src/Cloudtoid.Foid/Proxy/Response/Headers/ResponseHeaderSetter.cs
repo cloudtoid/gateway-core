@@ -1,5 +1,7 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
@@ -10,16 +12,24 @@
 
     internal sealed class ResponseHeaderSetter : IResponseHeaderSetter
     {
+        private static readonly ISet<string> HeaderTransferBlacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            Headers.Names.CallId,
+        };
+
         private readonly IResponseHeaderValuesProvider provider;
+        private readonly ITraceIdProvider traceIdProvider;
         private readonly OptionsProvider options;
         private readonly ILogger<ResponseHeaderSetter> logger;
 
         public ResponseHeaderSetter(
             IResponseHeaderValuesProvider provider,
+            ITraceIdProvider traceIdProvider,
             OptionsProvider options,
             ILogger<ResponseHeaderSetter> logger)
         {
             this.provider = CheckValue(provider, nameof(provider));
+            this.traceIdProvider = CheckValue(traceIdProvider, nameof(traceIdProvider));
             this.options = CheckValue(options, nameof(options));
             this.logger = CheckValue(logger, nameof(logger));
         }
@@ -35,6 +45,8 @@
             context.RequestAborted.ThrowIfCancellationRequested();
 
             AddUpstreamHeadersToDownstream(context, upstreamResponse);
+            AddCorrelationIdHeader(context, upstreamResponse);
+            AddCallIdHeader(context, upstreamResponse);
             AddExtraHeaders(context);
 
             return Task.CompletedTask;
@@ -49,6 +61,7 @@
             if (headers is null)
                 return;
 
+            var correlationIdHeader = traceIdProvider.GetCorrelationIdHeader(context);
             var headersWithOverride = HeaderOptions.HeaderNames;
 
             foreach (var header in headers)
@@ -69,12 +82,43 @@
                     continue;
                 }
 
+                if (name.EqualsOrdinalIgnoreCase(correlationIdHeader))
+                    continue;
+
+                // If blacklisted, we will not trasnfer its value
+                if (HeaderTransferBlacklist.Contains(name))
+                    continue;
+
                 // If it has an override, we will not trasnfer its value
                 if (headersWithOverride.Contains(name))
                     continue;
 
                 AddHeaderValues(context, upstreamResponse, name, header.Value.AsArray());
             }
+        }
+
+        private void AddCorrelationIdHeader(HttpContext context, HttpResponseMessage upstreamResponse)
+        {
+            if (!HeaderOptions.IncludeCorrelationId)
+                return;
+
+            AddHeaderValues(
+                context,
+                upstreamResponse,
+                traceIdProvider.GetCorrelationIdHeader(context),
+                traceIdProvider.GetCorrelationId(context));
+        }
+
+        private void AddCallIdHeader(HttpContext context, HttpResponseMessage upstreamResponse)
+        {
+            if (!HeaderOptions.IncludeCallId)
+                return;
+
+            AddHeaderValues(
+                context,
+                upstreamResponse,
+                Headers.Names.CallId,
+                traceIdProvider.GetCallId(context));
         }
 
         private void AddExtraHeaders(HttpContext context)

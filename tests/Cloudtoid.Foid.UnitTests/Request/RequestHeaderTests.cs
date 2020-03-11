@@ -327,7 +327,7 @@
                 .GetValues(HeaderName)
                 .SingleOrDefault()
                 .Should()
-                .Be(GuidProvider.Value.ToStringInvariant("N"));
+                .Be(GuidProvider.StringValue);
         }
 
         [TestMethod]
@@ -481,7 +481,7 @@
                 .GetValues(HeaderName)
                 .SingleOrDefault()
                 .Should()
-                .Be(GuidProvider.Value.ToStringInvariant("N"));
+                .Be(GuidProvider.StringValue);
         }
 
         [TestMethod]
@@ -538,7 +538,7 @@
                 .GetValues(HeaderName)
                 .SingleOrDefault()
                 .Should()
-                .Be(GuidProvider.Value.ToStringInvariant("N"));
+                .Be(GuidProvider.StringValue);
         }
 
         [TestMethod]
