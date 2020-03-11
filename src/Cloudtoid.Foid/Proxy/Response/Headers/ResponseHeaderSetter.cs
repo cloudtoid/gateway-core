@@ -25,7 +25,7 @@
     {
         private static readonly ISet<string> HeaderTransferBlacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            Headers.Names.CallId,
+            ProxyHeaderNames.CallId,
         };
 
         public ResponseHeaderSetter(
@@ -131,7 +131,7 @@
             AddHeaderValues(
                 context,
                 upstreamResponse,
-                Headers.Names.CallId,
+                ProxyHeaderNames.CallId,
                 TraceIdProvider.GetCallId(context));
         }
 

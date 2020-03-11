@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Net;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Threading.Tasks;
     using Cloudtoid.Foid.Proxy;
     using FluentAssertions;
@@ -178,6 +179,21 @@
 
             // Assert
             message.Headers.Contains("X-Empty-Header").Should().BeTrue();
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenHasContentHeaders_ContentHeadersNotIncludedAsync()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            var header = HeaderNames.ContentType;
+            context.Request.Headers.Add(header, "somevalue");
+
+            // Act
+            var message = await SetHeadersAsync(context);
+
+            // Assert
+            message.Headers.TryGetValues(header, out _).Should().BeFalse();
         }
 
         [TestMethod]

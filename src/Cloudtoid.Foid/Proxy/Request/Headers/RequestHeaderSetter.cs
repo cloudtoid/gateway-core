@@ -26,10 +26,10 @@
     {
         private static readonly ISet<string> HeaderTransferBlacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            Headers.Names.ExternalAddress,
+            ProxyHeaderNames.ExternalAddress,
             HeaderNames.Host,
-            Headers.Names.CallId,
-            Headers.Names.ProxyName,
+            ProxyHeaderNames.CallId,
+            ProxyHeaderNames.ProxyName,
         };
 
         public RequestHeaderSetter(
@@ -112,7 +112,7 @@
                 }
 
                 // Content headers should not be here. Ignore them.
-                if (Headers.ContentHeaders.IsContentHeader(name))
+                if (HeaderTypes.IsContentHeader(name))
                     continue;
 
                 if (name.EqualsOrdinalIgnoreCase(correlationIdHeader))
@@ -152,7 +152,7 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                Headers.Names.ExternalAddress,
+                ProxyHeaderNames.ExternalAddress,
                 clientAddress);
         }
 
@@ -168,7 +168,7 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                Headers.Names.ClientAddress,
+                ProxyHeaderNames.ClientAddress,
                 clientAddress);
         }
 
@@ -180,7 +180,7 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                Headers.Names.ClientProtocol,
+                ProxyHeaderNames.ClientProtocol,
                 context.Request.Scheme);
         }
 
@@ -204,7 +204,7 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                Headers.Names.CallId,
+                ProxyHeaderNames.CallId,
                 TraceIdProvider.GetCallId(context));
         }
 
@@ -216,7 +216,7 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                Headers.Names.ProxyName,
+                ProxyHeaderNames.ProxyName,
                 name);
         }
 

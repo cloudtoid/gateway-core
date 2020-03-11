@@ -16,7 +16,7 @@
 
                     internal static class Headers
                     {
-                        internal const string CorrelationIdHeader = Foid.Headers.Names.CorrelationId;
+                        internal const string CorrelationIdHeader = ProxyHeaderNames.CorrelationId;
 
                         internal const string ProxyName = "foid";
 

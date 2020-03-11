@@ -78,7 +78,7 @@
             foreach (var header in request.Headers)
             {
                 var name = header.Key;
-                if (!Headers.ContentHeaders.IsContentHeader(name))
+                if (!HeaderTypes.IsContentHeader(name))
                     continue;
 
                 AddHeaderValues(
