@@ -6,7 +6,6 @@
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Options;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using NSubstitute;
     using static FoidOptions.ProxyOptions;
@@ -106,10 +105,8 @@
                 .Returns(false);
 
             var services = new ServiceCollection()
-                .AddSingleton(GuidProvider.Instance)
                 .AddSingleton(provider)
-                .AddLogging()
-                .AddFoidProxy();
+                .AddTestFramework();
 
             var serviceProvider = services.BuildServiceProvider();
             var setter = serviceProvider.GetRequiredService<IResponseHeaderSetter>();
@@ -305,18 +302,9 @@
 
         private static async Task<HttpResponse> SetHeadersAsync(HttpResponseMessage message, FoidOptions? options = null)
         {
-            var monitor = Substitute.For<IOptionsMonitor<FoidOptions>>();
-            monitor.CurrentValue.Returns(options ?? new FoidOptions());
-
-            var services = new ServiceCollection()
-                .AddSingleton(GuidProvider.Instance)
-                .AddSingleton(monitor)
-                .AddLogging()
-                .AddFoidProxy();
-
+            var services = new ServiceCollection().AddTestFramework(options);
             var serviceProvider = services.BuildServiceProvider();
             var setter = serviceProvider.GetRequiredService<IResponseHeaderSetter>();
-
             var context = new DefaultHttpContext();
             await setter.SetHeadersAsync(context, message);
             return context.Response;

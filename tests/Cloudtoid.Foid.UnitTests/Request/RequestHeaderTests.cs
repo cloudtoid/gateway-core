@@ -5,13 +5,11 @@
     using System.Linq;
     using System.Net;
     using System.Net.Http;
-    using System.Net.Http.Headers;
     using System.Threading.Tasks;
     using Cloudtoid.Foid.Proxy;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Options;
     using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using NSubstitute;
@@ -222,15 +220,9 @@
                     out Arg.Any<IList<string>>())
                 .Returns(false);
 
-            var monitor = Substitute.For<IOptionsMonitor<FoidOptions>>();
-            monitor.CurrentValue.Returns(new FoidOptions());
-
             var services = new ServiceCollection()
-                .AddSingleton(GuidProvider.Instance)
                 .AddSingleton(provider)
-                .AddSingleton(monitor)
-                .AddLogging()
-                .AddFoidProxy();
+                .AddTestFramework();
 
             var serviceProvider = services.BuildServiceProvider();
             var setter = serviceProvider.GetRequiredService<IRequestHeaderSetter>();
@@ -655,17 +647,11 @@
             message.Headers.Contains("x-xtra-4").Should().BeFalse();
         }
 
-        private static async Task<HttpRequestMessage> SetHeadersAsync(HttpContext context, FoidOptions? options = null)
+        private static async Task<HttpRequestMessage> SetHeadersAsync(
+            HttpContext context,
+            FoidOptions? options = null)
         {
-            var monitor = Substitute.For<IOptionsMonitor<FoidOptions>>();
-            monitor.CurrentValue.Returns(options ?? new FoidOptions());
-
-            var services = new ServiceCollection()
-                .AddSingleton(GuidProvider.Instance)
-                .AddSingleton(monitor)
-                .AddLogging()
-                .AddFoidProxy();
-
+            var services = new ServiceCollection().AddTestFramework(options);
             var serviceProvider = services.BuildServiceProvider();
             var setter = serviceProvider.GetRequiredService<IRequestHeaderSetter>();
             var message = new HttpRequestMessage();

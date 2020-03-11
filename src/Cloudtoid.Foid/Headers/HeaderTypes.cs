@@ -7,7 +7,7 @@
     // The list below came from  System.Net.Http.Headers.KnownHeaders. See .net runtime on github.
     internal static class HeaderTypes
     {
-        private static readonly ISet<string> GeneralHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        internal static readonly ISet<string> GeneralHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             HeaderNames.CacheControl,
             HeaderNames.Connection,
@@ -20,7 +20,7 @@
             HeaderNames.Warning,
         };
 
-        private static readonly ISet<string> RequestHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        internal static readonly ISet<string> RequestHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             HeaderNames.Accept,
             HeaderNames.AcceptCharset,
@@ -44,7 +44,7 @@
             HeaderNames.UserAgent,
         };
 
-        private static readonly ISet<string> ContentHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        internal static readonly ISet<string> ContentHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             HeaderNames.Allow,
             HeaderNames.ContentDisposition,
@@ -59,7 +59,7 @@
             HeaderNames.LastModified,
         };
 
-        private static readonly ISet<string> ResponseHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        internal static readonly ISet<string> ResponseHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             HeaderNames.Status,
             HeaderNames.AcceptRanges,
@@ -74,7 +74,7 @@
             HeaderNames.WWWAuthenticate,
         };
 
-        private static readonly ISet<string> NonTrailingHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        internal static readonly ISet<string> NonTrailingHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             HeaderNames.Age,
             HeaderNames.Authorization,

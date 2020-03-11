@@ -23,9 +23,7 @@
                 .Build();
 
             var services = new ServiceCollection()
-                .AddOptions()
-                .AddSingleton(GuidProvider.Instance)
-                .AddFoidProxy()
+                .AddTestFramework()
                 .Configure<FoidOptions>(config);
 
             var options = services
@@ -108,9 +106,7 @@
                 .Build();
 
             var services = new ServiceCollection()
-                .AddOptions()
-                .AddSingleton(GuidProvider.Instance)
-                .AddFoidProxy()
+                .AddTestFramework()
                 .Configure<FoidOptions>(config);
 
             var options = services
@@ -184,9 +180,7 @@
                 .Build();
 
             var services = new ServiceCollection()
-                .AddOptions()
-                .AddSingleton(GuidProvider.Instance)
-                .AddFoidProxy()
+                .AddTestFramework()
                 .Configure<FoidOptions>(config);
 
             var options = services
@@ -232,9 +226,7 @@
                     .Build();
 
                 var services = new ServiceCollection()
-                    .AddOptions()
-                    .AddSingleton(GuidProvider.Instance)
-                    .AddFoidProxy()
+                    .AddTestFramework()
                     .Configure<FoidOptions>(config);
 
                 var serviceProvider = services.BuildServiceProvider();

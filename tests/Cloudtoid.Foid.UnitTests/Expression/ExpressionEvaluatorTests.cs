@@ -5,10 +5,8 @@
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Options;
     using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using NSubstitute;
 
     [TestClass]
     public sealed class ExpressionEvaluatorTests
@@ -251,18 +249,9 @@
 
         private static string Evaluate(string expression, HttpContext? context = null, FoidOptions? options = null)
         {
-            var monitor = Substitute.For<IOptionsMonitor<FoidOptions>>();
-            monitor.CurrentValue.Returns(options ?? new FoidOptions());
-
-            var services = new ServiceCollection()
-                .AddSingleton(monitor)
-                .AddSingleton(GuidProvider.Instance)
-                .AddLogging()
-                .AddFoidProxy();
-
+            var services = new ServiceCollection().AddTestFramework(options);
             var serviceProvider = services.BuildServiceProvider();
             var evaluator = serviceProvider.GetRequiredService<IExpressionEvaluator>();
-
             context ??= new DefaultHttpContext();
             return evaluator.Evaluate(context, expression);
         }
