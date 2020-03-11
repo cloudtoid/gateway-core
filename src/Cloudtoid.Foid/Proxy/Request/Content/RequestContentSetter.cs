@@ -20,8 +20,6 @@
     /// </summary>
     public class RequestContentSetter : IRequestContentSetter
     {
-        private const string ContentHeadersPrefix = "Content-";
-
         public RequestContentSetter(
             IRequestContentHeaderValuesProvider provider,
             ILogger<RequestContentSetter> logger)
@@ -80,7 +78,7 @@
             foreach (var header in request.Headers)
             {
                 var name = header.Key;
-                if (!name.StartsWithOrdinalIgnoreCase(ContentHeadersPrefix))
+                if (!Headers.ContentHeaders.IsContentHeader(name))
                     continue;
 
                 AddHeaderValues(

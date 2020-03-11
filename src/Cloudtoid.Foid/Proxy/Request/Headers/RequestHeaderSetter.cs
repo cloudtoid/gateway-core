@@ -111,6 +111,10 @@
                     continue;
                 }
 
+                // Content headers should not be here. Ignore them.
+                if (Headers.ContentHeaders.IsContentHeader(name))
+                    continue;
+
                 if (name.EqualsOrdinalIgnoreCase(correlationIdHeader))
                     continue;
 

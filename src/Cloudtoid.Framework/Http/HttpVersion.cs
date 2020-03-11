@@ -2,7 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
 
+    [DebuggerStepThrough]
     public static class HttpVersion
     {
         public static readonly Version Version10 = System.Net.HttpVersion.Version10;
