@@ -34,10 +34,8 @@
             await SetHeadersAsync(context, upstreamResponse);
             await SetContentAsync(context, upstreamResponse);
 
-            // TODO: What are upstreamResponse.Content.Headers vs. upstreamResponse.Headers?
-            // Also, do we need to copy both? Others seem to do it!
-
-            // TODO: Cookies, and Trailing headers. How about content length/types/etc?
+            // TODO: Trailing headers
+            // TODO: Cookies
         }
 
         private void SetStatusCode(HttpContext context, HttpResponseMessage upstreamResponse)
@@ -91,5 +89,19 @@
 
             logger.LogDebug("Transferred the content of the inbound upstream response to the outbound downstream response");
         }
+
+        ////private async Task SetTrailingHeadersAsync(HttpContext context, HttpResponseMessage upstreamResponse)
+        ////{
+        ////    if (upstreamResponse.TrailingHeaders is null)
+        ////        return;
+
+        ////    var response = context.Response;
+        ////    if (!ResponseTrailerExtensions.SupportsTrailers(context.Response))
+        ////        return;
+
+        ////    var headers = upstreamResponse.TrailingHeaders;
+        ////    foreach (var header in headers)
+        ////        response.AppendTrailer(header.Key, header.Value.AsArray());
+        ////}
     }
 }
