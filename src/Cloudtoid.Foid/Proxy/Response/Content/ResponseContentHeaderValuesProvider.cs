@@ -4,7 +4,7 @@
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
-    /// By inheriting from this class, one can partially control the outbound downstream response content headers and trailing headers. Please, consider the following extensibility points:
+    /// By inheriting from this class, one can partially control the outbound downstream response content headers. Please, consider the following extensibility points:
     /// 1. Inherit from <see cref="ResponseContentHeaderValuesProvider"/>, override its methods, and register it with DI; or
     /// 2. Implement <see cref="IResponseContentHeaderValuesProvider"/> and register it with DI; or
     /// 3. Inherit from <see cref="ResponseContentSetter"/>, override its methods, and register it with DI; or
