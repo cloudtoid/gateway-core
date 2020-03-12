@@ -66,15 +66,14 @@
             return Task.CompletedTask;
         }
 
-        protected virtual void AddUpstreamResponseHeadersToDownstream(HttpContext context, HttpResponseMessage upstreamResponse)
+        protected virtual void AddUpstreamResponseHeadersToDownstream(
+            HttpContext context,
+            HttpResponseMessage upstreamResponse)
         {
             if (HeaderOptions.IgnoreAllUpstreamResponseHeaders)
                 return;
 
-            var headers = upstreamResponse.Headers;
-            if (headers is null)
-                return;
-
+            var headers = upstreamResponse.Headers.ConcatOrEmpty(upstreamResponse.Content?.Headers);
             var correlationIdHeader = TraceIdProvider.GetCorrelationIdHeader(context);
             var headersWithOverride = HeaderOptions.HeaderNames;
 

@@ -6,6 +6,7 @@
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using NSubstitute;
     using static FoidOptions.ProxyOptions;
@@ -77,6 +78,25 @@
 
             // Assert
             response.Headers.ContainsKey("X-Empty-Header").Should().BeTrue();
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenContentHeaderValue_HeaderIsIncludedAsync()
+        {
+            // Arrange
+            var header = HeaderNames.ContentLocation;
+
+            var message = new HttpResponseMessage
+            {
+                Content = new StringContent("test")
+            };
+            message.Content.Headers.Add(header, "some-value");
+
+            // Act
+            var response = await SetHeadersAsync(message);
+
+            // Assert
+            response.Headers.ContainsKey(header).Should().BeTrue();
         }
 
         [TestMethod]
