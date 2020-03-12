@@ -34,7 +34,7 @@
 
             context.RequestAborted.ThrowIfCancellationRequested();
 
-            logger.LogDebug("Creating an outbound upstream HTTP request based on the inbound downstream request.");
+            logger.LogDebug("Creating an outbound upstream request based on the inbound downstream request.");
 
             var upstreamRequest = new HttpRequestMessage();
 
@@ -44,7 +44,7 @@
             await SetHeadersAsync(context, upstreamRequest);
             await SetContentAsync(context, upstreamRequest);
 
-            logger.LogDebug("Creating an outbound upstream HTTP request based on the inbound downstream request.");
+            logger.LogDebug("Created an outbound upstream request based on the inbound downstream request.");
 
             return upstreamRequest;
         }
@@ -72,13 +72,13 @@
 
         private async Task SetHeadersAsync(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            logger.LogDebug("Appending HTTP headers to the outbound upstream request");
+            logger.LogDebug("Appending the HTTP headers to the outbound upstream request");
 
             await headerSetter
                 .SetHeadersAsync(context, upstreamRequest)
                 .TraceOnFaulted(logger, "Failed to set the content body of the outbound upstream request", context.RequestAborted);
 
-            logger.LogDebug("Appended HTTP headers to the outbound upstream request");
+            logger.LogDebug("Appended the HTTP headers to the outbound upstream request");
         }
 
         private async Task SetContentAsync(HttpContext context, HttpRequestMessage upstreamRequest)

@@ -11,15 +11,18 @@
     {
         private readonly IResponseHeaderSetter headerSetter;
         private readonly IResponseContentSetter contentSetter;
+        private readonly ITrailingHeaderSetter trailingHeaderSetter;
         private readonly ILogger<ResponseCreator> logger;
 
         public ResponseCreator(
             IResponseHeaderSetter headerSetter,
             IResponseContentSetter contentSetter,
+            ITrailingHeaderSetter trailingHeaderSetter,
             ILogger<ResponseCreator> logger)
         {
             this.headerSetter = CheckValue(headerSetter, nameof(headerSetter));
             this.contentSetter = CheckValue(contentSetter, nameof(contentSetter));
+            this.trailingHeaderSetter = CheckValue(trailingHeaderSetter, nameof(trailingHeaderSetter));
             this.logger = CheckValue(logger, nameof(logger));
         }
 
@@ -30,15 +33,17 @@
 
             context.RequestAborted.ThrowIfCancellationRequested();
 
-            logger.LogDebug("Converting the upstream HTTP response to a downstream response.");
+            logger.LogDebug("Creating an outbound downstream response based on the inbound upstream request.");
 
             SetStatusCode(context, upstreamResponse);
             SetReasonPhrase(context, upstreamResponse);
             await SetHeadersAsync(context, upstreamResponse);
             await SetContentAsync(context, upstreamResponse);
+            await SetTrailingHeadersAsync(context, upstreamResponse);
 
-            // TODO: Trailing headers
-            // TODO: Cookies
+            logger.LogDebug("Created an outbound downstream response based on the inbound upstream request.");
+
+            // TODO: Cookies?
         }
 
         private void SetStatusCode(HttpContext context, HttpResponseMessage upstreamResponse)
@@ -67,13 +72,13 @@
 
         private async Task SetHeadersAsync(HttpContext context, HttpResponseMessage upstreamResponse)
         {
-            logger.LogDebug("Appending HTTP headers to the outbound downstream response");
+            logger.LogDebug("Appending the HTTP headers to the outbound downstream response");
 
             await headerSetter
                 .SetHeadersAsync(context, upstreamResponse)
-                .TraceOnFaulted(logger, "Failed to set the headers", context.RequestAborted);
+                .TraceOnFaulted(logger, "Failed to set the headers on the outbound downstream response", context.RequestAborted);
 
-            logger.LogDebug("Appended HTTP headers to the outbound downstream response");
+            logger.LogDebug("Appended the HTTP headers to the outbound downstream response");
         }
 
         private async Task SetContentAsync(HttpContext context, HttpResponseMessage upstreamResponse)
@@ -87,18 +92,15 @@
             logger.LogDebug("Transferred the content of the inbound upstream response to the outbound downstream response");
         }
 
-        ////private async Task SetTrailingHeadersAsync(HttpContext context, HttpResponseMessage upstreamResponse)
-        ////{
-        ////    if (upstreamResponse.TrailingHeaders is null)
-        ////        return;
+        private async Task SetTrailingHeadersAsync(HttpContext context, HttpResponseMessage upstreamResponse)
+        {
+            logger.LogDebug("Appending the trailing headers to the outbound downstream response");
 
-        ////    var response = context.Response;
-        ////    if (!ResponseTrailerExtensions.SupportsTrailers(context.Response))
-        ////        return;
+            await trailingHeaderSetter
+                .SetHeadersAsync(context, upstreamResponse)
+                .TraceOnFaulted(logger, "Failed to set the trailing headers on the outbound downstream response", context.RequestAborted);
 
-        ////    var headers = upstreamResponse.TrailingHeaders;
-        ////    foreach (var header in headers)
-        ////        response.AppendTrailer(header.Key, header.Value.AsArray());
-        ////}
+            logger.LogDebug("Appended the trailing headers to the outbound downstream response");
+        }
     }
 }

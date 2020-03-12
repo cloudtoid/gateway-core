@@ -108,7 +108,7 @@
                 if (headersWithOverride.Contains(name))
                     continue;
 
-                AddHeaderValues(context, upstreamResponse, name, header.Value.AsArray());
+                AddHeaderValues(context, name, header.Value.AsArray());
             }
         }
 
@@ -119,7 +119,6 @@
 
             AddHeaderValues(
                 context,
-                upstreamResponse,
                 TraceIdProvider.GetCorrelationIdHeader(context),
                 TraceIdProvider.GetCorrelationId(context));
         }
@@ -131,7 +130,6 @@
 
             AddHeaderValues(
                 context,
-                upstreamResponse,
                 ProxyHeaderNames.CallId,
                 TraceIdProvider.GetCallId(context));
         }
@@ -146,19 +144,18 @@
 
         protected virtual void AddHeaderValues(
             HttpContext context,
-            HttpResponseMessage upstreamResponse,
-            string nme,
+            string name,
             params string[] upstreamValues)
         {
-            if (Provider.TryGetHeaderValues(context, nme, upstreamValues, out var downstreamValues) && downstreamValues != null)
+            if (Provider.TryGetHeaderValues(context, name, upstreamValues, out var downstreamValues) && downstreamValues != null)
             {
-                context.Response.Headers.AddOrAppendHeaderValues(nme, downstreamValues);
+                context.Response.Headers.AddOrAppendHeaderValues(name, downstreamValues);
                 return;
             }
 
             Logger.LogInformation(
                 "Header '{0}' is not added. This was was instructed by the {1}.{2}.",
-                nme,
+                name,
                 nameof(IResponseHeaderValuesProvider),
                 nameof(IResponseHeaderValuesProvider.TryGetHeaderValues));
         }

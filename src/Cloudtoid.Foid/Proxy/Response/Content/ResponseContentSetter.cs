@@ -92,7 +92,6 @@
 
                 AddHeaderValues(
                     context,
-                    upstreamResponse,
                     name,
                     header.Value.AsArray());
             }
@@ -102,7 +101,6 @@
 
         protected virtual void AddHeaderValues(
             HttpContext context,
-            HttpResponseMessage upstreamResponse,
             string name,
             params string[] upstreamValues)
         {
