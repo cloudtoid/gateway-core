@@ -106,7 +106,7 @@
 
             var services = new ServiceCollection()
                 .AddSingleton(provider)
-                .AddTestFramework();
+                .AddTest();
 
             var serviceProvider = services.BuildServiceProvider();
             var setter = serviceProvider.GetRequiredService<IResponseHeaderSetter>();
@@ -302,7 +302,7 @@
 
         private static async Task<HttpResponse> SetHeadersAsync(HttpResponseMessage message, FoidOptions? options = null)
         {
-            var services = new ServiceCollection().AddTestFramework(options);
+            var services = new ServiceCollection().AddTest(options);
             var serviceProvider = services.BuildServiceProvider();
             var setter = serviceProvider.GetRequiredService<IResponseHeaderSetter>();
             var context = new DefaultHttpContext();

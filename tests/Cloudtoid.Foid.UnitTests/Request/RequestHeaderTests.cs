@@ -222,7 +222,7 @@
 
             var services = new ServiceCollection()
                 .AddSingleton(provider)
-                .AddTestFramework();
+                .AddTest();
 
             var serviceProvider = services.BuildServiceProvider();
             var setter = serviceProvider.GetRequiredService<IRequestHeaderSetter>();
@@ -651,7 +651,7 @@
             HttpContext context,
             FoidOptions? options = null)
         {
-            var services = new ServiceCollection().AddTestFramework(options);
+            var services = new ServiceCollection().AddTest(options);
             var serviceProvider = services.BuildServiceProvider();
             var setter = serviceProvider.GetRequiredService<IRequestHeaderSetter>();
             var message = new HttpRequestMessage();

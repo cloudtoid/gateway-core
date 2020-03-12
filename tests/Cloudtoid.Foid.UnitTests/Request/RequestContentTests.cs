@@ -29,7 +29,7 @@
 
         private static async Task<HttpRequestMessage> SetContentAsync(HttpContext context, FoidOptions? options = null)
         {
-            var services = new ServiceCollection().AddTestFramework(options);
+            var services = new ServiceCollection().AddTest(options);
             var serviceProvider = services.BuildServiceProvider();
             var setter = serviceProvider.GetRequiredService<IRequestContentSetter>();
             var message = new HttpRequestMessage();

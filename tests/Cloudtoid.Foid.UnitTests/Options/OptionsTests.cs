@@ -23,7 +23,7 @@
                 .Build();
 
             var services = new ServiceCollection()
-                .AddTestFramework()
+                .AddTest()
                 .Configure<FoidOptions>(config);
 
             var options = services
@@ -106,7 +106,7 @@
                 .Build();
 
             var services = new ServiceCollection()
-                .AddTestFramework()
+                .AddTest()
                 .Configure<FoidOptions>(config);
 
             var options = services
@@ -180,7 +180,7 @@
                 .Build();
 
             var services = new ServiceCollection()
-                .AddTestFramework()
+                .AddTest()
                 .Configure<FoidOptions>(config);
 
             var options = services
@@ -226,7 +226,7 @@
                     .Build();
 
                 var services = new ServiceCollection()
-                    .AddTestFramework()
+                    .AddTest()
                     .Configure<FoidOptions>(config);
 
                 var serviceProvider = services.BuildServiceProvider();

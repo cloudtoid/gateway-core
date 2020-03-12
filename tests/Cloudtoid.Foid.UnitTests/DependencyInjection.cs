@@ -7,7 +7,7 @@
 
     internal static class DependencyInjection
     {
-        public static IServiceCollection AddTestFramework(this IServiceCollection services, FoidOptions? options = null)
+        public static IServiceCollection AddTest(this IServiceCollection services, FoidOptions? options = null)
         {
             CheckValue(services, nameof(services));
 
