@@ -1,6 +1,5 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
-    using System.Collections.Generic;
     using Microsoft.AspNetCore.Http;
 
     /// <summary>

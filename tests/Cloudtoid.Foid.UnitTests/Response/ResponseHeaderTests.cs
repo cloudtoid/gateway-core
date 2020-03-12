@@ -320,7 +320,9 @@
             response.Headers.ContainsKey("x-xtra-4").Should().BeFalse();
         }
 
-        private static async Task<HttpResponse> SetHeadersAsync(HttpResponseMessage message, FoidOptions? options = null)
+        private static async Task<HttpResponse> SetHeadersAsync(
+            HttpResponseMessage message,
+            FoidOptions? options = null)
         {
             var services = new ServiceCollection().AddTest(options);
             var serviceProvider = services.BuildServiceProvider();

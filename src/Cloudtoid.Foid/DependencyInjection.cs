@@ -33,8 +33,8 @@
                 .TryAddSingleton<Proxy.IResponseCreator, Proxy.ResponseCreator>()
                 .TryAddSingleton<Proxy.IResponseHeaderSetter, Proxy.ResponseHeaderSetter>()
                 .TryAddSingleton<Proxy.IResponseHeaderValuesProvider, Proxy.ResponseHeaderValuesProvider>()
-                .TryAddSingleton<Proxy.IRequestContentSetter, Proxy.RequestContentSetter>()
-                .TryAddSingleton<Proxy.IRequestContentHeaderValuesProvider, Proxy.RequestContentHeaderValuesProvider>();
+                .TryAddSingleton<Proxy.IResponseContentSetter, Proxy.ResponseContentSetter>()
+                .TryAddSingleton<Proxy.IResponseContentHeaderValuesProvider, Proxy.ResponseContentHeaderValuesProvider>();
         }
 
         public static IApplicationBuilder UseFoidProxy(this IApplicationBuilder builder)

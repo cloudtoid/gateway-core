@@ -45,7 +45,7 @@
         }
 
         [TestMethod]
-        public async Task SetContentAsync_WhenNoContentTypeHeader_NoContentHeaderAddedAsync()
+        public async Task SetContentAsync_WhenNoContentHeader_NoContentHeaderAddedAsync()
         {
             // Arrange
             var context = new DefaultHttpContext();
