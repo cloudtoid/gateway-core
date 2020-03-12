@@ -80,9 +80,14 @@
             if (upstreamResponse.Content is null)
                 return;
 
+            if (context.Response.ContentLength <= 0)
+                return;
+
             logger.LogDebug("Transferring the content of the inbound upstream response to the outbound downstream response");
 
-            await upstreamResponse.Content.CopyToAsync(context.Response.Body);
+            await upstreamResponse.Content
+                .CopyToAsync(context.Response.Body)
+                .TraceOnFaulted(logger, "Failed to set the content body of the outbound downstream response", context.RequestAborted);
 
             logger.LogDebug("Transferred the content of the inbound upstream response to the outbound downstream response");
         }
