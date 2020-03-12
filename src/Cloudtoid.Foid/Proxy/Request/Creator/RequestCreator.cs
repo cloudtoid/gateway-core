@@ -76,7 +76,7 @@
 
             await headerSetter
                 .SetHeadersAsync(context, upstreamRequest)
-                .TraceOnFaulted(logger, "Failed to set the outbound upstream headers", context.RequestAborted);
+                .TraceOnFaulted(logger, "Failed to set the content body of the outbound upstream request", context.RequestAborted);
 
             logger.LogDebug("Appended HTTP headers to the outbound upstream request");
         }

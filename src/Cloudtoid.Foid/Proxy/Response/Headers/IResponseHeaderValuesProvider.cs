@@ -19,6 +19,10 @@
         /// By implementing this method, one can change the values of a given header.
         /// Return <c>false</c> if the header should be omitted.
         /// </summary>
-        bool TryGetHeaderValues(HttpContext context, string name, string[] upstreamValues, out string[] downstreamValues);
+        bool TryGetHeaderValues(
+            HttpContext context,
+            string name,
+            string[] upstreamValues,
+            out string[] downstreamValues);
     }
 }

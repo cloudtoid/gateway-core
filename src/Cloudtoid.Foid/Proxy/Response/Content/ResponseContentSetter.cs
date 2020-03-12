@@ -1,9 +1,12 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
+    using System;
+    using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Net.Http.Headers;
     using static Contract;
 
     /// <summary>
@@ -19,6 +22,11 @@
     /// </summary>s
     public class ResponseContentSetter : IResponseContentSetter
     {
+        private static readonly ISet<string> HeaderTransferBlacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            HeaderNames.TransferEncoding,
+        };
+
         public ResponseContentSetter(
             IResponseContentHeaderValuesProvider provider,
             ILogger<ResponseContentSetter> logger)
@@ -40,51 +48,52 @@
 
             context.RequestAborted.ThrowIfCancellationRequested();
 
-            var body = context.Response.Body;
-            if (body is null)
+            if (upstreamResponse.Content is null)
             {
-                Logger.LogDebug("The inbound downstream request does not have a content body.");
+                Logger.LogDebug("The inbound upstream response does not have a content body.");
                 return;
             }
 
-            await SetContentBodyAsync(context, upstreamResponse);
+            if (context.Response.ContentLength <= 0)
+            {
+                Logger.LogDebug("The inbound upstream response has a content length of zero.");
+                return;
+            }
+
             await SetContentHeadersAsync(context, upstreamResponse);
+            await SetContentBodyAsync(context, upstreamResponse);
         }
 
-        protected virtual Task SetContentBodyAsync(HttpContext context, HttpResponseMessage upstreamResponse)
+        protected virtual async Task SetContentBodyAsync(HttpContext context, HttpResponseMessage upstreamResponse)
         {
-            var body = context.Response.Body;
-            if (!body.CanRead)
-            {
-                Logger.LogDebug("The inbound downstream request does not have a readable body.");
-                return Task.CompletedTask;
-            }
+            var downstreamResponseStream = context.Response.Body;
 
-            if (body.CanSeek && body.Position != 0)
-            {
-                Logger.LogDebug("The inbound downstream request has a seekable body stream. Resetting the stream to the begining.");
-                body.Position = 0;
-            }
-
-            upstreamResponse.Content = new StreamContent(context.Response.Body);
-            return Task.CompletedTask;
+            // TODO: the current version of HttpContent.CopyToAsync doesn't expose the cancellation-token
+            // However, they are working on fixing that. We should modifgy this code and pass in context.RequestAborted
+            await upstreamResponse.Content.CopyToAsync(downstreamResponseStream);
+            await downstreamResponseStream.FlushAsync(context.RequestAborted);
         }
 
         protected virtual Task SetContentHeadersAsync(HttpContext context, HttpResponseMessage upstreamResponse)
         {
-            var request = context.Response;
+            context.RequestAborted.ThrowIfCancellationRequested();
 
-            foreach (var header in request.Headers)
+            var headers = upstreamResponse.Content?.Headers;
+            if (headers is null)
+                return Task.CompletedTask;
+
+            foreach (var header in headers)
             {
                 var name = header.Key;
-                if (!HeaderTypes.IsContentHeader(name))
+
+                if (HeaderTransferBlacklist.Contains(name))
                     continue;
 
                 AddHeaderValues(
                     context,
                     upstreamResponse,
                     name,
-                    header.Value);
+                    header.Value.AsArray());
             }
 
             return Task.CompletedTask;
@@ -94,11 +103,11 @@
             HttpContext context,
             HttpResponseMessage upstreamResponse,
             string name,
-            params string[] downstreamValues)
+            params string[] upstreamValues)
         {
-            if (Provider.TryGetHeaderValues(context, name, downstreamValues, out var upstreamValues) && upstreamValues != null)
+            if (Provider.TryGetHeaderValues(context, name, upstreamValues, out var downstreamValues) && downstreamValues != null)
             {
-                upstreamResponse.Content.Headers.TryAddWithoutValidation(name, upstreamValues);
+                context.Response.Headers[name] = downstreamValues;
                 return;
             }
 

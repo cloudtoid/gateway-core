@@ -18,13 +18,13 @@
     {
         /// <summary>
         /// By implementing this method, one can change the values of a given response header.
-        /// This interface is only used for content headers. See <see cref="IResponseHeaderValuesProvider"/> for request headers.
+        /// This interface is only used for content and trailing headers. See <see cref="IResponseHeaderValuesProvider"/> for response headers.
         /// Return <c>false</c> if the header should be omitted.
         /// </summary>
         bool TryGetHeaderValues(
             HttpContext context,
             string name,
-            IList<string> downstreamValues,
-            out IList<string> upstreamValues);
+            string[] downstreamValues,
+            out string[] upstreamValues);
     }
 }

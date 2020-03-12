@@ -73,11 +73,13 @@
             if (HeaderOptions.IgnoreAllUpstreamResponseHeaders)
                 return;
 
-            var headers = upstreamResponse.Headers.ConcatOrEmpty(upstreamResponse.Content?.Headers);
+            if (upstreamResponse.Headers is null)
+                return;
+
             var correlationIdHeader = TraceIdProvider.GetCorrelationIdHeader(context);
             var headersWithOverride = HeaderOptions.HeaderNames;
 
-            foreach (var header in headers)
+            foreach (var header in upstreamResponse.Headers)
             {
                 var name = header.Key;
 

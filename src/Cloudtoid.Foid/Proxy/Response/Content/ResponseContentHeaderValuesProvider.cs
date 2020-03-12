@@ -14,13 +14,13 @@
     /// 1. <c>TryAddSingleton<IResponseHeaderValuesProvider, MyResponseHeaderValuesProvider>()</c>
     /// 2. <c>TryAddSingleton<IResponseHeaderSetter, MyResponseHeaderSetter>()</c>
     /// </summary>
-    public class ResponseContentHeaderValuesProvider : IRequestContentHeaderValuesProvider
+    public class ResponseContentHeaderValuesProvider : IResponseContentHeaderValuesProvider
     {
         public virtual bool TryGetHeaderValues(
             HttpContext context,
             string name,
-            IList<string> downstreamValues,
-            out IList<string> upstreamValues)
+            string[] downstreamValues,
+            out string[] upstreamValues)
         {
             upstreamValues = downstreamValues;
             return true;

@@ -81,7 +81,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenContentHeaderValue_HeaderIsIncludedAsync()
+        public async Task SetHeadersAsync_WhenContentHeaderValue_HeaderIsNotIncludedAsync()
         {
             // Arrange
             var header = HeaderNames.ContentLocation;
@@ -96,7 +96,7 @@
             var response = await SetHeadersAsync(message);
 
             // Assert
-            response.Headers.ContainsKey(header).Should().BeTrue();
+            response.Headers.ContainsKey(header).Should().BeFalse();
         }
 
         [TestMethod]

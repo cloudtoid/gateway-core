@@ -72,9 +72,7 @@
 
         protected virtual Task SetContentHeadersAsync(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            var request = context.Request;
-
-            foreach (var header in request.Headers)
+            foreach (var header in context.Request.Headers)
             {
                 var name = header.Key;
                 if (!HeaderTypes.IsContentHeader(name))

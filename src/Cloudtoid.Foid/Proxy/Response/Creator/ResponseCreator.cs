@@ -10,13 +10,16 @@
     internal sealed class ResponseCreator : IResponseCreator
     {
         private readonly IResponseHeaderSetter headerSetter;
+        private readonly IResponseContentSetter contentSetter;
         private readonly ILogger<ResponseCreator> logger;
 
         public ResponseCreator(
             IResponseHeaderSetter headerSetter,
+            IResponseContentSetter contentSetter,
             ILogger<ResponseCreator> logger)
         {
             this.headerSetter = CheckValue(headerSetter, nameof(headerSetter));
+            this.contentSetter = CheckValue(contentSetter, nameof(contentSetter));
             this.logger = CheckValue(logger, nameof(logger));
         }
 
@@ -75,16 +78,10 @@
 
         private async Task SetContentAsync(HttpContext context, HttpResponseMessage upstreamResponse)
         {
-            if (upstreamResponse.Content is null)
-                return;
-
-            if (context.Response.ContentLength <= 0)
-                return;
-
             logger.LogDebug("Transferring the content of the inbound upstream response to the outbound downstream response");
 
-            await upstreamResponse.Content
-                .CopyToAsync(context.Response.Body)
+            await contentSetter
+                .SetContentAsync(context, upstreamResponse)
                 .TraceOnFaulted(logger, "Failed to set the content body of the outbound downstream response", context.RequestAborted);
 
             logger.LogDebug("Transferred the content of the inbound upstream response to the outbound downstream response");
