@@ -88,15 +88,6 @@
                     header.Value);
             }
 
-            if (!string.IsNullOrEmpty(request.ContentType))
-            {
-                AddHeaderValues(
-                    context,
-                    upstreamRequest,
-                    HeaderNames.ContentType,
-                    request.ContentType);
-            }
-
             return Task.CompletedTask;
         }
 

@@ -17,6 +17,22 @@
         {
             // Arrange
             var context = new DefaultHttpContext();
+            var header = HeaderNames.ContentLength;
+            context.Request.Headers.Add(header, "somevalue");
+
+            // Act
+            var message = await SetContentAsync(context);
+
+            // Assert
+            message.Content.Headers.TryGetValues(header, out var headers).Should().BeTrue();
+            headers.Should().HaveCount(1);
+        }
+
+        [TestMethod]
+        public async Task SetContentAsync_WhenHasContentTypeHeader_ContentTypeHeadersIncludedOnlyOnceAsync()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
             var header = HeaderNames.ContentType;
             context.Request.Headers.Add(header, "somevalue");
 
@@ -24,7 +40,23 @@
             var message = await SetContentAsync(context);
 
             // Assert
-            message.Headers.TryGetValues(header, out _).Should().BeFalse();
+            message.Content.Headers.TryGetValues(header, out var headers).Should().BeTrue();
+            headers.Should().HaveCount(1);
+        }
+
+        [TestMethod]
+        public async Task SetContentAsync_WhenNoContentTypeHeader_NoContentHeaderAddedAsync()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            var header = HeaderNames.Accept;
+            context.Request.Headers.Add(header, "somevalue");
+
+            // Act
+            var message = await SetContentAsync(context);
+
+            // Assert
+            message.Content.Headers.TryGetValues(header, out _).Should().BeFalse();
         }
 
         private static async Task<HttpRequestMessage> SetContentAsync(HttpContext context, FoidOptions? options = null)
