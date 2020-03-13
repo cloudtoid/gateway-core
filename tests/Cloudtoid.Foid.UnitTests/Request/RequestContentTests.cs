@@ -53,7 +53,7 @@
             context.Request.Headers.Add(header, "somevalue");
 
             var options = new FoidOptions();
-            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamHeaders = true;
+            options.Proxy.Downstream.Response.Headers.IgnoreAllUpstreamHeaders = true;
 
             // Act
             var message = await SetContentAsync(context, options: options);

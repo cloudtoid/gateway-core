@@ -35,6 +35,24 @@
         }
 
         [TestMethod]
+        public async Task SetContentAsync_WhenIgnoreHeaders_ContentHeadersNotIncludedAsync()
+        {
+            // Arrange
+            var header = HeaderNames.ContentDisposition;
+            const string value = "some-value";
+            var message = CreateHttpResponseMessage((header, value));
+
+            var options = new FoidOptions();
+            options.Proxy.Downstream.Response.Headers.IgnoreAllUpstreamHeaders = true;
+
+            // Act
+            var response = await SetContentAsync(message, options: options);
+
+            // Assert
+            response.Headers.ContainsKey(header).Should().BeFalse();
+        }
+
+        [TestMethod]
         public async Task SetContentAsync_WhenHasContentHeaders_ContentHeadersIncludedAsync()
         {
             // Arrange
