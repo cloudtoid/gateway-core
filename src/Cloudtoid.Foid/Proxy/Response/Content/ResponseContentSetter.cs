@@ -8,6 +8,7 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.Net.Http.Headers;
     using static Contract;
+    using Options = OptionsProvider.ProxyOptions.DownstreamOptions.ResponseOptions.HeadersOptions;
 
     /// <summary>
     /// By inheriting from this class, one can have full control over the outbound downstream response content and content header. However, a fully functioning implementation is nontrivial. Therefore, before implementing this interface, consider the following extensibility points:
@@ -27,17 +28,27 @@
             HeaderNames.TransferEncoding,
         };
 
+        private readonly HeaderSanetizer sanetizer;
+
         public ResponseContentSetter(
             IResponseContentHeaderValuesProvider provider,
+            OptionsProvider options,
             ILogger<ResponseContentSetter> logger)
         {
             Provider = CheckValue(provider, nameof(provider));
+            Options = CheckValue(options, nameof(options));
             Logger = CheckValue(logger, nameof(logger));
+            sanetizer = new HeaderSanetizer(logger);
         }
 
         protected IResponseContentHeaderValuesProvider Provider { get; }
 
+        protected OptionsProvider Options { get; }
+
         protected ILogger<ResponseContentSetter> Logger { get; }
+
+        // Do NOT cache this value. Options react to changes.
+        private Options HeaderOptions => Options.Proxy.Downstream.Response.Headers;
 
         public virtual async Task SetContentAsync(
             HttpContext context,
@@ -77,15 +88,28 @@
 
         protected virtual Task SetContentHeadersAsync(HttpContext context, HttpResponseMessage upstreamResponse)
         {
+            if (HeaderOptions.IgnoreAllUpstreamHeaders)
+                return Task.CompletedTask;
+
             context.RequestAborted.ThrowIfCancellationRequested();
 
             var headers = upstreamResponse.Content?.Headers;
             if (headers is null)
                 return Task.CompletedTask;
 
+            var allowHeadersWithEmptyValue = HeaderOptions.AllowHeadersWithEmptyValue;
+            var allowHeadersWithUnderscoreInName = HeaderOptions.AllowHeadersWithUnderscoreInName;
+
             foreach (var header in headers)
             {
                 var name = header.Key;
+
+                if (!sanetizer.IsValid(
+                    name,
+                    header.Value,
+                    allowHeadersWithEmptyValue,
+                    allowHeadersWithUnderscoreInName))
+                    continue;
 
                 if (HeaderTransferBlacklist.Contains(name))
                     continue;

@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
@@ -28,22 +27,35 @@
             ProxyHeaderNames.CallId,
         };
 
+        private readonly HeaderSanetizer sanetizer;
+
         public TrailingHeaderSetter(
             ITrailingHeaderValuesProvider provider,
+            OptionsProvider options,
             ILogger<TrailingHeaderSetter> logger)
         {
             Provider = CheckValue(provider, nameof(provider));
+            Options = CheckValue(options, nameof(options));
             Logger = CheckValue(logger, nameof(logger));
+            sanetizer = new HeaderSanetizer(logger);
         }
 
         protected ITrailingHeaderValuesProvider Provider { get; }
 
+        protected OptionsProvider Options { get; }
+
         protected ILogger<TrailingHeaderSetter> Logger { get; }
+
+        // Do NOT cache this value. Options react to changes.
+        private Options HeaderOptions => Options.Proxy.Downstream.Response.Headers;
 
         public virtual Task SetHeadersAsync(HttpContext context, HttpResponseMessage upstreamResponse)
         {
             CheckValue(context, nameof(context));
             CheckValue(upstreamResponse, nameof(upstreamResponse));
+
+            if (HeaderOptions.IgnoreAllUpstreamHeaders)
+                return Task.CompletedTask;
 
             context.RequestAborted.ThrowIfCancellationRequested();
 
@@ -53,9 +65,23 @@
             if (!ResponseTrailerExtensions.SupportsTrailers(context.Response))
                 return Task.CompletedTask;
 
+            var allowHeadersWithEmptyValue = HeaderOptions.AllowHeadersWithEmptyValue;
+            var allowHeadersWithUnderscoreInName = HeaderOptions.AllowHeadersWithUnderscoreInName;
             var headers = upstreamResponse.TrailingHeaders;
+
             foreach (var header in headers)
-                AddHeaderValues(context, header.Key, header.Value.AsArray());
+            {
+                var name = header.Key;
+
+                if (!sanetizer.IsValid(
+                    name,
+                    header.Value,
+                    allowHeadersWithEmptyValue,
+                    allowHeadersWithUnderscoreInName))
+                    continue;
+
+                AddHeaderValues(context, name, header.Value.AsArray());
+            }
 
             return Task.CompletedTask;
         }

@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
@@ -28,6 +27,8 @@
             ProxyHeaderNames.CallId,
         };
 
+        private readonly HeaderSanetizer sanetizer;
+
         public ResponseHeaderSetter(
             IResponseHeaderValuesProvider provider,
             ITraceIdProvider traceIdProvider,
@@ -38,6 +39,7 @@
             TraceIdProvider = CheckValue(traceIdProvider, nameof(traceIdProvider));
             Options = CheckValue(options, nameof(options));
             Logger = CheckValue(logger, nameof(logger));
+            sanetizer = new HeaderSanetizer(logger);
         }
 
         protected IResponseHeaderValuesProvider Provider { get; }
@@ -76,6 +78,8 @@
             if (upstreamResponse.Headers is null)
                 return;
 
+            var allowHeadersWithEmptyValue = HeaderOptions.AllowHeadersWithEmptyValue;
+            var allowHeadersWithUnderscoreInName = HeaderOptions.AllowHeadersWithUnderscoreInName;
             var correlationIdHeader = TraceIdProvider.GetCorrelationIdHeader(context);
             var headersWithOverride = HeaderOptions.HeaderNames;
 
@@ -83,19 +87,12 @@
             {
                 var name = header.Key;
 
-                // Remove empty headers
-                if (!HeaderOptions.AllowHeadersWithEmptyValue && header.Value.All(s => string.IsNullOrEmpty(s)))
-                {
-                    Logger.LogInformation("Removing header '{0}' as its value is empty.", name);
+                if (!sanetizer.IsValid(
+                    name,
+                    header.Value,
+                    allowHeadersWithEmptyValue,
+                    allowHeadersWithUnderscoreInName))
                     continue;
-                }
-
-                // Remove headers with underscore in their names
-                if (!HeaderOptions.AllowHeadersWithUnderscoreInName && name.Contains('_'))
-                {
-                    Logger.LogInformation("Removing header '{0}' as headers should not have underscores in their name.", header.Key);
-                    continue;
-                }
 
                 if (name.EqualsOrdinalIgnoreCase(correlationIdHeader))
                     continue;
