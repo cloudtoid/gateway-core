@@ -10,7 +10,7 @@
           "defaultHost": "this-machine-name",
           "allowHeadersWithEmptyValue": true,
           "allowHeadersWithUnderscoreInName": true,
-          "ignoreAllDownstreamRequestHeaders": true,
+          "ignoreAllDownstreamHeaders": true,
           "includeExternalAddress": true,
           "ignoreClientAddress": true,
           "ignoreClientProtocol": true,
@@ -34,7 +34,7 @@
         "headers": {
           "allowHeadersWithEmptyValue": true,
           "allowHeadersWithUnderscoreInName": true,
-          "ignoreAllUpstreamResponseHeaders": true,
+          "ignoreAllUpstreamHeaders": true,
           "includeCorrelationId": true,
           "includeCallId": true,
           "headers": [

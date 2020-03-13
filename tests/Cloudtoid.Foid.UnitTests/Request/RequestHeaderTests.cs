@@ -23,7 +23,7 @@
         {
             // Arrange
             var options = new FoidOptions();
-            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamRequestHeaders = false;
+            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamHeaders = false;
             options.Proxy.Upstream.Request.Headers.IgnoreHost = true;
 
             var context = new DefaultHttpContext();
@@ -41,7 +41,7 @@
         {
             // Arrange
             var options = new FoidOptions();
-            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamRequestHeaders = true;
+            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamHeaders = true;
             options.Proxy.Upstream.Request.Headers.IgnoreHost = false;
 
             var context = new DefaultHttpContext();
@@ -285,7 +285,7 @@
             // Arrange
             const string HeaderName = "x-custom-test";
             var options = new FoidOptions();
-            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamRequestHeaders = true;
+            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamHeaders = true;
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, "abc");
@@ -303,7 +303,7 @@
             // Arrange
             const string HeaderName = "x-custom-test";
             var options = new FoidOptions();
-            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamRequestHeaders = false;
+            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamHeaders = false;
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, new[] { "abc", "efg" });
@@ -321,7 +321,7 @@
             // Arrange
             const string HeaderName = "x-correlation-id";
             var options = new FoidOptions();
-            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamRequestHeaders = true;
+            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamHeaders = true;
             options.Proxy.Upstream.Request.Headers.IgnoreCorrelationId = false;
 
             var context = new DefaultHttpContext();
@@ -344,7 +344,7 @@
             // Arrange
             const string HeaderName = "x-correlation-id";
             var options = new FoidOptions();
-            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamRequestHeaders = false;
+            options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamHeaders = false;
             options.Proxy.Upstream.Request.Headers.IgnoreCorrelationId = false;
 
             var context = new DefaultHttpContext();

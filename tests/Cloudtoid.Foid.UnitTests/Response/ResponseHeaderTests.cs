@@ -152,7 +152,7 @@
             // Arrange
             const string HeaderName = "x-custom-test";
             var options = new FoidOptions();
-            options.Proxy.Downstream.Response.Headers.IgnoreAllUpstreamResponseHeaders = true;
+            options.Proxy.Downstream.Response.Headers.IgnoreAllUpstreamHeaders = true;
 
             var message = new HttpResponseMessage();
             message.Headers.Add(HeaderName, "abc");
@@ -170,7 +170,7 @@
             // Arrange
             const string HeaderName = "x-custom-test";
             var options = new FoidOptions();
-            options.Proxy.Downstream.Response.Headers.IgnoreAllUpstreamResponseHeaders = false;
+            options.Proxy.Downstream.Response.Headers.IgnoreAllUpstreamHeaders = false;
 
             var message = new HttpResponseMessage();
             message.Headers.Add(HeaderName, new[] { "abc", "efg" });

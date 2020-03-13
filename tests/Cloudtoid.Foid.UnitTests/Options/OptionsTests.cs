@@ -43,7 +43,7 @@
             requestHeaders.GetDefaultHost(context).Should().Be("this-machine-name");
             requestHeaders.AllowHeadersWithEmptyValue.Should().BeTrue();
             requestHeaders.AllowHeadersWithUnderscoreInName.Should().BeTrue();
-            requestHeaders.IgnoreAllDownstreamRequestHeaders.Should().BeTrue();
+            requestHeaders.IgnoreAllDownstreamHeaders.Should().BeTrue();
             requestHeaders.IgnoreCallId.Should().BeTrue();
             requestHeaders.IgnoreClientAddress.Should().BeTrue();
             requestHeaders.IgnoreClientProtocol.Should().BeTrue();
@@ -199,7 +199,7 @@
             requestHeaders.GetDefaultHost(context).Should().Be(Environment.MachineName);
             requestHeaders.AllowHeadersWithEmptyValue.Should().BeFalse();
             requestHeaders.AllowHeadersWithUnderscoreInName.Should().BeFalse();
-            requestHeaders.IgnoreAllDownstreamRequestHeaders.Should().BeFalse();
+            requestHeaders.IgnoreAllDownstreamHeaders.Should().BeFalse();
             requestHeaders.IgnoreCallId.Should().BeFalse();
             requestHeaders.IgnoreClientAddress.Should().BeFalse();
             requestHeaders.IgnoreClientProtocol.Should().BeFalse();

@@ -21,15 +21,19 @@
     {
         public RequestContentSetter(
             IRequestContentHeaderValuesProvider provider,
+            OptionsProvider options,
             ILogger<RequestContentSetter> logger)
         {
             Provider = CheckValue(provider, nameof(provider));
+            Options = CheckValue(options, nameof(options));
             Logger = CheckValue(logger, nameof(logger));
         }
 
         protected IRequestContentHeaderValuesProvider Provider { get; }
 
         protected ILogger<RequestContentSetter> Logger { get; }
+
+        protected OptionsProvider Options { get; }
 
         public virtual async Task SetContentAsync(
             HttpContext context,
@@ -72,6 +76,9 @@
 
         protected virtual Task SetContentHeadersAsync(HttpContext context, HttpRequestMessage upstreamRequest)
         {
+            if (Options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamHeaders)
+                return Task.CompletedTask;
+
             foreach (var header in context.Request.Headers)
             {
                 var name = header.Key;

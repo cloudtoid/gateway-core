@@ -56,10 +56,10 @@
                         public bool IncludeExternalAddress { get; set; }
 
                         /// <summary>
-                        /// If false, it will copy all the headers from the inbound downstream request to the outbound upstream request.
+                        /// If false, it will copy all headers from the inbound downstream request to the outbound upstream request. This includes both request and content headers.
                         /// The default value is <c>false</c>.
                         /// </summary>
-                        public bool IgnoreAllDownstreamRequestHeaders { get; set; }
+                        public bool IgnoreAllDownstreamHeaders { get; set; }
 
                         /// <summary>
                         /// If false, it will append a host header to the outbound upstream request.
@@ -130,10 +130,10 @@
                         public bool AllowHeadersWithUnderscoreInName { get; set; }
 
                         /// <summary>
-                        /// If false, it will copy all headers from the inbound upstream response to the outbound downstream response.
+                        /// If false, it will copy all headers from the inbound upstream response to the outbound downstream response. This includes response, content, and trailing headers.
                         /// The default value is <c>false</c>.
                         /// </summary>
-                        public bool IgnoreAllUpstreamResponseHeaders { get; set; }
+                        public bool IgnoreAllUpstreamHeaders { get; set; }
 
                         /// <summary>
                         /// If true, it will append a correlation identifier header to the outbound downstream response. The actual header name is defined by <see cref="CorrelationIdHeader"/>

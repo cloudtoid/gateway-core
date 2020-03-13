@@ -20,7 +20,7 @@
                 return (string)existingHost;
 
             var headersOptions = options.Proxy.Upstream.Request.Headers;
-            if (headersOptions.IgnoreAllDownstreamRequestHeaders)
+            if (headersOptions.IgnoreAllDownstreamHeaders)
                 return CreateHost(context);
 
             if (!context.Request.Headers.TryGetValue(HeaderNames.Host, out var values) || values.Count == 0)

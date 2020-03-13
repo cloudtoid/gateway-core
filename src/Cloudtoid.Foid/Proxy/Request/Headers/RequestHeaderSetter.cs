@@ -32,6 +32,8 @@
             ProxyHeaderNames.ProxyName,
         };
 
+        private readonly HeaderSanetizer sanetizer;
+
         public RequestHeaderSetter(
             IRequestHeaderValuesProvider provider,
             ITraceIdProvider traceIdProvider,
@@ -44,6 +46,7 @@
             HostProvider = CheckValue(hostProvider, nameof(hostProvider));
             Options = CheckValue(options, nameof(options));
             Logger = CheckValue(logger, nameof(logger));
+            sanetizer = new HeaderSanetizer(logger);
         }
 
         protected IRequestHeaderValuesProvider Provider { get; }
@@ -83,13 +86,15 @@
             HttpContext context,
             HttpRequestMessage upstreamRequest)
         {
-            if (HeaderOptions.IgnoreAllDownstreamRequestHeaders)
+            if (HeaderOptions.IgnoreAllDownstreamHeaders)
                 return;
 
             var headers = context.Request.Headers;
             if (headers is null)
                 return;
 
+            var allowHeadersWithEmptyValue = HeaderOptions.AllowHeadersWithEmptyValue;
+            var allowHeadersWithUnderscoreInName = HeaderOptions.AllowHeadersWithUnderscoreInName;
             var correlationIdHeader = TraceIdProvider.GetCorrelationIdHeader(context);
             var headersWithOverride = HeaderOptions.HeaderNames;
 
@@ -97,19 +102,12 @@
             {
                 var name = header.Key;
 
-                // Remove empty headers
-                if (!HeaderOptions.AllowHeadersWithEmptyValue && header.Value.All(string.IsNullOrEmpty))
-                {
-                    Logger.LogInformation("Removing header '{0}' as its value is empty.", name);
+                if (!sanetizer.IsValid(
+                    name,
+                    header.Value,
+                    allowHeadersWithEmptyValue,
+                    allowHeadersWithUnderscoreInName))
                     continue;
-                }
-
-                // Remove headers with underscore in their names
-                if (!HeaderOptions.AllowHeadersWithUnderscoreInName && name.Contains('_'))
-                {
-                    Logger.LogInformation("Removing header '{0}' as headers should not have underscores in their name.", header.Key);
-                    continue;
-                }
 
                 // Content headers should not be here. Ignore them.
                 if (HeaderTypes.IsContentHeader(name))

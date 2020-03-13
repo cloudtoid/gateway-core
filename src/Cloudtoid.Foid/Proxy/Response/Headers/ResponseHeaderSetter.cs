@@ -70,7 +70,7 @@
             HttpContext context,
             HttpResponseMessage upstreamResponse)
         {
-            if (HeaderOptions.IgnoreAllUpstreamResponseHeaders)
+            if (HeaderOptions.IgnoreAllUpstreamHeaders)
                 return;
 
             if (upstreamResponse.Headers is null)

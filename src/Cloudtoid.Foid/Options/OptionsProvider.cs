@@ -126,8 +126,8 @@
                         public bool IncludeExternalAddress
                             => context.UpstreamRequestHeaders.IncludeExternalAddress;
 
-                        public bool IgnoreAllDownstreamRequestHeaders
-                            => context.UpstreamRequestHeaders.IgnoreAllDownstreamRequestHeaders;
+                        public bool IgnoreAllDownstreamHeaders
+                            => context.UpstreamRequestHeaders.IgnoreAllDownstreamHeaders;
 
                         public bool IgnoreHost
                             => context.UpstreamRequestHeaders.IgnoreHost;
@@ -218,8 +218,8 @@
                         public bool AllowHeadersWithUnderscoreInName
                             => context.DownstreamResponseHeaders.AllowHeadersWithUnderscoreInName;
 
-                        public bool IgnoreAllUpstreamResponseHeaders
-                            => context.DownstreamResponseHeaders.IgnoreAllUpstreamResponseHeaders;
+                        public bool IgnoreAllUpstreamHeaders
+                            => context.DownstreamResponseHeaders.IgnoreAllUpstreamHeaders;
 
                         public bool IncludeCorrelationId
                             => context.DownstreamResponseHeaders.IncludeCorrelationId;

@@ -35,7 +35,7 @@
                 return (string)existingId;
 
             var headersOptions = options.Proxy.Upstream.Request.Headers;
-            if (headersOptions.IgnoreAllDownstreamRequestHeaders)
+            if (headersOptions.IgnoreAllDownstreamHeaders)
                 return CreateCorrelationId(context);
 
             var correlationIdHeader = GetCorrelationIdHeader(context);
