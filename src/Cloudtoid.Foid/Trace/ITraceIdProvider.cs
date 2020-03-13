@@ -1,4 +1,4 @@
-﻿namespace Cloudtoid.Foid
+﻿namespace Cloudtoid.Foid.Trace
 {
     using Microsoft.AspNetCore.Http;
 

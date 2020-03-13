@@ -1,6 +1,6 @@
-﻿namespace Cloudtoid.Foid
+﻿namespace Cloudtoid.Foid.Headers
 {
-    internal static class ProxyHeaderNames
+    internal static class Names
     {
         internal const string ExternalAddress = "x-foid-external-address";
         internal const string ClientAddress = "x-forwarded-for";

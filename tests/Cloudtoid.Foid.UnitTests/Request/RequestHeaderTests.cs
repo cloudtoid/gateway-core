@@ -6,6 +6,7 @@
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Cloudtoid.Foid.Options;
     using Cloudtoid.Foid.Proxy;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
@@ -13,10 +14,10 @@
     using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using NSubstitute;
-    using static FoidOptions.ProxyOptions;
+    using static Cloudtoid.Foid.Options.FoidOptions.ProxyOptions;
 
     [TestClass]
-    public class RequestHeaderTests
+    public sealed class RequestHeaderTests
     {
         [TestMethod]
         public async Task GetHostHeaderValue_WhenIgnoreHost_HostHeaderNotIncludedAsync()

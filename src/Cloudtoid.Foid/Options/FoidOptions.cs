@@ -1,4 +1,4 @@
-﻿namespace Cloudtoid.Foid
+﻿namespace Cloudtoid.Foid.Options
 {
     using System;
 
@@ -56,7 +56,7 @@
                         public bool IncludeExternalAddress { get; set; }
 
                         /// <summary>
-                        /// If false, it will copy all headers from the inbound downstream request to the outbound upstream request. This includes both request and content headers.
+                        /// If false, it will copy all headers (expect for a few that are blocked) from the inbound downstream request to the outbound upstream request. This includes both request and content headers.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IgnoreAllDownstreamHeaders { get; set; }
@@ -155,7 +155,7 @@
                 }
             }
 
-            public class ExtraHeader
+            public sealed class ExtraHeader
             {
                 public string? Name { get; set; }
 

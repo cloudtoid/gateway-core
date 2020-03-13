@@ -6,7 +6,7 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-    public class CollectionExtensionTests
+    public sealed class CollectionExtensionTests
     {
         [TestMethod]
         public void IndexOf_WhenDifferentConditions_ReturnsIndex()

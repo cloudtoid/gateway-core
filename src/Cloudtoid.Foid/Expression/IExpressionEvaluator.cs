@@ -1,4 +1,4 @@
-﻿namespace Cloudtoid.Foid
+﻿namespace Cloudtoid.Foid.Expression
 {
     using Microsoft.AspNetCore.Http;
 

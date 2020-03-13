@@ -2,6 +2,8 @@
 {
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Cloudtoid.Foid.Headers;
+    using Cloudtoid.Foid.Options;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using static Contract;

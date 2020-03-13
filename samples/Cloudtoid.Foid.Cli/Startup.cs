@@ -8,7 +8,7 @@ namespace Cloudtoid.Foid.Cli
     using Microsoft.Extensions.Hosting;
     using static Contract;
 
-    public class Startup
+    public sealed class Startup
     {
         public Startup(IConfiguration configuration)
         {

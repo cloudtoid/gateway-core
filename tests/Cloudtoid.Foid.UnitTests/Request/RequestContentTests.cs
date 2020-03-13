@@ -2,6 +2,7 @@
 {
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Cloudtoid.Foid.Options;
     using Cloudtoid.Foid.Proxy;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
@@ -10,7 +11,7 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-    public class RequestContentTests
+    public sealed class RequestContentTests
     {
         [TestMethod]
         public async Task SetContentAsync_WhenHasContentHeaders_ContentHeadersIncludedAsync()
@@ -77,7 +78,9 @@
             message.Content.Headers.TryGetValues(header, out _).Should().BeFalse();
         }
 
-        private static async Task<HttpRequestMessage> SetContentAsync(HttpContext context, FoidOptions? options = null)
+        private static async Task<HttpRequestMessage> SetContentAsync(
+            HttpContext context,
+            FoidOptions? options = null)
         {
             var services = new ServiceCollection().AddTest(options);
             var serviceProvider = services.BuildServiceProvider();

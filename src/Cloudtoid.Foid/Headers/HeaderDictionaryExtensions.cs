@@ -1,4 +1,4 @@
-﻿namespace Cloudtoid.Foid
+﻿namespace Cloudtoid.Foid.Headers
 {
     using System.Collections.Generic;
     using System.Diagnostics;

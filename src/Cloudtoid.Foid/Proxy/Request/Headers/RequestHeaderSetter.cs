@@ -4,11 +4,15 @@
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Cloudtoid.Foid.Headers;
+    using Cloudtoid.Foid.Host;
+    using Cloudtoid.Foid.Options;
+    using Cloudtoid.Foid.Trace;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using Microsoft.Net.Http.Headers;
     using static Contract;
-    using Options = OptionsProvider.ProxyOptions.UpstreamOptions.RequestOptions.HeadersOptions;
+    using Options = Options.OptionsProvider.ProxyOptions.UpstreamOptions.RequestOptions.HeadersOptions;
 
     /// <summary>
     /// By inheriting from this class, one can have full control over the outbound upstream request headers. Please consider the following extensibility points:
@@ -25,10 +29,10 @@
     {
         private static readonly ISet<string> HeaderTransferBlacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            ProxyHeaderNames.ExternalAddress,
+            Names.ExternalAddress,
             HeaderNames.Host,
-            ProxyHeaderNames.CallId,
-            ProxyHeaderNames.ProxyName,
+            Names.CallId,
+            Names.ProxyName,
         };
 
         private readonly HeaderSanetizer sanetizer;
@@ -149,7 +153,7 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                ProxyHeaderNames.ExternalAddress,
+                Names.ExternalAddress,
                 clientAddress);
         }
 
@@ -165,7 +169,7 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                ProxyHeaderNames.ClientAddress,
+                Names.ClientAddress,
                 clientAddress);
         }
 
@@ -177,7 +181,7 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                ProxyHeaderNames.ClientProtocol,
+                Names.ClientProtocol,
                 context.Request.Scheme);
         }
 
@@ -201,7 +205,7 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                ProxyHeaderNames.CallId,
+                Names.CallId,
                 TraceIdProvider.GetCallId(context));
         }
 
@@ -213,7 +217,7 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                ProxyHeaderNames.ProxyName,
+                Names.ProxyName,
                 name);
         }
 

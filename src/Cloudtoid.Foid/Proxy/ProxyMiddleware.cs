@@ -3,6 +3,7 @@
     using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using Cloudtoid;
+    using Cloudtoid.Foid.Options;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using static Contract;

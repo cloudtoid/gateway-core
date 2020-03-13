@@ -1,10 +1,10 @@
-﻿namespace Cloudtoid.Foid
+﻿namespace Cloudtoid.Foid.Options
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using Cloudtoid.Foid.Options;
+    using Cloudtoid.Foid.Expression;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Options;
     using static Contract;

@@ -1,10 +1,15 @@
-﻿namespace Cloudtoid.Foid
+﻿namespace Cloudtoid.Foid.Host
 {
+    using Cloudtoid.Foid.Options;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Net.Http.Headers;
     using static Contract;
 
-    internal sealed class HostProvider : IHostProvider
+    /// <summary>
+    /// By inheriting from this class, one can override the HOST header of the outbound upstream request.
+    /// You can also implement <see cref="IHostProvider"/> and register it with DI.
+    /// </summary>
+    public class HostProvider : IHostProvider
     {
         private static readonly object HostKey = new object();
         private readonly OptionsProvider options;
@@ -14,8 +19,9 @@
             this.options = CheckValue(options, nameof(options));
         }
 
-        public string GetHost(HttpContext context)
+        public virtual string GetHost(HttpContext context)
         {
+            // look up in out request cache first
             if (context.Items.TryGetValue(HostKey, out var existingHost))
                 return (string)existingHost;
 
@@ -36,7 +42,7 @@
         private string CreateHost(HttpContext context)
         {
             var host = options.Proxy.Upstream.Request.Headers.GetDefaultHost(context);
-            context.Items.Add(HostKey, host);
+            context.Items.Add(HostKey, host); // cache the value
             return host;
         }
 

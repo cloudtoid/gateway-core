@@ -3,6 +3,7 @@
     using System.IO;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Cloudtoid.Foid.Options;
     using Cloudtoid.Foid.Proxy;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
@@ -11,7 +12,7 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-    public class ResponseContentTests
+    public sealed class ResponseContentTests
     {
         [TestMethod]
         public async Task SetContentAsync_WhenHasContentBody_BodyIsCopiedAsync()

@@ -1,5 +1,6 @@
-﻿namespace Cloudtoid.Foid
+﻿namespace Cloudtoid.Foid.Trace
 {
+    using Cloudtoid.Foid.Options;
     using Microsoft.AspNetCore.Http;
     using static Contract;
 

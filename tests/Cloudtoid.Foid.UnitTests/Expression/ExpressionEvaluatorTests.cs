@@ -2,6 +2,8 @@
 {
     using System;
     using System.Net;
+    using Cloudtoid.Foid.Expression;
+    using Cloudtoid.Foid.Options;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
@@ -247,7 +249,10 @@
 
         private static string GetVarName(string varName) => $"${varName}";
 
-        private static string Evaluate(string expression, HttpContext? context = null, FoidOptions? options = null)
+        private static string Evaluate(
+            string expression,
+            HttpContext? context = null,
+            FoidOptions? options = null)
         {
             var services = new ServiceCollection().AddTest(options);
             var serviceProvider = services.BuildServiceProvider();

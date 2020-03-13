@@ -4,7 +4,7 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-    public class EmptyTests
+    public sealed class EmptyTests
     {
         [TestMethod]
         public void SingleValueList_Smoke()

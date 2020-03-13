@@ -2,6 +2,7 @@
 {
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Cloudtoid.Foid.Options;
     using Cloudtoid.Foid.Proxy;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
@@ -9,10 +10,10 @@
     using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using NSubstitute;
-    using static FoidOptions.ProxyOptions;
+    using static Cloudtoid.Foid.Options.FoidOptions.ProxyOptions;
 
     [TestClass]
-    public class ResponseHeaderTests
+    public sealed class ResponseHeaderTests
     {
         [TestMethod]
         public async Task SetHeadersAsync_WhenHeaderWithUnderscore_HeaderRemovedAsync()

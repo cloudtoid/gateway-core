@@ -4,10 +4,13 @@
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Cloudtoid.Foid.Headers;
+    using Cloudtoid.Foid.Options;
+    using Cloudtoid.Foid.Trace;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using static Contract;
-    using Options = OptionsProvider.ProxyOptions.DownstreamOptions.ResponseOptions.HeadersOptions;
+    using Options = Options.OptionsProvider.ProxyOptions.DownstreamOptions.ResponseOptions.HeadersOptions;
 
     /// <summary>
     /// By inheriting from this clss, one can have full control over the outbound downstream response headers. Please consider the following extensibility points:
@@ -24,7 +27,7 @@
     {
         private static readonly ISet<string> HeaderTransferBlacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            ProxyHeaderNames.CallId,
+            Names.CallId,
         };
 
         private readonly HeaderSanetizer sanetizer;
@@ -127,7 +130,7 @@
 
             AddHeaderValues(
                 context,
-                ProxyHeaderNames.CallId,
+                Names.CallId,
                 TraceIdProvider.GetCallId(context));
         }
 

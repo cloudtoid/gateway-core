@@ -4,13 +4,14 @@
     using System.IO;
     using System.Linq;
     using System.Threading;
+    using Cloudtoid.Foid.Options;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using static FoidOptions.ProxyOptions;
+    using static Cloudtoid.Foid.Options.FoidOptions.ProxyOptions;
 
     [TestClass]
     public sealed class OptionsTests

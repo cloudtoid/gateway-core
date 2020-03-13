@@ -4,7 +4,7 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-    public class HttpVersionTests
+    public sealed class HttpVersionTests
     {
         [TestMethod]
         public void GetHttpVersion_AllHttpVersions_CorrectResults()
