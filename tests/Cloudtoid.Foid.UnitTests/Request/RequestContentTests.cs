@@ -30,6 +30,21 @@
         }
 
         [TestMethod]
+        public async Task SetContentAsync_WhenHasCustomContentHeader_ContentHeaderIsIgnoredAsync()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            var header = "x-test-header";
+            context.Request.Headers.Add(header, "some-value");
+
+            // Act
+            var message = await SetContentAsync(context);
+
+            // Assert
+            message.Content.Headers.TryGetValues(header, out _).Should().BeFalse();
+        }
+
+        [TestMethod]
         public async Task SetContentAsync_WhenHasContentTypeHeader_ContentTypeHeadersIncludedOnlyOnceAsync()
         {
             // Arrange

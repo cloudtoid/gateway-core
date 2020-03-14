@@ -7,7 +7,7 @@
     // The list below came from  System.Net.Http.Headers.KnownHeaders. See .net runtime on github.
     internal static class HeaderTypes
     {
-        internal static readonly ISet<string> GeneralHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly ISet<string> GeneralHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             HeaderNames.CacheControl,
             HeaderNames.Connection,
@@ -20,7 +20,7 @@
             HeaderNames.Warning,
         };
 
-        internal static readonly ISet<string> RequestHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly ISet<string> RequestHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             HeaderNames.Accept,
             HeaderNames.AcceptCharset,
@@ -44,7 +44,7 @@
             HeaderNames.UserAgent,
         };
 
-        internal static readonly ISet<string> ContentHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly ISet<string> ContentHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             HeaderNames.Allow,
             HeaderNames.ContentDisposition,
@@ -59,7 +59,7 @@
             HeaderNames.LastModified,
         };
 
-        internal static readonly ISet<string> ResponseHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly ISet<string> ResponseHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             HeaderNames.Status,
             HeaderNames.AcceptRanges,
@@ -74,7 +74,7 @@
             HeaderNames.WWWAuthenticate,
         };
 
-        internal static readonly ISet<string> NonTrailingHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly ISet<string> NonTrailingHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             HeaderNames.Age,
             HeaderNames.Authorization,
@@ -111,7 +111,19 @@
             HeaderNames.WWWAuthenticate,
         };
 
+        internal static bool IsGeneralHeader(string headerName)
+            => GeneralHeaders.Contains(headerName);
+
+        internal static bool IsRequestHeader(string headerName)
+            => RequestHeaders.Contains(headerName);
+
+        internal static bool IsResponseHeader(string headerName)
+            => ResponseHeaders.Contains(headerName);
+
         internal static bool IsContentHeader(string headerName)
-                => ContentHeaders.Contains(headerName);
+            => ContentHeaders.Contains(headerName);
+
+        internal static bool IsCustomHeader(string headerName)
+            => headerName.StartsWithOrdinalIgnoreCase("x");
     }
 }

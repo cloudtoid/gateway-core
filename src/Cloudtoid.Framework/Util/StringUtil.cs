@@ -251,7 +251,7 @@
         /// Derives a CLS-compliant name from the specified string.
         /// </summary>
         /// <param name="s">Input string which may include any characters.</param>
-        /// <param name="fallbackName">CLS-compliant fallback name to use if no allowed characters present in <paramref name="s"/>.</param>
+        /// <param name="fallbackName">CLS-compliant fall-back name to use if no allowed characters present in <paramref name="s"/>.</param>
         public static string DeriveClsCompliantName(string s, string fallbackName)
         {
             CheckNonEmpty(s, nameof(s));
