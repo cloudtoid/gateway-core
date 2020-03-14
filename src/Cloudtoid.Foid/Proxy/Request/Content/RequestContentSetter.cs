@@ -53,6 +53,12 @@
                 return;
             }
 
+            if (!context.Request.ContentLength.HasValue)
+            {
+                Logger.LogDebug("The inbound downstream request does not specify a 'Content-Length'.");
+                return;
+            }
+
             await SetContentBodyAsync(context, upstreamRequest);
             await SetContentHeadersAsync(context, upstreamRequest);
         }
@@ -68,7 +74,7 @@
 
             if (body.CanSeek && body.Position != 0)
             {
-                Logger.LogDebug("The inbound downstream request has a seekable body stream. Resetting the stream to the begining.");
+                Logger.LogDebug("The inbound downstream request has a seek-able body stream. Resetting the stream to the beginning.");
                 body.Position = 0;
             }
 
@@ -110,7 +116,7 @@
             }
 
             Logger.LogInformation(
-                "Header '{0}' is not added. This was was instructed by the {1}.{2}.",
+                "Header '{0}' is not added. This was instructed by the {1}.{2}.",
                 name,
                 nameof(IRequestContentHeaderValuesProvider),
                 nameof(IRequestContentHeaderValuesProvider.TryGetHeaderValues));

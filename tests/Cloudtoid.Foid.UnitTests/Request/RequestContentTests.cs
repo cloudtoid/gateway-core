@@ -18,7 +18,7 @@
         {
             // Arrange
             var context = new DefaultHttpContext();
-            var header = HeaderNames.ContentLength;
+            var header = HeaderNames.ContentDisposition;
             context.Request.Headers.Add(header, "some-value");
 
             // Act
@@ -50,7 +50,7 @@
         {
             // Arrange
             var context = new DefaultHttpContext();
-            var header = HeaderNames.ContentLength;
+            var header = HeaderNames.ContentLocation;
             context.Request.Headers.Add(header, "some-value");
 
             var options = new FoidOptions();
@@ -85,6 +85,7 @@
             var services = new ServiceCollection().AddTest(options);
             var serviceProvider = services.BuildServiceProvider();
             var setter = serviceProvider.GetRequiredService<IRequestContentSetter>();
+            context.Request.ContentLength = 10;
             var message = new HttpRequestMessage();
             await setter.SetContentAsync(context, message);
             return message;

@@ -30,10 +30,13 @@
     {
         private static readonly ISet<string> HeaderTransferBlacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            Names.ExternalAddress,
             HeaderNames.Host,
-            Names.CallId,
+            Names.ExternalAddress,
             Names.ProxyName,
+            Names.CallId,
+            Names.ForwardedFor,
+            Names.ForwardedHost,
+            Names.ForwardedProtocol
         };
 
         private readonly HeaderSanetizer sanetizer;
@@ -180,10 +183,13 @@
             if (HeaderOptions.IgnoreForwardedProtocol)
                 return;
 
+            if (string.IsNullOrEmpty(context.Request.Scheme))
+                return;
+
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                Names.ForwrdedProtocol,
+                Names.ForwardedProtocol,
                 context.Request.Scheme);
         }
 
@@ -199,7 +205,7 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                Names.ForwrdedHost,
+                Names.ForwardedHost,
                 host.Value);
         }
 

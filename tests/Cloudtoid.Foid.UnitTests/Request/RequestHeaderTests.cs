@@ -104,14 +104,14 @@
         {
             // Arrange
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(HeaderNames.Host, "myhost");
+            context.Request.Headers.Add(HeaderNames.Host, "my-host");
 
             // Act
             var message = await SetHeadersAsync(context);
 
             // Assert
             message.Headers.Contains(HeaderNames.Host).Should().BeTrue();
-            message.Headers.GetValues(HeaderNames.Host).SingleOrDefault().Should().Be("myhost");
+            message.Headers.GetValues(HeaderNames.Host).SingleOrDefault().Should().Be("my-host");
         }
 
         [TestMethod]
@@ -186,7 +186,7 @@
             // Arrange
             var context = new DefaultHttpContext();
             var header = HeaderNames.ContentType;
-            context.Request.Headers.Add(header, "somevalue");
+            context.Request.Headers.Add(header, "some-value");
 
             // Act
             var message = await SetHeadersAsync(context);
@@ -243,6 +243,32 @@
         }
 
         [TestMethod]
+        public async Task SetHeadersAsync_WhenHasXForwardHeaders_ExistingHeadersAreIgnoredAsync()
+        {
+            // Arrange
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.IgnoreForwardedFor = false;
+            options.Proxy.Upstream.Request.Headers.IgnoreForwardedHost = false;
+            options.Proxy.Upstream.Request.Headers.IgnoreForwardedProtocol = false;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(Headers.Names.ForwardedFor, "some-value");
+            context.Request.Headers.Add(Headers.Names.ForwardedHost, "some-value");
+            context.Request.Headers.Add(Headers.Names.ForwardedProtocol, "some-value");
+            context.Request.Host = new HostString("some-host");
+            context.Request.Scheme = "HTTPS";
+            context.Connection.RemoteIpAddress = new IPAddress(new byte[] { 0, 1, 2, 3 });
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(Headers.Names.ForwardedFor).Should().BeEquivalentTo(new[] { "0.1.2.3" });
+            message.Headers.GetValues(Headers.Names.ForwardedHost).Should().BeEquivalentTo(new[] { "some-host" });
+            message.Headers.GetValues(Headers.Names.ForwardedProtocol).Should().BeEquivalentTo(new[] { "HTTPS" });
+        }
+
+        [TestMethod]
         public async Task SetHeadersAsync_WhenIncludeExternalAddress_HeaderIncludedAsync()
         {
             // Arrange
@@ -289,7 +315,7 @@
             options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamHeaders = true;
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(HeaderName, "abc");
+            context.Request.Headers.Add(HeaderName, "some-value");
 
             // Act
             var message = await SetHeadersAsync(context, options);
@@ -307,13 +333,13 @@
             options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamHeaders = false;
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(HeaderName, new[] { "abc", "efg" });
+            context.Request.Headers.Add(HeaderName, new[] { "first-value", "second-value" });
 
             // Act
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(HeaderName).Should().BeEquivalentTo(new[] { "abc", "efg" });
+            message.Headers.GetValues(HeaderName).Should().BeEquivalentTo(new[] { "first-value", "second-value" });
         }
 
         [TestMethod]
@@ -326,7 +352,7 @@
             options.Proxy.Upstream.Request.Headers.IgnoreCorrelationId = false;
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(HeaderName, "abc");
+            context.Request.Headers.Add(HeaderName, "some-value");
 
             // Act
             var message = await SetHeadersAsync(context, options);
@@ -349,7 +375,7 @@
             options.Proxy.Upstream.Request.Headers.IgnoreCorrelationId = false;
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(HeaderName, "abc");
+            context.Request.Headers.Add(HeaderName, "some-value");
 
             // Act
             var message = await SetHeadersAsync(context, options);
@@ -359,7 +385,7 @@
                 .GetValues(HeaderName)
                 .SingleOrDefault()
                 .Should()
-                .Be("abc");
+                .Be("some-value");
         }
 
         [TestMethod]
@@ -399,7 +425,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenIgnoreForwardedForButHasValue_NewValueIsAppenededAsync()
+        public async Task SetHeadersAsync_WhenIgnoreForwardedForButHasValue_OldValueIsIgnoredAsync()
         {
             // Arrange
             const string HeaderName = "x-forwarded-for";
@@ -415,7 +441,7 @@
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(HeaderName).Should().BeEquivalentTo(new[] { "3.2.1.0", "0.1.2.3" });
+            message.Headers.GetValues(HeaderName).Should().BeEquivalentTo(new[] { "0.1.2.3" });
         }
 
         [TestMethod]
@@ -499,7 +525,7 @@
             options.Proxy.Upstream.Request.Headers.IgnoreCorrelationId = true;
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(HeaderName, "abc");
+            context.Request.Headers.Add(HeaderName, "some-value");
 
             // Act
             var message = await SetHeadersAsync(context, options);
@@ -538,13 +564,13 @@
             options.Proxy.Upstream.Request.Headers.IgnoreCorrelationId = false;
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(HeaderName, "abc");
+            context.Request.Headers.Add(HeaderName, "some-value");
 
             // Act
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(HeaderName).SingleOrDefault().Should().Be("abc");
+            message.Headers.GetValues(HeaderName).SingleOrDefault().Should().Be("some-value");
         }
 
         [TestMethod]
@@ -556,7 +582,7 @@
             options.Proxy.Upstream.Request.Headers.IgnoreCallId = true;
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(HeaderName, "abc");
+            context.Request.Headers.Add(HeaderName, "some-value");
 
             // Act
             var message = await SetHeadersAsync(context, options);
@@ -595,7 +621,7 @@
             options.Proxy.Upstream.Request.Headers.ProxyName = string.Empty;
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(HeaderName, "abc");
+            context.Request.Headers.Add(HeaderName, "some-value");
 
             // Act
             var message = await SetHeadersAsync(context, options);
@@ -613,7 +639,7 @@
             options.Proxy.Upstream.Request.Headers.ProxyName = "edge";
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(HeaderName, "abc");
+            context.Request.Headers.Add(HeaderName, "some-value");
 
             // Act
             var message = await SetHeadersAsync(context, options);
@@ -628,7 +654,7 @@
             // Arrange
             const string HeaderName = "x-foid-proxy-name";
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(HeaderName, "abc");
+            context.Request.Headers.Add(HeaderName, "some-value");
 
             // Act
             var message = await SetHeadersAsync(context);
@@ -646,22 +672,22 @@
             {
                 new ExtraHeader
                 {
-                    Name = "x-xtra-1",
+                    Name = "x-extra-1",
                     Values = new[] { "value1_1", "value1_2" }
                 },
                 new ExtraHeader
                 {
-                    Name = "x-xtra-2",
+                    Name = "x-extra-2",
                     Values = new[] { "value2_1", "value2_2" }
                 },
                 new ExtraHeader
                 {
-                    Name = "x-xtra-3",
+                    Name = "x-extra-3",
                     Values = new string[0]
                 },
                 new ExtraHeader
                 {
-                    Name = "x-xtra-4",
+                    Name = "x-extra-4",
                     Values = null
                 },
                 new ExtraHeader
@@ -672,16 +698,16 @@
             };
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add("x-xtra-2", "value2_0");
+            context.Request.Headers.Add("x-extra-2", "value2_0");
 
             // Act
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues("x-xtra-1").Should().BeEquivalentTo(new[] { "value1_1", "value1_2" });
-            message.Headers.GetValues("x-xtra-2").Should().BeEquivalentTo(new[] { "value2_1", "value2_2" });
-            message.Headers.Contains("x-xtra-3").Should().BeFalse();
-            message.Headers.Contains("x-xtra-4").Should().BeFalse();
+            message.Headers.GetValues("x-extra-1").Should().BeEquivalentTo(new[] { "value1_1", "value1_2" });
+            message.Headers.GetValues("x-extra-2").Should().BeEquivalentTo(new[] { "value2_1", "value2_2" });
+            message.Headers.Contains("x-extra-3").Should().BeFalse();
+            message.Headers.Contains("x-extra-4").Should().BeFalse();
         }
 
         private static async Task<HttpRequestMessage> SetHeadersAsync(
