@@ -2,7 +2,6 @@
 {
     using Cloudtoid.Foid.Options;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Net.Http.Headers;
     using static Contract;
 
     /// <summary>
@@ -29,11 +28,13 @@
             if (headersOptions.IgnoreAllDownstreamHeaders)
                 return CreateHost(context);
 
-            if (!context.Request.Headers.TryGetValue(HeaderNames.Host, out var values) || values.Count == 0)
+            var hostHeader = context.Request.Host;
+            if (!hostHeader.HasValue)
                 return CreateHost(context);
 
             // If the HOST header includes a PORT number, remove the port number
-            var host = GetHostWithoutPortNumber(values[0]);
+            // This matches NGINX's implementation
+            var host = GetHostWithoutPortNumber(hostHeader.Value);
 
             context.Items.Add(HostKey, host);
             return host;

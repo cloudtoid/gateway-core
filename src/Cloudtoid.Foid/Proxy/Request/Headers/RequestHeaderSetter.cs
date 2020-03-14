@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
+    using System.Net.Sockets;
     using System.Threading.Tasks;
     using Cloudtoid.Foid.Headers;
     using Cloudtoid.Foid.Host;
@@ -75,8 +76,9 @@
             AddDownstreamRequestHeadersToUpstream(context, upstreamRequest);
             AddHostHeader(context, upstreamRequest);
             AddExternalAddressHeader(context, upstreamRequest);
-            AddClientAddressHeader(context, upstreamRequest);
-            AddClientProtocolHeader(context, upstreamRequest);
+            AddForwardedForHeader(context, upstreamRequest);
+            AddForwardedProtocolHeader(context, upstreamRequest);
+            AddForwardedHostHeader(context, upstreamRequest);
             AddCorrelationIdHeader(context, upstreamRequest);
             AddCallIdHeader(context, upstreamRequest);
             AddProxyNameHeader(context, upstreamRequest);
@@ -157,9 +159,9 @@
                 clientAddress);
         }
 
-        protected virtual void AddClientAddressHeader(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected virtual void AddForwardedForHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            if (HeaderOptions.IgnoreClientAddress)
+            if (HeaderOptions.IgnoreForwardedFor)
                 return;
 
             var clientAddress = GetRemoteIpAddressOrDefault(context);
@@ -169,20 +171,36 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                Names.ClientAddress,
+                Names.ForwardedFor,
                 clientAddress);
         }
 
-        protected virtual void AddClientProtocolHeader(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected virtual void AddForwardedProtocolHeader(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            if (HeaderOptions.IgnoreClientProtocol)
+            if (HeaderOptions.IgnoreForwardedProtocol)
                 return;
 
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                Names.ClientProtocol,
+                Names.ForwrdedProtocol,
                 context.Request.Scheme);
+        }
+
+        protected virtual void AddForwardedHostHeader(HttpContext context, HttpRequestMessage upstreamRequest)
+        {
+            if (HeaderOptions.IgnoreForwardedHost)
+                return;
+
+            var host = context.Request.Host;
+            if (!host.HasValue)
+                return;
+
+            AddHeaderValues(
+                context,
+                upstreamRequest,
+                Names.ForwrdedHost,
+                host.Value);
         }
 
         protected virtual void AddCorrelationIdHeader(HttpContext context, HttpRequestMessage upstreamRequest)
@@ -247,6 +265,16 @@
         }
 
         private static string? GetRemoteIpAddressOrDefault(HttpContext context)
-            => context.Connection.RemoteIpAddress?.ToString();
+        {
+            var address = context.Connection.RemoteIpAddress;
+            if (address is null)
+                return null;
+
+            var add = address.ToString();
+            if (address.AddressFamily == AddressFamily.InterNetworkV6)
+                return "\\" + add + "\"";
+
+            return add;
+        }
     }
 }

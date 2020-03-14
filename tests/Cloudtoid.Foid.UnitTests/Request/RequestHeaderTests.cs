@@ -363,12 +363,12 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenIgnoreClientAddress_HeaderNotIncludedAsync()
+        public async Task SetHeadersAsync_WhenIgnoreForwardedFor_HeaderNotIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-forwarded-for";
             var options = new FoidOptions();
-            options.Proxy.Upstream.Request.Headers.IgnoreClientAddress = true;
+            options.Proxy.Upstream.Request.Headers.IgnoreForwardedFor = true;
 
             var context = new DefaultHttpContext();
             context.Connection.RemoteIpAddress = new IPAddress(new byte[] { 0, 1, 2, 3 });
@@ -381,12 +381,12 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenNotIgnoreClientAddress_HeaderIncludedAsync()
+        public async Task SetHeadersAsync_WhenNotIgnoreForwardedFor_HeaderIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-forwarded-for";
             var options = new FoidOptions();
-            options.Proxy.Upstream.Request.Headers.IgnoreClientAddress = false;
+            options.Proxy.Upstream.Request.Headers.IgnoreForwardedFor = false;
 
             var context = new DefaultHttpContext();
             context.Connection.RemoteIpAddress = new IPAddress(new byte[] { 0, 1, 2, 3 });
@@ -399,13 +399,13 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenHasClientAddress_NewValueIsAppenededAsync()
+        public async Task SetHeadersAsync_WhenIgnoreForwardedForButHasValue_NewValueIsAppenededAsync()
         {
             // Arrange
             const string HeaderName = "x-forwarded-for";
 
             var options = new FoidOptions();
-            options.Proxy.Upstream.Request.Headers.IgnoreClientAddress = false;
+            options.Proxy.Upstream.Request.Headers.IgnoreForwardedFor = false;
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, "3.2.1.0");
@@ -419,12 +419,12 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenIgnoreClientProtocol_HeaderNotIncludedAsync()
+        public async Task SetHeadersAsync_WhenIgnoreForwardedProtocol_HeaderNotIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-forwarded-proto";
             var options = new FoidOptions();
-            options.Proxy.Upstream.Request.Headers.IgnoreClientProtocol = true;
+            options.Proxy.Upstream.Request.Headers.IgnoreForwardedProtocol = true;
 
             var context = new DefaultHttpContext();
             context.Request.Scheme = "HTTPS";
@@ -437,12 +437,12 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenNotIgnoreClientProtocol_HeaderIncludedAsync()
+        public async Task SetHeadersAsync_WhenNotIgnoreForwardedProtocol_HeaderIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-forwarded-proto";
             var options = new FoidOptions();
-            options.Proxy.Upstream.Request.Headers.IgnoreClientProtocol = false;
+            options.Proxy.Upstream.Request.Headers.IgnoreForwardedProtocol = false;
 
             var context = new DefaultHttpContext();
             context.Request.Scheme = "HTTPS";
@@ -452,6 +452,42 @@
 
             // Assert
             message.Headers.GetValues(HeaderName).SingleOrDefault().Should().Be("HTTPS");
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenIgnoreForwardedHost_HeaderNotIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-forwarded-host";
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.IgnoreForwardedHost = true;
+
+            var context = new DefaultHttpContext();
+            context.Request.Scheme = "HTTPS";
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.Contains(HeaderName).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_WhenNotIgnoreForwardedHost_HeaderIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-forwarded-host";
+            var options = new FoidOptions();
+            options.Proxy.Upstream.Request.Headers.IgnoreForwardedHost = false;
+
+            var context = new DefaultHttpContext();
+            context.Request.Host = new HostString("some-host");
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(HeaderName).SingleOrDefault().Should().Be("some-host");
         }
 
         [TestMethod]

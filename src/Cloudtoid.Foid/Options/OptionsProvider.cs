@@ -132,11 +132,14 @@
                         public bool IgnoreHost
                             => context.UpstreamRequestHeaders.IgnoreHost;
 
-                        public bool IgnoreClientAddress
-                            => context.UpstreamRequestHeaders.IgnoreClientAddress;
+                        public bool IgnoreForwardedFor
+                            => context.UpstreamRequestHeaders.IgnoreForwardedFor;
 
-                        public bool IgnoreClientProtocol
-                            => context.UpstreamRequestHeaders.IgnoreClientProtocol;
+                        public bool IgnoreForwardedProtocol
+                            => context.UpstreamRequestHeaders.IgnoreForwardedProtocol;
+
+                        public bool IgnoreForwardedHost
+                            => context.UpstreamRequestHeaders.IgnoreForwardedHost;
 
                         public bool IgnoreCorrelationId
                             => context.UpstreamRequestHeaders.IgnoreCorrelationId;

@@ -68,16 +68,22 @@
                         public bool IgnoreHost { get; set; }
 
                         /// <summary>
-                        /// If false, it will append the IP address of the nearest client to the "x-forwarded-for" header.
+                        /// If false, it will set "x-forwarded-for" header to the IP address of the nearest client.
                         /// The default value is <c>false</c>.
                         /// </summary>
-                        public bool IgnoreClientAddress { get; set; }
+                        public bool IgnoreForwardedFor { get; set; }
 
                         /// <summary>
-                        /// If false, it will append the client protocol (HTTP or HTTPS) to the "x-forwarded-proto" header.
+                        /// If false, it will set ""x-forwarded-proto" header to the client protocol (HTTP or HTTPS).
                         /// The default value is <c>false</c>.
                         /// </summary>
-                        public bool IgnoreClientProtocol { get; set; }
+                        public bool IgnoreForwardedProtocol { get; set; }
+
+                        /// <summary>
+                        /// If false, it will set ""x-forwarded-host" header to the value of the "HOST" header from the inbound downstream request.
+                        /// The default value is <c>false</c>.
+                        /// </summary>
+                        public bool IgnoreForwardedHost { get; set; }
 
                         /// <summary>
                         /// If false, it will append a correlation identifier header if not present. The actual header name is defined by <see cref="CorrelationIdHeader"/>
