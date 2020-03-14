@@ -62,13 +62,13 @@
 
         private async Task SetUriAsync(HttpContext context, HttpRequestMessage upstreamRequest)
         {
-            logger.LogDebug("Rewriting the uri by calling an instance of {0}", uriRewriter.GetType().FullName);
+            logger.LogDebug("Rewriting the Uri by calling an instance of {0}", uriRewriter.GetType().FullName);
 
             upstreamRequest.RequestUri = await uriRewriter
                 .RewriteUriAsync(context)
                 .TraceOnFaulted(logger, "Failed to rewrite a URI", context.RequestAborted);
 
-            logger.LogDebug("Rewrote the uri by calling an instance of {0}", uriRewriter.GetType().FullName);
+            logger.LogDebug("Rewrote the Uri by calling an instance of {0}", uriRewriter.GetType().FullName);
         }
 
         private async Task SetHeadersAsync(HttpContext context, HttpRequestMessage upstreamRequest)

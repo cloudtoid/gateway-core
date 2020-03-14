@@ -104,20 +104,20 @@
             => context.Request.Method;
 
         /// <summary>
-        /// The shceme (HTTP or HTTPS) used by the inbound downstream request
+        /// The scheme (HTTP or HTTPS) used by the inbound downstream request
         /// </summary>
         private static string? GetRequestScheme(Context context)
             => context.Request.Scheme;
 
         /// <summary>
-        /// The unscaped path base value.
+        /// The unescaped path base value.
         /// This is identical to <see cref="HttpRequest.PathBase"/>
         /// </summary>
         private static string? GetRequestPathBase(Context context)
             => context.Request.PathBase.Value;
 
         /// <summary>
-        /// The unscaped path value.
+        /// The unescaped path value.
         /// This is identical to <see cref="HttpRequest.Path"/>
         /// </summary>
         private static string? GetRequestPath(Context context)

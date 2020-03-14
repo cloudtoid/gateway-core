@@ -7,7 +7,7 @@
 
     internal sealed class VariableTrie<TValue> where TValue : class
     {
-        // 37 == 26 * english chars + 1 * underscore
+        // 37 == 26 * alphabet + 1 * underscore
         private readonly VariableTrie<TValue>?[] map = new VariableTrie<TValue>?[27];
         private TValue? value;
 

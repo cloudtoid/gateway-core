@@ -13,7 +13,7 @@
     using Options = Options.OptionsProvider.ProxyOptions.DownstreamOptions.ResponseOptions.HeadersOptions;
 
     /// <summary>
-    /// By inheriting from this clss, one can have full control over the outbound downstream response headers. Please consider the following extensibility points:
+    /// By inheriting from this class, one can have full control over the outbound downstream response headers. Please consider the following extensibility points:
     /// 1. Inherit from <see cref="ResponseHeaderValuesProvider"/>, override its methods, and register it with DI; or
     /// 2. Implement <see cref="IResponseHeaderValuesProvider"/> and register it with DI; or
     /// 3. Inherit from <see cref="ResponseHeaderSetter"/>, override its methods, and register it with DI; or
@@ -100,11 +100,11 @@
                 if (name.EqualsOrdinalIgnoreCase(correlationIdHeader))
                     continue;
 
-                // If blacklisted, we will not trasnfer its value
+                // If blacklisted, we will not transfer its value
                 if (HeaderTransferBlacklist.Contains(name))
                     continue;
 
-                // If it has an override, we will not trasnfer its value
+                // If it has an override, we will not transfer its value
                 if (headersWithOverride.Contains(name))
                     continue;
 
@@ -154,7 +154,7 @@
             }
 
             Logger.LogInformation(
-                "Header '{0}' is not added. This was was instructed by the {1}.{2}.",
+                "Header '{0}' is not added. This was instructed by the {1}.{2}.",
                 name,
                 nameof(IResponseHeaderValuesProvider),
                 nameof(IResponseHeaderValuesProvider.TryGetHeaderValues));

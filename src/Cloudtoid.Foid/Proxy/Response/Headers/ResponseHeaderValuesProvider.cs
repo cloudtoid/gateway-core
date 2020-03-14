@@ -3,7 +3,7 @@
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
-    /// By inheriting from this clss, one can have some control over the outbound downstream response headers. Please consider the following extensibility points:
+    /// By inheriting from this class, one can have some control over the outbound downstream response headers. Please consider the following extensibility points:
     /// 1. Inherit from <see cref="ResponseHeaderValuesProvider"/>, override its methods, and register it with DI; or
     /// 2. Implement <see cref="IResponseHeaderValuesProvider"/> and register it with DI; or
     /// 3. Inherit from <see cref="ResponseHeaderSetter"/>, override its methods, and register it with DI; or

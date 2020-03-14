@@ -19,7 +19,7 @@
             // Arrange
             var context = new DefaultHttpContext();
             var header = HeaderNames.ContentLength;
-            context.Request.Headers.Add(header, "somevalue");
+            context.Request.Headers.Add(header, "some-value");
 
             // Act
             var message = await SetContentAsync(context);
@@ -35,7 +35,7 @@
             // Arrange
             var context = new DefaultHttpContext();
             var header = HeaderNames.ContentType;
-            context.Request.Headers.Add(header, "somevalue");
+            context.Request.Headers.Add(header, "some-value");
 
             // Act
             var message = await SetContentAsync(context);
@@ -51,7 +51,7 @@
             // Arrange
             var context = new DefaultHttpContext();
             var header = HeaderNames.ContentLength;
-            context.Request.Headers.Add(header, "somevalue");
+            context.Request.Headers.Add(header, "some-value");
 
             var options = new FoidOptions();
             options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamHeaders = true;
@@ -69,7 +69,7 @@
             // Arrange
             var context = new DefaultHttpContext();
             var header = HeaderNames.Accept;
-            context.Request.Headers.Add(header, "somevalue");
+            context.Request.Headers.Add(header, "some-value");
 
             // Act
             var message = await SetContentAsync(context);

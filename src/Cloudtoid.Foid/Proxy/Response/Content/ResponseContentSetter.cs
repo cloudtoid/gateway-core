@@ -83,7 +83,7 @@
             var downstreamResponseStream = context.Response.Body;
 
             // TODO: the current version of HttpContent.CopyToAsync doesn't expose the cancellation-token
-            // However, they are working on fixing that. We should modifgy this code and pass in context.RequestAborted
+            // However, they are working on fixing that. We should modify this code and pass in context.RequestAborted
             await upstreamResponse.Content.CopyToAsync(downstreamResponseStream);
             await downstreamResponseStream.FlushAsync(context.RequestAborted);
         }
@@ -137,7 +137,7 @@
             }
 
             Logger.LogInformation(
-                "Header '{0}' is not added. This was was instructed by the {1}.{2}.",
+                "Header '{0}' is not added. This was instructed by the {1}.{2}.",
                 name,
                 nameof(IResponseContentHeaderValuesProvider),
                 nameof(IResponseContentHeaderValuesProvider.TryGetHeaderValues));

@@ -14,7 +14,9 @@
             this.httpClientFactory = CheckValue(httpClientFactory, nameof(httpClientFactory));
         }
 
-        public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage upstreamMessage, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage upstreamMessage,
+            CancellationToken cancellationToken)
         {
             CheckValue(upstreamMessage, nameof(upstreamMessage));
 
