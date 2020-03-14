@@ -10,21 +10,21 @@
     [DebuggerStepThrough]
     public static class HashUtil
     {
-        // A fallback hash code to use for null values.  Avoid zero just to give a better distribution.
+        // A fall-back hash code to use for null values.  Avoid zero just to give a better distribution.
         public const int NullHashCode = -0xBEEF;
 
         /// <summary>
-        /// Combines the hashcodes and creates a new hashcode
+        /// Combines the hash codes and creates a new hash code
         /// </summary>
         public static uint Combine(uint u1, uint u2) => ((u1 << 7) | (u1 >> 25)) ^ u2;
 
         /// <summary>
-        /// Combines the hashcodes and creates a new hashcode
+        /// Combines the hash codes and creates a new hash code
         /// </summary>
         public static int Combine(int n1, int n2) => (int)Combine((uint)n1, (uint)n2);
 
         /// <summary>
-        /// Combines the hashcodes and creates a new hashcode
+        /// Combines the hash codes and creates a new hash code
         /// </summary>
         public static int Combine(int n1, int n2, int n3)
         {
@@ -33,7 +33,7 @@
         }
 
         /// <summary>
-        /// Combines the hashcodes and creates a new hashcode
+        /// Combines the hash codes and creates a new hash code
         /// </summary>
         public static int Combine(int n1, int n2, int n3, int n4)
         {
@@ -45,7 +45,7 @@
         }
 
         /// <summary>
-        /// Combines the hashcodes and creates a new hashcode
+        /// Combines the hash codes and creates a new hash code
         /// </summary>
         public static int Combine(int n1, int n2, int n3, int n4, int n5)
         {
@@ -58,7 +58,7 @@
         }
 
         /// <summary>
-        /// Combines the hashcodes and creates a new hashcode
+        /// Combines the hash codes and creates a new hash code
         /// </summary>
         public static int Combine(int n1, int n2, int n3, int n4, int n5, int n6)
         {
@@ -72,7 +72,7 @@
         }
 
         /// <summary>
-        /// Combines the hashcodes and creates a new hashcode
+        /// Combines the hash codes and creates a new hash code
         /// </summary>
         public static int Combine(int n1, int n2, int n3, int n4, int n5, int n6, int n7)
         {
@@ -87,7 +87,7 @@
         }
 
         /// <summary>
-        /// Combines the hashcodes and creates a new hashcode
+        /// Combines the hash codes and creates a new hash code
         /// </summary>
         public static int Combine(int n1, int n2, int n3, int n4, int n5, int n6, int n7, int n8)
         {
@@ -103,7 +103,7 @@
         }
 
         /// <summary>
-        /// Combines the hashcodes and creates a new hashcode
+        /// Combines the hash codes and creates a new hash code
         /// </summary>
         public static int Combine(int n1, int n2, int n3, int n4, int n5, int n6, int n7, int n8, int n9)
         {

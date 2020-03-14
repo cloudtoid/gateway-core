@@ -415,7 +415,7 @@
 
         /// <summary>
         /// Verify whether Guid is Empty.
-        /// Note: This is needed because .Net Guid is not a class, it's a struct
+        /// Note: This is needed because .NET Guid is not a class, it's a value type
         /// and hence the CheckValue generic of class type does not cover this.
         /// </summary>
         /// <exception cref="ArgumentException"> is thrown on failure.</exception>
@@ -426,7 +426,7 @@
 
         /// <summary>
         /// Verify whether Guid is Empty.
-        /// Note: This is needed because .Net Guid is not a class, it's a struct
+        /// Note: This is needed because .NET Guid is not a class, it's a value type
         /// and hence the CheckValue generic of class type does not cover this.
         /// </summary>
         /// <exception cref="ArgumentException"> is thrown on failure.</exception>
@@ -629,7 +629,7 @@
         }
 
         /// <summary>
-        /// Used to validate that a readonly dictionary is non-null and non-empty.
+        /// Used to validate that a read only dictionary is non-null and non-empty.
         /// </summary>
         /// <exception cref="ArgumentException"> is thrown on failure.</exception>
         /// <exception cref="ArgumentNullException"> is thrown is <paramref name="arguments"/> is null.</exception>
@@ -641,7 +641,7 @@
         public static IReadOnlyDictionary<TKey, TValue> CheckNonEmpty<TKey, TValue>(IReadOnlyDictionary<TKey, TValue>? arguments, string paramName) where TKey : notnull => CheckNonEmpty(arguments, paramName, null, Array.Empty<object>());
 
         /// <summary>
-        /// Used to validate that a readonly dictionary is non-null and non-empty.
+        /// Used to validate that a read only dictionary is non-null and non-empty.
         /// </summary>
         /// <exception cref="ArgumentException"> is thrown on failure.</exception>
         /// <exception cref="ArgumentNullException"> is thrown is <paramref name="arguments"/> is null.</exception>
@@ -1363,7 +1363,7 @@
             }
             catch (FormatException)
             {
-                return format + " args = " + string.Join(",", args);
+                return format + " arguments = " + string.Join(",", args);
             }
         }
     }
