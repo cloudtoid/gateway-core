@@ -14,7 +14,7 @@ An API Gateway for .NET Core
 - Protection
   - Authentication
   - Authorization
-  - Rate Limiting 
+  - Rate Limiting
 - Features
   - Routing
   - Request Aggregation
@@ -24,3 +24,7 @@ An API Gateway for .NET Core
   - Logging / Tracing / Correlation
   - Headers / Method / Query String / Claims Transformation
   - Fully extensible
+
+## Code TODOs:
+1- Add tests for the tariling TrailingHeaderSetter.
+1- 

@@ -73,16 +73,14 @@
 
             foreach (var header in headers)
             {
-                var name = header.Key;
-
                 if (!sanetizer.IsValid(
-                    name,
+                    header.Key,
                     header.Value,
                     allowHeadersWithEmptyValue,
                     allowHeadersWithUnderscoreInName))
                     continue;
 
-                AddHeaderValues(context, name, header.Value.AsArray());
+                AddHeaderValues(context, header.Key, header.Value.AsArray());
             }
 
             return Task.CompletedTask;

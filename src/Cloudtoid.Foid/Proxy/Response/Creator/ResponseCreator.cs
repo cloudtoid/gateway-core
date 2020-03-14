@@ -42,8 +42,6 @@
             await SetTrailingHeadersAsync(context, upstreamResponse);
 
             logger.LogDebug("Created an outbound downstream response based on the inbound upstream request.");
-
-            // TODO: Cookies?
         }
 
         private void SetStatusCode(HttpContext context, HttpResponseMessage upstreamResponse)
