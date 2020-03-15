@@ -63,15 +63,19 @@
                     {
                         new ExtraHeader
                         {
-                            Name = "x-xtra-1",
+                            Name = "x-extra-1",
                             Values = new[] { "value1_1", "value1_2" }
                         },
                         new ExtraHeader
                         {
-                            Name = "x-xtra-2",
+                            Name = "x-extra-2",
                             Values = new[] { "value2_1", "value2_2" }
                         },
                     });
+
+            var requestSender = request.Sender;
+            requestSender.AllowAutoRedirect.Should().BeTrue();
+            requestSender.UseCookies.Should().BeTrue();
 
             var response = options.Proxy.Downstream.Response;
             var responseHeaders = response.Headers;
@@ -89,12 +93,12 @@
                     {
                         new ExtraHeader
                         {
-                            Name = "x-xtra-1",
+                            Name = "x-extra-1",
                             Values = new[] { "value1_1", "value1_2" }
                         },
                         new ExtraHeader
                         {
-                            Name = "x-xtra-2",
+                            Name = "x-extra-2",
                             Values = new[] { "value2_1", "value2_2" }
                         },
                     });
@@ -139,13 +143,13 @@
                     {
                         new ExtraHeader
                         {
-                            Name = "x-xtra-1",
-                            Values = new[] { "x-xtra-1:v1:" + expressionValue, "x-xtra-1:v2:" + expressionValue }
+                            Name = "x-extra-1",
+                            Values = new[] { "x-extra-1:v1:" + expressionValue, "x-extra-1:v2:" + expressionValue }
                         },
                         new ExtraHeader
                         {
-                            Name = "x-xtra-2",
-                            Values = new[] { "x-xtra-2:v1:" + expressionValue, "x-xtra-2:v2:" + expressionValue }
+                            Name = "x-extra-2",
+                            Values = new[] { "x-extra-2:v1:" + expressionValue, "x-extra-2:v2:" + expressionValue }
                         },
                     });
 
@@ -163,19 +167,19 @@
                     {
                         new ExtraHeader
                         {
-                            Name = "x-xtra-1",
-                            Values = new[] { "x-xtra-1:v1:" + expressionValue, "x-xtra-1:v2:" + expressionValue }
+                            Name = "x-extra-1",
+                            Values = new[] { "x-extra-1:v1:" + expressionValue, "x-extra-1:v2:" + expressionValue }
                         },
                         new ExtraHeader
                         {
-                            Name = "x-xtra-2",
-                            Values = new[] { "x-xtra-2:v1:" + expressionValue, "x-xtra-2:v2:" + expressionValue }
+                            Name = "x-extra-2",
+                            Values = new[] { "x-extra-2:v1:" + expressionValue, "x-extra-2:v2:" + expressionValue }
                         },
                     });
         }
 
         [TestMethod]
-        public void New_OptionsEmpty_AllValuesSetToDefault()
+        public void New_EmptyOptions_AllValuesSetToDefault()
         {
             var config = new ConfigurationBuilder()
                 .AddJsonFile(@"Options\OptionsEmpty.json", optional: false)
@@ -209,6 +213,10 @@
             requestHeaders.IgnoreCorrelationId.Should().BeFalse();
             requestHeaders.IncludeExternalAddress.Should().BeFalse();
             requestHeaders.Headers.Should().BeEmpty();
+
+            var requestSender = request.Sender;
+            requestSender.AllowAutoRedirect.Should().BeFalse();
+            requestSender.UseCookies.Should().BeFalse();
 
             var response = options.Proxy.Downstream.Response;
             var responseHeaders = response.Headers;

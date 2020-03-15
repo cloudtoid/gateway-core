@@ -5,7 +5,7 @@
     using Microsoft.AspNetCore.Http;
 
     /// <summary>
-    /// By implementing this interface, one can have some control over the outbound upstream content and its content headers. However, a fully functioning implementation is nontrivial. Therefore, before implementing this interface, consider the following extensibility points:
+    /// By implementing this interface, one can have full control over the outbound upstream content and its content headers. However, a fully functioning implementation is nontrivial. Therefore, before implementing this interface, consider the following extensibility points:
     /// 1. Inherit from <see cref="RequestContentHeaderValuesProvider"/>, override its methods, and register it with DI; or
     /// 2. Implement <see cref="IRequestContentHeaderValuesProvider"/> and register it with DI; or
     /// 3. Inherit from <see cref="RequestContentSetter"/>, override its methods, and register it with DI; or

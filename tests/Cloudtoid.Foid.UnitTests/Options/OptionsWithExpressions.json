@@ -10,12 +10,12 @@
           "defaultHost": "DefaultHost:$server_name",
           "headers": [
             {
-              "name": "x-xtra-1",
-              "values": [ "x-xtra-1:v1:$server_name", "x-xtra-1:v2:$server_name" ]
+              "name": "x-extra-1",
+              "values": [ "x-extra-1:v1:$server_name", "x-extra-1:v2:$server_name" ]
             },
             {
-              "name": "x-xtra-2",
-              "values": [ "x-xtra-2:v1:$server_name", "x-xtra-2:v2:$server_name" ]
+              "name": "x-extra-2",
+              "values": [ "x-extra-2:v1:$server_name", "x-extra-2:v2:$server_name" ]
             }
           ]
         }
@@ -26,12 +26,12 @@
         "headers": {
           "headers": [
             {
-              "name": "x-xtra-1",
-              "values": [ "x-xtra-1:v1:$server_name", "x-xtra-1:v2:$server_name" ]
+              "name": "x-extra-1",
+              "values": [ "x-extra-1:v1:$server_name", "x-extra-1:v2:$server_name" ]
             },
             {
-              "name": "x-xtra-2",
-              "values": [ "x-xtra-2:v1:$server_name", "x-xtra-2:v2:$server_name" ]
+              "name": "x-extra-2",
+              "values": [ "x-extra-2:v1:$server_name", "x-extra-2:v2:$server_name" ]
             }
           ]
         }

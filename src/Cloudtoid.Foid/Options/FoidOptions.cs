@@ -37,6 +37,8 @@
 
                     public HeadersOptions Headers { get; set; } = new HeadersOptions();
 
+                    public SenderOptions Sender { get; set; } = new SenderOptions();
+
                     public sealed class HeadersOptions
                     {
                         /// <summary>
@@ -111,6 +113,24 @@
                         /// Extra headers to be appended to the outbound downstream response. If a header already exists, it is replaced with the new value.
                         /// </summary>
                         public ExtraHeader[] Headers { get; set; } = Array.Empty<ExtraHeader>();
+                    }
+
+                    public sealed class SenderOptions
+                    {
+                        /// <summary>
+                        /// Gets or sets a value that indicates whether the HTTP handler used by the outbound upstream request sender (<see cref="Proxy.IRequestSender"/>)
+                        /// should follow redirection responses.
+                        /// The default value is <c>false</c>.
+                        /// </summary>
+                        public bool AllowAutoRedirect { get; set; }
+
+                        /// <summary>
+                        /// Gets or sets a value that indicates whether the HTTP handler used by the outbound upstream request sender (<see cref="Proxy.IRequestSender"/>)
+                        /// uses the <see cref="System.Net.Http.HttpClientHandler.CookieContainer"/> property to store server cookies and uses these cookies when sending requests.
+                        /// By default, headers with an empty value are dropped.
+                        /// The default value is <c>false</c>.
+                        /// </summary>
+                        public bool UseCookies { get; set; }
                     }
                 }
             }

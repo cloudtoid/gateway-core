@@ -87,19 +87,28 @@
                     {
                         this.context = context;
                         Headers = new HeadersOptions(context);
+                        Sender = new SenderOptions(context);
                     }
 
                     public HeadersOptions Headers { get; }
 
+                    public SenderOptions Sender { get; }
+
                     public Version GetHttpVersion(HttpContext httpContext)
                     {
-                        var result = context.Evaluate(httpContext, context.UpstreamRequest.HttpVersion);
+                        var result = context.Evaluate(
+                            httpContext,
+                            context.UpstreamRequest.HttpVersion);
+
                         return HttpVersion.ParseOrDefault(result) ?? Defaults.Proxy.Upstream.Request.HttpVersion;
                     }
 
                     public TimeSpan GetTimeout(HttpContext httpContext)
                     {
-                        var result = context.Evaluate(httpContext, context.UpstreamRequest.TimeoutInMilliseconds);
+                        var result = context.Evaluate(
+                            httpContext,
+                            context.UpstreamRequest.TimeoutInMilliseconds);
+
                         return long.TryParse(result, out var timeout) && timeout > 0
                             ? TimeSpan.FromMilliseconds(timeout)
                             : Defaults.Proxy.Upstream.Request.Timeout;
@@ -182,6 +191,22 @@
                             return true;
                         }
                     }
+
+                    public sealed class SenderOptions
+                    {
+                        private readonly Context context;
+
+                        internal SenderOptions(Context context)
+                        {
+                            this.context = context;
+                        }
+
+                        public bool AllowAutoRedirect
+                            => context.UpstreamRequestSender.AllowAutoRedirect;
+
+                        public bool UseCookies
+                            => context.UpstreamRequestSender.UseCookies;
+                    }
                 }
             }
 
@@ -261,6 +286,8 @@
             internal FoidOptions.ProxyOptions.UpstreamOptions.RequestOptions UpstreamRequest => Upstream.Request;
 
             internal FoidOptions.ProxyOptions.UpstreamOptions.RequestOptions.HeadersOptions UpstreamRequestHeaders => UpstreamRequest.Headers;
+
+            internal FoidOptions.ProxyOptions.UpstreamOptions.RequestOptions.SenderOptions UpstreamRequestSender => UpstreamRequest.Sender;
 
             internal FoidOptions.ProxyOptions.DownstreamOptions Downstream => Proxy.Downstream;
 

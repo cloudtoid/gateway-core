@@ -14,7 +14,7 @@
         {
             CheckValue(services, nameof(services));
 
-            if (services.Exists<ProxyMarker>())
+            if (services.Exists<Marker>())
                 return services;
 
             if (options != null)
@@ -27,11 +27,11 @@
             return services
                 .AddSingleton(GuidProvider.Instance)
                 .AddLogging()
-                .AddFoidProxy();
+                .AddFoidProxy().Services;
         }
 
         // prevents multiple registrations of this library with DI
-        private sealed class ProxyMarker
+        private sealed class Marker
         {
         }
     }

@@ -9,7 +9,7 @@
     using static Contract;
 
     /// <summary>
-    /// By inheriting from this class, one can have some control over the outbound upstream content and its content headers. Please consider the following extensibility points:
+    /// By inheriting from this class, one can have full control over the outbound upstream content and its content headers. Please consider the following extensibility points:
     /// 1. Inherit from <see cref="RequestContentHeaderValuesProvider"/>, override its methods, and register it with DI; or
     /// 2. Implement <see cref="IRequestContentHeaderValuesProvider"/> and register it with DI; or
     /// 3. Inherit from <see cref="RequestContentSetter"/>, override its methods, and register it with DI; or

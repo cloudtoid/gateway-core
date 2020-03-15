@@ -19,14 +19,18 @@
           "ignoreCallId": true,
           "headers": [
             {
-              "name": "x-xtra-1",
+              "name": "x-extra-1",
               "values": [ "value1_1", "value1_2" ]
             },
             {
-              "name": "x-xtra-2",
+              "name": "x-extra-2",
               "values": [ "value2_1", "value2_2" ]
             }
           ]
+        },
+        "sender": {
+          "allowAutoRedirect": true,
+          "useCookies": true
         }
       }
     },
@@ -40,11 +44,11 @@
           "includeCallId": true,
           "headers": [
             {
-              "name": "x-xtra-1",
+              "name": "x-extra-1",
               "values": [ "value1_1", "value1_2" ]
             },
             {
-              "name": "x-xtra-2",
+              "name": "x-extra-2",
               "values": [ "value2_1", "value2_2" ]
             }
           ]

@@ -7,9 +7,9 @@
 
     internal sealed class RequestSender : IRequestSender
     {
-        private readonly IHttpClientFactory httpClientFactory;
+        private readonly IRequestSenderHttpClientFactory httpClientFactory;
 
-        public RequestSender(IHttpClientFactory httpClientFactory)
+        public RequestSender(IRequestSenderHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = CheckValue(httpClientFactory, nameof(httpClientFactory));
         }
