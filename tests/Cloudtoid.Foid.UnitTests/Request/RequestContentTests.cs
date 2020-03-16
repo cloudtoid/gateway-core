@@ -102,7 +102,7 @@
             var setter = serviceProvider.GetRequiredService<IRequestContentSetter>();
             context.Request.ContentLength = 10;
             var message = new HttpRequestMessage();
-            await setter.SetContentAsync(context, message);
+            await setter.SetContentAsync(context, message, default);
             return message;
         }
     }

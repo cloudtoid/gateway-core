@@ -138,7 +138,7 @@
 
             // Act
             var context = new DefaultHttpContext();
-            await setter.SetHeadersAsync(context, message);
+            await setter.SetHeadersAsync(context, message, default);
             var response = context.Response;
 
             // Assert
@@ -156,7 +156,7 @@
             options.Proxy.Downstream.Response.Headers.IgnoreAllUpstreamHeaders = true;
 
             var message = new HttpResponseMessage();
-            message.Headers.Add(HeaderName, "abc");
+            message.Headers.Add(HeaderName, "some-value");
 
             // Act
             var response = await SetHeadersAsync(message, options);
@@ -174,13 +174,13 @@
             options.Proxy.Downstream.Response.Headers.IgnoreAllUpstreamHeaders = false;
 
             var message = new HttpResponseMessage();
-            message.Headers.Add(HeaderName, new[] { "abc", "efg" });
+            message.Headers.Add(HeaderName, new[] { "value-1", "value-2" });
 
             // Act
             var response = await SetHeadersAsync(message, options);
 
             // Assert
-            response.Headers[HeaderName].Should().BeEquivalentTo(new[] { "abc", "efg" });
+            response.Headers[HeaderName].Should().BeEquivalentTo(new[] { "value-1", "value-2" });
         }
 
         [TestMethod]
@@ -283,22 +283,22 @@
             {
                 new ExtraHeader
                 {
-                    Name = "x-xtra-1",
+                    Name = "x-extra-1",
                     Values = new[] { "value1_1", "value1_2" }
                 },
                 new ExtraHeader
                 {
-                    Name = "x-xtra-2",
+                    Name = "x-extra-2",
                     Values = new[] { "value2_1", "value2_2" }
                 },
                 new ExtraHeader
                 {
-                    Name = "x-xtra-3",
+                    Name = "x-extra-3",
                     Values = new string[0]
                 },
                 new ExtraHeader
                 {
-                    Name = "x-xtra-4",
+                    Name = "x-extra-4",
                     Values = null
                 },
                 new ExtraHeader
@@ -309,16 +309,16 @@
             };
 
             var message = new HttpResponseMessage();
-            message.Headers.Add("x-xtra-2", "value2_0");
+            message.Headers.Add("x-extra-2", "value2_0");
 
             // Act
             var response = await SetHeadersAsync(message, options);
 
             // Assert
-            response.Headers["x-xtra-1"].Should().BeEquivalentTo(new[] { "value1_1", "value1_2" });
-            response.Headers["x-xtra-2"].Should().BeEquivalentTo(new[] { "value2_1", "value2_2" });
-            response.Headers.ContainsKey("x-xtra-3").Should().BeFalse();
-            response.Headers.ContainsKey("x-xtra-4").Should().BeFalse();
+            response.Headers["x-extra-1"].Should().BeEquivalentTo(new[] { "value1_1", "value1_2" });
+            response.Headers["x-extra-2"].Should().BeEquivalentTo(new[] { "value2_1", "value2_2" });
+            response.Headers.ContainsKey("x-extra-3").Should().BeFalse();
+            response.Headers.ContainsKey("x-extra-4").Should().BeFalse();
         }
 
         private static async Task<HttpResponse> SetHeadersAsync(
@@ -329,7 +329,7 @@
             var serviceProvider = services.BuildServiceProvider();
             var setter = serviceProvider.GetRequiredService<IResponseHeaderSetter>();
             var context = new DefaultHttpContext();
-            await setter.SetHeadersAsync(context, message);
+            await setter.SetHeadersAsync(context, message, default);
             return context.Response;
         }
     }

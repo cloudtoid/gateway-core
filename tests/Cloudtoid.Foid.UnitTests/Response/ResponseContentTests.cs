@@ -144,7 +144,7 @@
             if (context is null)
                 context = new DefaultHttpContext();
 
-            await setter.SetContentAsync(context, message);
+            await setter.SetContentAsync(context, message, default);
             return context.Response;
         }
     }

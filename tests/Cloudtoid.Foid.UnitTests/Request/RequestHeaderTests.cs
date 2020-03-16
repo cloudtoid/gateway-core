@@ -234,7 +234,7 @@
 
             // Act
             var message = new HttpRequestMessage();
-            await setter.SetHeadersAsync(context, message);
+            await setter.SetHeadersAsync(context, message, default);
 
             // Assert
             message.Headers.Contains("X-Keep-Header").Should().BeTrue();
@@ -718,7 +718,7 @@
             var serviceProvider = services.BuildServiceProvider();
             var setter = serviceProvider.GetRequiredService<IRequestHeaderSetter>();
             var message = new HttpRequestMessage();
-            await setter.SetHeadersAsync(context, message);
+            await setter.SetHeadersAsync(context, message, default);
             return message;
         }
     }
