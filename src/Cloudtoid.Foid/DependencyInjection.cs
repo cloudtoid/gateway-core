@@ -13,7 +13,7 @@
 
         /// <summary>
         /// Adds the proxy services to <see cref="IServiceCollection"/> and configures a default <see cref="HttpClient"/>
-        /// used by <see cref="IRequestSender"/> to send upstream HTTP request.
+        /// which is used by <see cref="IRequestSender"/> to send upstream HTTP request.
         /// </summary>
         public static IProxyBuilder AddFoidProxy(this IServiceCollection services)
         {
@@ -35,7 +35,7 @@
         /// <summary>
         /// Adds the proxy services to <see cref="IServiceCollection"/>.
         /// The <see cref="HttpClient"/> used by <see cref="IRequestSender"/> to send upstream HTTP requests
-        /// expects to find a registered client with <paramref name="requestSenderHttpClientName"/> name.
+        /// expects to find a registered <see cref="HttpClient"/> with <paramref name="requestSenderHttpClientName"/> name.
         /// </summary>
         public static IServiceCollection AddFoidProxy(
             this IServiceCollection services,
@@ -89,7 +89,7 @@
                 .TryAddSingleton<IResponseContentHeaderValuesProvider, ResponseContentHeaderValuesProvider>();
         }
 
-        // prevents multiple registrations of this library with DI
+        // This class prevents multiple registrations of this library with DI
         private sealed class Marker
         {
         }
