@@ -37,6 +37,13 @@
         /// The <see cref="HttpClient"/> used by <see cref="IRequestSender"/> to send upstream HTTP requests
         /// expects to find a registered <see cref="HttpClient"/> with <paramref name="requestSenderHttpClientName"/> name.
         /// </summary>
+        /// <example>
+        /// <c>
+        /// services.AddHttpClient("MyHttpClient);
+        ///
+        /// services.AddFoidProxy("MyHttpClient");
+        /// </c>
+        /// </example>
         public static IServiceCollection AddFoidProxy(
             this IServiceCollection services,
             string requestSenderHttpClientName)
