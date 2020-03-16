@@ -5,17 +5,19 @@
 
     /// <summary>
     /// By implementing this interface, one can have some control over the outbound upstream content headers. Please consider the following extensibility points:
-    /// <list type="bullet">
-    /// <item><description>1. Inherit from <see cref="RequestContentHeaderValuesProvider"/>, override its methods, and register it with DI; or</description></item>
-    /// <item><description>2. Implement <see cref="IRequestContentHeaderValuesProvider"/> and register it with DI; or</description></item>
-    /// <item><description>3. Inherit from <see cref="RequestContentSetter"/>, override its methods, and register it with DI; or</description></item>
-    /// <item><description>4. Implement <see cref="IRequestContentSetter"/> and register it with DI</description></item>
+    /// <list type="number">
+    /// <item><description>Inherit from <see cref="RequestContentHeaderValuesProvider"/>, override its methods, and register it with DI; or</description></item>
+    /// <item><description>Implement <see cref="IRequestContentHeaderValuesProvider"/> and register it with DI; or</description></item>
+    /// <item><description>Inherit from <see cref="RequestContentSetter"/>, override its methods, and register it with DI; or</description></item>
+    /// <item><description>Implement <see cref="IRequestContentSetter"/> and register it with DI</description></item>
     /// </list>
     /// </summary>
     /// <example>
     /// Dependency Injection registrations:
-    /// 1. <c>TryAddSingleton&lt;IRequestHeaderValuesProvider, MyRequestHeaderValuesProvider&gt;()</c>
-    /// 2. <c>TryAddSingleton&lt;IRequestHeaderSetter, MyRequestHeaderSetter&gt;()</c>
+    /// <list type="bullet">
+    /// <item><description><c>TryAddSingleton&lt;<see cref="IRequestContentHeaderValuesProvider"/>, MyRequestContentHeaderValuesProvider&gt;()</c></description></item>
+    /// <item><description><c>TryAddSingleton&lt;<see cref="IRequestContentSetter"/>, MyRequestContentSetter&gt;()</c></description></item>
+    /// </list>
     /// </example>
     public interface IRequestContentHeaderValuesProvider
     {

@@ -14,15 +14,20 @@
 
     /// <summary>
     /// By inheriting from this class, one can have full control over the outbound downstream response headers. Please consider the following extensibility points:
-    /// 1. Inherit from <see cref="ResponseHeaderValuesProvider"/>, override its methods, and register it with DI; or
-    /// 2. Implement <see cref="IResponseHeaderValuesProvider"/> and register it with DI; or
-    /// 3. Inherit from <see cref="ResponseHeaderSetter"/>, override its methods, and register it with DI; or
-    /// 4. Implement <see cref="IResponseHeaderSetter"/> and register it with DI.
-    ///
-    /// Dependency Injection registrations:
-    /// 1. <c>TryAddSingleton&lt;IResponseHeaderValuesProvider, MyResponseHeaderValuesProvider&gt;()</c>
-    /// 2. <c>TryAddSingleton&lt;IResponseHeaderSetter, MyResponseHeaderSetter&gt;()</c>
+    /// <list type="number">
+    /// <item><description>Inherit from <see cref="ResponseHeaderValuesProvider"/>, override its methods, and register it with DI; or</description></item>
+    /// <item><description>Implement <see cref="IResponseHeaderValuesProvider"/> and register it with DI; or</description></item>
+    /// <item><description>Inherit from <see cref="ResponseHeaderSetter"/>, override its methods, and register it with DI; or</description></item>
+    /// <item><description>Implement <see cref="IResponseHeaderSetter"/> and register it with DI</description></item>
+    /// </list>
     /// </summary>
+    /// <example>
+    /// Dependency Injection registrations:
+    /// <list type="bullet">
+    /// <item><description><c>TryAddSingleton&lt;<see cref="IResponseHeaderValuesProvider"/>, MyResponseHeaderValuesProvider&gt;()</c></description></item>
+    /// <item><description><c>TryAddSingleton&lt;<see cref="IResponseHeaderSetter"/>, MyResponseHeaderSetter&gt;()</c></description></item>
+    /// </list>
+    /// </example>
     public class ResponseHeaderSetter : IResponseHeaderSetter
     {
         private static readonly ISet<string> HeaderTransferBlacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
