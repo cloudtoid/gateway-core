@@ -10,8 +10,8 @@
     /// 4. Implement <see cref="ITrailingHeaderSetter"/> and register it with DI.
     ///
     /// Dependency Injection registrations:
-    /// 1. <c>TryAddSingleton<ITrailingHeadersValuesProvider, MyTrailingHeadersValuesProvider>()</c>
-    /// 2. <c>TryAddSingleton<ITrailingHeadersSetter, MyTrailingHeadersSetter>()</c>
+    /// 1. <c>TryAddSingleton&lt;ITrailingHeadersValuesProvider, MyTrailingHeadersValuesProvider&gt;()</c>
+    /// 2. <c>TryAddSingleton&lt;ITrailingHeadersSetter, MyTrailingHeadersSetter&gt;()</c>
     /// </summary>
     public interface ITrailingHeaderValuesProvider
     {

@@ -68,6 +68,7 @@
         /// </summary>
         /// <exception cref="ArgumentNullException"> is thrown on failure.</exception>
         /// <typeparam name="T">The type of the value being tested.</typeparam>
+        /// <typeparam name="TArg">The type of the argument for message format.</typeparam>
         /// <param name="val">The value being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="format">The exception message format with 1 argument only.</param>
@@ -80,6 +81,8 @@
         /// </summary>
         /// <exception cref="ArgumentNullException"> is thrown on failure.</exception>
         /// <typeparam name="T">The type of the value being tested.</typeparam>
+        /// <typeparam name="TArg0">The type of the first argument for message format.</typeparam>
+        /// <typeparam name="TArg1">The type of the second argument for message format.</typeparam>
         /// <param name="val">The value being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="format">The exception message format with 2 arguments.</param>
@@ -93,6 +96,9 @@
         /// </summary>
         /// <exception cref="ArgumentNullException"> is thrown on failure.</exception>
         /// <typeparam name="T">The type of the value being tested.</typeparam>
+        /// <typeparam name="TArg0">The type of the first argument for message format.</typeparam>
+        /// <typeparam name="TArg1">The type of the second argument for message format.</typeparam>
+        /// <typeparam name="TArg2">The type of the third argument for message format.</typeparam>
         /// <param name="val">The value being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="format">The exception message format with 3 arguments.</param>
@@ -135,6 +141,7 @@
         /// </summary>
         /// <exception cref="ArgumentNullException"> is thrown on failure.</exception>
         /// <typeparam name="T">The type of the value being tested.</typeparam>
+        /// <typeparam name="TArg">The type of the argument for message format.</typeparam>
         /// <param name="val">The value being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="format">The exception message format with 1 argument only.</param>
@@ -148,6 +155,8 @@
         /// </summary>
         /// <exception cref="ArgumentNullException"> is thrown on failure.</exception>
         /// <typeparam name="T">The type of the value being tested.</typeparam>
+        /// <typeparam name="TArg0">The type of the first argument for message format.</typeparam>
+        /// <typeparam name="TArg1">The type of the second argument for message format.</typeparam>
         /// <param name="val">The value being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="format">The exception message format with 2 arguments.</param>
@@ -162,6 +171,9 @@
         /// </summary>
         /// <exception cref="ArgumentNullException"> is thrown on failure.</exception>
         /// <typeparam name="T">The type of the value being tested.</typeparam>
+        /// <typeparam name="TArg0">The type of the first argument for message format.</typeparam>
+        /// <typeparam name="TArg1">The type of the second argument for message format.</typeparam>
+        /// <typeparam name="TArg2">The type of the third argument for message format.</typeparam>
         /// <param name="val">The value being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="format">The exception message format with 3 arguments.</param>
@@ -205,7 +217,8 @@
         /// Used to validate that the value is non-null.
         /// </summary>
         /// <exception cref="ArgumentNullException"> is thrown on failure.</exception>
-        /// <typeparam name="T">The type of the value being tested.</typeparam>
+        /// <typeparam name="T">The type of the <see cref="Task"/> being tested.</typeparam>
+        /// <typeparam name="TArg">The type of the argument for message format.</typeparam>
         /// <param name="task">The value being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="format">The exception message format with 1 argument only.</param>
@@ -217,7 +230,9 @@
         /// Used to validate that the value is non-null.
         /// </summary>
         /// <exception cref="ArgumentNullException"> is thrown on failure.</exception>
-        /// <typeparam name="T">The type of the value being tested.</typeparam>
+        /// <typeparam name="T">The type of the <see cref="Task"/> being tested.</typeparam>
+        /// <typeparam name="TArg0">The type of the first argument for message format.</typeparam>
+        /// <typeparam name="TArg1">The type of the second argument for message format.</typeparam>
         /// <param name="task">The value being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="format">The exception message format with 2 arguments.</param>
@@ -230,7 +245,10 @@
         /// Used to validate that the value is non-null.
         /// </summary>
         /// <exception cref="ArgumentNullException"> is thrown on failure.</exception>
-        /// <typeparam name="T">The type of the value being tested.</typeparam>
+        /// <typeparam name="T">The type of the <see cref="Task"/> being tested.</typeparam>
+        /// <typeparam name="TArg0">The type of the first argument for message format.</typeparam>
+        /// <typeparam name="TArg1">The type of the second argument for message format.</typeparam>
+        /// <typeparam name="TArg2">The type of the third argument for message format.</typeparam>
         /// <param name="task">The value being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="format">The exception message format with 3 arguments.</param>
@@ -259,7 +277,6 @@
         /// Used to validate that the value is non-null.
         /// </summary>
         /// <exception cref="ArgumentNullException"> is thrown on failure.</exception>
-        /// <typeparam name="T">The type of the value being tested.</typeparam>
         /// <param name="val">The value being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -305,7 +322,6 @@
         /// Used to validate that the value is non-null.
         /// </summary>
         /// <exception cref="ArgumentNullException"> is thrown on failure.</exception>
-        /// <typeparam name="T">The type of the value being tested.</typeparam>
         /// <param name="val">The value being tested.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
@@ -664,9 +680,9 @@
         /// <summary>
         /// Used to validate that a string is non-null, non-empty, and non-whitespace.
         /// </summary>
-        /// <exception cref="ArgumentException"> is thrown on failure.</exception>
-        /// <exception cref="ArgumentNullException"> is thrown is <paramref name="arguments"/> or any of its items is null.</exception>
-        /// <param name="s">The string to check.</param>
+        /// <exception cref="ArgumentException"> is thrown if <paramref name="s"/> is empty or white-space.</exception>
+        /// <exception cref="ArgumentNullException"> is thrown if <paramref name="s"/> is null.</exception>
+        /// /// <param name="s">The string to check.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string CheckNonWhitespace(string? s, string paramName) => CheckNonWhitespace(s, paramName, null, Array.Empty<object>());
@@ -674,8 +690,8 @@
         /// <summary>
         /// Used to validate that a string is non-null, non-empty, and non-whitespace.
         /// </summary>
-        /// <exception cref="ArgumentException"> is thrown on failure.</exception>
-        /// <exception cref="ArgumentNullException"> is thrown is <paramref name="arguments"/> or any of its items is null.</exception>
+        /// <exception cref="ArgumentException"> is thrown if <paramref name="s"/> is empty.</exception>
+        /// <exception cref="ArgumentNullException"> is thrown if <paramref name="s"/> is null.</exception>
         /// <param name="s">The string to check.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
         /// <param name="message">The exception message or message format.</param>
@@ -1102,7 +1118,7 @@
         /// Used to validate that the value of a parameter is of a given type or inherits/implements that type
         /// </summary>
         /// <exception cref="ArgumentException"> is thrown on failure.</exception>
-        /// <exception cref="ArgumentNullException"> is thrown is <paramref name="val"/> is null.</exception
+        /// <exception cref="ArgumentNullException"> is thrown is <paramref name="val"/> is null.</exception>
         /// <typeparam name="TType">The type of the value to test.</typeparam>
         /// <param name="val">The value to test.</param>
         /// <param name="paramName">parameter name</param>
@@ -1226,10 +1242,10 @@
         /// <exception cref="ArgumentException"> is thrown on failure.</exception>
         /// <typeparam name="T">The type of the value being tested.</typeparam>
         /// <param name="val">The value being tested.</param>
-        /// <param name="expected">The comparand that <paramref name="val"/> is compared to.</param>
+        /// <param name="notExpected">The comparand that <paramref name="val"/> is compared to.</param>
         /// <param name="paramName">The name of the parameter being tested.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T CheckNotEqual<T>(T val, T expected, string paramName) => CheckNotEqual(val, expected, paramName, null, Array.Empty<object>());
+        public static T CheckNotEqual<T>(T val, T notExpected, string paramName) => CheckNotEqual(val, notExpected, paramName, null, Array.Empty<object>());
 
         /// <summary>
         /// Used to check that the <paramref name="val"/> is not equal to <paramref name="notExpected"/>.

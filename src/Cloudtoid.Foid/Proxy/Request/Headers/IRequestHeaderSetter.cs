@@ -12,8 +12,8 @@
     /// 4. Implement <see cref="IRequestHeaderSetter"/> and register it with DI.
     ///
     /// Dependency Injection registrations:
-    /// 1. <c>TryAddSingleton<IRequestHeaderValuesProvider, MyRequestHeaderValuesProvider>()</c>
-    /// 2. <c>TryAddSingleton<IRequestHeaderSetter, MyRequestHeaderSetter>()</c>
+    /// 1. <c>TryAddSingleton&lt;IRequestHeaderValuesProvider, MyRequestHeaderValuesProvider&gt;()</c>
+    /// 2. <c>TryAddSingleton&lt;IRequestHeaderSetter, MyRequestHeaderSetter&gt;()</c>
     /// </summary>
     public interface IRequestHeaderSetter
     {

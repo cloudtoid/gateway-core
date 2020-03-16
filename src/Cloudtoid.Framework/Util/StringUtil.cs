@@ -242,6 +242,25 @@
                     return !firstChar;
 
                 // Other characters are invalid everywhere
+                case UnicodeCategory.ClosePunctuation:
+                case UnicodeCategory.Control:
+                case UnicodeCategory.CurrencySymbol:
+                case UnicodeCategory.DashPunctuation:
+                case UnicodeCategory.EnclosingMark:
+                case UnicodeCategory.FinalQuotePunctuation:
+                case UnicodeCategory.InitialQuotePunctuation:
+                case UnicodeCategory.LineSeparator:
+                case UnicodeCategory.MathSymbol:
+                case UnicodeCategory.ModifierSymbol:
+                case UnicodeCategory.OpenPunctuation:
+                case UnicodeCategory.OtherNotAssigned:
+                case UnicodeCategory.OtherNumber:
+                case UnicodeCategory.OtherPunctuation:
+                case UnicodeCategory.OtherSymbol:
+                case UnicodeCategory.ParagraphSeparator:
+                case UnicodeCategory.PrivateUse:
+                case UnicodeCategory.SpaceSeparator:
+                case UnicodeCategory.Surrogate:
                 default:
                     return false;
             }

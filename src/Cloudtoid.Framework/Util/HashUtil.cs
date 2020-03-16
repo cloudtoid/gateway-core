@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Runtime.CompilerServices;
     using static Contract;
 
     /// <summary>
@@ -16,16 +17,21 @@
         /// <summary>
         /// Combines the hash codes and creates a new hash code
         /// </summary>
-        public static uint Combine(uint u1, uint u2) => ((u1 << 7) | (u1 >> 25)) ^ u2;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint Combine(uint u1, uint u2)
+            => ((u1 << 7) | (u1 >> 25)) ^ u2;
 
         /// <summary>
         /// Combines the hash codes and creates a new hash code
         /// </summary>
-        public static int Combine(int n1, int n2) => (int)Combine((uint)n1, (uint)n2);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int Combine(int n1, int n2)
+            => (int)Combine((uint)n1, (uint)n2);
 
         /// <summary>
         /// Combines the hash codes and creates a new hash code
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int Combine(int n1, int n2, int n3)
         {
             var hash = Combine((uint)n1, (uint)n2);
@@ -182,7 +188,7 @@
         /// Computes a unique hash code for a set
         /// </summary>
         /// <remarks>
-        /// This implementation is found in <see cref="HashSetEqualityComparer"/> implementation in .NET framework
+        /// This implementation is found in System.Collections.Generic.HashSetEqualityComparer implementation in .NET framework
         /// </remarks>
         public static int Combine<T>(ISet<T> values, IEqualityComparer<T>? comparer = null)
         {
@@ -190,7 +196,7 @@
 
             comparer ??= EqualityComparer<T>.Default;
 
-            var hash = values.Count;
+            int hash = 0;
             foreach (var value in values)
                 hash ^= CombineCommutative(GetHashCode(value, comparer));
 
@@ -223,19 +229,17 @@
         /// This method used to compute the impact of one element's hash code on the parent collection hash code
         /// The order of the element in the collection is irrelevant
         /// </summary>
-        public static int CombineCommutative(int elementHashcode) => elementHashcode ^ int.MaxValue;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int CombineCommutative(int elementHashcode)
+            => elementHashcode & 0x7FFFFFFF;
 
         /// <summary>
         /// Uses the <paramref name="comparer"/> to get the hash code of the <paramref name="value"/>.
         /// Avoids calling <paramref name="comparer"/> if <paramref name="value"/> is null, because most comparers
         /// do not support this.
         /// </summary>
-        private static int GetHashCode<T>(T value, IEqualityComparer<T>? comparer)
-        {
-            if (value is null)
-                return NullHashCode;
-
-            return comparer != null ? comparer.GetHashCode(value) : value!.GetHashCode();
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int GetHashCode<T>(T value, IEqualityComparer<T> comparer)
+            => value is null ? NullHashCode : comparer.GetHashCode(value);
     }
 }

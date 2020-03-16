@@ -12,8 +12,8 @@
     /// 4. Implement <see cref="IResponseContentSetter"/> and register it with DI.
     ///
     /// Dependency Injection registrations:
-    /// 1. <c>TryAddSingleton<IResponseContentHeaderValuesProvider, MyResponseContentHeaderValuesProvider>()</c>
-    /// 2. <c>TryAddSingleton<IResponseContentSetter, MyResponseContentSetter>()</c>
+    /// 1. <c>TryAddSingleton&lt;IResponseContentHeaderValuesProvider, MyResponseContentHeaderValuesProvider&gt;()</c>
+    /// 2. <c>TryAddSingleton&lt;IResponseContentSetter, MyResponseContentSetter&gt;()</c>
     /// </summary>
     public interface IResponseContentSetter
     {

@@ -10,8 +10,8 @@
     /// 4. Implement <see cref="IResponseHeaderSetter"/> and register it with DI.
     ///
     /// Dependency Injection registrations:
-    /// 1. <c>TryAddSingleton<IResponseHeaderValuesProvider, MyResponseHeaderValuesProvider>()</c>
-    /// 2. <c>TryAddSingleton<IResponseHeaderSetter, MyResponseHeaderSetter>()</c>
+    /// 1. <c>TryAddSingleton&lt;IResponseHeaderValuesProvider, MyResponseHeaderValuesProvider&gt;()</c>
+    /// 2. <c>TryAddSingleton&lt;IResponseHeaderSetter, MyResponseHeaderSetter&gt;()</c>
     /// </summary>
     public interface IResponseHeaderValuesProvider
     {
