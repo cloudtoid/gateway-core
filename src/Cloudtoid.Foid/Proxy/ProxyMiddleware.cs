@@ -13,6 +13,7 @@
         private readonly RequestDelegate next;
         private readonly IRequestCreator requestCreator;
         private readonly IRequestSender sender;
+        private readonly IResponseSender responseSender;
         private readonly OptionsProvider options;
         private readonly ILogger<ProxyMiddleware> logger;
 
@@ -20,12 +21,14 @@
             RequestDelegate next,
             IRequestCreator requestCreator,
             IRequestSender sender,
+            IResponseSender responseSender,
             OptionsProvider options,
             ILogger<ProxyMiddleware> logger)
         {
             this.next = CheckValue(next, nameof(next));
             this.requestCreator = CheckValue(requestCreator, nameof(requestCreator));
             this.sender = CheckValue(sender, nameof(sender));
+            this.responseSender = CheckValue(responseSender, nameof(responseSender));
             this.options = CheckValue(options, nameof(options));
             this.logger = CheckValue(logger, nameof(logger));
         }
@@ -42,14 +45,18 @@
             var cancellationToken = context.RequestAborted;
             cancellationToken.ThrowIfCancellationRequested();
 
-            var request = await requestCreator
+            var upstreamRequest = await requestCreator
                 .CreateRequestAsync(context)
                 .TraceOnFaulted(logger, "Failed to create an outbound upstream HTTP request message", cancellationToken);
 
-            var timeout = options.Proxy.Upstream.Request.GetTimeout(context);
-            var response = await Async
-                .WithTimeout(sender.SendAsync, request, timeout, cancellationToken)
+            var upstreamTimeout = options.Proxy.Upstream.Request.GetTimeout(context);
+            var upstreamResponse = await Async
+                .WithTimeout(sender.SendAsync, upstreamRequest, upstreamTimeout, cancellationToken)
                 .TraceOnFaulted(logger, "Failed to forward the HTTP request to the upstream system.", cancellationToken);
+
+            await responseSender
+                .SendResponseAsync(context, upstreamResponse)
+                .TraceOnFaulted(logger, "Failed to convert and send the downstream response message.", cancellationToken);
 
             await next.Invoke(context);
         }

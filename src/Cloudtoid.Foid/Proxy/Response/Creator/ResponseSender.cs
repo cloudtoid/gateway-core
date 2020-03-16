@@ -7,18 +7,18 @@
     using Microsoft.Extensions.Logging;
     using static Contract;
 
-    internal sealed class ResponseCreator : IResponseCreator
+    internal sealed class ResponseSender : IResponseSender
     {
         private readonly IResponseHeaderSetter headerSetter;
         private readonly IResponseContentSetter contentSetter;
         private readonly ITrailingHeaderSetter trailingHeaderSetter;
-        private readonly ILogger<ResponseCreator> logger;
+        private readonly ILogger<ResponseSender> logger;
 
-        public ResponseCreator(
+        public ResponseSender(
             IResponseHeaderSetter headerSetter,
             IResponseContentSetter contentSetter,
             ITrailingHeaderSetter trailingHeaderSetter,
-            ILogger<ResponseCreator> logger)
+            ILogger<ResponseSender> logger)
         {
             this.headerSetter = CheckValue(headerSetter, nameof(headerSetter));
             this.contentSetter = CheckValue(contentSetter, nameof(contentSetter));
@@ -26,7 +26,9 @@
             this.logger = CheckValue(logger, nameof(logger));
         }
 
-        public async Task CreateResponseAsync(HttpContext context, HttpResponseMessage upstreamResponse)
+        public async Task SendResponseAsync(
+            HttpContext context,
+            HttpResponseMessage upstreamResponse)
         {
             CheckValue(context, nameof(context));
             CheckValue(upstreamResponse, nameof(upstreamResponse));

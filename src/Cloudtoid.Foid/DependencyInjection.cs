@@ -89,7 +89,7 @@
                 .TryAddSingleton<IRequestSenderHttpClientFactory>(sp => new RequestSenderHttpClientFactory(sp, requestSenderHttpClientName))
                 .TryAddSingleton<IRequestSender, RequestSender>()
                 .TryAddSingleton<IRequestCreator, RequestCreator>()
-                .TryAddSingleton<IResponseCreator, ResponseCreator>()
+                .TryAddSingleton<IResponseSender, ResponseSender>()
                 .TryAddSingleton<IResponseHeaderSetter, ResponseHeaderSetter>()
                 .TryAddSingleton<IResponseHeaderValuesProvider, ResponseHeaderValuesProvider>()
                 .TryAddSingleton<IResponseContentSetter, ResponseContentSetter>()
