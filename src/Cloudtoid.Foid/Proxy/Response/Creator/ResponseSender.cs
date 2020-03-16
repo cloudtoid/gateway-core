@@ -1,6 +1,7 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Http.Features;
@@ -28,20 +29,21 @@
 
         public async Task SendResponseAsync(
             HttpContext context,
-            HttpResponseMessage upstreamResponse)
+            HttpResponseMessage upstreamResponse,
+            CancellationToken cancellationToken)
         {
             CheckValue(context, nameof(context));
             CheckValue(upstreamResponse, nameof(upstreamResponse));
 
-            context.RequestAborted.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             logger.LogDebug("Creating an outbound downstream response based on the inbound upstream request.");
 
             SetStatusCode(context, upstreamResponse);
             SetReasonPhrase(context, upstreamResponse);
-            await SetHeadersAsync(context, upstreamResponse);
-            await SetContentAsync(context, upstreamResponse);
-            await SetTrailingHeadersAsync(context, upstreamResponse);
+            await SetHeadersAsync(context, upstreamResponse, cancellationToken);
+            await SetContentAsync(context, upstreamResponse, cancellationToken);
+            await SetTrailingHeadersAsync(context, upstreamResponse, cancellationToken);
 
             logger.LogDebug("Created an outbound downstream response based on the inbound upstream request.");
         }
@@ -70,35 +72,44 @@
             upstreamResponse.ReasonPhrase = responseFeature.ReasonPhrase;
         }
 
-        private async Task SetHeadersAsync(HttpContext context, HttpResponseMessage upstreamResponse)
+        private async Task SetHeadersAsync(
+            HttpContext context,
+            HttpResponseMessage upstreamResponse,
+            CancellationToken cancellationToken)
         {
             logger.LogDebug("Appending the HTTP headers to the outbound downstream response");
 
             await headerSetter
-                .SetHeadersAsync(context, upstreamResponse)
-                .TraceOnFaulted(logger, "Failed to set the headers on the outbound downstream response", context.RequestAborted);
+                .SetHeadersAsync(context, upstreamResponse, cancellationToken)
+                .TraceOnFaulted(logger, "Failed to set the headers on the outbound downstream response", cancellationToken);
 
             logger.LogDebug("Appended the HTTP headers to the outbound downstream response");
         }
 
-        private async Task SetContentAsync(HttpContext context, HttpResponseMessage upstreamResponse)
+        private async Task SetContentAsync(
+            HttpContext context,
+            HttpResponseMessage upstreamResponse,
+            CancellationToken cancellationToken)
         {
             logger.LogDebug("Transferring the content of the inbound upstream response to the outbound downstream response");
 
             await contentSetter
-                .SetContentAsync(context, upstreamResponse)
-                .TraceOnFaulted(logger, "Failed to set the content body of the outbound downstream response", context.RequestAborted);
+                .SetContentAsync(context, upstreamResponse, cancellationToken)
+                .TraceOnFaulted(logger, "Failed to set the content body of the outbound downstream response", cancellationToken);
 
             logger.LogDebug("Transferred the content of the inbound upstream response to the outbound downstream response");
         }
 
-        private async Task SetTrailingHeadersAsync(HttpContext context, HttpResponseMessage upstreamResponse)
+        private async Task SetTrailingHeadersAsync(
+            HttpContext context,
+            HttpResponseMessage upstreamResponse,
+            CancellationToken cancellationToken)
         {
             logger.LogDebug("Appending the trailing headers to the outbound downstream response");
 
             await trailingHeaderSetter
-                .SetHeadersAsync(context, upstreamResponse)
-                .TraceOnFaulted(logger, "Failed to set the trailing headers on the outbound downstream response", context.RequestAborted);
+                .SetHeadersAsync(context, upstreamResponse, cancellationToken)
+                .TraceOnFaulted(logger, "Failed to set the trailing headers on the outbound downstream response", cancellationToken);
 
             logger.LogDebug("Appended the trailing headers to the outbound downstream response");
         }

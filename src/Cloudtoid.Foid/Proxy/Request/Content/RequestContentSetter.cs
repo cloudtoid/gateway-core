@@ -1,6 +1,7 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using Cloudtoid.Foid.Headers;
     using Cloudtoid.Foid.Options;
@@ -45,12 +46,13 @@
         /// <inheritdoc/>
         public virtual async Task SetContentAsync(
             HttpContext context,
-            HttpRequestMessage upstreamRequest)
+            HttpRequestMessage upstreamRequest,
+            CancellationToken cancellationToken)
         {
             CheckValue(context, nameof(context));
             CheckValue(upstreamRequest, nameof(upstreamRequest));
 
-            context.RequestAborted.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             var body = context.Request.Body;
             if (body is null)
@@ -65,11 +67,14 @@
                 return;
             }
 
-            await SetContentBodyAsync(context, upstreamRequest);
-            await SetContentHeadersAsync(context, upstreamRequest);
+            await SetContentBodyAsync(context, upstreamRequest, cancellationToken);
+            await SetContentHeadersAsync(context, upstreamRequest, cancellationToken);
         }
 
-        protected virtual Task SetContentBodyAsync(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected virtual Task SetContentBodyAsync(
+            HttpContext context,
+            HttpRequestMessage upstreamRequest,
+            CancellationToken cancellationToken)
         {
             var body = context.Request.Body;
             if (!body.CanRead)
@@ -88,7 +93,10 @@
             return Task.CompletedTask;
         }
 
-        protected virtual Task SetContentHeadersAsync(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected virtual Task SetContentHeadersAsync(
+            HttpContext context,
+            HttpRequestMessage upstreamRequest,
+            CancellationToken cancellationToken)
         {
             if (Options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamHeaders)
                 return Task.CompletedTask;

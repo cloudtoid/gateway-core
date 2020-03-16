@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using Cloudtoid.Foid.Headers;
     using Cloudtoid.Foid.Options;
@@ -61,12 +62,15 @@
         // Do NOT cache this value. Options react to changes.
         private Options HeaderOptions => Options.Proxy.Downstream.Response.Headers;
 
-        public virtual Task SetHeadersAsync(HttpContext context, HttpResponseMessage upstreamResponse)
+        public virtual Task SetHeadersAsync(
+            HttpContext context,
+            HttpResponseMessage upstreamResponse,
+            CancellationToken cancellationToken)
         {
             CheckValue(context, nameof(context));
             CheckValue(upstreamResponse, nameof(upstreamResponse));
 
-            context.RequestAborted.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             AddUpstreamResponseHeadersToDownstream(context, upstreamResponse);
             AddCorrelationIdHeader(context, upstreamResponse);

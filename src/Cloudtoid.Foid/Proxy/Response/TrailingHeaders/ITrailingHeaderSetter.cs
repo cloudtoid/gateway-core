@@ -1,6 +1,7 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
 
@@ -22,6 +23,9 @@
     /// </example>
     public interface ITrailingHeaderSetter
     {
-        Task SetHeadersAsync(HttpContext context, HttpResponseMessage upstreamResponse);
+        Task SetHeadersAsync(
+            HttpContext context,
+            HttpResponseMessage upstreamResponse,
+            CancellationToken cancellationToken);
     }
 }

@@ -1,6 +1,7 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
 
@@ -8,6 +9,7 @@
     {
         Task SendResponseAsync(
             HttpContext context,
-            HttpResponseMessage upstreamResponse);
+            HttpResponseMessage upstreamResponse,
+            CancellationToken cancellationToken);
     }
 }

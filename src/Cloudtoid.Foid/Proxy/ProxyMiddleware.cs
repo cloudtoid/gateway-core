@@ -1,6 +1,8 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using Cloudtoid;
     using Cloudtoid.Foid.Options;
@@ -45,20 +47,41 @@
             var cancellationToken = context.RequestAborted;
             cancellationToken.ThrowIfCancellationRequested();
 
-            var upstreamRequest = await requestCreator
-                .CreateRequestAsync(context)
-                .TraceOnFaulted(logger, "Failed to create an outbound upstream HTTP request message", cancellationToken);
-
-            var upstreamTimeout = options.Proxy.Upstream.Request.GetTimeout(context);
-            var upstreamResponse = await Async
-                .WithTimeout(sender.SendAsync, upstreamRequest, upstreamTimeout, cancellationToken)
-                .TraceOnFaulted(logger, "Failed to forward the HTTP request to the upstream system.", cancellationToken);
-
-            await responseSender
-                .SendResponseAsync(context, upstreamResponse)
-                .TraceOnFaulted(logger, "Failed to convert and send the downstream response message.", cancellationToken);
+            var upstreamRequest = await CreateUpstreamRequestAsync(context, cancellationToken);
+            var upstreamResponse = await SendUpstreamRequestAsync(context, upstreamRequest, cancellationToken);
+            await SendDownstreamResponseAsync(context, upstreamResponse, cancellationToken);
 
             await next.Invoke(context);
+        }
+
+        private async Task<HttpRequestMessage> CreateUpstreamRequestAsync(
+            HttpContext context,
+            CancellationToken cancellationToken)
+        {
+            return await requestCreator
+                .CreateRequestAsync(context, cancellationToken)
+                .TraceOnFaulted(logger, "Failed to create an outbound upstream HTTP request message", cancellationToken);
+        }
+
+        private async Task<HttpResponseMessage> SendUpstreamRequestAsync(
+            HttpContext context,
+            HttpRequestMessage upstreamRequest,
+            CancellationToken cancellationToken)
+        {
+            var upstreamTimeout = options.Proxy.Upstream.Request.GetTimeout(context);
+            return await Async
+                .WithTimeout(sender.SendAsync, upstreamRequest, upstreamTimeout, cancellationToken)
+                .TraceOnFaulted(logger, "Failed to forward the HTTP request to the upstream system.", cancellationToken);
+        }
+
+        private async Task SendDownstreamResponseAsync(
+            HttpContext context,
+            HttpResponseMessage upstreamResponse,
+            CancellationToken cancellationToken)
+        {
+            await responseSender
+                .SendResponseAsync(context, upstreamResponse, cancellationToken)
+                .TraceOnFaulted(logger, "Failed to convert and send the downstream response message.", cancellationToken);
         }
     }
 }

@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Net.Sockets;
+    using System.Threading;
     using System.Threading.Tasks;
     using Cloudtoid.Foid.Headers;
     using Cloudtoid.Foid.Host;
@@ -74,12 +75,15 @@
         // Do NOT cache this value. Options react to changes.
         private Options HeaderOptions => Options.Proxy.Upstream.Request.Headers;
 
-        public virtual Task SetHeadersAsync(HttpContext context, HttpRequestMessage upstreamRequest)
+        public virtual Task SetHeadersAsync(
+            HttpContext context,
+            HttpRequestMessage upstreamRequest,
+            CancellationToken cancellationToken)
         {
             CheckValue(context, nameof(context));
             CheckValue(upstreamRequest, nameof(upstreamRequest));
 
-            context.RequestAborted.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             AddDownstreamRequestHeadersToUpstream(context, upstreamRequest);
             AddHostHeader(context, upstreamRequest);

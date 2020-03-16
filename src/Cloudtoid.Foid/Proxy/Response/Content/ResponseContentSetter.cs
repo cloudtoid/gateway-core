@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
     using Cloudtoid.Foid.Headers;
     using Cloudtoid.Foid.Options;
@@ -59,12 +60,13 @@
 
         public virtual async Task SetContentAsync(
             HttpContext context,
-            HttpResponseMessage upstreamResponse)
+            HttpResponseMessage upstreamResponse,
+            CancellationToken cancellationToken)
         {
             CheckValue(context, nameof(context));
             CheckValue(upstreamResponse, nameof(upstreamResponse));
 
-            context.RequestAborted.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (upstreamResponse.Content is null)
             {
@@ -78,27 +80,33 @@
                 return;
             }
 
-            await SetContentHeadersAsync(context, upstreamResponse);
-            await SetContentBodyAsync(context, upstreamResponse);
-            await SetContentHeadersAsync(context, upstreamResponse);
+            await SetContentHeadersAsync(context, upstreamResponse, cancellationToken);
+            await SetContentBodyAsync(context, upstreamResponse, cancellationToken);
+            await SetContentHeadersAsync(context, upstreamResponse, cancellationToken);
         }
 
-        protected virtual async Task SetContentBodyAsync(HttpContext context, HttpResponseMessage upstreamResponse)
+        protected virtual async Task SetContentBodyAsync(
+            HttpContext context,
+            HttpResponseMessage upstreamResponse,
+            CancellationToken cancellationToken)
         {
             var downstreamResponseStream = context.Response.Body;
 
             // TODO: the current version of HttpContent.CopyToAsync doesn't expose the cancellation-token
-            // However, they are working on fixing that. We should modify this code and pass in context.RequestAborted
+            // However, they are working on fixing that. We should modify this code and pass in cancellationToken
             await upstreamResponse.Content.CopyToAsync(downstreamResponseStream);
-            await downstreamResponseStream.FlushAsync(context.RequestAborted);
+            await downstreamResponseStream.FlushAsync(cancellationToken);
         }
 
-        protected virtual Task SetContentHeadersAsync(HttpContext context, HttpResponseMessage upstreamResponse)
+        protected virtual Task SetContentHeadersAsync(
+            HttpContext context,
+            HttpResponseMessage upstreamResponse,
+            CancellationToken cancellationToken)
         {
             if (HeaderOptions.IgnoreAllUpstreamHeaders)
                 return Task.CompletedTask;
 
-            context.RequestAborted.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             var headers = upstreamResponse.Content?.Headers;
             if (headers is null)
