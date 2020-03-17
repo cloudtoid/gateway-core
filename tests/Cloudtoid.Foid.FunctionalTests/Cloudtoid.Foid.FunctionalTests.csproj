@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(FoidAppDotNetVersion)</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Cloudtoid.Foid\Cloudtoid.Foid.csproj" />
+    <ProjectReference Include="..\..\src\Cloudtoid.Framework\Cloudtoid.Framework.csproj" />
+  </ItemGroup>
+
+</Project>
