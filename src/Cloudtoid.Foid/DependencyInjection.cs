@@ -64,7 +64,9 @@
             if (marker is null)
                 throw new InvalidOperationException($"Call {nameof(AddFoidProxy)} before calling {nameof(UseFoidProxy)}");
 
-            return builder.UseMiddleware<ProxyMiddleware>();
+            return builder
+                .UseMiddleware<ProxyExceptionHandlerMiddleware>()
+                .UseMiddleware<ProxyMiddleware>();
         }
 
         private static IServiceCollection AddFoidProxyCore(
@@ -93,7 +95,9 @@
                 .TryAddSingleton<IResponseHeaderSetter, ResponseHeaderSetter>()
                 .TryAddSingleton<IResponseHeaderValuesProvider, ResponseHeaderValuesProvider>()
                 .TryAddSingleton<IResponseContentSetter, ResponseContentSetter>()
-                .TryAddSingleton<IResponseContentHeaderValuesProvider, ResponseContentHeaderValuesProvider>();
+                .TryAddSingleton<IResponseContentHeaderValuesProvider, ResponseContentHeaderValuesProvider>()
+                .TryAddSingleton<ITrailingHeaderSetter, TrailingHeaderSetter>()
+                .TryAddSingleton<ITrailingHeaderValuesProvider, TrailingHeaderValuesProvider>();
         }
 
         // This class prevents multiple registrations of this library with DI

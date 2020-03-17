@@ -1,6 +1,7 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.Net;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
@@ -42,8 +43,6 @@
 
             logger.LogDebug("Reverse proxy received a new inbound downstream {0} request.", context.Request.Method);
 
-            // TODO: What error should we send back if any of the stuff below fail?
-
             var cancellationToken = context.RequestAborted;
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -60,7 +59,7 @@
         {
             return await requestCreator
                 .CreateRequestAsync(context, cancellationToken)
-                .TraceOnFaulted(logger, "Failed to create an outbound upstream HTTP request message", cancellationToken);
+                .TraceOnFaulted(logger, "Failed to create an outbound upstream request.", cancellationToken);
         }
 
         private async Task<HttpResponseMessage> SendUpstreamRequestAsync(
@@ -69,9 +68,17 @@
             CancellationToken cancellationToken)
         {
             var upstreamTimeout = options.Proxy.Upstream.Request.GetTimeout(context);
-            return await Async
-                .WithTimeout(sender.SendAsync, upstreamRequest, upstreamTimeout, cancellationToken)
-                .TraceOnFaulted(logger, "Failed to forward the HTTP request to the upstream system.", cancellationToken);
+
+            try
+            {
+                return await Async
+                    .WithTimeout(sender.SendAsync, upstreamRequest, upstreamTimeout, cancellationToken)
+                    .TraceOnFaulted(logger, "Failed to forward the request to the upstream system.", cancellationToken);
+            }
+            catch (HttpRequestException hre)
+            {
+                throw new ProxyException(HttpStatusCode.BadGateway, hre);
+            }
         }
 
         private async Task SendDownstreamResponseAsync(
