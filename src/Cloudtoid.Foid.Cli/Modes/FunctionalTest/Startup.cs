@@ -1,6 +1,5 @@
 namespace Cloudtoid.Foid.Cli.Modes.FunctionalTest
 {
-    using Cloudtoid.Foid;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -22,7 +21,8 @@ namespace Cloudtoid.Foid.Cli.Modes.FunctionalTest
         {
             CheckValue(services, nameof(services));
 
-            services.AddFoidProxy();
+            _ = services.AddControllers();
+            _ = services.AddFoidProxy();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -32,6 +32,9 @@ namespace Cloudtoid.Foid.Cli.Modes.FunctionalTest
 
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
+
+            app.UseRouting();
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
 
             app.UseFoidProxy();
         }
