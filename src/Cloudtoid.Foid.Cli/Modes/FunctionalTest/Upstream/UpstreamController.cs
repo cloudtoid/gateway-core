@@ -1,4 +1,4 @@
-﻿namespace Cloudtoid.Foid.Cli.Modes.FunctionalTest
+﻿namespace Cloudtoid.Foid.Cli.Modes.FunctionalTest.Upstream
 {
     using Microsoft.AspNetCore.Mvc;
 

@@ -1,7 +1,5 @@
-namespace Cloudtoid.Foid.Cli.Modes.Default
+namespace Cloudtoid.Foid.Cli.Modes.FunctionalTest.Upstream
 {
-    using System.Threading.Tasks;
-    using Cloudtoid.Foid;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -9,13 +7,13 @@ namespace Cloudtoid.Foid.Cli.Modes.Default
     using Microsoft.Extensions.Hosting;
     using static Contract;
 
-    internal sealed class Startup
+    internal sealed class UpstreamStartup
     {
         public void ConfigureServices(IServiceCollection services)
         {
             CheckValue(services, nameof(services));
 
-            services.AddFoidProxy();
+            _ = services.AddControllers();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -26,15 +24,16 @@ namespace Cloudtoid.Foid.Cli.Modes.Default
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
 
-            app.UseFoidProxy();
+            app.UseRouting();
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
         }
 
-        internal static async Task StartAsync()
+        internal static IWebHost BuildWebHost()
         {
-            await WebHost.CreateDefaultBuilder()
-                .UseStartup<Startup>()
-                .Build()
-                .StartAsync();
+            return WebHost.CreateDefaultBuilder()
+                .ConfigureKestrel(o => o.ListenLocalhost(Config.UpstreamPortNumber))
+                .UseStartup<UpstreamStartup>()
+                .Build();
         }
     }
 }

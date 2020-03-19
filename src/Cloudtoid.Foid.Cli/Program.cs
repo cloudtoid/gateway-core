@@ -1,5 +1,6 @@
 ﻿namespace Cloudtoid.Foid.Cli
 {
+    using System;
     using System.Reflection;
     using Microsoft.Extensions.CommandLineUtils;
 
@@ -30,7 +31,12 @@
                 command.Description = "Run the CLI in its default mode.";
                 command.HelpOption("-?|-h|--help");
 
-                command.OnExecute(() => Modes.FunctionalTest.Startup.Run());
+                command.OnExecute(async () =>
+                {
+                    await Modes.Default.Startup.StartAsync();
+                    Console.ReadKey(false);
+                    return 0;
+                });
             });
 
             app.Command("functional-test", (command) =>
@@ -39,7 +45,12 @@
                  command.ExtendedHelpText = "This will run a specific proxy server that is used by the functional tests.";
                  command.HelpOption("-?|-h|--help");
 
-                 command.OnExecute(() => Modes.FunctionalTest.Startup.Run());
+                 command.OnExecute(async () =>
+                 {
+                     await Modes.FunctionalTest.Startup.StartAsync();
+                     Console.ReadKey(false);
+                     return 0;
+                 });
              });
 
             app.OnExecute(() => defaultCommand.Execute());
