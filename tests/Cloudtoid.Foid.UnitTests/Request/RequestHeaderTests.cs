@@ -203,6 +203,7 @@
         {
             // Arrange
             var provider = Substitute.For<IRequestHeaderValuesProvider>();
+            var services = new ServiceCollection().AddSingleton(provider);
 
             provider
                 .TryGetHeaderValues(
@@ -228,18 +229,8 @@
             httpContext.Request.Headers.Add("X-Keep-Header", "keep-value");
             httpContext.Request.Headers.Add("X-Drop-Header", "drop-value");
 
-            var services = new ServiceCollection()
-                .AddSingleton(provider)
-                .AddTest()
-                .AddTestOptions();
-
-            var serviceProvider = services.BuildServiceProvider();
-            var setter = serviceProvider.GetRequiredService<IRequestHeaderSetter>();
-            var context = serviceProvider.GetCallContext(httpContext);
-
             // Act
-            var message = new HttpRequestMessage();
-            await setter.SetHeadersAsync(context, message, default);
+            var message = await SetHeadersAsync(httpContext, services: services);
 
             // Assert
             message.Headers.Contains("X-Keep-Header").Should().BeTrue();
@@ -739,10 +730,11 @@
 
         private static async Task<HttpRequestMessage> SetHeadersAsync(
             HttpContext httpContext,
-            FoidOptions? options = null)
+            FoidOptions? options = null,
+            IServiceCollection? services = null)
         {
-            var services = new ServiceCollection().AddTest().AddTestOptions(options);
-            var serviceProvider = services.BuildServiceProvider();
+            services ??= new ServiceCollection();
+            var serviceProvider = services.AddTest().AddTestOptions(options).BuildServiceProvider();
             var setter = serviceProvider.GetRequiredService<IRequestHeaderSetter>();
             var context = serviceProvider.GetCallContext(httpContext);
             var message = new HttpRequestMessage();
