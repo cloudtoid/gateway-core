@@ -1,19 +1,13 @@
 ﻿namespace Cloudtoid.Foid.UnitTests
 {
     using System;
-    using System.Linq;
     using System.Net;
     using Cloudtoid.Foid.Expression;
-    using Cloudtoid.Foid.Host;
-    using Cloudtoid.Foid.Options;
-    using Cloudtoid.Foid.Routes;
-    using Cloudtoid.Foid.Trace;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using NSubstitute;
 
     [TestClass]
     public sealed class ExpressionEvaluatorTests
@@ -258,35 +252,10 @@
             string expression,
             HttpContext? httpContext = null)
         {
-            var options = new FoidOptions
-            {
-                Routes = new FoidOptions.RouteOptions[]
-                {
-                    new FoidOptions.RouteOptions
-                    {
-                        Route = "/api/",
-                        Proxy = new FoidOptions.RouteOptions.ProxyOptions
-                        {
-                            To = "/upstream/add"
-                        }
-                    }
-                }
-            };
-
-            var services = new ServiceCollection().AddTest(options);
+            var services = new ServiceCollection().AddTest().AddTestOptions();
             var serviceProvider = services.BuildServiceProvider();
             var evaluator = serviceProvider.GetRequiredService<IExpressionEvaluator>();
-            var routeProvider = serviceProvider.GetRequiredService<IRouteProvider>();
-            var routeOptions = routeProvider.First();
-
-            httpContext ??= new DefaultHttpContext();
-
-            var context = new CallContext(
-                serviceProvider.GetRequiredService<IHostProvider>(),
-                serviceProvider.GetRequiredService<ITraceIdProvider>(),
-                httpContext,
-                new Route(routeOptions));
-
+            var context = serviceProvider.GetCallContext(httpContext);
             return evaluator.Evaluate(context, expression);
         }
     }

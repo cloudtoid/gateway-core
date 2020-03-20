@@ -6,7 +6,7 @@
     using Cloudtoid.Foid.Trace;
     using Microsoft.AspNetCore.Http;
 
-    ////[DebuggerStepThrough]
+    [DebuggerStepThrough]
     public sealed class CallContext
     {
         private readonly IHostProvider hostProvider;
