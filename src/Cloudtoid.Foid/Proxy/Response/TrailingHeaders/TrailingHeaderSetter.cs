@@ -6,11 +6,9 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Cloudtoid.Foid.Headers;
-    using Cloudtoid.Foid.Options;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using static Contract;
-    using Options = Options.OptionsProvider.ProxyOptions.DownstreamOptions.ResponseOptions.HeadersOptions;
 
     /// <summary>
     /// By inheriting from this class, one can have full control over the outbound downstream response trailing headers. Please consider the following extensibility points:
@@ -39,33 +37,27 @@
 
         public TrailingHeaderSetter(
             ITrailingHeaderValuesProvider provider,
-            OptionsProvider options,
             ILogger<TrailingHeaderSetter> logger)
         {
             Provider = CheckValue(provider, nameof(provider));
-            Options = CheckValue(options, nameof(options));
             Logger = CheckValue(logger, nameof(logger));
             sanetizer = new HeaderSanetizer(logger);
         }
 
         protected ITrailingHeaderValuesProvider Provider { get; }
 
-        protected OptionsProvider Options { get; }
-
         protected ILogger<TrailingHeaderSetter> Logger { get; }
 
-        // Do NOT cache this value. Options react to changes.
-        private Options HeaderOptions => Options.Proxy.Downstream.Response.Headers;
-
         public virtual Task SetHeadersAsync(
-            HttpContext context,
+            CallContext context,
             HttpResponseMessage upstreamResponse,
             CancellationToken cancellationToken)
         {
             CheckValue(context, nameof(context));
             CheckValue(upstreamResponse, nameof(upstreamResponse));
 
-            if (HeaderOptions.IgnoreAllUpstreamHeaders)
+            var options = context.ProxyDownstreamResponseHeaderOptions;
+            if (options.IgnoreAllUpstreamHeaders)
                 return Task.CompletedTask;
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -76,8 +68,8 @@
             if (!ResponseTrailerExtensions.SupportsTrailers(context.Response))
                 return Task.CompletedTask;
 
-            var allowHeadersWithEmptyValue = HeaderOptions.AllowHeadersWithEmptyValue;
-            var allowHeadersWithUnderscoreInName = HeaderOptions.AllowHeadersWithUnderscoreInName;
+            var allowHeadersWithEmptyValue = options.AllowHeadersWithEmptyValue;
+            var allowHeadersWithUnderscoreInName = options.AllowHeadersWithUnderscoreInName;
             var headers = upstreamResponse.TrailingHeaders;
 
             foreach (var header in headers)
@@ -96,7 +88,7 @@
         }
 
         protected virtual void AddHeaderValues(
-            HttpContext context,
+            CallContext context,
             string name,
             params string[] upstreamValues)
         {

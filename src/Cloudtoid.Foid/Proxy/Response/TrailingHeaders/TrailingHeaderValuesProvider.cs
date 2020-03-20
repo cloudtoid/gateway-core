@@ -1,7 +1,5 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
-    using Microsoft.AspNetCore.Http;
-
     /// <summary>
     /// By inheriting from this class, one can have some control over the outbound downstream response trailing headers. Please consider the following extensibility points:
     /// <list type="number">
@@ -21,7 +19,7 @@
     public class TrailingHeaderValuesProvider : ITrailingHeaderValuesProvider
     {
         public virtual bool TryGetHeaderValues(
-            HttpContext context,
+            CallContext context,
             string name,
             string[] upstreamHeaders,
             out string[] downstreamHeaders)

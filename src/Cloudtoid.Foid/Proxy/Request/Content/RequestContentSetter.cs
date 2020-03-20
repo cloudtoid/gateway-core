@@ -4,8 +4,6 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Cloudtoid.Foid.Headers;
-    using Cloudtoid.Foid.Options;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using static Contract;
 
@@ -29,11 +27,9 @@
     {
         public RequestContentSetter(
             IRequestContentHeaderValuesProvider provider,
-            OptionsProvider options,
             ILogger<RequestContentSetter> logger)
         {
             Provider = CheckValue(provider, nameof(provider));
-            Options = CheckValue(options, nameof(options));
             Logger = CheckValue(logger, nameof(logger));
         }
 
@@ -41,11 +37,9 @@
 
         protected ILogger<RequestContentSetter> Logger { get; }
 
-        protected OptionsProvider Options { get; }
-
         /// <inheritdoc/>
         public virtual async Task SetContentAsync(
-            HttpContext context,
+            CallContext context,
             HttpRequestMessage upstreamRequest,
             CancellationToken cancellationToken)
         {
@@ -72,7 +66,7 @@
         }
 
         protected virtual Task SetContentBodyAsync(
-            HttpContext context,
+            CallContext context,
             HttpRequestMessage upstreamRequest,
             CancellationToken cancellationToken)
         {
@@ -94,11 +88,11 @@
         }
 
         protected virtual Task SetContentHeadersAsync(
-            HttpContext context,
+            CallContext context,
             HttpRequestMessage upstreamRequest,
             CancellationToken cancellationToken)
         {
-            if (Options.Proxy.Upstream.Request.Headers.IgnoreAllDownstreamHeaders)
+            if (context.ProxyUpstreamRequestHeadersOptions.IgnoreAllDownstreamHeaders)
                 return Task.CompletedTask;
 
             foreach (var header in context.Request.Headers)
@@ -119,7 +113,7 @@
         }
 
         protected virtual void AddHeaderValues(
-            HttpContext context,
+            CallContext context,
             HttpRequestMessage upstreamRequest,
             string name,
             params string[] downstreamValues)

@@ -6,12 +6,9 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Cloudtoid.Foid.Headers;
-    using Cloudtoid.Foid.Options;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using Microsoft.Net.Http.Headers;
     using static Contract;
-    using Options = Options.OptionsProvider.ProxyOptions.DownstreamOptions.ResponseOptions.HeadersOptions;
 
     /// <summary>
     /// By inheriting from this class, one can have full control over the outbound downstream response content and content header. However, a fully functioning implementation is nontrivial. Therefore, before implementing this interface, consider the following extensibility points:
@@ -40,26 +37,19 @@
 
         public ResponseContentSetter(
             IResponseContentHeaderValuesProvider provider,
-            OptionsProvider options,
             ILogger<ResponseContentSetter> logger)
         {
             Provider = CheckValue(provider, nameof(provider));
-            Options = CheckValue(options, nameof(options));
             Logger = CheckValue(logger, nameof(logger));
             sanetizer = new HeaderSanetizer(logger);
         }
 
         protected IResponseContentHeaderValuesProvider Provider { get; }
 
-        protected OptionsProvider Options { get; }
-
         protected ILogger<ResponseContentSetter> Logger { get; }
 
-        // Do NOT cache this value. Options react to changes.
-        private Options HeaderOptions => Options.Proxy.Downstream.Response.Headers;
-
         public virtual async Task SetContentAsync(
-            HttpContext context,
+            CallContext context,
             HttpResponseMessage upstreamResponse,
             CancellationToken cancellationToken)
         {
@@ -86,7 +76,7 @@
         }
 
         protected virtual async Task SetContentBodyAsync(
-            HttpContext context,
+            CallContext context,
             HttpResponseMessage upstreamResponse,
             CancellationToken cancellationToken)
         {
@@ -99,11 +89,12 @@
         }
 
         protected virtual Task SetContentHeadersAsync(
-            HttpContext context,
+            CallContext context,
             HttpResponseMessage upstreamResponse,
             CancellationToken cancellationToken)
         {
-            if (HeaderOptions.IgnoreAllUpstreamHeaders)
+            var options = context.ProxyDownstreamResponseHeaderOptions;
+            if (options.IgnoreAllUpstreamHeaders)
                 return Task.CompletedTask;
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -112,8 +103,8 @@
             if (headers is null)
                 return Task.CompletedTask;
 
-            var allowHeadersWithEmptyValue = HeaderOptions.AllowHeadersWithEmptyValue;
-            var allowHeadersWithUnderscoreInName = HeaderOptions.AllowHeadersWithUnderscoreInName;
+            var allowHeadersWithEmptyValue = options.AllowHeadersWithEmptyValue;
+            var allowHeadersWithUnderscoreInName = options.AllowHeadersWithUnderscoreInName;
 
             foreach (var header in headers)
             {
@@ -139,7 +130,7 @@
         }
 
         protected virtual void AddHeaderValues(
-            HttpContext context,
+            CallContext context,
             string name,
             params string[] upstreamValues)
         {

@@ -3,7 +3,6 @@
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Http.Features;
     using Microsoft.Extensions.Logging;
     using static Contract;
@@ -28,7 +27,7 @@
         }
 
         public async Task SendResponseAsync(
-            HttpContext context,
+            CallContext context,
             HttpResponseMessage upstreamResponse,
             CancellationToken cancellationToken)
         {
@@ -48,7 +47,7 @@
             logger.LogDebug("Created an outbound downstream response based on the inbound upstream request.");
         }
 
-        private void SetStatusCode(HttpContext context, HttpResponseMessage upstreamResponse)
+        private void SetStatusCode(CallContext context, HttpResponseMessage upstreamResponse)
         {
             if (context.Response.HasStarted)
             {
@@ -59,13 +58,13 @@
             context.Response.StatusCode = (int)upstreamResponse.StatusCode;
         }
 
-        private void SetReasonPhrase(HttpContext context, HttpResponseMessage upstreamResponse)
+        private void SetReasonPhrase(CallContext context, HttpResponseMessage upstreamResponse)
         {
             var httpVersion = HttpVersion.ParseOrDefault(context.Request.Protocol);
             if (httpVersion is null || httpVersion >= HttpVersion.Version20)
                 return; // Reason phrase is not supported by HTTP/2.0 and higher
 
-            var responseFeature = context.Features.Get<IHttpResponseFeature>();
+            var responseFeature = context.HttpContext.Features.Get<IHttpResponseFeature>();
             if (responseFeature is null || responseFeature.ReasonPhrase is null)
                 return;
 
@@ -73,7 +72,7 @@
         }
 
         private async Task SetHeadersAsync(
-            HttpContext context,
+            CallContext context,
             HttpResponseMessage upstreamResponse,
             CancellationToken cancellationToken)
         {
@@ -87,7 +86,7 @@
         }
 
         private async Task SetContentAsync(
-            HttpContext context,
+            CallContext context,
             HttpResponseMessage upstreamResponse,
             CancellationToken cancellationToken)
         {
@@ -101,7 +100,7 @@
         }
 
         private async Task SetTrailingHeadersAsync(
-            HttpContext context,
+            CallContext context,
             HttpResponseMessage upstreamResponse,
             CancellationToken cancellationToken)
         {

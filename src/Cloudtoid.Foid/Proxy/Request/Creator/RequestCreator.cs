@@ -3,8 +3,6 @@
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using Cloudtoid.Foid.Options;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using static Contract;
 
@@ -13,25 +11,22 @@
         private readonly IUriRewriter uriRewriter;
         private readonly IRequestHeaderSetter headerSetter;
         private readonly IRequestContentSetter contentSetter;
-        private readonly OptionsProvider options;
         private readonly ILogger<RequestCreator> logger;
 
         public RequestCreator(
             IUriRewriter uriRewriter,
             IRequestHeaderSetter headerSetter,
             IRequestContentSetter contentSetter,
-            OptionsProvider options,
             ILogger<RequestCreator> logger)
         {
             this.uriRewriter = CheckValue(uriRewriter, nameof(uriRewriter));
             this.headerSetter = CheckValue(headerSetter, nameof(headerSetter));
             this.contentSetter = CheckValue(contentSetter, nameof(contentSetter));
-            this.options = CheckValue(options, nameof(options));
             this.logger = CheckValue(logger, nameof(logger));
         }
 
         public async Task<HttpRequestMessage> CreateRequestAsync(
-            HttpContext context,
+            CallContext context,
             CancellationToken cancellationToken)
         {
             CheckValue(context, nameof(context));
@@ -53,18 +48,18 @@
             return upstreamRequest;
         }
 
-        private void SetHttpMethod(HttpContext context, HttpRequestMessage upstreamRequest)
+        private void SetHttpMethod(CallContext context, HttpRequestMessage upstreamRequest)
         {
             upstreamRequest.Method = Cloudtoid.HttpMethod.Parse(context.Request.Method);
         }
 
-        private void SetHttpVersion(HttpContext context, HttpRequestMessage upstreamRequest)
+        private void SetHttpVersion(CallContext context, HttpRequestMessage upstreamRequest)
         {
-            upstreamRequest.Version = options.Proxy.Upstream.Request.GetHttpVersion(context);
+            upstreamRequest.Version = context.ProxyUpstreamRequestOptions.GetHttpVersion(context);
         }
 
         private async Task SetUriAsync(
-            HttpContext context,
+            CallContext context,
             HttpRequestMessage upstreamRequest,
             CancellationToken cancellationToken)
         {
@@ -78,7 +73,7 @@
         }
 
         private async Task SetHeadersAsync(
-            HttpContext context,
+            CallContext context,
             HttpRequestMessage upstreamRequest,
             CancellationToken cancellationToken)
         {
@@ -92,7 +87,7 @@
         }
 
         private async Task SetContentAsync(
-            HttpContext context,
+            CallContext context,
             HttpRequestMessage upstreamRequest,
             CancellationToken cancellationToken)
         {

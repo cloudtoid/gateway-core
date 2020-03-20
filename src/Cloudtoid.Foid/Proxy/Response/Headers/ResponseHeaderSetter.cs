@@ -6,12 +6,8 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Cloudtoid.Foid.Headers;
-    using Cloudtoid.Foid.Options;
-    using Cloudtoid.Foid.Trace;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using static Contract;
-    using Options = Options.OptionsProvider.ProxyOptions.DownstreamOptions.ResponseOptions.HeadersOptions;
 
     /// <summary>
     /// By inheriting from this class, one can have full control over the outbound downstream response headers. Please consider the following extensibility points:
@@ -40,30 +36,19 @@
 
         public ResponseHeaderSetter(
             IResponseHeaderValuesProvider provider,
-            ITraceIdProvider traceIdProvider,
-            OptionsProvider options,
             ILogger<ResponseHeaderSetter> logger)
         {
             Provider = CheckValue(provider, nameof(provider));
-            TraceIdProvider = CheckValue(traceIdProvider, nameof(traceIdProvider));
-            Options = CheckValue(options, nameof(options));
             Logger = CheckValue(logger, nameof(logger));
             sanetizer = new HeaderSanetizer(logger);
         }
 
         protected IResponseHeaderValuesProvider Provider { get; }
 
-        protected ITraceIdProvider TraceIdProvider { get; }
-
-        protected OptionsProvider Options { get; }
-
         protected ILogger<ResponseHeaderSetter> Logger { get; }
 
-        // Do NOT cache this value. Options react to changes.
-        private Options HeaderOptions => Options.Proxy.Downstream.Response.Headers;
-
         public virtual Task SetHeadersAsync(
-            HttpContext context,
+            CallContext context,
             HttpResponseMessage upstreamResponse,
             CancellationToken cancellationToken)
         {
@@ -81,19 +66,20 @@
         }
 
         protected virtual void AddUpstreamResponseHeadersToDownstream(
-            HttpContext context,
+            CallContext context,
             HttpResponseMessage upstreamResponse)
         {
-            if (HeaderOptions.IgnoreAllUpstreamHeaders)
+            var options = context.ProxyDownstreamResponseHeaderOptions;
+            if (options.IgnoreAllUpstreamHeaders)
                 return;
 
             if (upstreamResponse.Headers is null)
                 return;
 
-            var allowHeadersWithEmptyValue = HeaderOptions.AllowHeadersWithEmptyValue;
-            var allowHeadersWithUnderscoreInName = HeaderOptions.AllowHeadersWithUnderscoreInName;
-            var correlationIdHeader = TraceIdProvider.GetCorrelationIdHeader(context);
-            var headersWithOverride = HeaderOptions.HeaderNames;
+            var allowHeadersWithEmptyValue = options.AllowHeadersWithEmptyValue;
+            var allowHeadersWithUnderscoreInName = options.AllowHeadersWithUnderscoreInName;
+            var correlationIdHeader = context.CorrelationIdHeader;
+            var headersWithOverride = options.HeaderNames;
 
             foreach (var header in upstreamResponse.Headers)
             {
@@ -121,38 +107,38 @@
             }
         }
 
-        protected virtual void AddCorrelationIdHeader(HttpContext context, HttpResponseMessage upstreamResponse)
+        protected virtual void AddCorrelationIdHeader(CallContext context, HttpResponseMessage upstreamResponse)
         {
-            if (!HeaderOptions.IncludeCorrelationId)
+            if (!context.ProxyDownstreamResponseHeaderOptions.IncludeCorrelationId)
                 return;
 
             AddHeaderValues(
                 context,
-                TraceIdProvider.GetCorrelationIdHeader(context),
-                TraceIdProvider.GetCorrelationId(context));
+                context.CorrelationIdHeader,
+                context.CorrelationId);
         }
 
-        protected virtual void AddCallIdHeader(HttpContext context, HttpResponseMessage upstreamResponse)
+        protected virtual void AddCallIdHeader(CallContext context, HttpResponseMessage upstreamResponse)
         {
-            if (!HeaderOptions.IncludeCallId)
+            if (!context.ProxyDownstreamResponseHeaderOptions.IncludeCallId)
                 return;
 
             AddHeaderValues(
                 context,
                 Names.CallId,
-                TraceIdProvider.GetCallId(context));
+                context.CallId);
         }
 
-        protected virtual void AddExtraHeaders(HttpContext context)
+        protected virtual void AddExtraHeaders(CallContext context)
         {
             var headers = context.Response.Headers;
 
-            foreach (var header in HeaderOptions.Headers)
+            foreach (var header in context.ProxyDownstreamResponseHeaderOptions.Headers)
                 headers.AddOrAppendHeaderValues(header.Name, header.GetValues(context));
         }
 
         protected virtual void AddHeaderValues(
-            HttpContext context,
+            CallContext context,
             string name,
             params string[] upstreamValues)
         {

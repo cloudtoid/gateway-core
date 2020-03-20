@@ -1,9 +1,15 @@
 {
-  "proxy": {
-    "upstream": {
-      "request": {
-        "timeoutInMilliseconds": 5000
+  "routes": [
+    {
+      "route": "/api/",
+      "proxy": {
+        "to": "http://localhost:85/upstream/",
+        "upstream": {
+          "request": {
+            "timeoutInMilliseconds": 5000
+          }
+        }
       }
     }
-  }
+  ]
 }

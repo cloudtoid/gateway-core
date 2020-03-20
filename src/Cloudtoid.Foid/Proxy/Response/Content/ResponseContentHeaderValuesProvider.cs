@@ -1,7 +1,5 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
-    using Microsoft.AspNetCore.Http;
-
     /// <summary>
     /// By inheriting from this class, one can partially control the outbound downstream response content headers. Please, consider the following extensibility points:
     /// <list type="number">
@@ -21,7 +19,7 @@
     public class ResponseContentHeaderValuesProvider : IResponseContentHeaderValuesProvider
     {
         public virtual bool TryGetHeaderValues(
-            HttpContext context,
+            CallContext context,
             string name,
             string[] downstreamValues,
             out string[] upstreamValues)

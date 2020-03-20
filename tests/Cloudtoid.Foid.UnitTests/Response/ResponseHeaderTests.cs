@@ -1,336 +1,335 @@
-﻿namespace Cloudtoid.Foid.UnitTests
-{
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using Cloudtoid.Foid.Options;
-    using Cloudtoid.Foid.Proxy;
-    using FluentAssertions;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Net.Http.Headers;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using NSubstitute;
-    using static Cloudtoid.Foid.Options.FoidOptions.ProxyOptions;
+﻿////namespace Cloudtoid.Foid.UnitTests
+////{
+////    using System.Net.Http;
+////    using System.Threading.Tasks;
+////    using Cloudtoid.Foid.Options;
+////    using Cloudtoid.Foid.Proxy;
+////    using FluentAssertions;
+////    using Microsoft.AspNetCore.Http;
+////    using Microsoft.Extensions.DependencyInjection;
+////    using Microsoft.Net.Http.Headers;
+////    using Microsoft.VisualStudio.TestTools.UnitTesting;
+////    using NSubstitute;
 
-    [TestClass]
-    public sealed class ResponseHeaderTests
-    {
-        [TestMethod]
-        public async Task SetHeadersAsync_WhenHeaderWithUnderscore_HeaderRemovedAsync()
-        {
-            // Arrange
-            var message = new HttpResponseMessage();
-            message.Headers.Add("X-Good-Header", "some-value");
-            message.Headers.Add("X_Bad_Header", "some-value");
+////    [TestClass]
+////    public sealed class ResponseHeaderTests
+////    {
+////        [TestMethod]
+////        public async Task SetHeadersAsync_WhenHeaderWithUnderscore_HeaderRemovedAsync()
+////        {
+////            // Arrange
+////            var message = new HttpResponseMessage();
+////            message.Headers.Add("X-Good-Header", "some-value");
+////            message.Headers.Add("X_Bad_Header", "some-value");
 
-            // Act
-            var response = await SetHeadersAsync(message);
+////            // Act
+////            var response = await SetHeadersAsync(message);
 
-            // Assert
-            response.Headers.ContainsKey("X-Good-Header").Should().BeTrue();
-            response.Headers.ContainsKey("X_Bad_Header").Should().BeFalse();
-        }
+////            // Assert
+////            response.Headers.ContainsKey("X-Good-Header").Should().BeTrue();
+////            response.Headers.ContainsKey("X_Bad_Header").Should().BeFalse();
+////        }
 
-        [TestMethod]
-        public async Task SetHeadersAsync_WhenAllowHeadersWithUnderscore_HeaderKeptAsync()
-        {
-            // Arrange
-            var options = new FoidOptions();
-            options.Proxy.Downstream.Response.Headers.AllowHeadersWithUnderscoreInName = true;
+////        [TestMethod]
+////        public async Task SetHeadersAsync_WhenAllowHeadersWithUnderscore_HeaderKeptAsync()
+////        {
+////            // Arrange
+////            var options = new FoidOptions();
+////            options.Proxy.Downstream.Response.Headers.AllowHeadersWithUnderscoreInName = true;
 
-            var message = new HttpResponseMessage();
-            message.Headers.Add("X-Good-Header", "some-value");
-            message.Headers.Add("X_Bad_Header", "some-value");
+////            var message = new HttpResponseMessage();
+////            message.Headers.Add("X-Good-Header", "some-value");
+////            message.Headers.Add("X_Bad_Header", "some-value");
 
-            // Act
-            var response = await SetHeadersAsync(message, options);
+////            // Act
+////            var response = await SetHeadersAsync(message, options);
 
-            // Assert
-            response.Headers.ContainsKey("X-Good-Header").Should().BeTrue();
-            response.Headers.ContainsKey("X_Bad_Header").Should().BeTrue();
-        }
+////            // Assert
+////            response.Headers.ContainsKey("X-Good-Header").Should().BeTrue();
+////            response.Headers.ContainsKey("X_Bad_Header").Should().BeTrue();
+////        }
 
-        [TestMethod]
-        public async Task SetHeadersAsync_WhenHeaderWithEmptyValue_HeaderRemovedAsync()
-        {
-            // Arrange
-            var message = new HttpResponseMessage();
-            message.Headers.Add("X-Empty-Header", string.Empty);
+////        [TestMethod]
+////        public async Task SetHeadersAsync_WhenHeaderWithEmptyValue_HeaderRemovedAsync()
+////        {
+////            // Arrange
+////            var message = new HttpResponseMessage();
+////            message.Headers.Add("X-Empty-Header", string.Empty);
 
-            // Act
-            var response = await SetHeadersAsync(message);
+////            // Act
+////            var response = await SetHeadersAsync(message);
 
-            // Assert
-            response.Headers.ContainsKey("X-Empty-Header").Should().BeFalse();
-        }
+////            // Assert
+////            response.Headers.ContainsKey("X-Empty-Header").Should().BeFalse();
+////        }
 
-        [TestMethod]
-        public async Task SetHeadersAsync_WhenAllowHeaderWithEmptyValue_HeaderIsKeptAsync()
-        {
-            // Arrange
-            var options = new FoidOptions();
-            options.Proxy.Downstream.Response.Headers.AllowHeadersWithEmptyValue = true;
+////        [TestMethod]
+////        public async Task SetHeadersAsync_WhenAllowHeaderWithEmptyValue_HeaderIsKeptAsync()
+////        {
+////            // Arrange
+////            var options = new FoidOptions();
+////            options.Proxy.Downstream.Response.Headers.AllowHeadersWithEmptyValue = true;
 
-            var message = new HttpResponseMessage();
-            message.Headers.Add("X-Empty-Header", string.Empty);
+////            var message = new HttpResponseMessage();
+////            message.Headers.Add("X-Empty-Header", string.Empty);
 
-            // Act
-            var response = await SetHeadersAsync(message, options);
+////            // Act
+////            var response = await SetHeadersAsync(message, options);
 
-            // Assert
-            response.Headers.ContainsKey("X-Empty-Header").Should().BeTrue();
-        }
+////            // Assert
+////            response.Headers.ContainsKey("X-Empty-Header").Should().BeTrue();
+////        }
 
-        [TestMethod]
-        public async Task SetHeadersAsync_WhenContentHeaderValue_HeaderIsNotIncludedAsync()
-        {
-            // Arrange
-            var header = HeaderNames.ContentLocation;
+////        [TestMethod]
+////        public async Task SetHeadersAsync_WhenContentHeaderValue_HeaderIsNotIncludedAsync()
+////        {
+////            // Arrange
+////            var header = HeaderNames.ContentLocation;
 
-            var message = new HttpResponseMessage
-            {
-                Content = new StringContent("test")
-            };
-            message.Content.Headers.Add(header, "some-value");
+////            var message = new HttpResponseMessage
+////            {
+////                Content = new StringContent("test")
+////            };
+////            message.Content.Headers.Add(header, "some-value");
 
-            // Act
-            var response = await SetHeadersAsync(message);
+////            // Act
+////            var response = await SetHeadersAsync(message);
 
-            // Assert
-            response.Headers.ContainsKey(header).Should().BeFalse();
-        }
+////            // Assert
+////            response.Headers.ContainsKey(header).Should().BeFalse();
+////        }
 
-        [TestMethod]
-        public async Task SetHeadersAsync_WhenCustomHeaderValuesProviderDropsHeaders_HeadersAreNotIncludedAsync()
-        {
-            // Arrange
-            var provider = Substitute.For<IResponseHeaderValuesProvider>();
-            provider
-                .TryGetHeaderValues(
-                    Arg.Any<HttpContext>(),
-                    Arg.Is("X-Keep-Header"),
-                    Arg.Any<string[]>(),
-                    out Arg.Any<string[]>())
-                .Returns(x =>
-                {
-                    x[3] = new[] { "keep-value" };
-                    return true;
-                });
+////        [TestMethod]
+////        public async Task SetHeadersAsync_WhenCustomHeaderValuesProviderDropsHeaders_HeadersAreNotIncludedAsync()
+////        {
+////            // Arrange
+////            var provider = Substitute.For<IResponseHeaderValuesProvider>();
+////            provider
+////                .TryGetHeaderValues(
+////                    Arg.Any<HttpContext>(),
+////                    Arg.Is("X-Keep-Header"),
+////                    Arg.Any<string[]>(),
+////                    out Arg.Any<string[]>())
+////                .Returns(x =>
+////                {
+////                    x[3] = new[] { "keep-value" };
+////                    return true;
+////                });
 
-            provider
-                .TryGetHeaderValues(
-                    Arg.Any<HttpContext>(),
-                    Arg.Is("X-Drop-Header"),
-                    Arg.Any<string[]>(),
-                    out Arg.Any<string[]>())
-                .Returns(false);
+////            provider
+////                .TryGetHeaderValues(
+////                    Arg.Any<HttpContext>(),
+////                    Arg.Is("X-Drop-Header"),
+////                    Arg.Any<string[]>(),
+////                    out Arg.Any<string[]>())
+////                .Returns(false);
 
-            var services = new ServiceCollection()
-                .AddSingleton(provider)
-                .AddTest();
+////            var services = new ServiceCollection()
+////                .AddSingleton(provider)
+////                .AddTest();
 
-            var serviceProvider = services.BuildServiceProvider();
-            var setter = serviceProvider.GetRequiredService<IResponseHeaderSetter>();
+////            var serviceProvider = services.BuildServiceProvider();
+////            var setter = serviceProvider.GetRequiredService<IResponseHeaderSetter>();
 
-            var message = new HttpResponseMessage();
-            message.Headers.Add("X-Keep-Header", "keep-value");
-            message.Headers.Add("X-Drop-Header", "drop-value");
+////            var message = new HttpResponseMessage();
+////            message.Headers.Add("X-Keep-Header", "keep-value");
+////            message.Headers.Add("X-Drop-Header", "drop-value");
 
-            // Act
-            var context = new DefaultHttpContext();
-            await setter.SetHeadersAsync(context, message, default);
-            var response = context.Response;
+////            // Act
+////            var context = new DefaultHttpContext();
+////            await setter.SetHeadersAsync(context, message, default);
+////            var response = context.Response;
 
-            // Assert
-            response.Headers.ContainsKey("X-Keep-Header").Should().BeTrue();
-            response.Headers["X-Keep-Header"].Should().BeEquivalentTo(new[] { "keep-value" });
-            response.Headers.ContainsKey("X-Drop-Header").Should().BeFalse();
-        }
+////            // Assert
+////            response.Headers.ContainsKey("X-Keep-Header").Should().BeTrue();
+////            response.Headers["X-Keep-Header"].Should().BeEquivalentTo(new[] { "keep-value" });
+////            response.Headers.ContainsKey("X-Drop-Header").Should().BeFalse();
+////        }
 
-        [TestMethod]
-        public async Task SetHeadersAsync_WhenIgnoreAllUpstreamResponseHeaders_NoDownstreamHeaderIsIncludedAsync()
-        {
-            // Arrange
-            const string HeaderName = "x-custom-test";
-            var options = new FoidOptions();
-            options.Proxy.Downstream.Response.Headers.IgnoreAllUpstreamHeaders = true;
+////        [TestMethod]
+////        public async Task SetHeadersAsync_WhenIgnoreAllUpstreamResponseHeaders_NoDownstreamHeaderIsIncludedAsync()
+////        {
+////            // Arrange
+////            const string HeaderName = "x-custom-test";
+////            var options = new FoidOptions();
+////            options.Proxy.Downstream.Response.Headers.IgnoreAllUpstreamHeaders = true;
 
-            var message = new HttpResponseMessage();
-            message.Headers.Add(HeaderName, "some-value");
+////            var message = new HttpResponseMessage();
+////            message.Headers.Add(HeaderName, "some-value");
 
-            // Act
-            var response = await SetHeadersAsync(message, options);
+////            // Act
+////            var response = await SetHeadersAsync(message, options);
 
-            // Assert
-            response.Headers.ContainsKey(HeaderName).Should().BeFalse();
-        }
+////            // Assert
+////            response.Headers.ContainsKey(HeaderName).Should().BeFalse();
+////        }
 
-        [TestMethod]
-        public async Task SetHeadersAsync_WhenNotIgnoreAllUpstreamResponseHeaders_DownstreamHeadersAreIncludedAsync()
-        {
-            // Arrange
-            const string HeaderName = "x-custom-test";
-            var options = new FoidOptions();
-            options.Proxy.Downstream.Response.Headers.IgnoreAllUpstreamHeaders = false;
+////        [TestMethod]
+////        public async Task SetHeadersAsync_WhenNotIgnoreAllUpstreamResponseHeaders_DownstreamHeadersAreIncludedAsync()
+////        {
+////            // Arrange
+////            const string HeaderName = "x-custom-test";
+////            var options = new FoidOptions();
+////            options.Proxy.Downstream.Response.Headers.IgnoreAllUpstreamHeaders = false;
 
-            var message = new HttpResponseMessage();
-            message.Headers.Add(HeaderName, new[] { "value-1", "value-2" });
+////            var message = new HttpResponseMessage();
+////            message.Headers.Add(HeaderName, new[] { "value-1", "value-2" });
 
-            // Act
-            var response = await SetHeadersAsync(message, options);
+////            // Act
+////            var response = await SetHeadersAsync(message, options);
 
-            // Assert
-            response.Headers[HeaderName].Should().BeEquivalentTo(new[] { "value-1", "value-2" });
-        }
+////            // Assert
+////            response.Headers[HeaderName].Should().BeEquivalentTo(new[] { "value-1", "value-2" });
+////        }
 
-        [TestMethod]
-        public async Task SetHeadersAsync_WhenIncludeCorrelationId_HeaderIncludedAsync()
-        {
-            // Arrange
-            const string HeaderName = "x-correlation-id";
-            var options = new FoidOptions();
-            options.Proxy.Downstream.Response.Headers.IncludeCorrelationId = true;
+////        [TestMethod]
+////        public async Task SetHeadersAsync_WhenIncludeCorrelationId_HeaderIncludedAsync()
+////        {
+////            // Arrange
+////            const string HeaderName = "x-correlation-id";
+////            var options = new FoidOptions();
+////            options.Proxy.Downstream.Response.Headers.IncludeCorrelationId = true;
 
-            var message = new HttpResponseMessage();
-            message.Headers.Add(HeaderName, "old-value");
+////            var message = new HttpResponseMessage();
+////            message.Headers.Add(HeaderName, "old-value");
 
-            // Act
-            var response = await SetHeadersAsync(message, options);
+////            // Act
+////            var response = await SetHeadersAsync(message, options);
 
-            // Assert
-            response.Headers[HeaderName].Should().BeEquivalentTo(GuidProvider.StringValue);
-        }
+////            // Assert
+////            response.Headers[HeaderName].Should().BeEquivalentTo(GuidProvider.StringValue);
+////        }
 
-        [TestMethod]
-        public async Task SetHeadersAsync_WhenNotIncludeCorrelationId_HeaderNotIncludedAsync()
-        {
-            // Arrange
-            const string HeaderName = "x-correlation-id";
-            var options = new FoidOptions();
-            options.Proxy.Downstream.Response.Headers.IncludeCorrelationId = false;
+////        [TestMethod]
+////        public async Task SetHeadersAsync_WhenNotIncludeCorrelationId_HeaderNotIncludedAsync()
+////        {
+////            // Arrange
+////            const string HeaderName = "x-correlation-id";
+////            var options = new FoidOptions();
+////            options.Proxy.Downstream.Response.Headers.IncludeCorrelationId = false;
 
-            var message = new HttpResponseMessage();
-            message.Headers.Add(HeaderName, "old-value");
+////            var message = new HttpResponseMessage();
+////            message.Headers.Add(HeaderName, "old-value");
 
-            // Act
-            var response = await SetHeadersAsync(message, options);
+////            // Act
+////            var response = await SetHeadersAsync(message, options);
 
-            // Assert
-            response.Headers[HeaderName].Should().BeEmpty();
-        }
+////            // Assert
+////            response.Headers[HeaderName].Should().BeEmpty();
+////        }
 
-        [TestMethod]
-        public async Task SetHeadersAsync_WhenIncludeCorrelationIdWithNonDefaultHeaderName_HeaderIncludedAsync()
-        {
-            // Arrange
-            const string HeaderName = "x-test-id";
-            var options = new FoidOptions();
-            options.Proxy.CorrelationIdHeader = HeaderName;
-            options.Proxy.Downstream.Response.Headers.IncludeCorrelationId = true;
+////        [TestMethod]
+////        public async Task SetHeadersAsync_WhenIncludeCorrelationIdWithNonDefaultHeaderName_HeaderIncludedAsync()
+////        {
+////            // Arrange
+////            const string HeaderName = "x-test-id";
+////            var options = new FoidOptions();
+////            options.Proxy.CorrelationIdHeader = HeaderName;
+////            options.Proxy.Downstream.Response.Headers.IncludeCorrelationId = true;
 
-            var message = new HttpResponseMessage();
-            message.Headers.Add(HeaderName, "old-value");
+////            var message = new HttpResponseMessage();
+////            message.Headers.Add(HeaderName, "old-value");
 
-            // Act
-            var response = await SetHeadersAsync(message, options);
+////            // Act
+////            var response = await SetHeadersAsync(message, options);
 
-            // Assert
-            response.Headers[HeaderName].Should().BeEquivalentTo(GuidProvider.StringValue);
-        }
+////            // Assert
+////            response.Headers[HeaderName].Should().BeEquivalentTo(GuidProvider.StringValue);
+////        }
 
-        [TestMethod]
-        public async Task SetHeadersAsync_WhenIncludeCallId_HeaderIncludedAsync()
-        {
-            // Arrange
-            const string HeaderName = "x-call-id";
-            var options = new FoidOptions();
-            options.Proxy.Downstream.Response.Headers.IncludeCallId = true;
+////        [TestMethod]
+////        public async Task SetHeadersAsync_WhenIncludeCallId_HeaderIncludedAsync()
+////        {
+////            // Arrange
+////            const string HeaderName = "x-call-id";
+////            var options = new FoidOptions();
+////            options.Proxy.Downstream.Response.Headers.IncludeCallId = true;
 
-            var message = new HttpResponseMessage();
-            message.Headers.Add(HeaderName, "old-value");
+////            var message = new HttpResponseMessage();
+////            message.Headers.Add(HeaderName, "old-value");
 
-            // Act
-            var response = await SetHeadersAsync(message, options);
+////            // Act
+////            var response = await SetHeadersAsync(message, options);
 
-            // Assert
-            response.Headers[HeaderName].Should().BeEquivalentTo(GuidProvider.StringValue);
-        }
+////            // Assert
+////            response.Headers[HeaderName].Should().BeEquivalentTo(GuidProvider.StringValue);
+////        }
 
-        [TestMethod]
-        public async Task SetHeadersAsync_WhenNotIncludeCallId_HeaderNotIncludedAsync()
-        {
-            // Arrange
-            const string HeaderName = "x-call-id";
-            var options = new FoidOptions();
-            options.Proxy.Downstream.Response.Headers.IncludeCallId = false;
+////        [TestMethod]
+////        public async Task SetHeadersAsync_WhenNotIncludeCallId_HeaderNotIncludedAsync()
+////        {
+////            // Arrange
+////            const string HeaderName = "x-call-id";
+////            var options = new FoidOptions();
+////            options.Proxy.Downstream.Response.Headers.IncludeCallId = false;
 
-            var message = new HttpResponseMessage();
-            message.Headers.Add(HeaderName, "old-value");
+////            var message = new HttpResponseMessage();
+////            message.Headers.Add(HeaderName, "old-value");
 
-            // Act
-            var response = await SetHeadersAsync(message, options);
+////            // Act
+////            var response = await SetHeadersAsync(message, options);
 
-            // Assert
-            response.Headers[HeaderName].Should().BeEmpty();
-        }
+////            // Assert
+////            response.Headers[HeaderName].Should().BeEmpty();
+////        }
 
-        [TestMethod]
-        public async Task SetHeadersAsync_WhenExtraHeaders_HeadersIncludedAsync()
-        {
-            // Arrange
-            var options = new FoidOptions();
-            options.Proxy.Downstream.Response.Headers.Headers = new[]
-            {
-                new ExtraHeader
-                {
-                    Name = "x-extra-1",
-                    Values = new[] { "value1_1", "value1_2" }
-                },
-                new ExtraHeader
-                {
-                    Name = "x-extra-2",
-                    Values = new[] { "value2_1", "value2_2" }
-                },
-                new ExtraHeader
-                {
-                    Name = "x-extra-3",
-                    Values = new string[0]
-                },
-                new ExtraHeader
-                {
-                    Name = "x-extra-4",
-                    Values = null
-                },
-                new ExtraHeader
-                {
-                    Name = null,
-                    Values = null
-                },
-            };
+////        [TestMethod]
+////        public async Task SetHeadersAsync_WhenExtraHeaders_HeadersIncludedAsync()
+////        {
+////            // Arrange
+////            var options = new FoidOptions();
+////            options.Proxy.Downstream.Response.Headers.Headers = new[]
+////            {
+////                new ExtraHeader
+////                {
+////                    Name = "x-extra-1",
+////                    Values = new[] { "value1_1", "value1_2" }
+////                },
+////                new ExtraHeader
+////                {
+////                    Name = "x-extra-2",
+////                    Values = new[] { "value2_1", "value2_2" }
+////                },
+////                new ExtraHeader
+////                {
+////                    Name = "x-extra-3",
+////                    Values = new string[0]
+////                },
+////                new ExtraHeader
+////                {
+////                    Name = "x-extra-4",
+////                    Values = null
+////                },
+////                new ExtraHeader
+////                {
+////                    Name = null,
+////                    Values = null
+////                },
+////            };
 
-            var message = new HttpResponseMessage();
-            message.Headers.Add("x-extra-2", "value2_0");
+////            var message = new HttpResponseMessage();
+////            message.Headers.Add("x-extra-2", "value2_0");
 
-            // Act
-            var response = await SetHeadersAsync(message, options);
+////            // Act
+////            var response = await SetHeadersAsync(message, options);
 
-            // Assert
-            response.Headers["x-extra-1"].Should().BeEquivalentTo(new[] { "value1_1", "value1_2" });
-            response.Headers["x-extra-2"].Should().BeEquivalentTo(new[] { "value2_1", "value2_2" });
-            response.Headers.ContainsKey("x-extra-3").Should().BeFalse();
-            response.Headers.ContainsKey("x-extra-4").Should().BeFalse();
-        }
+////            // Assert
+////            response.Headers["x-extra-1"].Should().BeEquivalentTo(new[] { "value1_1", "value1_2" });
+////            response.Headers["x-extra-2"].Should().BeEquivalentTo(new[] { "value2_1", "value2_2" });
+////            response.Headers.ContainsKey("x-extra-3").Should().BeFalse();
+////            response.Headers.ContainsKey("x-extra-4").Should().BeFalse();
+////        }
 
-        private static async Task<HttpResponse> SetHeadersAsync(
-            HttpResponseMessage message,
-            FoidOptions? options = null)
-        {
-            var services = new ServiceCollection().AddTest(options);
-            var serviceProvider = services.BuildServiceProvider();
-            var setter = serviceProvider.GetRequiredService<IResponseHeaderSetter>();
-            var context = new DefaultHttpContext();
-            await setter.SetHeadersAsync(context, message, default);
-            return context.Response;
-        }
-    }
-}
+////        private static async Task<HttpResponse> SetHeadersAsync(
+////            HttpResponseMessage message,
+////            FoidOptions? options = null)
+////        {
+////            var services = new ServiceCollection().AddTest(options);
+////            var serviceProvider = services.BuildServiceProvider();
+////            var setter = serviceProvider.GetRequiredService<IResponseHeaderSetter>();
+////            var context = new DefaultHttpContext();
+////            await setter.SetHeadersAsync(context, message, default);
+////            return context.Response;
+////        }
+////    }
+////}

@@ -3,12 +3,11 @@
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http;
 
     public interface IRequestCreator
     {
         Task<HttpRequestMessage> CreateRequestAsync(
-            HttpContext context,
+            CallContext context,
             CancellationToken cancellationToken);
     }
 }

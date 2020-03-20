@@ -4,14 +4,17 @@
     using System.IO;
     using System.Linq;
     using System.Threading;
+    using Cloudtoid.Foid.Host;
     using Cloudtoid.Foid.Options;
+    using Cloudtoid.Foid.Routes;
+    using Cloudtoid.Foid.Trace;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using static Cloudtoid.Foid.Options.FoidOptions.ProxyOptions;
+    using NSubstitute;
 
     [TestClass]
     public sealed class OptionsTests
@@ -19,19 +22,9 @@
         [TestMethod]
         public void New_FullyPopulatedOptions_AllValuesAreReadCorrectly()
         {
-            var config = new ConfigurationBuilder()
-                .AddJsonFile(@"Options\OptionsFull.json", optional: false)
-                .Build();
+            var context = GetCallContext(@"Options\OptionsFull.json");
+            var options = context.Route.Options;
 
-            var services = new ServiceCollection()
-                .AddTest()
-                .Configure<FoidOptions>(config);
-
-            var options = services
-                .BuildServiceProvider()
-                .GetRequiredService<OptionsProvider>();
-
-            var context = new DefaultHttpContext();
             options.Proxy.GetCorrelationIdHeader(context).Should().Be("x-request-id");
 
             var request = options.Proxy.Upstream.Request;
@@ -107,20 +100,10 @@
         [TestMethod]
         public void New_AllOptionsThatAllowExpressions_AllValuesAreEvaluatedCorrectly()
         {
-            var config = new ConfigurationBuilder()
-                .AddJsonFile(@"Options\OptionsWithExpressions.json", optional: false)
-                .Build();
-
-            var services = new ServiceCollection()
-                .AddTest()
-                .Configure<FoidOptions>(config);
-
-            var options = services
-                .BuildServiceProvider()
-                .GetRequiredService<OptionsProvider>();
+            var context = GetCallContext(@"Options\OptionsWithExpressions.json");
+            var options = context.Route.Options;
 
             var expressionValue = Environment.MachineName;
-            var context = new DefaultHttpContext();
             options.Proxy.GetCorrelationIdHeader(context).Should().Be("CorrelationIdHeader:" + expressionValue);
 
             var request = options.Proxy.Upstream.Request;
@@ -181,19 +164,8 @@
         [TestMethod]
         public void New_EmptyOptions_AllValuesSetToDefault()
         {
-            var config = new ConfigurationBuilder()
-                .AddJsonFile(@"Options\OptionsEmpty.json", optional: false)
-                .Build();
-
-            var services = new ServiceCollection()
-                .AddTest()
-                .Configure<FoidOptions>(config);
-
-            var options = services
-                .BuildServiceProvider()
-                .GetRequiredService<OptionsProvider>();
-
-            var context = new DefaultHttpContext();
+            var context = GetCallContext(@"Options\OptionsEmpty.json");
+            var options = context.Route.Options;
 
             var request = options.Proxy.Upstream.Request;
             request.GetHttpVersion(context).Should().Be(HttpVersion.Version20);
@@ -226,7 +198,7 @@
         }
 
         [TestMethod]
-        public void New_OptionsgFileModified_FileIsReloaded()
+        public void New_OptionsFileModified_FileIsReloaded()
         {
             try
             {
@@ -241,37 +213,82 @@
                     .Configure<FoidOptions>(config);
 
                 var serviceProvider = services.BuildServiceProvider();
-                var options = serviceProvider.GetRequiredService<OptionsProvider>();
+                var routeProvider = serviceProvider.GetRequiredService<IRouteProvider>();
                 var monitor = serviceProvider.GetRequiredService<IOptionsMonitor<FoidOptions>>();
 
-                var context = new DefaultHttpContext();
+                var httpContext = new DefaultHttpContext();
+                var options = routeProvider.First();
 
-                var changeEvent = new AutoResetEvent(false);
+                var context = new CallContext(
+                    Substitute.For<IHostProvider>(),
+                    Substitute.For<ITraceIdProvider>(),
+                    httpContext,
+                    new Route(options));
 
-                void Reset(object o)
+                using (var changeEvent = new AutoResetEvent(false))
                 {
-                    changeEvent.Set();
+                    void Reset(object o)
+                    {
+                        changeEvent.Set();
+                        monitor.OnChange(Reset);
+                    }
+
                     monitor.OnChange(Reset);
+
+                    options.Proxy.Upstream.Request.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
+
+                    File.Copy(@"Options\Options2.json", @"Options\OptionsReload.json", true);
+                    changeEvent.WaitOne(2000);
+
+                    options = routeProvider.First();
+                    context = new CallContext(
+                        Substitute.For<IHostProvider>(),
+                        Substitute.For<ITraceIdProvider>(),
+                        httpContext,
+                        new Route(options));
+
+                    options.Proxy.Upstream.Request.GetTimeout(context).TotalMilliseconds.Should().Be(2000);
+
+                    File.Copy(@"Options\Options1.json", @"Options\OptionsReload.json", true);
+                    changeEvent.WaitOne(2000);
+                    options = routeProvider.First();
+                    context = new CallContext(
+                        Substitute.For<IHostProvider>(),
+                        Substitute.For<ITraceIdProvider>(),
+                        httpContext,
+                        new Route(options));
+
+                    options.Proxy.Upstream.Request.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
                 }
-
-                monitor.OnChange(Reset);
-
-                options.Proxy.Upstream.Request.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
-
-                File.Copy(@"Options\Options2.json", @"Options\OptionsReload.json", true);
-                changeEvent.WaitOne(2000);
-
-                options.Proxy.Upstream.Request.GetTimeout(context).TotalMilliseconds.Should().Be(2000);
-
-                File.Copy(@"Options\Options1.json", @"Options\OptionsReload.json", true);
-                changeEvent.WaitOne(2000);
-
-                options.Proxy.Upstream.Request.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
             }
             finally
             {
                 File.Delete(@"Options\OptionsReload.json");
             }
+        }
+
+        private static CallContext GetCallContext(string jsonFile)
+        {
+            var config = new ConfigurationBuilder()
+                .AddJsonFile(jsonFile, optional: false)
+                .Build();
+
+            var services = new ServiceCollection()
+                .AddTest()
+                .Configure<FoidOptions>(config);
+
+            var routeProvider = services
+                .BuildServiceProvider()
+                .GetRequiredService<IRouteProvider>();
+
+            var httpContext = new DefaultHttpContext();
+            var options = routeProvider.First();
+
+            return new CallContext(
+                Substitute.For<IHostProvider>(),
+                Substitute.For<ITraceIdProvider>(),
+                httpContext,
+                new Route(options));
         }
     }
 }

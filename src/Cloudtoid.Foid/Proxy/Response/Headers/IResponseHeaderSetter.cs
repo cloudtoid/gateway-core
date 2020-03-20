@@ -3,7 +3,6 @@
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// By implementing this interface, one can have full control over the outbound downstream response headers. However, a fully functioning implementation is nontrivial. Therefore, before implementing this interface, consider the following extensibility points:
@@ -24,7 +23,7 @@
     public interface IResponseHeaderSetter
     {
         Task SetHeadersAsync(
-            HttpContext context,
+            CallContext context,
             HttpResponseMessage upstreamResponse,
             CancellationToken cancellationToken);
     }

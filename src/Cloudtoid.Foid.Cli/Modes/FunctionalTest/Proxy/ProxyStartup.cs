@@ -24,7 +24,6 @@ namespace Cloudtoid.Foid.Cli.Modes.FunctionalTest.Proxy
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
 
-            app.Use((context, r) => r());
             app.UseFoidProxy();
         }
 

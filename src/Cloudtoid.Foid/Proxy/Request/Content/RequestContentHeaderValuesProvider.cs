@@ -1,7 +1,6 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
     using System.Collections.Generic;
-    using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// By inheriting from this class, one can have some control over the outbound upstream content headers. Please consider the following extensibility points:
@@ -23,7 +22,7 @@
     {
         /// <inheritdoc/>
         public virtual bool TryGetHeaderValues(
-            HttpContext context,
+            CallContext context,
             string name,
             IList<string> downstreamValues,
             out IList<string> upstreamValues)

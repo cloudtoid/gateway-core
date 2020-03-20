@@ -8,7 +8,10 @@
     [DebuggerStepThrough]
     internal static class HeaderDictionaryExtensions
     {
-        internal static void AddOrAppendHeaderValues(this IHeaderDictionary headers, string name, IEnumerable<string> values)
+        internal static void AddOrAppendHeaderValues(
+            this IHeaderDictionary headers,
+            string name,
+            IEnumerable<string> values)
         {
             if (!headers.TryGetValue(name, out var currentValues))
             {

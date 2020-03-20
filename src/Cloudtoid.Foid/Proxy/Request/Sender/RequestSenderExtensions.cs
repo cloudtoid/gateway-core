@@ -2,7 +2,6 @@
 {
     using System;
     using System.Net.Http;
-    using Cloudtoid.Foid.Options;
     using Microsoft.Extensions.DependencyInjection;
 
     internal static class RequestSenderExtensions
@@ -12,12 +11,18 @@
 
         private static HttpMessageHandler ConfigureHttpHandler(IServiceProvider serviceProvider)
         {
-            var options = serviceProvider.GetRequiredService<OptionsProvider>();
-            var senderOptions = options.Proxy.Upstream.Request.Sender;
+            // TODO: Commented out until fixed
+            // TODO: Commented out until fixed
+            // TODO: Commented out until fixed
+            // TODO: Commented out until fixed
+            // TODO: Commented out until fixed
+
+            //// var options = serviceProvider.GetRequiredService<RouteProvider>();
+            //// var senderOptions = options.Proxy.Upstream.Request.Sender;
             return new SocketsHttpHandler
             {
-                AllowAutoRedirect = senderOptions.AllowAutoRedirect,
-                UseCookies = senderOptions.UseCookies,
+                AllowAutoRedirect = false, //// senderOptions.AllowAutoRedirect,
+                UseCookies = false //// senderOptions.UseCookies,
             };
         }
     }

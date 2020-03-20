@@ -1,7 +1,5 @@
 ﻿namespace Cloudtoid.Foid.Host
 {
-    using Cloudtoid.Foid.Options;
-    using Microsoft.AspNetCore.Http;
     using static Contract;
 
     /// <summary>
@@ -10,42 +8,24 @@
     /// </summary>
     public class HostProvider : IHostProvider
     {
-        private static readonly object HostKey = new object();
-        private readonly OptionsProvider options;
-
-        public HostProvider(OptionsProvider options)
+        public virtual string GetHost(CallContext context)
         {
-            this.options = CheckValue(options, nameof(options));
-        }
+            CheckValue(context, nameof(context));
 
-        public virtual string GetHost(HttpContext context)
-        {
-            // look up in out request cache first
-            if (context.Items.TryGetValue(HostKey, out var existingHost))
-                return (string)existingHost;
-
-            var headersOptions = options.Proxy.Upstream.Request.Headers;
-            if (headersOptions.IgnoreAllDownstreamHeaders)
-                return CreateHost(context);
+            if (context.ProxyUpstreamRequestHeadersOptions.IgnoreAllDownstreamHeaders)
+                return GetDefaultHost(context);
 
             var hostHeader = context.Request.Host;
             if (!hostHeader.HasValue)
-                return CreateHost(context);
+                return GetDefaultHost(context);
 
             // If the HOST header includes a PORT number, remove the port number
             // This matches NGINX's implementation
-            var host = GetHostWithoutPortNumber(hostHeader.Value);
-
-            context.Items.Add(HostKey, host);
-            return host;
+            return GetHostWithoutPortNumber(hostHeader.Value);
         }
 
-        private string CreateHost(HttpContext context)
-        {
-            var host = options.Proxy.Upstream.Request.Headers.GetDefaultHost(context);
-            context.Items.Add(HostKey, host); // cache the value
-            return host;
-        }
+        private string GetDefaultHost(CallContext context)
+            => context.ProxyUpstreamRequestHeadersOptions.GetDefaultHost(context);
 
         private static string GetHostWithoutPortNumber(string host)
         {

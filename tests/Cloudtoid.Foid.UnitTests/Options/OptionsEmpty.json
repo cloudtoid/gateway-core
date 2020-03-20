@@ -1,4 +1,10 @@
 {
-  "proxy": {
-  }
+  "routes": [
+    {
+      "route": "/api/",
+      "proxy": {
+        "to": "http://localhost:85/upstream/"
+      }
+    }
+  ]
 }

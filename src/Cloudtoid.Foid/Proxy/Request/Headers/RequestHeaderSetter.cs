@@ -7,14 +7,9 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Cloudtoid.Foid.Headers;
-    using Cloudtoid.Foid.Host;
-    using Cloudtoid.Foid.Options;
-    using Cloudtoid.Foid.Trace;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using Microsoft.Net.Http.Headers;
     using static Contract;
-    using Options = Options.OptionsProvider.ProxyOptions.UpstreamOptions.RequestOptions.HeadersOptions;
 
     /// <summary>
     /// By inheriting from this class, one can have full control over the outbound upstream request headers. Please consider the following extensibility points:
@@ -49,34 +44,19 @@
 
         public RequestHeaderSetter(
             IRequestHeaderValuesProvider provider,
-            ITraceIdProvider traceIdProvider,
-            IHostProvider hostProvider,
-            OptionsProvider options,
             ILogger<RequestHeaderSetter> logger)
         {
             Provider = CheckValue(provider, nameof(provider));
-            TraceIdProvider = CheckValue(traceIdProvider, nameof(traceIdProvider));
-            HostProvider = CheckValue(hostProvider, nameof(hostProvider));
-            Options = CheckValue(options, nameof(options));
             Logger = CheckValue(logger, nameof(logger));
             sanetizer = new HeaderSanetizer(logger);
         }
 
         protected IRequestHeaderValuesProvider Provider { get; }
 
-        protected ITraceIdProvider TraceIdProvider { get; }
-
-        protected IHostProvider HostProvider { get; }
-
-        protected OptionsProvider Options { get; }
-
         protected ILogger<RequestHeaderSetter> Logger { get; }
 
-        // Do NOT cache this value. Options react to changes.
-        private Options HeaderOptions => Options.Proxy.Upstream.Request.Headers;
-
         public virtual Task SetHeadersAsync(
-            HttpContext context,
+            CallContext context,
             HttpRequestMessage upstreamRequest,
             CancellationToken cancellationToken)
         {
@@ -100,20 +80,21 @@
         }
 
         protected virtual void AddDownstreamRequestHeadersToUpstream(
-            HttpContext context,
+            CallContext context,
             HttpRequestMessage upstreamRequest)
         {
-            if (HeaderOptions.IgnoreAllDownstreamHeaders)
+            var options = context.ProxyUpstreamRequestHeadersOptions;
+            if (options.IgnoreAllDownstreamHeaders)
                 return;
 
             var headers = context.Request.Headers;
             if (headers is null)
                 return;
 
-            var allowHeadersWithEmptyValue = HeaderOptions.AllowHeadersWithEmptyValue;
-            var allowHeadersWithUnderscoreInName = HeaderOptions.AllowHeadersWithUnderscoreInName;
-            var correlationIdHeader = TraceIdProvider.GetCorrelationIdHeader(context);
-            var headersWithOverride = HeaderOptions.HeaderNames;
+            var allowHeadersWithEmptyValue = options.AllowHeadersWithEmptyValue;
+            var allowHeadersWithUnderscoreInName = options.AllowHeadersWithUnderscoreInName;
+            var correlationIdHeader = context.CorrelationIdHeader;
+            var headersWithOverride = options.HeaderNames;
 
             foreach (var header in headers)
             {
@@ -145,19 +126,19 @@
             }
         }
 
-        protected virtual void AddHostHeader(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected virtual void AddHostHeader(CallContext context, HttpRequestMessage upstreamRequest)
         {
-            if (HeaderOptions.IgnoreHost)
+            if (context.ProxyUpstreamRequestHeadersOptions.IgnoreHost)
                 return;
 
             upstreamRequest.Headers.TryAddWithoutValidation(
                 HeaderNames.Host,
-                HostProvider.GetHost(context));
+                context.Host);
         }
 
-        protected virtual void AddExternalAddressHeader(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected virtual void AddExternalAddressHeader(CallContext context, HttpRequestMessage upstreamRequest)
         {
-            if (!HeaderOptions.IncludeExternalAddress)
+            if (!context.ProxyUpstreamRequestHeadersOptions.IncludeExternalAddress)
                 return;
 
             var clientAddress = GetRemoteIpAddressOrDefault(context);
@@ -171,9 +152,9 @@
                 clientAddress);
         }
 
-        protected virtual void AddForwardedForHeader(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected virtual void AddForwardedForHeader(CallContext context, HttpRequestMessage upstreamRequest)
         {
-            if (HeaderOptions.IgnoreForwardedFor)
+            if (context.ProxyUpstreamRequestHeadersOptions.IgnoreForwardedFor)
                 return;
 
             var clientAddress = GetRemoteIpAddressOrDefault(context);
@@ -187,9 +168,9 @@
                 clientAddress);
         }
 
-        protected virtual void AddForwardedProtocolHeader(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected virtual void AddForwardedProtocolHeader(CallContext context, HttpRequestMessage upstreamRequest)
         {
-            if (HeaderOptions.IgnoreForwardedProtocol)
+            if (context.ProxyUpstreamRequestHeadersOptions.IgnoreForwardedProtocol)
                 return;
 
             if (string.IsNullOrEmpty(context.Request.Scheme))
@@ -202,9 +183,9 @@
                 context.Request.Scheme);
         }
 
-        protected virtual void AddForwardedHostHeader(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected virtual void AddForwardedHostHeader(CallContext context, HttpRequestMessage upstreamRequest)
         {
-            if (HeaderOptions.IgnoreForwardedHost)
+            if (context.ProxyUpstreamRequestHeadersOptions.IgnoreForwardedHost)
                 return;
 
             var host = context.Request.Host;
@@ -218,33 +199,33 @@
                 host.Value);
         }
 
-        protected virtual void AddCorrelationIdHeader(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected virtual void AddCorrelationIdHeader(CallContext context, HttpRequestMessage upstreamRequest)
         {
-            if (HeaderOptions.IgnoreCorrelationId)
+            if (context.ProxyUpstreamRequestHeadersOptions.IgnoreCorrelationId)
                 return;
 
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                TraceIdProvider.GetCorrelationIdHeader(context),
-                TraceIdProvider.GetCorrelationId(context));
+                context.CorrelationIdHeader,
+                context.CorrelationId);
         }
 
-        protected virtual void AddCallIdHeader(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected virtual void AddCallIdHeader(CallContext context, HttpRequestMessage upstreamRequest)
         {
-            if (HeaderOptions.IgnoreCallId)
+            if (context.ProxyUpstreamRequestHeadersOptions.IgnoreCallId)
                 return;
 
             AddHeaderValues(
                 context,
                 upstreamRequest,
                 Names.CallId,
-                TraceIdProvider.GetCallId(context));
+                context.CallId);
         }
 
-        protected virtual void AddProxyNameHeader(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected virtual void AddProxyNameHeader(CallContext context, HttpRequestMessage upstreamRequest)
         {
-            if (!HeaderOptions.TryGetProxyName(context, out var name))
+            if (!context.ProxyUpstreamRequestHeadersOptions.TryGetProxyName(context, out var name))
                 return;
 
             AddHeaderValues(
@@ -254,14 +235,14 @@
                 name);
         }
 
-        protected virtual void AddExtraHeaders(HttpContext context, HttpRequestMessage upstreamRequest)
+        protected virtual void AddExtraHeaders(CallContext context, HttpRequestMessage upstreamRequest)
         {
-            foreach (var header in HeaderOptions.Headers)
+            foreach (var header in context.ProxyUpstreamRequestHeadersOptions.Headers)
                 upstreamRequest.Headers.TryAddWithoutValidation(header.Name, header.GetValues(context));
         }
 
         protected virtual void AddHeaderValues(
-            HttpContext context,
+            CallContext context,
             HttpRequestMessage upstreamRequest,
             string name,
             params string[] downstreamValues)
@@ -279,9 +260,9 @@
                 nameof(IRequestHeaderValuesProvider.TryGetHeaderValues));
         }
 
-        private static string? GetRemoteIpAddressOrDefault(HttpContext context)
+        private static string? GetRemoteIpAddressOrDefault(CallContext context)
         {
-            var address = context.Connection.RemoteIpAddress;
+            var address = context.HttpContext.Connection.RemoteIpAddress;
             if (address is null)
                 return null;
 

@@ -1,7 +1,5 @@
 ﻿namespace Cloudtoid.Foid.Proxy
 {
-    using Microsoft.AspNetCore.Http;
-
     /// <summary>
     /// By implementing this interface, one can partially control the outbound downstream response content headers and trailing headers. Please, consider the following extensibility points:
     /// <list type="number">
@@ -26,7 +24,7 @@
         /// Return <c>false</c> if the header should be omitted.
         /// </summary>
         bool TryGetHeaderValues(
-            HttpContext context,
+            CallContext context,
             string name,
             string[] downstreamValues,
             out string[] upstreamValues);

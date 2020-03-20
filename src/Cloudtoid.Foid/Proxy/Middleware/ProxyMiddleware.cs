@@ -6,7 +6,9 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Cloudtoid;
-    using Cloudtoid.Foid.Options;
+    using Cloudtoid.Foid.Host;
+    using Cloudtoid.Foid.Routes;
+    using Cloudtoid.Foid.Trace;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using static Contract;
@@ -17,7 +19,9 @@
         private readonly IRequestCreator requestCreator;
         private readonly IRequestSender sender;
         private readonly IResponseSender responseSender;
-        private readonly OptionsProvider options;
+        private readonly IRouteProvider routeProvider;
+        private readonly IHostProvider hostProvider;
+        private readonly ITraceIdProvider traceIdProvider;
         private readonly ILogger<ProxyMiddleware> logger;
 
         public ProxyMiddleware(
@@ -25,36 +29,49 @@
             IRequestCreator requestCreator,
             IRequestSender sender,
             IResponseSender responseSender,
-            OptionsProvider options,
+            IRouteProvider routeProvider,
+            IHostProvider hostProvider,
+            ITraceIdProvider traceIdProvider,
             ILogger<ProxyMiddleware> logger)
         {
             this.next = CheckValue(next, nameof(next));
             this.requestCreator = CheckValue(requestCreator, nameof(requestCreator));
             this.sender = CheckValue(sender, nameof(sender));
             this.responseSender = CheckValue(responseSender, nameof(responseSender));
-            this.options = CheckValue(options, nameof(options));
+            this.routeProvider = CheckValue(routeProvider, nameof(routeProvider));
+            this.hostProvider = CheckValue(hostProvider, nameof(hostProvider));
+            this.traceIdProvider = CheckValue(traceIdProvider, nameof(traceIdProvider));
             this.logger = CheckValue(logger, nameof(logger));
         }
 
         [SuppressMessage("Style", "VSTHRD200:Use Async suffix for async methods", Justification = "Implementing an ASP.NET middleware. This signature cannot be changed.")]
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext httpContext)
         {
-            CheckValue(context, nameof(context));
+            CheckValue(httpContext, nameof(httpContext));
 
-            logger.LogDebug("Reverse proxy received a new inbound downstream {0} request.", context.Request.Method);
+            logger.LogDebug("Reverse proxy received a new inbound downstream {0} request.", httpContext.Request.Method);
 
-            var cancellationToken = context.RequestAborted;
+            var cancellationToken = httpContext.RequestAborted;
             cancellationToken.ThrowIfCancellationRequested();
 
-            var upstreamRequest = await CreateUpstreamRequestAsync(context, cancellationToken);
-            var upstreamResponse = await SendUpstreamRequestAsync(context, upstreamRequest, cancellationToken);
-            await SendDownstreamResponseAsync(context, upstreamResponse, cancellationToken);
+            if (routeProvider.TryGetRoute(httpContext, out var route))
+            {
+                var context = new CallContext(
+                    hostProvider,
+                    traceIdProvider,
+                    httpContext,
+                    route);
 
-            await next.Invoke(context);
+                var upstreamRequest = await CreateUpstreamRequestAsync(context, cancellationToken);
+                var upstreamResponse = await SendUpstreamRequestAsync(context, upstreamRequest, cancellationToken);
+                await SendDownstreamResponseAsync(context, upstreamResponse, cancellationToken);
+            }
+
+            await next.Invoke(httpContext);
         }
 
         private async Task<HttpRequestMessage> CreateUpstreamRequestAsync(
-            HttpContext context,
+            CallContext context,
             CancellationToken cancellationToken)
         {
             return await requestCreator
@@ -63,11 +80,11 @@
         }
 
         private async Task<HttpResponseMessage> SendUpstreamRequestAsync(
-            HttpContext context,
+            CallContext context,
             HttpRequestMessage upstreamRequest,
             CancellationToken cancellationToken)
         {
-            var upstreamTimeout = options.Proxy.Upstream.Request.GetTimeout(context);
+            var upstreamTimeout = context.ProxyUpstreamRequestOptions.GetTimeout(context);
 
             try
             {
@@ -82,7 +99,7 @@
         }
 
         private async Task SendDownstreamResponseAsync(
-            HttpContext context,
+            CallContext context,
             HttpResponseMessage upstreamResponse,
             CancellationToken cancellationToken)
         {

@@ -4,37 +4,25 @@
     using System.Collections.Generic;
     using System.Text;
     using System.Threading;
-    using Cloudtoid.Foid.Host;
-    using Cloudtoid.Foid.Trace;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Http.Extensions;
-    using Microsoft.Extensions.DependencyInjection;
     using static Contract;
     using Cache = System.Collections.Generic.IReadOnlyDictionary<string, ExpressionEvaluator.ParsedExpression>;
-    using VariableEvaluator = System.Func<ExpressionEvaluator.Context, string?>;
+    using VariableEvaluator = System.Func<CallContext, string?>;
 
     internal sealed class ExpressionEvaluator : IExpressionEvaluator
     {
         private static readonly VariableTrie<VariableEvaluator> VariableEvaluatorTrie = BuildTrie();
-        private readonly IServiceProvider serviceProvider;
-        private ITraceIdProvider? traceIdProvider;
-        private IHostProvider? hostProvider;
-        private Cache cache;
+        private Cache cache = new Dictionary<string, ParsedExpression>(0, StringComparer.Ordinal);
 
-        public ExpressionEvaluator(IServiceProvider serviceProvider)
-        {
-            this.serviceProvider = CheckValue(serviceProvider, nameof(serviceProvider));
-            cache = new Dictionary<string, ParsedExpression>(0, StringComparer.Ordinal);
-        }
-
-        public string Evaluate(HttpContext context, string expression)
+        public string Evaluate(CallContext context, string expression)
         {
             CheckValue(context, nameof(context));
             CheckValue(expression, nameof(expression));
             return EvaluateCore(context, expression);
         }
 
-        private string EvaluateCore(HttpContext context, string expression)
+        private string EvaluateCore(CallContext context, string expression)
         {
             if (!cache.TryGetValue(expression, out var parsedExpression))
             {
@@ -55,79 +43,72 @@
                 while (Interlocked.CompareExchange(ref cache, newCache, snapshot) != snapshot);
             }
 
-            var c = new Context
-            {
-                HttpContext = context,
-                TraceIdProvider = traceIdProvider ?? (traceIdProvider = serviceProvider.GetRequiredService<ITraceIdProvider>()),
-                HostProvider = hostProvider ?? (hostProvider = serviceProvider.GetRequiredService<IHostProvider>()),
-            };
-
-            return parsedExpression.Evaluate(c);
+            return parsedExpression.Evaluate(context);
         }
 
         /// <summary>
         /// "Content-Length" request header field
         /// </summary>
-        private static string? GetContentLength(Context context)
+        private static string? GetContentLength(CallContext context)
             => context.Request.ContentLength?.ToStringInvariant();
 
         /// <summary>
         /// "Content-Type" request header field
         /// </summary>
-        private static string? GetContentType(Context context)
+        private static string? GetContentType(CallContext context)
             => context.Request.ContentType;
 
         /// <summary>
         /// The value correlation identifier header if not present or a newly generated one.
         /// </summary>
-        private static string? GetCorrelationId(Context context)
-            => context.TraceIdProvider.GetCorrelationId(context.HttpContext);
+        private static string? GetCorrelationId(CallContext context)
+            => context.CorrelationId;
 
         /// <summary>
         /// The value correlation identifier header if not present or a newly generated one.
         /// The default header name of correlation identifier is "x-correlation-id" but this can be changed
         /// using the CorrelationIdHeader option.
         /// </summary>
-        private static string? GetCallId(Context context)
-            => context.TraceIdProvider.GetCallId(context.HttpContext);
+        private static string? GetCallId(CallContext context)
+            => context.CallId;
 
         /// <summary>
         /// The value that should be used as the HOST header on the outbound upstream request.
         /// </summary>
-        private static string? GetHost(Context context)
-            => context.HostProvider.GetHost(context.HttpContext);
+        private static string? GetHost(CallContext context)
+            => context.Host;
 
         /// <summary>
         /// The HTTP method of the inbound downstream request
         /// </summary>
-        private static string? GetRequestMethod(Context context)
+        private static string? GetRequestMethod(CallContext context)
             => context.Request.Method;
 
         /// <summary>
         /// The scheme (HTTP or HTTPS) used by the inbound downstream request
         /// </summary>
-        private static string? GetRequestScheme(Context context)
+        private static string? GetRequestScheme(CallContext context)
             => context.Request.Scheme;
 
         /// <summary>
         /// The unescaped path base value.
         /// This is identical to <see cref="HttpRequest.PathBase"/>
         /// </summary>
-        private static string? GetRequestPathBase(Context context)
+        private static string? GetRequestPathBase(CallContext context)
             => context.Request.PathBase.Value;
 
         /// <summary>
         /// The unescaped path value.
         /// This is identical to <see cref="HttpRequest.Path"/>
         /// </summary>
-        private static string? GetRequestPath(Context context)
+        private static string? GetRequestPath(CallContext context)
             => context.Request.Path.Value;
 
         /// <summary>
         /// The escaped query string with the leading '?' character.
         /// This is identical to <see cref="HttpRequest.QueryString"/>
         /// </summary>
-        private static string? GetRequestQueryString(Context context)
+        private static string? GetRequestQueryString(CallContext context)
             => context.Request.QueryString.Value;
 
         /// <summary>
@@ -135,43 +116,43 @@
         /// scheme + host + path-base + path + query-string
         /// This is identical to <see cref="UriHelper.GetEncodedUrl(HttpRequest)"/>.
         /// </summary>
-        private static string? GetRequestEncodedUri(Context context)
+        private static string? GetRequestEncodedUri(CallContext context)
             => context.Request.GetEncodedUrl();
 
         /// <summary>
         /// The IP address of the client
         /// </summary>
-        private static string? GetRemoteAddress(Context context)
+        private static string? GetRemoteAddress(CallContext context)
             => context.HttpContext.Connection?.RemoteIpAddress?.ToString();
 
         /// <summary>
         /// The IP port number of the remote client.
         /// </summary>
-        private static string? GetRemotePort(Context context)
+        private static string? GetRemotePort(CallContext context)
             => context.HttpContext.Connection?.RemotePort.ToStringInvariant();
 
         /// <summary>
         /// The IP address of the server which accepted the request
         /// </summary>
-        private static string? GetServerAddress(Context context)
+        private static string? GetServerAddress(CallContext context)
             => context.HttpContext.Connection?.LocalIpAddress?.ToString();
 
         /// <summary>
         /// The IP port number of the server which accepted the request
         /// </summary>
-        private static string? GetServerPort(Context context)
+        private static string? GetServerPort(CallContext context)
             => context.HttpContext.Connection?.LocalPort.ToStringInvariant();
 
         /// <summary>
         /// The name of the server which accepted the request
         /// </summary>
-        private static string? GetServerName(Context context)
+        private static string? GetServerName(CallContext context)
             => Environment.MachineName;
 
         /// <summary>
         /// The protocol of the inbound downstream request, usually “HTTP/1.0”, “HTTP/1.1”, or “HTTP/2.0”
         /// </summary>
-        private static string? GetServerProtocol(Context context)
+        private static string? GetServerProtocol(CallContext context)
             => context.Request.Protocol;
 
         private static ParsedExpression Parse(string expression)
@@ -255,17 +236,6 @@
                 .AddValue(VariableNames.ServerProtocol, GetServerProtocol);
         }
 
-        internal struct Context
-        {
-            internal HttpContext HttpContext { get; set; }
-
-            internal ITraceIdProvider TraceIdProvider { get; set; }
-
-            internal IHostProvider HostProvider { get; set; }
-
-            internal HttpRequest Request => HttpContext.Request;
-        }
-
         internal struct ParsedExpression
         {
             private readonly IList<dynamic> instructions;
@@ -275,7 +245,7 @@
                 this.instructions = instructions;
             }
 
-            internal string Evaluate(Context context)
+            internal string Evaluate(CallContext context)
             {
                 if (instructions.Count == 0)
                     return string.Empty;
