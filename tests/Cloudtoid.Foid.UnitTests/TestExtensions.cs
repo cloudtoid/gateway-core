@@ -1,6 +1,7 @@
 ﻿namespace Cloudtoid.Foid.UnitTests
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Cloudtoid.Foid.Host;
     using Cloudtoid.Foid.Options;
@@ -60,11 +61,10 @@
         {
             return new FoidOptions
             {
-                Routes = new FoidOptions.RouteOptions[]
+                Routes = new Dictionary<string, FoidOptions.RouteOptions>
                 {
-                    new FoidOptions.RouteOptions
+                    ["/api/"] = new FoidOptions.RouteOptions
                     {
-                        Route = "/api/",
                         Proxy = new FoidOptions.RouteOptions.ProxyOptions
                         {
                             To = "/upstream/api/"

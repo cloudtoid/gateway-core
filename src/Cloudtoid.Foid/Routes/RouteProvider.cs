@@ -55,8 +55,8 @@
         private IReadOnlyList<RouteOptions> CreateRoutes()
         {
             return options.CurrentValue.Routes
-                .Where(r => !string.IsNullOrEmpty(r.Route) && !string.IsNullOrEmpty(r.Proxy?.To))
-                .Select(r => new RouteOptions(context, r))
+                .Where(r => !string.IsNullOrEmpty(r.Value.Proxy?.To))
+                .Select(r => new RouteOptions(context, r.Key, r.Value))
                 .AsReadOnlyList();
         }
     }

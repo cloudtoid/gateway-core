@@ -1,7 +1,6 @@
 {
-  "routes": [
-    {
-      "route": "/api/",
+  "routes": {
+    "/api/": {
       "proxy": {
         "to": "http://localhost:85/upstream/",
         "correlationIdHeader": "x-request-id",
@@ -21,16 +20,10 @@
               "ignoreForwardedHost": true,
               "ignoreCorrelationId": true,
               "ignoreCallId": true,
-              "headers": [
-                {
-                  "name": "x-extra-1",
-                  "values": [ "value1_1", "value1_2" ]
-                },
-                {
-                  "name": "x-extra-2",
-                  "values": [ "value2_1", "value2_2" ]
-                }
-              ]
+              "headers": {
+                "x-extra-1": [ "value1_1", "value1_2" ],
+                "x-extra-2": [ "value2_1", "value2_2" ]
+              }
             },
             "sender": {
               "allowAutoRedirect": true,
@@ -46,20 +39,14 @@
               "ignoreAllUpstreamHeaders": true,
               "includeCorrelationId": true,
               "includeCallId": true,
-              "headers": [
-                {
-                  "name": "x-extra-1",
-                  "values": [ "value1_1", "value1_2" ]
-                },
-                {
-                  "name": "x-extra-2",
-                  "values": [ "value2_1", "value2_2" ]
-                }
-              ]
+              "headers": {
+                "x-extra-1": [ "value1_1", "value1_2" ],
+                "x-extra-2": [ "value2_1", "value2_2" ]
+              }
             }
           }
         }
       }
     }
-  ]
+  }
 }

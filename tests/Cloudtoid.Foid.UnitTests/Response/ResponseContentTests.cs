@@ -45,7 +45,7 @@
             var message = CreateHttpResponseMessage((header, value));
 
             var options = TestExtensions.CreateDefaultOptions();
-            options.Routes.First().Proxy!.Downstream.Response.Headers.IgnoreAllUpstreamHeaders = true;
+            options.Routes.First().Value.Proxy!.Downstream.Response.Headers.IgnoreAllUpstreamHeaders = true;
 
             // Act
             var response = await SetContentAsync(message, options: options);

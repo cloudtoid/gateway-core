@@ -11,9 +11,10 @@
     {
         internal RouteOptions(
             OptionsContext context,
+            string route,
             Options.RouteOptions options)
         {
-            Route = CheckValue(options.Route, nameof(options.Route));
+            Route = CheckValue(route, nameof(route));
             Proxy = new ProxyOptions(context, CheckValue(options.Proxy, nameof(options.Proxy)));
         }
 
@@ -132,7 +133,7 @@
                             this.options = options;
 
                             HeaderNames = new HashSet<string>(
-                                options.Headers.Select(h => h.Name).WhereNotNullOrEmpty(),
+                                options.Headers.Select(h => h.Key).WhereNotNullOrEmpty(),
                                 StringComparer.OrdinalIgnoreCase);
                         }
 
@@ -170,8 +171,8 @@
 
                         public IEnumerable<ExtraHeader> Headers
                             => options.Headers
-                            .Where(h => !string.IsNullOrEmpty(h.Name) && !h.Values.IsNullOrEmpty())
-                            .Select(h => new ExtraHeader(context, h.Name!, h.Values!));
+                            .Where(h => !string.IsNullOrEmpty(h.Key) && !h.Value.IsNullOrEmpty())
+                            .Select(h => new ExtraHeader(context, h.Key, h.Value));
 
                         public string GetDefaultHost(CallContext callContext)
                         {
@@ -259,7 +260,7 @@
                             this.options = options;
 
                             HeaderNames = new HashSet<string>(
-                                options.Headers.Select(h => h.Name).WhereNotNullOrEmpty(),
+                                options.Headers.Select(h => h.Key).WhereNotNullOrEmpty(),
                                 StringComparer.OrdinalIgnoreCase);
                         }
 
@@ -282,8 +283,8 @@
 
                         public IEnumerable<ExtraHeader> Headers
                             => options.Headers
-                            .Where(h => !string.IsNullOrEmpty(h.Name) && !h.Values.IsNullOrEmpty())
-                            .Select(h => new ExtraHeader(context, h.Name!, h.Values!));
+                            .Where(h => !string.IsNullOrEmpty(h.Key) && !h.Value.IsNullOrEmpty())
+                            .Select(h => new ExtraHeader(context, h.Key!, h.Value!));
                     }
                 }
             }

@@ -1,7 +1,6 @@
 {
-  "routes": [
-    {
-      "route": "/api/",
+  "routes": {
+    "/api/": {
       "proxy": {
         "to": "http://localhost:85/upstream/",
         "upstream": {
@@ -11,5 +10,5 @@
         }
       }
     }
-  ]
+  }
 }

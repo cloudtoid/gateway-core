@@ -1,7 +1,6 @@
 {
-  "routes": [
-    {
-      "route": "/api/",
+  "routes": {
+    "/api/": {
       "proxy": {
         "to": "http://localhost:85/upstream/",
         "correlationIdHeader": "CorrelationIdHeader:$server_name",
@@ -12,36 +11,24 @@
             "headers": {
               "proxyName": "ProxyName:$server_name",
               "defaultHost": "DefaultHost:$server_name",
-              "headers": [
-                {
-                  "name": "x-extra-1",
-                  "values": [ "x-extra-1:v1:$server_name", "x-extra-1:v2:$server_name" ]
-                },
-                {
-                  "name": "x-extra-2",
-                  "values": [ "x-extra-2:v1:$server_name", "x-extra-2:v2:$server_name" ]
-                }
-              ]
+              "headers": {
+                "x-extra-1": [ "x-extra-1:v1:$server_name", "x-extra-1:v2:$server_name" ],
+                "x-extra-2": [ "x-extra-2:v1:$server_name", "x-extra-2:v2:$server_name" ]
+              }
             }
           }
         },
         "downstream": {
           "response": {
             "headers": {
-              "headers": [
-                {
-                  "name": "x-extra-1",
-                  "values": [ "x-extra-1:v1:$server_name", "x-extra-1:v2:$server_name" ]
-                },
-                {
-                  "name": "x-extra-2",
-                  "values": [ "x-extra-2:v1:$server_name", "x-extra-2:v2:$server_name" ]
-                }
-              ]
+              "headers": {
+                "x-extra-1": [ "x-extra-1:v1:$server_name", "x-extra-1:v2:$server_name" ],
+                "x-extra-2": [ "x-extra-2:v1:$server_name", "x-extra-2:v2:$server_name" ]
+              }
             }
           }
         }
       }
     }
-  ]
+  }
 }

@@ -44,26 +44,13 @@
             requestHeaders.IgnoreForwardedHost.Should().BeTrue();
             requestHeaders.IgnoreCorrelationId.Should().BeTrue();
             requestHeaders.IncludeExternalAddress.Should().BeTrue();
-            requestHeaders.Headers.Select(
-                h => new ExtraHeader
-                {
-                    Name = h.Name,
-                    Values = h.GetValues(context).ToArray()
-                })
+            requestHeaders.Headers.Select(h => (h.Name, Values: h.GetValues(context).ToArray()))
                 .Should()
                 .BeEquivalentTo(
                     new[]
                     {
-                        new ExtraHeader
-                        {
-                            Name = "x-extra-1",
-                            Values = new[] { "value1_1", "value1_2" }
-                        },
-                        new ExtraHeader
-                        {
-                            Name = "x-extra-2",
-                            Values = new[] { "value2_1", "value2_2" }
-                        },
+                        (Name: "x-extra-1", Values: new[] { "value1_1", "value1_2" }),
+                        (Name: "x-extra-2", Values: new[] { "value2_1", "value2_2" })
                     });
 
             var requestSender = request.Sender;
@@ -74,26 +61,13 @@
             var responseHeaders = response.Headers;
             responseHeaders.AllowHeadersWithEmptyValue.Should().BeTrue();
             responseHeaders.AllowHeadersWithUnderscoreInName.Should().BeTrue();
-            responseHeaders.Headers.Select(
-                h => new ExtraHeader
-                {
-                    Name = h.Name,
-                    Values = h.GetValues(context).ToArray()
-                })
+            responseHeaders.Headers.Select(h => (h.Name, Values: h.GetValues(context).ToArray()))
                 .Should()
                 .BeEquivalentTo(
                     new[]
                     {
-                        new ExtraHeader
-                        {
-                            Name = "x-extra-1",
-                            Values = new[] { "value1_1", "value1_2" }
-                        },
-                        new ExtraHeader
-                        {
-                            Name = "x-extra-2",
-                            Values = new[] { "value2_1", "value2_2" }
-                        },
+                        (Name: "x-extra-1", Values: new[] { "value1_1", "value1_2" }),
+                        (Name: "x-extra-2", Values: new[] { "value2_1", "value2_2" })
                     });
         }
 
@@ -114,50 +88,24 @@
             requestHeaders.TryGetProxyName(context, out var proxyName).Should().BeTrue();
             proxyName.Should().Be("ProxyName:" + expressionValue);
             requestHeaders.GetDefaultHost(context).Should().Be("DefaultHost:" + expressionValue);
-            requestHeaders.Headers.Select(
-                h => new ExtraHeader
-                {
-                    Name = h.Name,
-                    Values = h.GetValues(context).ToArray()
-                })
+            requestHeaders.Headers.Select(h => (h.Name, Values: h.GetValues(context).ToArray()))
                 .Should()
                 .BeEquivalentTo(
                     new[]
                     {
-                        new ExtraHeader
-                        {
-                            Name = "x-extra-1",
-                            Values = new[] { "x-extra-1:v1:" + expressionValue, "x-extra-1:v2:" + expressionValue }
-                        },
-                        new ExtraHeader
-                        {
-                            Name = "x-extra-2",
-                            Values = new[] { "x-extra-2:v1:" + expressionValue, "x-extra-2:v2:" + expressionValue }
-                        },
+                        (Name: "x-extra-1", Values: new[] { "x-extra-1:v1:" + expressionValue, "x-extra-1:v2:" + expressionValue }),
+                        (Name: "x-extra-2", Values: new[] { "x-extra-2:v1:" + expressionValue, "x-extra-2:v2:" + expressionValue })
                     });
 
             var response = options.Proxy.Downstream.Response;
             var responseHeaders = response.Headers;
-            responseHeaders.Headers.Select(
-                h => new ExtraHeader
-                {
-                    Name = h.Name,
-                    Values = h.GetValues(context).ToArray()
-                })
+            responseHeaders.Headers.Select(h => (h.Name, Values: h.GetValues(context).ToArray()))
                 .Should()
                 .BeEquivalentTo(
                     new[]
                     {
-                        new ExtraHeader
-                        {
-                            Name = "x-extra-1",
-                            Values = new[] { "x-extra-1:v1:" + expressionValue, "x-extra-1:v2:" + expressionValue }
-                        },
-                        new ExtraHeader
-                        {
-                            Name = "x-extra-2",
-                            Values = new[] { "x-extra-2:v1:" + expressionValue, "x-extra-2:v2:" + expressionValue }
-                        },
+                        (Name: "x-extra-1", Values: new[] { "x-extra-1:v1:" + expressionValue, "x-extra-1:v2:" + expressionValue }),
+                        (Name: "x-extra-2", Values: new[] { "x-extra-2:v1:" + expressionValue, "x-extra-2:v2:" + expressionValue })
                     });
         }
 

@@ -1,22 +1,18 @@
 ﻿namespace Cloudtoid.Foid.Options
 {
     using System;
+    using System.Collections.Generic;
 
     public sealed class FoidOptions
     {
         /// <summary>
         /// Gets or sets the list of proxy server route configurations
+        /// The string key here is the relative request URI.
         /// </summary>
-        public RouteOptions[] Routes { get; set; } = Array.Empty<RouteOptions>();
+        public Dictionary<string, RouteOptions> Routes { get; set; } = new Dictionary<string, RouteOptions>(StringComparer.OrdinalIgnoreCase);
 
         public sealed class RouteOptions
         {
-            /// <summary>
-            /// Gets or sets the relative request URI.
-            /// This is a required property.
-            /// </summary>
-            public string? Route { get; set; }
-
             /// <summary>
             /// Gets or sets the proxy configuration depending on a relative request URI specified by <see cref="Route"/>.
             /// </summary>
@@ -134,7 +130,7 @@
                             /// <summary>
                             /// Extra headers to be appended to the outbound downstream response. If a header already exists, it is replaced with the new value.
                             /// </summary>
-                            public ExtraHeader[] Headers { get; set; } = Array.Empty<ExtraHeader>();
+                            public Dictionary<string, string[]> Headers { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
                         }
 
                         public sealed class SenderOptions
@@ -198,18 +194,11 @@
                             /// <summary>
                             /// Extra headers to be appended to the outbound downstream response. If a header already exists, it is replaced with the new value.
                             /// </summary>
-                            public ExtraHeader[] Headers { get; set; } = Array.Empty<ExtraHeader>();
+                            public Dictionary<string, string[]> Headers { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
                         }
                     }
                 }
             }
         }
-    }
-
-    public sealed class ExtraHeader
-    {
-        public string? Name { get; set; }
-
-        public string[]? Values { get; set; }
     }
 }
