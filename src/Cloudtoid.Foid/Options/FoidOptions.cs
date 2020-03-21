@@ -134,14 +134,14 @@
                     public sealed class SenderOptions
                     {
                         /// <summary>
-                        /// Gets or sets a value that indicates whether the HTTP handler used by the outbound upstream request sender (<see cref="Proxy.IRequestSender"/>)
+                        /// Gets or sets a value that indicates whether the HTTP handler used by the outbound upstream request sender (<see cref="Upstream.IRequestSender"/>)
                         /// should follow redirection responses.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool AllowAutoRedirect { get; set; }
 
                         /// <summary>
-                        /// Gets or sets a value that indicates whether the HTTP handler used by the outbound upstream request sender (<see cref="Proxy.IRequestSender"/>)
+                        /// Gets or sets a value that indicates whether the HTTP handler used by the outbound upstream request sender (<see cref="Upstream.IRequestSender"/>)
                         /// uses the <see cref="System.Net.Http.HttpClientHandler.CookieContainer"/> property to store server cookies and uses these cookies when sending requests.
                         /// By default, headers with an empty value are dropped.
                         /// The default value is <c>false</c>.

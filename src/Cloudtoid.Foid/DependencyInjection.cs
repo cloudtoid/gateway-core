@@ -2,7 +2,9 @@
 {
     using System;
     using System.Net.Http;
+    using Cloudtoid.Foid.Downstream;
     using Cloudtoid.Foid.Proxy;
+    using Cloudtoid.Foid.Upstream;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using static Contract;

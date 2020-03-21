@@ -6,9 +6,11 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Cloudtoid;
+    using Cloudtoid.Foid.Downstream;
     using Cloudtoid.Foid.Host;
     using Cloudtoid.Foid.Routes;
     using Cloudtoid.Foid.Trace;
+    using Cloudtoid.Foid.Upstream;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using static Contract;

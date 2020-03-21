@@ -4,8 +4,8 @@
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Cloudtoid.Foid.Downstream;
     using Cloudtoid.Foid.Options;
-    using Cloudtoid.Foid.Proxy;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
