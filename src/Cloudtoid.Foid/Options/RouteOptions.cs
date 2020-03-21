@@ -15,8 +15,9 @@
             Options.RouteOptions options)
         {
             Route = CheckValue(route, nameof(route));
+            Check(options.Proxy is null || options.Proxy.To != null, "A proxy should always have a To property.");
 
-            if (options.Proxy != null && !string.IsNullOrEmpty(options.Proxy.To))
+            if (options.Proxy != null && options.Proxy.To != null)
                 Proxy = new ProxyOptions(context, options.Proxy);
         }
 
