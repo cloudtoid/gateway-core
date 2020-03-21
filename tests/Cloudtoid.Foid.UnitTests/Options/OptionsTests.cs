@@ -25,9 +25,9 @@
             var context = GetCallContext(@"Options\OptionsFull.json");
             var options = context.Route.Options;
 
-            options.Proxy.GetCorrelationIdHeader(context).Should().Be("x-request-id");
+            options.Proxy!.GetCorrelationIdHeader(context).Should().Be("x-request-id");
 
-            var request = options.Proxy.Upstream.Request;
+            var request = options.Proxy.UpstreamRequest;
             request.GetHttpVersion(context).Should().Be(HttpVersion.Version30);
             request.GetTimeout(context).TotalMilliseconds.Should().Be(5200);
 
@@ -44,7 +44,7 @@
             requestHeaders.IgnoreForwardedHost.Should().BeTrue();
             requestHeaders.IgnoreCorrelationId.Should().BeTrue();
             requestHeaders.IncludeExternalAddress.Should().BeTrue();
-            requestHeaders.Headers.Select(h => (h.Name, Values: h.GetValues(context).ToArray()))
+            requestHeaders.Headers.Select(h => (h.Name, Values: h.GetValues(context)))
                 .Should()
                 .BeEquivalentTo(
                     new[]
@@ -57,11 +57,11 @@
             requestSender.AllowAutoRedirect.Should().BeTrue();
             requestSender.UseCookies.Should().BeTrue();
 
-            var response = options.Proxy.Downstream.Response;
+            var response = options.Proxy.DownstreamResponse;
             var responseHeaders = response.Headers;
             responseHeaders.AllowHeadersWithEmptyValue.Should().BeTrue();
             responseHeaders.AllowHeadersWithUnderscoreInName.Should().BeTrue();
-            responseHeaders.Headers.Select(h => (h.Name, Values: h.GetValues(context).ToArray()))
+            responseHeaders.Headers.Select(h => (h.Name, Values: h.GetValues(context)))
                 .Should()
                 .BeEquivalentTo(
                     new[]
@@ -78,9 +78,9 @@
             var options = context.Route.Options;
 
             var expressionValue = Environment.MachineName;
-            options.Proxy.GetCorrelationIdHeader(context).Should().Be("CorrelationIdHeader:" + expressionValue);
+            options.Proxy!.GetCorrelationIdHeader(context).Should().Be("CorrelationIdHeader:" + expressionValue);
 
-            var request = options.Proxy.Upstream.Request;
+            var request = options.Proxy.UpstreamRequest;
             request.GetHttpVersion(context).Should().Be(HttpVersion.Version11);
             request.GetTimeout(context).TotalMilliseconds.Should().Be(5200);
 
@@ -88,7 +88,7 @@
             requestHeaders.TryGetProxyName(context, out var proxyName).Should().BeTrue();
             proxyName.Should().Be("ProxyName:" + expressionValue);
             requestHeaders.GetDefaultHost(context).Should().Be("DefaultHost:" + expressionValue);
-            requestHeaders.Headers.Select(h => (h.Name, Values: h.GetValues(context).ToArray()))
+            requestHeaders.Headers.Select(h => (h.Name, Values: h.GetValues(context)))
                 .Should()
                 .BeEquivalentTo(
                     new[]
@@ -97,9 +97,9 @@
                         (Name: "x-extra-2", Values: new[] { "x-extra-2:v1:" + expressionValue, "x-extra-2:v2:" + expressionValue })
                     });
 
-            var response = options.Proxy.Downstream.Response;
+            var response = options.Proxy.DownstreamResponse;
             var responseHeaders = response.Headers;
-            responseHeaders.Headers.Select(h => (h.Name, Values: h.GetValues(context).ToArray()))
+            responseHeaders.Headers.Select(h => (h.Name, Values: h.GetValues(context)))
                 .Should()
                 .BeEquivalentTo(
                     new[]
@@ -115,7 +115,7 @@
             var context = GetCallContext(@"Options\OptionsEmpty.json");
             var options = context.Route.Options;
 
-            var request = options.Proxy.Upstream.Request;
+            var request = options.Proxy!.UpstreamRequest;
             request.GetHttpVersion(context).Should().Be(HttpVersion.Version20);
             request.GetTimeout(context).TotalMilliseconds.Should().Be(240000);
 
@@ -138,7 +138,7 @@
             requestSender.AllowAutoRedirect.Should().BeFalse();
             requestSender.UseCookies.Should().BeFalse();
 
-            var response = options.Proxy.Downstream.Response;
+            var response = options.Proxy.DownstreamResponse;
             var responseHeaders = response.Headers;
             responseHeaders.AllowHeadersWithEmptyValue.Should().BeFalse();
             responseHeaders.AllowHeadersWithUnderscoreInName.Should().BeFalse();
@@ -167,7 +167,7 @@
                 var httpContext = new DefaultHttpContext();
                 var options = routeProvider.First();
 
-                var context = new CallContext(
+                var context = new ProxyContext(
                     Substitute.For<IHostProvider>(),
                     Substitute.For<ITraceIdProvider>(),
                     httpContext,
@@ -183,30 +183,30 @@
 
                     monitor.OnChange(Reset);
 
-                    options.Proxy.Upstream.Request.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
+                    options.Proxy!.UpstreamRequest.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
 
                     File.Copy(@"Options\Options2.json", @"Options\OptionsReload.json", true);
                     changeEvent.WaitOne(2000);
 
                     options = routeProvider.First();
-                    context = new CallContext(
+                    context = new ProxyContext(
                         Substitute.For<IHostProvider>(),
                         Substitute.For<ITraceIdProvider>(),
                         httpContext,
                         new Route(options));
 
-                    options.Proxy.Upstream.Request.GetTimeout(context).TotalMilliseconds.Should().Be(2000);
+                    options.Proxy!.UpstreamRequest.GetTimeout(context).TotalMilliseconds.Should().Be(2000);
 
                     File.Copy(@"Options\Options1.json", @"Options\OptionsReload.json", true);
                     changeEvent.WaitOne(2000);
                     options = routeProvider.First();
-                    context = new CallContext(
+                    context = new ProxyContext(
                         Substitute.For<IHostProvider>(),
                         Substitute.For<ITraceIdProvider>(),
                         httpContext,
                         new Route(options));
 
-                    options.Proxy.Upstream.Request.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
+                    options.Proxy!.UpstreamRequest.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
                 }
             }
             finally
@@ -215,7 +215,7 @@
             }
         }
 
-        private static CallContext GetCallContext(string jsonFile)
+        private static ProxyContext GetCallContext(string jsonFile)
         {
             var config = new ConfigurationBuilder()
                 .AddJsonFile(jsonFile, optional: false)
@@ -232,7 +232,7 @@
             var httpContext = new DefaultHttpContext();
             var options = routeProvider.First();
 
-            return new CallContext(
+            return new ProxyContext(
                 Substitute.For<IHostProvider>(),
                 Substitute.For<ITraceIdProvider>(),
                 httpContext,

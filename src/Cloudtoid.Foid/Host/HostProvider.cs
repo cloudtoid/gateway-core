@@ -8,7 +8,7 @@
     /// </summary>
     public class HostProvider : IHostProvider
     {
-        public virtual string GetHost(CallContext context)
+        public virtual string GetHost(ProxyContext context)
         {
             CheckValue(context, nameof(context));
 
@@ -24,7 +24,7 @@
             return GetHostWithoutPortNumber(hostHeader.Value);
         }
 
-        private string GetDefaultHost(CallContext context)
+        private string GetDefaultHost(ProxyContext context)
             => context.ProxyUpstreamRequestHeadersOptions.GetDefaultHost(context);
 
         private static string GetHostWithoutPortNumber(string host)

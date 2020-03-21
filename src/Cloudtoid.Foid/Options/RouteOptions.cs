@@ -15,12 +15,14 @@
             Options.RouteOptions options)
         {
             Route = CheckValue(route, nameof(route));
-            Proxy = new ProxyOptions(context, CheckValue(options.Proxy, nameof(options.Proxy)));
+
+            if (options.Proxy != null && !string.IsNullOrEmpty(options.Proxy.To))
+                Proxy = new ProxyOptions(context, options.Proxy);
         }
 
         public string Route { get; }
 
-        public ProxyOptions Proxy { get; }
+        public ProxyOptions? Proxy { get; }
 
         public struct ExtraHeader
         {
@@ -36,7 +38,7 @@
 
             public string Name { get; }
 
-            public IEnumerable<string> GetValues(CallContext callContext)
+            public IEnumerable<string> GetValues(ProxyContext callContext)
             {
                 var c = context;
                 return values.Select(v => c.Evaluate(callContext, v));
@@ -52,17 +54,20 @@
                 OptionsContext context,
                 Options.RouteOptions.ProxyOptions options)
             {
+                To = CheckValue(options.To, nameof(options.To));
                 this.context = context;
                 this.options = options;
-                Upstream = new UpstreamOptions(context, options.Upstream);
-                Downstream = new DownstreamOptions(context, options.Downstream);
+                UpstreamRequest = new UpstreamRequestOptions(context, options.UpstreamRequest);
+                DownstreamResponse = new DownstreamResponseOptions(context, options.DownstreamResponse);
             }
 
-            public UpstreamOptions Upstream { get; }
+            public string To { get; }
 
-            public DownstreamOptions Downstream { get; }
+            public UpstreamRequestOptions UpstreamRequest { get; }
 
-            public string GetCorrelationIdHeader(CallContext callContext)
+            public DownstreamResponseOptions DownstreamResponse { get; }
+
+            public string GetCorrelationIdHeader(ProxyContext callContext)
             {
                 var eval = context.Evaluate(callContext, options.CorrelationIdHeader);
                 return string.IsNullOrWhiteSpace(eval)
@@ -70,222 +75,198 @@
                     : eval;
             }
 
-            public sealed class UpstreamOptions
+            public sealed class UpstreamRequestOptions
             {
-                internal UpstreamOptions(
+                private readonly OptionsContext context;
+                private readonly Options.RouteOptions.ProxyOptions.UpstreamRequestOptions options;
+
+                internal UpstreamRequestOptions(
                     OptionsContext context,
-                    Options.RouteOptions.ProxyOptions.UpstreamOptions options)
+                    Options.RouteOptions.ProxyOptions.UpstreamRequestOptions options)
                 {
-                    Request = new RequestOptions(context, options.Request);
+                    this.context = context;
+                    this.options = options;
+                    Headers = new HeadersOptions(context, options.Headers);
+                    Sender = new SenderOptions(context, options.Sender);
                 }
 
-                public RequestOptions Request { get; }
+                public HeadersOptions Headers { get; }
 
-                public sealed class RequestOptions
+                public SenderOptions Sender { get; }
+
+                public Version GetHttpVersion(ProxyContext callContext)
+                {
+                    var result = context.Evaluate(
+                        callContext,
+                        options.HttpVersion);
+
+                    return HttpVersion.ParseOrDefault(result) ?? Defaults.Proxy.Upstream.Request.HttpVersion;
+                }
+
+                public TimeSpan GetTimeout(ProxyContext callContext)
+                {
+                    var result = context.Evaluate(
+                        callContext,
+                        options.TimeoutInMilliseconds);
+
+                    return long.TryParse(result, out var timeout) && timeout > 0
+                        ? TimeSpan.FromMilliseconds(timeout)
+                        : Defaults.Proxy.Upstream.Request.Timeout;
+                }
+
+                public sealed class HeadersOptions
                 {
                     private readonly OptionsContext context;
-                    private readonly Options.RouteOptions.ProxyOptions.UpstreamOptions.RequestOptions options;
+                    private readonly Options.RouteOptions.ProxyOptions.UpstreamRequestOptions.HeadersOptions options;
 
-                    internal RequestOptions(
+                    internal HeadersOptions(
                         OptionsContext context,
-                        Options.RouteOptions.ProxyOptions.UpstreamOptions.RequestOptions options)
+                        Options.RouteOptions.ProxyOptions.UpstreamRequestOptions.HeadersOptions options)
                     {
                         this.context = context;
                         this.options = options;
-                        Headers = new HeadersOptions(context, options.Headers);
-                        Sender = new SenderOptions(context, options.Sender);
+
+                        HeaderNames = new HashSet<string>(
+                            options.Headers.Select(h => h.Key).WhereNotNullOrEmpty(),
+                            StringComparer.OrdinalIgnoreCase);
                     }
 
-                    public HeadersOptions Headers { get; }
+                    public bool AllowHeadersWithEmptyValue
+                        => options.AllowHeadersWithEmptyValue;
 
-                    public SenderOptions Sender { get; }
+                    public bool AllowHeadersWithUnderscoreInName
+                        => options.AllowHeadersWithUnderscoreInName;
 
-                    public Version GetHttpVersion(CallContext callContext)
+                    public bool IncludeExternalAddress
+                        => options.IncludeExternalAddress;
+
+                    public bool IgnoreAllDownstreamHeaders
+                        => options.IgnoreAllDownstreamHeaders;
+
+                    public bool IgnoreHost
+                        => options.IgnoreHost;
+
+                    public bool IgnoreForwardedFor
+                        => options.IgnoreForwardedFor;
+
+                    public bool IgnoreForwardedProtocol
+                        => options.IgnoreForwardedProtocol;
+
+                    public bool IgnoreForwardedHost
+                        => options.IgnoreForwardedHost;
+
+                    public bool IgnoreCorrelationId
+                        => options.IgnoreCorrelationId;
+
+                    public bool IgnoreCallId
+                        => options.IgnoreCallId;
+
+                    public ISet<string> HeaderNames { get; }
+
+                    public IEnumerable<ExtraHeader> Headers
+                        => options.Headers
+                        .Where(h => !string.IsNullOrEmpty(h.Key) && !h.Value.IsNullOrEmpty())
+                        .Select(h => new ExtraHeader(context, h.Key, h.Value));
+
+                    public string GetDefaultHost(ProxyContext callContext)
                     {
-                        var result = context.Evaluate(
-                            callContext,
-                            options.HttpVersion);
-
-                        return HttpVersion.ParseOrDefault(result) ?? Defaults.Proxy.Upstream.Request.HttpVersion;
+                        var eval = context.Evaluate(callContext, options.DefaultHost);
+                        return string.IsNullOrWhiteSpace(eval)
+                            ? Defaults.Proxy.Upstream.Request.Headers.Host
+                            : eval;
                     }
 
-                    public TimeSpan GetTimeout(CallContext callContext)
+                    public bool TryGetProxyName(ProxyContext callContext, [NotNullWhen(true)] out string? proxyName)
                     {
-                        var result = context.Evaluate(
-                            callContext,
-                            options.TimeoutInMilliseconds);
-
-                        return long.TryParse(result, out var timeout) && timeout > 0
-                            ? TimeSpan.FromMilliseconds(timeout)
-                            : Defaults.Proxy.Upstream.Request.Timeout;
-                    }
-
-                    public sealed class HeadersOptions
-                    {
-                        private readonly OptionsContext context;
-                        private readonly Options.RouteOptions.ProxyOptions.UpstreamOptions.RequestOptions.HeadersOptions options;
-
-                        internal HeadersOptions(
-                            OptionsContext context,
-                            Options.RouteOptions.ProxyOptions.UpstreamOptions.RequestOptions.HeadersOptions options)
+                        var expr = options.ProxyName;
+                        if (expr is null)
                         {
-                            this.context = context;
-                            this.options = options;
-
-                            HeaderNames = new HashSet<string>(
-                                options.Headers.Select(h => h.Key).WhereNotNullOrEmpty(),
-                                StringComparer.OrdinalIgnoreCase);
-                        }
-
-                        public bool AllowHeadersWithEmptyValue
-                            => options.AllowHeadersWithEmptyValue;
-
-                        public bool AllowHeadersWithUnderscoreInName
-                            => options.AllowHeadersWithUnderscoreInName;
-
-                        public bool IncludeExternalAddress
-                            => options.IncludeExternalAddress;
-
-                        public bool IgnoreAllDownstreamHeaders
-                            => options.IgnoreAllDownstreamHeaders;
-
-                        public bool IgnoreHost
-                            => options.IgnoreHost;
-
-                        public bool IgnoreForwardedFor
-                            => options.IgnoreForwardedFor;
-
-                        public bool IgnoreForwardedProtocol
-                            => options.IgnoreForwardedProtocol;
-
-                        public bool IgnoreForwardedHost
-                            => options.IgnoreForwardedHost;
-
-                        public bool IgnoreCorrelationId
-                            => options.IgnoreCorrelationId;
-
-                        public bool IgnoreCallId
-                            => options.IgnoreCallId;
-
-                        public ISet<string> HeaderNames { get; }
-
-                        public IEnumerable<ExtraHeader> Headers
-                            => options.Headers
-                            .Where(h => !string.IsNullOrEmpty(h.Key) && !h.Value.IsNullOrEmpty())
-                            .Select(h => new ExtraHeader(context, h.Key, h.Value));
-
-                        public string GetDefaultHost(CallContext callContext)
-                        {
-                            var eval = context.Evaluate(callContext, options.DefaultHost);
-                            return string.IsNullOrWhiteSpace(eval)
-                                ? Defaults.Proxy.Upstream.Request.Headers.Host
-                                : eval;
-                        }
-
-                        public bool TryGetProxyName(CallContext callContext, [NotNullWhen(true)] out string? proxyName)
-                        {
-                            var expr = options.ProxyName;
-                            if (expr is null)
-                            {
-                                proxyName = Defaults.Proxy.Upstream.Request.Headers.ProxyName;
-                                return true;
-                            }
-
-                            var eval = context.Evaluate(callContext, expr);
-                            if (string.IsNullOrWhiteSpace(eval))
-                            {
-                                proxyName = null;
-                                return false;
-                            }
-
-                            proxyName = eval;
+                            proxyName = Defaults.Proxy.Upstream.Request.Headers.ProxyName;
                             return true;
                         }
-                    }
 
-                    public sealed class SenderOptions
-                    {
-                        private readonly OptionsContext context;
-                        private readonly Options.RouteOptions.ProxyOptions.UpstreamOptions.RequestOptions.SenderOptions options;
-
-                        internal SenderOptions(
-                            OptionsContext context,
-                            Options.RouteOptions.ProxyOptions.UpstreamOptions.RequestOptions.SenderOptions options)
+                        var eval = context.Evaluate(callContext, expr);
+                        if (string.IsNullOrWhiteSpace(eval))
                         {
-                            this.context = context;
-                            this.options = options;
+                            proxyName = null;
+                            return false;
                         }
 
-                        public bool AllowAutoRedirect
-                            => options.AllowAutoRedirect;
-
-                        public bool UseCookies
-                            => options.UseCookies;
+                        proxyName = eval;
+                        return true;
                     }
+                }
+
+                public sealed class SenderOptions
+                {
+                    private readonly OptionsContext context;
+                    private readonly Options.RouteOptions.ProxyOptions.UpstreamRequestOptions.SenderOptions options;
+
+                    internal SenderOptions(
+                        OptionsContext context,
+                        Options.RouteOptions.ProxyOptions.UpstreamRequestOptions.SenderOptions options)
+                    {
+                        this.context = context;
+                        this.options = options;
+                    }
+
+                    public bool AllowAutoRedirect
+                        => options.AllowAutoRedirect;
+
+                    public bool UseCookies
+                        => options.UseCookies;
                 }
             }
 
-            public sealed class DownstreamOptions
+            public sealed class DownstreamResponseOptions
             {
-                internal DownstreamOptions(
+                internal DownstreamResponseOptions(
                     OptionsContext context,
-                    Options.RouteOptions.ProxyOptions.DownstreamOptions options)
+                    Options.RouteOptions.ProxyOptions.DownstreamResponseOptions options)
                 {
-                    Response = new ResponseOptions(context, options.Response);
+                    Headers = new HeadersOptions(context, options.Headers);
                 }
 
-                public ResponseOptions Response { get; }
+                public HeadersOptions Headers { get; }
 
-                public sealed class ResponseOptions
+                public sealed class HeadersOptions
                 {
-                    internal ResponseOptions(
+                    private readonly OptionsContext context;
+                    private readonly Options.RouteOptions.ProxyOptions.DownstreamResponseOptions.HeadersOptions options;
+
+                    internal HeadersOptions(
                         OptionsContext context,
-                        Options.RouteOptions.ProxyOptions.DownstreamOptions.ResponseOptions options)
+                        Options.RouteOptions.ProxyOptions.DownstreamResponseOptions.HeadersOptions options)
                     {
-                        Headers = new HeadersOptions(context, options.Headers);
+                        this.context = context;
+                        this.options = options;
+
+                        HeaderNames = new HashSet<string>(
+                            options.Headers.Select(h => h.Key).WhereNotNullOrEmpty(),
+                            StringComparer.OrdinalIgnoreCase);
                     }
 
-                    public HeadersOptions Headers { get; }
+                    public bool AllowHeadersWithEmptyValue
+                        => options.AllowHeadersWithEmptyValue;
 
-                    public sealed class HeadersOptions
-                    {
-                        private readonly OptionsContext context;
-                        private readonly Options.RouteOptions.ProxyOptions.DownstreamOptions.ResponseOptions.HeadersOptions options;
+                    public bool AllowHeadersWithUnderscoreInName
+                        => options.AllowHeadersWithUnderscoreInName;
 
-                        internal HeadersOptions(
-                            OptionsContext context,
-                            Options.RouteOptions.ProxyOptions.DownstreamOptions.ResponseOptions.HeadersOptions options)
-                        {
-                            this.context = context;
-                            this.options = options;
+                    public bool IgnoreAllUpstreamHeaders
+                        => options.IgnoreAllUpstreamHeaders;
 
-                            HeaderNames = new HashSet<string>(
-                                options.Headers.Select(h => h.Key).WhereNotNullOrEmpty(),
-                                StringComparer.OrdinalIgnoreCase);
-                        }
+                    public bool IncludeCorrelationId
+                        => options.IncludeCorrelationId;
 
-                        public bool AllowHeadersWithEmptyValue
-                            => options.AllowHeadersWithEmptyValue;
+                    public bool IncludeCallId
+                        => options.IncludeCallId;
 
-                        public bool AllowHeadersWithUnderscoreInName
-                            => options.AllowHeadersWithUnderscoreInName;
+                    public ISet<string> HeaderNames { get; }
 
-                        public bool IgnoreAllUpstreamHeaders
-                            => options.IgnoreAllUpstreamHeaders;
-
-                        public bool IncludeCorrelationId
-                            => options.IncludeCorrelationId;
-
-                        public bool IncludeCallId
-                            => options.IncludeCallId;
-
-                        public ISet<string> HeaderNames { get; }
-
-                        public IEnumerable<ExtraHeader> Headers
-                            => options.Headers
-                            .Where(h => !string.IsNullOrEmpty(h.Key) && !h.Value.IsNullOrEmpty())
-                            .Select(h => new ExtraHeader(context, h.Key!, h.Value!));
-                    }
+                    public IEnumerable<ExtraHeader> Headers
+                        => options.Headers
+                        .Where(h => !string.IsNullOrEmpty(h.Key) && !h.Value.IsNullOrEmpty())
+                        .Select(h => new ExtraHeader(context, h.Key!, h.Value!));
                 }
             }
         }

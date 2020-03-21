@@ -10,6 +10,6 @@
         /// Returns the value that should be used as the HOST header of the outbound upstream request.
         /// This method is only called once per request.
         /// </summary>
-        string GetHost(CallContext context);
+        string GetHost(ProxyContext context);
     }
 }

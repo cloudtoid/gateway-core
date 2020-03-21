@@ -3,10 +3,8 @@
     "/api/": {
       "proxy": {
         "to": "http://localhost:85/upstream/",
-        "upstream": {
-          "request": {
-            "timeoutInMilliseconds": 5000
-          }
+        "upstreamRequest": {
+          "timeoutInMilliseconds": 5000
         }
       }
     }

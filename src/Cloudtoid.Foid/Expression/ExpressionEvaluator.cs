@@ -8,21 +8,21 @@
     using Microsoft.AspNetCore.Http.Extensions;
     using static Contract;
     using Cache = System.Collections.Generic.IReadOnlyDictionary<string, ExpressionEvaluator.ParsedExpression>;
-    using VariableEvaluator = System.Func<CallContext, string?>;
+    using VariableEvaluator = System.Func<ProxyContext, string?>;
 
     internal sealed class ExpressionEvaluator : IExpressionEvaluator
     {
         private static readonly VariableTrie<VariableEvaluator> VariableEvaluatorTrie = BuildTrie();
         private Cache cache = new Dictionary<string, ParsedExpression>(0, StringComparer.Ordinal);
 
-        public string Evaluate(CallContext context, string expression)
+        public string Evaluate(ProxyContext context, string expression)
         {
             CheckValue(context, nameof(context));
             CheckValue(expression, nameof(expression));
             return EvaluateCore(context, expression);
         }
 
-        private string EvaluateCore(CallContext context, string expression)
+        private string EvaluateCore(ProxyContext context, string expression)
         {
             if (!cache.TryGetValue(expression, out var parsedExpression))
             {
@@ -49,19 +49,19 @@
         /// <summary>
         /// "Content-Length" request header field
         /// </summary>
-        private static string? GetContentLength(CallContext context)
+        private static string? GetContentLength(ProxyContext context)
             => context.Request.ContentLength?.ToStringInvariant();
 
         /// <summary>
         /// "Content-Type" request header field
         /// </summary>
-        private static string? GetContentType(CallContext context)
+        private static string? GetContentType(ProxyContext context)
             => context.Request.ContentType;
 
         /// <summary>
         /// The value correlation identifier header if not present or a newly generated one.
         /// </summary>
-        private static string? GetCorrelationId(CallContext context)
+        private static string? GetCorrelationId(ProxyContext context)
             => context.CorrelationId;
 
         /// <summary>
@@ -69,46 +69,46 @@
         /// The default header name of correlation identifier is "x-correlation-id" but this can be changed
         /// using the CorrelationIdHeader option.
         /// </summary>
-        private static string? GetCallId(CallContext context)
+        private static string? GetCallId(ProxyContext context)
             => context.CallId;
 
         /// <summary>
         /// The value that should be used as the HOST header on the outbound upstream request.
         /// </summary>
-        private static string? GetHost(CallContext context)
+        private static string? GetHost(ProxyContext context)
             => context.Host;
 
         /// <summary>
         /// The HTTP method of the inbound downstream request
         /// </summary>
-        private static string? GetRequestMethod(CallContext context)
+        private static string? GetRequestMethod(ProxyContext context)
             => context.Request.Method;
 
         /// <summary>
         /// The scheme (HTTP or HTTPS) used by the inbound downstream request
         /// </summary>
-        private static string? GetRequestScheme(CallContext context)
+        private static string? GetRequestScheme(ProxyContext context)
             => context.Request.Scheme;
 
         /// <summary>
         /// The unescaped path base value.
         /// This is identical to <see cref="HttpRequest.PathBase"/>
         /// </summary>
-        private static string? GetRequestPathBase(CallContext context)
+        private static string? GetRequestPathBase(ProxyContext context)
             => context.Request.PathBase.Value;
 
         /// <summary>
         /// The unescaped path value.
         /// This is identical to <see cref="HttpRequest.Path"/>
         /// </summary>
-        private static string? GetRequestPath(CallContext context)
+        private static string? GetRequestPath(ProxyContext context)
             => context.Request.Path.Value;
 
         /// <summary>
         /// The escaped query string with the leading '?' character.
         /// This is identical to <see cref="HttpRequest.QueryString"/>
         /// </summary>
-        private static string? GetRequestQueryString(CallContext context)
+        private static string? GetRequestQueryString(ProxyContext context)
             => context.Request.QueryString.Value;
 
         /// <summary>
@@ -116,43 +116,43 @@
         /// scheme + host + path-base + path + query-string
         /// This is identical to <see cref="UriHelper.GetEncodedUrl(HttpRequest)"/>.
         /// </summary>
-        private static string? GetRequestEncodedUri(CallContext context)
+        private static string? GetRequestEncodedUri(ProxyContext context)
             => context.Request.GetEncodedUrl();
 
         /// <summary>
         /// The IP address of the client
         /// </summary>
-        private static string? GetRemoteAddress(CallContext context)
+        private static string? GetRemoteAddress(ProxyContext context)
             => context.HttpContext.Connection?.RemoteIpAddress?.ToString();
 
         /// <summary>
         /// The IP port number of the remote client.
         /// </summary>
-        private static string? GetRemotePort(CallContext context)
+        private static string? GetRemotePort(ProxyContext context)
             => context.HttpContext.Connection?.RemotePort.ToStringInvariant();
 
         /// <summary>
         /// The IP address of the server which accepted the request
         /// </summary>
-        private static string? GetServerAddress(CallContext context)
+        private static string? GetServerAddress(ProxyContext context)
             => context.HttpContext.Connection?.LocalIpAddress?.ToString();
 
         /// <summary>
         /// The IP port number of the server which accepted the request
         /// </summary>
-        private static string? GetServerPort(CallContext context)
+        private static string? GetServerPort(ProxyContext context)
             => context.HttpContext.Connection?.LocalPort.ToStringInvariant();
 
         /// <summary>
         /// The name of the server which accepted the request
         /// </summary>
-        private static string? GetServerName(CallContext context)
+        private static string? GetServerName(ProxyContext context)
             => Environment.MachineName;
 
         /// <summary>
         /// The protocol of the inbound downstream request, usually “HTTP/1.0”, “HTTP/1.1”, or “HTTP/2.0”
         /// </summary>
-        private static string? GetServerProtocol(CallContext context)
+        private static string? GetServerProtocol(ProxyContext context)
             => context.Request.Protocol;
 
         private static ParsedExpression Parse(string expression)
@@ -245,7 +245,7 @@
                 this.instructions = instructions;
             }
 
-            internal string Evaluate(CallContext context)
+            internal string Evaluate(ProxyContext context)
             {
                 if (instructions.Count == 0)
                     return string.Empty;

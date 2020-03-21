@@ -41,7 +41,7 @@
             return services;
         }
 
-        public static CallContext GetCallContext(
+        public static ProxyContext GetCallContext(
             this IServiceProvider provider,
             HttpContext? httpContext = null)
         {
@@ -50,7 +50,7 @@
 
             httpContext ??= new DefaultHttpContext();
 
-            return new CallContext(
+            return new ProxyContext(
                 provider.GetRequiredService<IHostProvider>(),
                 provider.GetRequiredService<ITraceIdProvider>(),
                 httpContext,

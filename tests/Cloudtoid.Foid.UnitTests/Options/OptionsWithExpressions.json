@@ -4,27 +4,23 @@
       "proxy": {
         "to": "http://localhost:85/upstream/",
         "correlationIdHeader": "CorrelationIdHeader:$server_name",
-        "upstream": {
-          "request": {
-            "httpVersion": "$server_name/1.1",
-            "timeoutInMilliseconds": "5200",
+        "upstreamRequest": {
+          "httpVersion": "$server_name/1.1",
+          "timeoutInMilliseconds": "5200",
+          "headers": {
+            "proxyName": "ProxyName:$server_name",
+            "defaultHost": "DefaultHost:$server_name",
             "headers": {
-              "proxyName": "ProxyName:$server_name",
-              "defaultHost": "DefaultHost:$server_name",
-              "headers": {
-                "x-extra-1": [ "x-extra-1:v1:$server_name", "x-extra-1:v2:$server_name" ],
-                "x-extra-2": [ "x-extra-2:v1:$server_name", "x-extra-2:v2:$server_name" ]
-              }
+              "x-extra-1": [ "x-extra-1:v1:$server_name", "x-extra-1:v2:$server_name" ],
+              "x-extra-2": [ "x-extra-2:v1:$server_name", "x-extra-2:v2:$server_name" ]
             }
           }
         },
-        "downstream": {
-          "response": {
+        "downstreamResponse": {
+          "headers": {
             "headers": {
-              "headers": {
-                "x-extra-1": [ "x-extra-1:v1:$server_name", "x-extra-1:v2:$server_name" ],
-                "x-extra-2": [ "x-extra-2:v1:$server_name", "x-extra-2:v2:$server_name" ]
-              }
+              "x-extra-1": [ "x-extra-1:v1:$server_name", "x-extra-1:v2:$server_name" ],
+              "x-extra-2": [ "x-extra-2:v1:$server_name", "x-extra-2:v2:$server_name" ]
             }
           }
         }

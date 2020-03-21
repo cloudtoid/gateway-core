@@ -2,6 +2,6 @@
 {
     public interface IExpressionEvaluator
     {
-        string Evaluate(CallContext context, string expression);
+        string Evaluate(ProxyContext context, string expression);
     }
 }

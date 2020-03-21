@@ -4,45 +4,41 @@
       "proxy": {
         "to": "http://localhost:85/upstream/",
         "correlationIdHeader": "x-request-id",
-        "upstream": {
-          "request": {
-            "httpVersion": "3.0",
-            "timeoutInMilliseconds": 5200,
+        "upstreamRequest": {
+          "httpVersion": "3.0",
+          "timeoutInMilliseconds": 5200,
+          "headers": {
+            "proxyName": "some-proxy-name",
+            "defaultHost": "this-machine-name",
+            "allowHeadersWithEmptyValue": true,
+            "allowHeadersWithUnderscoreInName": true,
+            "ignoreAllDownstreamHeaders": true,
+            "includeExternalAddress": true,
+            "ignoreForwardedFor": true,
+            "ignoreForwardedProtocol": true,
+            "ignoreForwardedHost": true,
+            "ignoreCorrelationId": true,
+            "ignoreCallId": true,
             "headers": {
-              "proxyName": "some-proxy-name",
-              "defaultHost": "this-machine-name",
-              "allowHeadersWithEmptyValue": true,
-              "allowHeadersWithUnderscoreInName": true,
-              "ignoreAllDownstreamHeaders": true,
-              "includeExternalAddress": true,
-              "ignoreForwardedFor": true,
-              "ignoreForwardedProtocol": true,
-              "ignoreForwardedHost": true,
-              "ignoreCorrelationId": true,
-              "ignoreCallId": true,
-              "headers": {
-                "x-extra-1": [ "value1_1", "value1_2" ],
-                "x-extra-2": [ "value2_1", "value2_2" ]
-              }
-            },
-            "sender": {
-              "allowAutoRedirect": true,
-              "useCookies": true
+              "x-extra-1": [ "value1_1", "value1_2" ],
+              "x-extra-2": [ "value2_1", "value2_2" ]
             }
+          },
+          "sender": {
+            "allowAutoRedirect": true,
+            "useCookies": true
           }
         },
-        "downstream": {
-          "response": {
+        "downstreamResponse": {
+          "headers": {
+            "allowHeadersWithEmptyValue": true,
+            "allowHeadersWithUnderscoreInName": true,
+            "ignoreAllUpstreamHeaders": true,
+            "includeCorrelationId": true,
+            "includeCallId": true,
             "headers": {
-              "allowHeadersWithEmptyValue": true,
-              "allowHeadersWithUnderscoreInName": true,
-              "ignoreAllUpstreamHeaders": true,
-              "includeCorrelationId": true,
-              "includeCallId": true,
-              "headers": {
-                "x-extra-1": [ "value1_1", "value1_2" ],
-                "x-extra-2": [ "value2_1", "value2_2" ]
-              }
+              "x-extra-1": [ "value1_1", "value1_2" ],
+              "x-extra-2": [ "value2_1", "value2_2" ]
             }
           }
         }

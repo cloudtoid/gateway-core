@@ -70,7 +70,7 @@
             context.Request.Headers.Add(header, "some-value");
 
             var options = TestExtensions.CreateDefaultOptions();
-            options.Routes.First().Value.Proxy!.Upstream.Request.Headers.IgnoreAllDownstreamHeaders = true;
+            options.Routes.First().Value.Proxy!.UpstreamRequest.Headers.IgnoreAllDownstreamHeaders = true;
 
             // Act
             var message = await SetContentAsync(context, options: options);

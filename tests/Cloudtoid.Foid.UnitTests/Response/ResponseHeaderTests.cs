@@ -37,7 +37,7 @@
         {
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes.First().Value.Proxy!.Downstream.Response.Headers;
+            var headersOptions = options.Routes.First().Value.Proxy!.DownstreamResponse.Headers;
             headersOptions.AllowHeadersWithUnderscoreInName = true;
 
             var message = new HttpResponseMessage();
@@ -71,7 +71,7 @@
         {
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes.First().Value.Proxy!.Downstream.Response.Headers;
+            var headersOptions = options.Routes.First().Value.Proxy!.DownstreamResponse.Headers;
             headersOptions.AllowHeadersWithEmptyValue = true;
 
             var message = new HttpResponseMessage();
@@ -112,7 +112,7 @@
 
             provider
                 .TryGetHeaderValues(
-                    Arg.Any<CallContext>(),
+                    Arg.Any<ProxyContext>(),
                     Arg.Is("X-Keep-Header"),
                     Arg.Any<string[]>(),
                     out Arg.Any<string[]>())
@@ -124,7 +124,7 @@
 
             provider
                 .TryGetHeaderValues(
-                    Arg.Any<CallContext>(),
+                    Arg.Any<ProxyContext>(),
                     Arg.Is("X-Drop-Header"),
                     Arg.Any<string[]>(),
                     out Arg.Any<string[]>())
@@ -149,7 +149,7 @@
             // Arrange
             const string HeaderName = "x-custom-test";
             var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes.First().Value.Proxy!.Downstream.Response.Headers;
+            var headersOptions = options.Routes.First().Value.Proxy!.DownstreamResponse.Headers;
             headersOptions.IgnoreAllUpstreamHeaders = true;
 
             var message = new HttpResponseMessage();
@@ -168,7 +168,7 @@
             // Arrange
             const string HeaderName = "x-custom-test";
             var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes.First().Value.Proxy!.Downstream.Response.Headers;
+            var headersOptions = options.Routes.First().Value.Proxy!.DownstreamResponse.Headers;
             headersOptions.IgnoreAllUpstreamHeaders = false;
 
             var message = new HttpResponseMessage();
@@ -187,7 +187,7 @@
             // Arrange
             const string HeaderName = "x-correlation-id";
             var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes.First().Value.Proxy!.Downstream.Response.Headers;
+            var headersOptions = options.Routes.First().Value.Proxy!.DownstreamResponse.Headers;
             headersOptions.IncludeCorrelationId = true;
 
             var message = new HttpResponseMessage();
@@ -206,7 +206,7 @@
             // Arrange
             const string HeaderName = "x-correlation-id";
             var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes.First().Value.Proxy!.Downstream.Response.Headers;
+            var headersOptions = options.Routes.First().Value.Proxy!.DownstreamResponse.Headers;
             headersOptions.IncludeCorrelationId = false;
 
             var message = new HttpResponseMessage();
@@ -227,7 +227,7 @@
             var options = TestExtensions.CreateDefaultOptions();
             var proxy = options.Routes.First().Value.Proxy!;
             proxy.CorrelationIdHeader = HeaderName;
-            proxy.Downstream.Response.Headers.IncludeCorrelationId = true;
+            proxy.DownstreamResponse.Headers.IncludeCorrelationId = true;
 
             var message = new HttpResponseMessage();
             message.Headers.Add(HeaderName, "old-value");
@@ -245,7 +245,7 @@
             // Arrange
             const string HeaderName = "x-call-id";
             var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes.First().Value.Proxy!.Downstream.Response.Headers;
+            var headersOptions = options.Routes.First().Value.Proxy!.DownstreamResponse.Headers;
             headersOptions.IncludeCallId = true;
 
             var message = new HttpResponseMessage();
@@ -264,7 +264,7 @@
             // Arrange
             const string HeaderName = "x-call-id";
             var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes.First().Value.Proxy!.Downstream.Response.Headers;
+            var headersOptions = options.Routes.First().Value.Proxy!.DownstreamResponse.Headers;
             headersOptions.IncludeCallId = false;
 
             var message = new HttpResponseMessage();
@@ -282,7 +282,7 @@
         {
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes.First().Value.Proxy!.Downstream.Response.Headers;
+            var headersOptions = options.Routes.First().Value.Proxy!.DownstreamResponse.Headers;
             headersOptions.Headers = new Dictionary<string, string[]>()
             {
                 ["x-extra-1"] = new[] { "value1_1", "value1_2" },

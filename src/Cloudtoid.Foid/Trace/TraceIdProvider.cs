@@ -11,10 +11,10 @@
             this.guidProvider = CheckValue(guidProvider, nameof(guidProvider));
         }
 
-        public virtual string GetCorrelationIdHeader(CallContext context)
+        public virtual string GetCorrelationIdHeader(ProxyContext context)
             => context.ProxyOptions.GetCorrelationIdHeader(context);
 
-        public virtual string GetOrCreateCorrelationId(CallContext context)
+        public virtual string GetOrCreateCorrelationId(ProxyContext context)
         {
             if (context.ProxyUpstreamRequestHeadersOptions.IgnoreAllDownstreamHeaders)
                 return CreateCorrelationId();
@@ -26,7 +26,7 @@
             return values[0];
         }
 
-        public virtual string CreateCallId(CallContext context)
+        public virtual string CreateCallId(ProxyContext context)
             => guidProvider.NewGuid().ToStringInvariant("N");
 
         private string CreateCorrelationId()

@@ -14,7 +14,7 @@
         }
 
         [return: NotNullIfNotNull("expression")]
-        internal string? Evaluate(CallContext context, string? expression)
+        internal string? Evaluate(ProxyContext context, string? expression)
             => expression is null ? null : evaluator.Evaluate(context, expression);
     }
 }
