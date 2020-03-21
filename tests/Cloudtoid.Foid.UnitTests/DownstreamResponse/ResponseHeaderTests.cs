@@ -292,16 +292,20 @@
             };
 
             var message = new HttpResponseMessage();
+            message.Headers.Add("x-extra-0", "value0_0");
             message.Headers.Add("x-extra-2", "value2_0");
+            message.Headers.Add("x-extra-3", "value3_0");
+            message.Headers.Add("x-extra-4", "value4_0");
 
             // Act
             var response = await SetHeadersAsync(message, options);
 
             // Assert
+            response.Headers["x-extra-0"].Should().BeEquivalentTo(new[] { "value0_0" });
             response.Headers["x-extra-1"].Should().BeEquivalentTo(new[] { "value1_1", "value1_2" });
             response.Headers["x-extra-2"].Should().BeEquivalentTo(new[] { "value2_1", "value2_2" });
-            response.Headers.ContainsKey("x-extra-3").Should().BeFalse();
-            response.Headers.ContainsKey("x-extra-4").Should().BeFalse();
+            response.Headers.ContainsKey("x-extra-3").Should().BeFalse(); // should have been removed because its new value is empty
+            response.Headers.ContainsKey("x-extra-4").Should().BeFalse(); // should have been removed because its new value is null
         }
 
         private static async Task<HttpResponse> SetHeadersAsync(

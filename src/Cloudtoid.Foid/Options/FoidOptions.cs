@@ -124,7 +124,9 @@
                         public string? ProxyName { get; set; }
 
                         /// <summary>
-                        /// Extra headers to be appended to the outbound downstream response. If a header already exists, it is replaced with the new value.
+                        /// Extra headers to be appended to the outbound downstream response.
+                        /// If a header already exists, it is replaced with the new value.
+                        /// To remove a header, add it here with no values.
                         /// </summary>
                         public Dictionary<string, string[]> Headers { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
                     }
@@ -183,7 +185,9 @@
                         public bool IncludeCallId { get; set; }
 
                         /// <summary>
-                        /// Extra headers to be appended to the outbound downstream response. If a header already exists, it is replaced with the new value.
+                        /// Extra headers to be appended to the outbound downstream response.
+                        /// If a header already exists, it is replaced with the new value.
+                        /// To remove a header, add it here with no values.
                         /// </summary>
                         public Dictionary<string, string[]> Headers { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
                     }
