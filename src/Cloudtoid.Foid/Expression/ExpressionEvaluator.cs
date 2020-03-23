@@ -175,7 +175,7 @@
                 int varNameStartIndex = index;
                 while (index < len)
                 {
-                    if (!VariableNames.IsValidVariableChar(expression[index]))
+                    if (!expression[index].IsValidVariableChar())
                         break;
 
                     index++;

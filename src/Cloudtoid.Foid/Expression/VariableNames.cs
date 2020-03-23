@@ -1,5 +1,7 @@
 ﻿namespace Cloudtoid.Foid.Expression
 {
+    using System.Runtime.CompilerServices;
+
     // Based on NGINX: https://nginx.org/en/docs/http/ngx_http_core_module.html?&_ga=2.254306688.966016521.1583780354-1842431965.1581627980#variables
     public static class VariableNames
     {
@@ -21,10 +23,12 @@
         public const string ServerPort = "server_port";
         public const string ServerProtocol = "server_protocol";
 
-        public static bool IsValidVariableChar(char c)
-        {
-            int a = c;
-            return (a > 64 && a < 91) || (a > 96 && a < 123) || a == 95;
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsValidVariableChar(this char c)
+            => IsValidVariableChar((int)c);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsValidVariableChar(int c)
+            => (c > 47 && c < 58) || (c > 64 && c < 91) || (c > 96 && c < 123) || c == 95;
     }
 }
