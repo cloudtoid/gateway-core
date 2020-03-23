@@ -612,6 +612,37 @@
         }
 
         /// <summary>
+        /// Used to validate that an array is non-null and non-empty.
+        /// </summary>
+        /// <exception cref="ArgumentException"> is thrown on failure.</exception>
+        /// <exception cref="ArgumentNullException"> is thrown is <paramref name="arguments"/> is null.</exception>
+        /// <typeparam name="T">The type of the items being tested.</typeparam>
+        /// <param name="arguments">The collection being tested.</param>
+        /// <param name="paramName">The name of the parameter being tested.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T[] CheckNonEmpty<T>(T[]? arguments, string paramName) => CheckNonEmpty(arguments, paramName, null, Array.Empty<object>());
+
+        /// <summary>
+        /// Used to validate that an array is non-null and non-empty.
+        /// </summary>
+        /// <exception cref="ArgumentException"> is thrown on failure.</exception>
+        /// <exception cref="ArgumentNullException"> is thrown is <paramref name="arguments"/> is null.</exception>
+        /// <typeparam name="T">The type of the items being tested.</typeparam>
+        /// <param name="arguments">The collection being tested.</param>
+        /// <param name="paramName">The name of the parameter being tested.</param>
+        /// <param name="message">The exception message or message format.</param>
+        /// <param name="args">The arguments for message format.</param>
+        public static T[] CheckNonEmpty<T>(T[]? arguments, string paramName, string? message, params object?[] args)
+        {
+            var items = CheckValue(arguments, paramName, message, args);
+
+            if (items.Length == 0)
+                throw ExceptNonEmpty(paramName, message, args);
+
+            return items;
+        }
+
+        /// <summary>
         /// Used to validate that a dictionary is non-null and non-empty.
         /// </summary>
         /// <exception cref="ArgumentException"> is thrown on failure.</exception>

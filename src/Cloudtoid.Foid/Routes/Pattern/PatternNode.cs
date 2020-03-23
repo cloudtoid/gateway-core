@@ -1,5 +1,7 @@
 ﻿namespace Cloudtoid.Foid.Routes.Pattern
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using static Contract;
 
     internal abstract class PatternNode
@@ -18,7 +20,17 @@
             if (Equals(right, MatchNode.Empty))
                 return left;
 
-            return new ConcatNode(left, right);
+            var nodes = Enumerable.Empty<PatternNode>();
+
+            nodes = left is SequenceNode leftSeq
+                ? nodes.Concat(leftSeq.Nodes)
+                : nodes.Concat(left);
+
+            nodes = right is SequenceNode rightSeq
+                ? nodes.Concat(rightSeq.Nodes)
+                : nodes.Concat(right);
+
+            return new SequenceNode(nodes);
         }
 
         internal abstract void Accept(PatternNodeVisitor visitor);
@@ -104,19 +116,23 @@
             => visitor.VisitOptional(this);
     }
 
-    internal sealed class ConcatNode : PatternNode
+    internal sealed class SequenceNode : PatternNode
     {
-        internal ConcatNode(PatternNode left, PatternNode right)
+        internal SequenceNode(IEnumerable<PatternNode> nodes)
         {
-            Left = CheckValue(left, nameof(left));
-            Right = CheckValue(right, nameof(right));
+            Nodes = CheckNonEmpty(
+                CheckValue(nodes, nameof(nodes)).AsReadOnlyList(),
+                nameof(nodes));
         }
 
-        public PatternNode Left { get; }
+        internal SequenceNode(params PatternNode[] nodes)
+        {
+            Nodes = CheckNonEmpty(nodes, nameof(nodes));
+        }
 
-        public PatternNode Right { get; }
+        public IReadOnlyList<PatternNode> Nodes { get; }
 
         internal override void Accept(PatternNodeVisitor visitor)
-            => visitor.VisitConcat(this);
+            => visitor.VisitSequence(this);
     }
 }

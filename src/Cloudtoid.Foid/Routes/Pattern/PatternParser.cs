@@ -40,12 +40,13 @@
                 PatternNode? node = null;
                 int c;
                 int len = 0;
+                int pos = reader.Position;
                 while ((c = reader.Read()) > -1)
                 {
                     if (c == stopChar)
                     {
                         if (len > 0)
-                            node += new MatchNode(route.Substring(reader.Position - len, len));
+                            node += new MatchNode(route.Substring(pos, len));
 
                         return node;
                     }
@@ -84,9 +85,12 @@
 
                     if (len > 0)
                     {
-                        node += new MatchNode(route.Substring(reader.Position - len, len));
+                        node += new MatchNode(route.Substring(pos, len));
                         len = 0;
                     }
+
+                    if (len == 0)
+                        pos = reader.Position;
 
                     node += next;
                 }

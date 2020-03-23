@@ -35,10 +35,10 @@
             Visit(node.Node);
         }
 
-        protected internal virtual void VisitConcat(ConcatNode node)
+        protected internal virtual void VisitSequence(SequenceNode node)
         {
-            Visit(node.Left);
-            Visit(node.Right);
+            foreach (var child in node.Nodes)
+                Visit(child);
         }
     }
 }

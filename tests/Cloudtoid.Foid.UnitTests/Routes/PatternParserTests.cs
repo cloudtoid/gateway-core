@@ -21,7 +21,9 @@
         {
             var parser = new PatternParser();
             parser.TryParse("a", out var pattern, out var error).Should().BeTrue();
-            pattern.Should().BeEquivalentTo(new MatchNode("a"));
+            pattern.Should().BeEquivalentTo(
+                new MatchNode("a"),
+                o => o.RespectingRuntimeTypes());
             error.Should().BeNull();
         }
 
@@ -30,7 +32,9 @@
         {
             var parser = new PatternParser();
             parser.TryParse("valid-value", out var pattern, out var error).Should().BeTrue();
-            pattern.Should().BeEquivalentTo(new MatchNode("valid-value"));
+            pattern.Should().BeEquivalentTo(
+                new MatchNode("valid-value"),
+                o => o.RespectingRuntimeTypes());
             error.Should().BeNull();
         }
 
@@ -39,7 +43,9 @@
         {
             var parser = new PatternParser();
             parser.TryParse("/", out var pattern, out var error).Should().BeTrue();
-            pattern.Should().BeEquivalentTo(SegmentlNode.Instance);
+            pattern.Should().BeEquivalentTo(
+                SegmentlNode.Instance,
+                o => o.RespectingRuntimeTypes());
             error.Should().BeNull();
         }
 
@@ -48,7 +54,9 @@
         {
             var parser = new PatternParser();
             parser.TryParse("*", out var pattern, out var error).Should().BeTrue();
-            pattern.Should().BeEquivalentTo(WildcardNode.Instance);
+            pattern.Should().BeEquivalentTo(
+                WildcardNode.Instance,
+                o => o.RespectingRuntimeTypes());
             error.Should().BeNull();
         }
 
@@ -57,7 +65,9 @@
         {
             var parser = new PatternParser();
             parser.TryParse("(value)", out var pattern, out var error).Should().BeTrue();
-            pattern.Should().BeEquivalentTo(new OptionalNode(new MatchNode("value")));
+            pattern.Should().BeEquivalentTo(
+                new OptionalNode(new MatchNode("value")),
+                o => o.RespectingRuntimeTypes());
             error.Should().BeNull();
         }
 
@@ -66,7 +76,9 @@
         {
             var parser = new PatternParser();
             parser.TryParse("(*)", out var pattern, out var error).Should().BeTrue();
-            pattern.Should().BeEquivalentTo(new OptionalNode(WildcardNode.Instance));
+            pattern.Should().BeEquivalentTo(
+                new OptionalNode(WildcardNode.Instance),
+                o => o.RespectingRuntimeTypes());
             error.Should().BeNull();
         }
 
@@ -102,7 +114,9 @@
         {
             var parser = new PatternParser();
             parser.TryParse(":variable", out var pattern, out var error).Should().BeTrue();
-            pattern.Should().BeEquivalentTo(new VariableNode("variable"));
+            pattern.Should().BeEquivalentTo(
+                new VariableNode("variable"),
+                o => o.RespectingRuntimeTypes());
             error.Should().BeNull();
         }
 
@@ -115,13 +129,41 @@
             error.Should().Contain("invalid name");
         }
 
+        [TestMethod]
+        public void TryParse_WhenSegmentIsVariable_Success()
+        {
+            var parser = new PatternParser();
+            parser.TryParse("/api/v:version/", out var pattern, out var error).Should().BeTrue();
+
+            pattern.Should().BeEquivalentTo(
+                new SequenceNode(
+                    SegmentlNode.Instance,
+                    new MatchNode("api"),
+                    SegmentlNode.Instance,
+                    new MatchNode("v"),
+                    new VariableNode("version"),
+                    SegmentlNode.Instance),
+                o => o.RespectingRuntimeTypes());
+
+            var exp = SegmentlNode.Instance
+                + new MatchNode("api")
+                + SegmentlNode.Instance
+                + new MatchNode("v")
+                + new VariableNode("version")
+                + SegmentlNode.Instance;
+
+            pattern.Should().BeEquivalentTo(
+                 exp,
+                 o => o.RespectingRuntimeTypes());
+
+            error.Should().BeNull();
+        }
+
         // /api/v:version/
         // /api/v:version/product/:id/
         // /api/v:version/product/:id
         // /api(/v:version)/product(/:id)
         // /api(/v:version)/product/(:id)
         // /(api/v:version/)product/
-        // )
-        // (
     }
 }
