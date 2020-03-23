@@ -1,6 +1,7 @@
 ﻿namespace Cloudtoid.Foid.Routes.Pattern
 {
     using System.Diagnostics.CodeAnalysis;
+    using System.Text;
     using Cloudtoid.Foid.Expression;
     using static Contract;
 
@@ -20,18 +21,18 @@
         private struct Parser
         {
             private readonly string route;
-            private string? error;
+            private readonly StringBuilder error;
 
             public Parser(string route)
             {
                 this.route = route;
-                error = null;
+                error = new StringBuilder();
             }
 
             internal (PatternNode? Pattern, string? Error) Parse()
             {
                 using (var reader = new SeekableStringReader(route))
-                    return (ReadNode(reader), error);
+                    return (ReadNode(reader), error.Length == 0 ? null : error.ToString());
             }
 
             private PatternNode? ReadNode(SeekableStringReader reader, char? stopChar = null)
@@ -68,6 +69,10 @@
                             next = ReadOptionalNode(reader);
                             break;
 
+                        case PatternConstants.OptionalEnd:
+                            error.AppendLine($"There is an unexpected '{(char)c}'.");
+                            return null;
+
                         default:
                             len++;
                             continue;
@@ -86,6 +91,13 @@
                     node += next;
                 }
 
+                // expected an end char but didn't find it
+                if (stopChar.HasValue)
+                {
+                    error.AppendLine($"There is a missing '{stopChar}'.");
+                    return null;
+                }
+
                 node += len == 0
                     ? MatchNode.Empty
                     : new MatchNode(route.Substring(reader.Position - len, len));
@@ -98,11 +110,14 @@
                 int len = 0;
                 int c;
                 while ((c = reader.Peek()) > -1 && VariableNames.IsValidVariableChar(c))
+                {
+                    reader.Read();
                     len++;
+                }
 
                 if (len == 0)
                 {
-                    error ??= "The route pattern has an variable with an invalid name. The valid characters are 'a-zA-Z0-9'.";
+                    error.AppendLine("The route pattern has an variable with an invalid name. The valid characters are 'a-zA-Z0-9'.");
                     return null;
                 }
 
@@ -115,7 +130,7 @@
 
                 if (node == null)
                 {
-                    error ??= "The route pattern has an optional element that seems to be empty or invalid.";
+                    error.AppendLine("The route pattern has an optional element that seems to be empty or invalid.");
                     return null;
                 }
 

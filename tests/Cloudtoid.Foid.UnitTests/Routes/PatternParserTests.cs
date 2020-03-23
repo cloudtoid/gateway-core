@@ -51,5 +51,77 @@
             pattern.Should().BeEquivalentTo(WildcardNode.Instance);
             error.Should().BeNull();
         }
+
+        [TestMethod]
+        public void TryParse_WhenOptionalMatch_ReturnsOptionalWithMatchNode()
+        {
+            var parser = new PatternParser();
+            parser.TryParse("(value)", out var pattern, out var error).Should().BeTrue();
+            pattern.Should().BeEquivalentTo(new OptionalNode(new MatchNode("value")));
+            error.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void TryParse_WhenOptionalWild_ReturnsOptionalWithWildNode()
+        {
+            var parser = new PatternParser();
+            parser.TryParse("(*)", out var pattern, out var error).Should().BeTrue();
+            pattern.Should().BeEquivalentTo(new OptionalNode(WildcardNode.Instance));
+            error.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void TryParse_WhenEmptyOptional_ReturnsNullPatternAndError()
+        {
+            var parser = new PatternParser();
+            parser.TryParse("()", out var pattern, out var error).Should().BeFalse();
+            pattern.Should().BeNull();
+            error.Should().Contain("empty or invalid");
+        }
+
+        [TestMethod]
+        public void TryParse_WhenOptionalStartOnly_ReturnsNullPatternAndError()
+        {
+            var parser = new PatternParser();
+            parser.TryParse("(", out var pattern, out var error).Should().BeFalse();
+            pattern.Should().BeNull();
+            error.Should().Contain("There is a missing ')'");
+        }
+
+        [TestMethod]
+        public void TryParse_WhenOptionalEndOnly_ReturnsNullPatternAndError()
+        {
+            var parser = new PatternParser();
+            parser.TryParse(")", out var pattern, out var error).Should().BeFalse();
+            pattern.Should().BeNull();
+            error.Should().Contain("There is an unexpected ')'");
+        }
+
+        [TestMethod]
+        public void TryParse_WhenSimpleVariable_ReturnsVariableNode()
+        {
+            var parser = new PatternParser();
+            parser.TryParse(":variable", out var pattern, out var error).Should().BeTrue();
+            pattern.Should().BeEquivalentTo(new VariableNode("variable"));
+            error.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void TryParse_WhenEmptyVariable_ReturnsNullPatternAndError()
+        {
+            var parser = new PatternParser();
+            parser.TryParse(":-----", out var pattern, out var error).Should().BeFalse();
+            pattern.Should().BeNull();
+            error.Should().Contain("invalid name");
+        }
+
+        // /api/v:version/
+        // /api/v:version/product/:id/
+        // /api/v:version/product/:id
+        // /api(/v:version)/product(/:id)
+        // /api(/v:version)/product/(:id)
+        // /(api/v:version/)product/
+        // )
+        // (
     }
 }
