@@ -235,8 +235,7 @@
             pattern.Should().BeEquivalentTo(
                 SegmentNode.Instance
                 + new MatchNode("api")
-                + new OptionalNode(
-                    (SegmentNode.Instance + new MatchNode("v1.0"))!)
+                + new OptionalNode((SegmentNode.Instance + new MatchNode("v1.0"))!)
                 + SegmentNode.Instance
                 + new MatchNode("product")
                 + SegmentNode.Instance
@@ -246,9 +245,63 @@
             error.Should().BeNull();
         }
 
+        [TestMethod]
+        public void TryParse_WhenMultipleOptionlSegmentsWithVariables_Success()
+        {
+            var parser = new PatternParser();
+            parser.TryParse("/api(/v:version)/product(/:id)", out var pattern, out var error).Should().BeTrue();
+
+            pattern.Should().BeEquivalentTo(
+                SegmentNode.Instance
+                + new MatchNode("api")
+                + new OptionalNode((SegmentNode.Instance + new MatchNode("v") + new VariableNode("version"))!)
+                + SegmentNode.Instance
+                + new MatchNode("product")
+                + new OptionalNode((SegmentNode.Instance + new VariableNode("id"))!),
+                o => o.RespectingRuntimeTypes());
+
+            error.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void TryParse_WhenMultipleOptionlSegmentsWithVariablesExtended_Success()
+        {
+            var parser = new PatternParser();
+            parser.TryParse("/api(/v:version)/product/(:id)", out var pattern, out var error).Should().BeTrue();
+
+            pattern.Should().BeEquivalentTo(
+                SegmentNode.Instance
+                + new MatchNode("api")
+                + new OptionalNode((SegmentNode.Instance + new MatchNode("v") + new VariableNode("version"))!)
+                + SegmentNode.Instance
+                + new MatchNode("product")
+                + SegmentNode.Instance
+                + new OptionalNode(new VariableNode("id")),
+                o => o.RespectingRuntimeTypes());
+
+            error.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void TryParse_WhenComplexOptional_Success()
+        {
+            var parser = new PatternParser();
+            parser.TryParse("/(api/v:version/)product/", out var pattern, out var error).Should().BeTrue();
+
+            pattern.Should().BeEquivalentTo(
+                SegmentNode.Instance
+                + new OptionalNode((new MatchNode("api") + SegmentNode.Instance + new MatchNode("v") + new VariableNode("version") + SegmentNode.Instance)!)
+                + new MatchNode("product")
+                + SegmentNode.Instance,
+                o => o.RespectingRuntimeTypes());
+
+            error.Should().BeNull();
+        }
+
         // /api/v:version/
         // /api/v:version/product/:id/
         // /api/v:version/product/:id
+        // /api(/v1.0)/product/:id
         // /api(/v:version)/product(/:id)
         // /api(/v:version)/product/(:id)
         // /(api/v:version/)product/
