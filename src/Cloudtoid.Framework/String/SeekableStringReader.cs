@@ -11,21 +11,23 @@
     /// </summary>
     public class SeekableStringReader : TextReader
     {
-        private string? value;
-        private int length;
+        private readonly int length;
         private int pos;
+        private bool disposed;
 
         public SeekableStringReader(string value)
         {
-            this.value = CheckValue(value, nameof(value));
+            Value = CheckValue(value, nameof(value));
             length = value.Length;
         }
+
+        public string Value { get; }
 
         public virtual int Position
         {
             get
             {
-                if (value is null)
+                if (disposed)
                     throw new ObjectDisposedException(nameof(SeekableStringReader));
 
                 return pos;
@@ -38,9 +40,7 @@
 
         protected override void Dispose(bool disposing)
         {
-            value = null;
-            pos = 0;
-            length = 0;
+            disposed = true;
             base.Dispose(disposing);
         }
 
@@ -52,13 +52,13 @@
         /// </summary>
         public override int Peek()
         {
-            if (value is null)
+            if (disposed)
                 throw new ObjectDisposedException(nameof(SeekableStringReader));
 
             if (pos == length)
                 return -1;
 
-            return value[pos];
+            return Value[pos];
         }
 
         /// <summary>
@@ -67,13 +67,13 @@
         /// </summary>
         public override int Read()
         {
-            if (value is null)
+            if (disposed)
                 throw new ObjectDisposedException(nameof(SeekableStringReader));
 
             if (pos == length)
                 return -1;
 
-            return value[pos++];
+            return Value[pos++];
         }
 
         /// <summary>
@@ -88,7 +88,7 @@
             CheckNonNegative(index, nameof(index));
             CheckNonNegative(count, nameof(count));
             Check(buffer.Length - index >= count, "The length of the buffer is smaller than what is needed by index + count");
-            if (value is null)
+            if (disposed)
                 throw new ObjectDisposedException(nameof(SeekableStringReader));
 
             int n = length - pos;
@@ -97,7 +97,7 @@
                 if (n > count)
                     n = count;
 
-                value.CopyTo(pos, buffer, index, n);
+                Value.CopyTo(pos, buffer, index, n);
                 pos += n;
             }
 
@@ -106,7 +106,7 @@
 
         public override int Read(Span<char> buffer)
         {
-            if (value is null)
+            if (disposed)
                 throw new ObjectDisposedException(nameof(SeekableStringReader));
 
             int n = length - pos;
@@ -115,7 +115,7 @@
                 if (n > buffer.Length)
                     n = buffer.Length;
 
-                value.AsSpan(pos, n).CopyTo(buffer);
+                Value.AsSpan(pos, n).CopyTo(buffer);
                 pos += n;
             }
 
@@ -127,17 +127,17 @@
 
         public override string ReadToEnd()
         {
-            if (value is null)
+            if (disposed)
                 throw new ObjectDisposedException(nameof(SeekableStringReader));
 
             string s;
             if (pos == 0)
             {
-                s = value;
+                s = Value;
             }
             else
             {
-                s = value.Substring(pos, length - pos);
+                s = Value.Substring(pos, length - pos);
             }
 
             pos = length;
@@ -153,18 +153,18 @@
         /// </summary>
         public override string? ReadLine()
         {
-            if (value is null)
+            if (disposed)
                 throw new ObjectDisposedException(nameof(SeekableStringReader));
 
             int i = pos;
             while (i < length)
             {
-                char ch = value[i];
+                char ch = Value[i];
                 if (ch == '\r' || ch == '\n')
                 {
-                    string result = value.Substring(pos, i - pos);
+                    string result = Value.Substring(pos, i - pos);
                     pos = i + 1;
-                    if (ch == '\r' && pos < length && value[pos] == '\n')
+                    if (ch == '\r' && pos < length && Value[pos] == '\n')
                     {
                         pos++;
                     }
@@ -177,7 +177,7 @@
 
             if (i > pos)
             {
-                string result = value.Substring(pos, i - pos);
+                string result = Value.Substring(pos, i - pos);
                 pos = i;
                 return result;
             }

@@ -5,6 +5,7 @@
     internal static class PatternConstants
     {
         internal const string EscapeSequence = @"\\";
+        internal const char EscapeSequenceStart = '\\';
         internal const char SegmentStart = '/';
         internal const char VariableStart = ':';
         internal const char OptionalStart = '(';

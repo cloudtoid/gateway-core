@@ -51,6 +51,11 @@
                         return node;
                     }
 
+                    if (c == PatternConstants.EscapeSequenceStart)
+                    {
+                        // TODO: Read ahead and escape if needed. If not, then do nothing ad continue as normal.
+                    }
+
                     PatternNode? next;
                     switch (c)
                     {
@@ -73,6 +78,9 @@
                         case PatternConstants.OptionalEnd:
                             error.AppendLine($"There is an unexpected '{(char)c}'.");
                             return null;
+
+                        case PatternConstants.EscapeSequenceStart:
+                        // TODO: Read ahead and escape if needed. If not, then do nothing ad continue as normal.
 
                         default:
                             len++;
