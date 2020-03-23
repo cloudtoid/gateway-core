@@ -40,7 +40,7 @@
                 PatternNode? node = null;
                 int c;
                 int len = 0;
-                int start = reader.Position;
+                int start = reader.NextPosition;
                 while ((c = reader.Read()) > -1)
                 {
                     if (c == stopChar)
@@ -49,11 +49,6 @@
                             node += new MatchNode(route.Substring(start, len));
 
                         return node;
-                    }
-
-                    if (c == PatternConstants.EscapeSequenceStart)
-                    {
-                        // TODO: Read ahead and escape if needed. If not, then do nothing ad continue as normal.
                     }
 
                     PatternNode? next;
@@ -80,7 +75,11 @@
                             return null;
 
                         case PatternConstants.EscapeSequenceStart:
-                        // TODO: Read ahead and escape if needed. If not, then do nothing ad continue as normal.
+                            if (ShouldEscape(reader))
+                                reader.NextPosition += PatternConstants.EscapeSequence.Length;
+
+                            len++;
+                            continue;
 
                         default:
                             len++;
@@ -95,7 +94,7 @@
                         node += new MatchNode(route.Substring(start, len));
 
                     node += next;
-                    start = reader.Position;
+                    start = reader.NextPosition;
                     len = 0;
                 }
 
@@ -108,7 +107,7 @@
 
                 node += len == 0
                     ? MatchNode.Empty
-                    : new MatchNode(route.Substring(reader.Position - len, len));
+                    : new MatchNode(route.Substring(reader.NextPosition - len, len));
 
                 return node;
             }
@@ -125,11 +124,11 @@
 
                 if (len == 0)
                 {
-                    error.AppendLine("The route pattern has an variable with an invalid name. The valid characters are 'a-zA-Z0-9'.");
+                    error.AppendLine("The route pattern has a variable with an empty or invalid name. The valid characters are 'a-zA-Z0-9'.");
                     return null;
                 }
 
-                return new VariableNode(route.Substring(reader.Position - len, len));
+                return new VariableNode(route.Substring(reader.NextPosition - len, len));
             }
 
             private OptionalNode? ReadOptionalNode(SeekableStringReader reader)
@@ -143,6 +142,24 @@
                 }
 
                 return new OptionalNode(node);
+            }
+
+            // returns true, if escaped an escapable char
+            private bool ShouldEscape(SeekableStringReader reader)
+            {
+                var value = reader.Value;
+                var start = reader.NextPosition - 1;
+                var len = PatternConstants.EscapeSequence.Length;
+                if (value.Length - reader.NextPosition < len)
+                    return false;
+
+                for (int i = 1; i < len; i++)
+                {
+                    if (PatternConstants.EscapeSequence[i] != value[start + i])
+                        return false;
+                }
+
+                return PatternConstants.Escapable.Contains(value[start + len]);
             }
         }
     }

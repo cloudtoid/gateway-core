@@ -298,6 +298,127 @@
             error.Should().BeNull();
         }
 
+        [TestMethod]
+        public void TryParse_WhenUsingEscapeCharButNotFollowedByEscapableChar_EscapeCharsShouldBeMatched()
+        {
+            var values = new[]
+            {
+                @"\",
+                @"\\",
+                @"\\a",
+                @"\\value",
+                @"value\",
+                @"value\\",
+                @"value\\a",
+                @"some\\value",
+                @"\\a\",
+                @"\\a\\",
+                @"\\a\\b",
+                @"\\some\\value"
+            };
+
+            foreach (var value in values)
+                ExpectMatch(value);
+
+            values = new[]
+            {
+                @":variable\",
+                @":variable\\",
+                @":variable\\a",
+                @":variable\\value",
+                @":variable-value\",
+                @":variable-value\\",
+                @":variable-value\\a",
+                @":variable-some\\value",
+                @":variable\\a\",
+                @":variable\\a\\",
+                @":variable\\a\\b",
+                @":variable\\some\\value",
+                @"\:variable",
+                @"\\a:variable",
+                @"\\value:variable",
+                @"-value\:variable",
+                @"-value\\a:variable",
+                @"-some\\value:variable",
+                @"\\a\:variable",
+                @"\\a\\b:variable",
+                @"\\some\\value:variable"
+            };
+
+            foreach (var value in values)
+                ExpectVariableAndMatch(value);
+
+            values = new[]
+            {
+                @"\:variable",
+                @"\\a:variable",
+                @"\\value:variable",
+                @"-value\:variable",
+                @"-value\\a:variable",
+                @"-some\\value:variable",
+                @"\\a\:variable",
+                @"\\a\\b:variable",
+                @"\\some\\value:variable"
+            };
+
+            foreach (var value in values)
+                ExpectEndVariableAndMatch(value);
+        }
+
+        private static void ExpectMatch(string value)
+        {
+            new PatternParser().TryParse(value, out var pattern, out var error).Should().BeTrue();
+            pattern.Should().BeEquivalentTo(new MatchNode(value), o => o.RespectingRuntimeTypes());
+            error.Should().BeNull();
+        }
+
+        private static void ExpectVariableAndMatch(string value)
+        {
+            new PatternParser().TryParse(value, out var pattern, out var error).Should().BeTrue();
+            pattern.Should()
+                .BeEquivalentTo(
+                    new VariableNode("variable") + new MatchNode(value.ReplaceOrdinal(":variable", string.Empty)),
+                    o => o.RespectingRuntimeTypes());
+
+            error.Should().BeNull();
+        }
+
+        private static void ExpectEndVariableAndMatch(string value)
+        {
+            new PatternParser().TryParse(value, out var pattern, out var error).Should().BeTrue();
+            pattern.Should()
+                    .BeEquivalentTo(
+                        new MatchNode(value.ReplaceOrdinal(":variable", string.Empty)) + new VariableNode("variable"),
+                        o => o.RespectingRuntimeTypes());
+
+            error.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void TryParse_WhenEscaped_SpecialCharIsEscaped()
+        {
+            var values = new[]
+            {
+                @"\\:var",
+                @"\\*",
+                @"\\(",
+                @"\\)",
+                @"\\*value",
+                @"\\(value",
+                @"\\)value",
+            };
+
+            foreach (var value in values)
+                ExpectEscapedMatch(value);
+        }
+
+        private static void ExpectEscapedMatch(string value)
+        {
+            new PatternParser().TryParse(value, out var pattern, out var error).Should().BeTrue();
+            pattern.Should().BeEquivalentTo(new MatchNode(value.ReplaceOrdinal(@"\\", string.Empty)), o => o.RespectingRuntimeTypes());
+            error.Should().BeNull();
+        }
+
         // /api/v:version/
         // /api/v:version/product/:id/
         // /api/v:version/product/:id
@@ -305,5 +426,17 @@
         // /api(/v:version)/product(/:id)
         // /api(/v:version)/product/(:id)
         // /(api/v:version/)product/
+        // \
+        // \\
+        // \\a
+        // \\value
+        // value\
+        // value\\
+        // value\\a
+        // some\\value
+        // \\a\
+        // \\a\\
+        // \\a\\b
+        // \\some\\value
     }
 }

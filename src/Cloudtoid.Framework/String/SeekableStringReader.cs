@@ -23,16 +23,14 @@
 
         public string Value { get; }
 
-        public virtual int Position
+        public virtual int NextPosition
         {
             get
             {
-                if (disposed)
-                    throw new ObjectDisposedException(nameof(SeekableStringReader));
-
+                CheckDisposed();
                 return pos;
             }
-            set => pos = CheckRange(value, 0, length - 1, nameof(Position));
+            set => pos = CheckRange(value, 0, length, nameof(NextPosition));
         }
 
         public override void Close()
@@ -52,13 +50,8 @@
         /// </summary>
         public override int Peek()
         {
-            if (disposed)
-                throw new ObjectDisposedException(nameof(SeekableStringReader));
-
-            if (pos == length)
-                return -1;
-
-            return Value[pos];
+            CheckDisposed();
+            return pos == length ? -1 : Value[pos];
         }
 
         /// <summary>
@@ -67,13 +60,8 @@
         /// </summary>
         public override int Read()
         {
-            if (disposed)
-                throw new ObjectDisposedException(nameof(SeekableStringReader));
-
-            if (pos == length)
-                return -1;
-
-            return Value[pos++];
+            CheckDisposed();
+            return pos == length ? -1 : Value[pos++];
         }
 
         /// <summary>
@@ -88,8 +76,7 @@
             CheckNonNegative(index, nameof(index));
             CheckNonNegative(count, nameof(count));
             Check(buffer.Length - index >= count, "The length of the buffer is smaller than what is needed by index + count");
-            if (disposed)
-                throw new ObjectDisposedException(nameof(SeekableStringReader));
+            CheckDisposed();
 
             int n = length - pos;
             if (n > 0)
@@ -106,8 +93,7 @@
 
         public override int Read(Span<char> buffer)
         {
-            if (disposed)
-                throw new ObjectDisposedException(nameof(SeekableStringReader));
+            CheckDisposed();
 
             int n = length - pos;
             if (n > 0)
@@ -127,18 +113,11 @@
 
         public override string ReadToEnd()
         {
-            if (disposed)
-                throw new ObjectDisposedException(nameof(SeekableStringReader));
+            CheckDisposed();
 
-            string s;
-            if (pos == 0)
-            {
-                s = Value;
-            }
-            else
-            {
-                s = Value.Substring(pos, length - pos);
-            }
+            var s = pos == 0
+                ? Value
+                : Value.Substring(pos, length - pos);
 
             pos = length;
             return s;
@@ -153,8 +132,7 @@
         /// </summary>
         public override string? ReadLine()
         {
-            if (disposed)
-                throw new ObjectDisposedException(nameof(SeekableStringReader));
+            CheckDisposed();
 
             int i = pos;
             while (i < length)
@@ -216,6 +194,12 @@
             return cancellationToken.IsCancellationRequested
                 ? new ValueTask<int>(Task.FromCanceled<int>(cancellationToken))
                 : new ValueTask<int>(Read(buffer.Span));
+        }
+
+        private void CheckDisposed()
+        {
+            if (disposed)
+                throw new ObjectDisposedException(nameof(SeekableStringReader));
         }
     }
 }
