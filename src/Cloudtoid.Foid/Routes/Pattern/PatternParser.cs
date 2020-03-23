@@ -40,13 +40,13 @@
                 PatternNode? node = null;
                 int c;
                 int len = 0;
-                int pos = reader.Position;
+                int start = reader.Position;
                 while ((c = reader.Read()) > -1)
                 {
                     if (c == stopChar)
                     {
                         if (len > 0)
-                            node += new MatchNode(route.Substring(pos, len));
+                            node += new MatchNode(route.Substring(start, len));
 
                         return node;
                     }
@@ -55,7 +55,7 @@
                     switch (c)
                     {
                         case PatternConstants.SegmentStart:
-                            next = SegmentlNode.Instance;
+                            next = SegmentNode.Instance;
                             break;
 
                         case PatternConstants.Wildcard:
@@ -84,15 +84,11 @@
                         return null;
 
                     if (len > 0)
-                    {
-                        node += new MatchNode(route.Substring(pos, len));
-                        len = 0;
-                    }
-
-                    if (len == 0)
-                        pos = reader.Position;
+                        node += new MatchNode(route.Substring(start, len));
 
                     node += next;
+                    start = reader.Position;
+                    len = 0;
                 }
 
                 // expected an end char but didn't find it

@@ -1,11 +1,14 @@
 ﻿namespace Cloudtoid.Foid.Routes.Pattern
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using static Contract;
 
     internal abstract class PatternNode
     {
+        [return: NotNullIfNotNull("left")]
+        [return: NotNullIfNotNull("right")]
         public static PatternNode? operator +(PatternNode? left, PatternNode? right)
         {
             if (left is null)
@@ -76,13 +79,13 @@
     /// <summary>
     /// Represents a forward slash in the pattern
     /// </summary>
-    internal sealed class SegmentlNode : LeafNode
+    internal sealed class SegmentNode : LeafNode
     {
-        private SegmentlNode()
+        private SegmentNode()
         {
         }
 
-        internal static SegmentlNode Instance { get; } = new SegmentlNode();
+        internal static SegmentNode Instance { get; } = new SegmentNode();
 
         internal override void Accept(PatternNodeVisitor visitor)
             => visitor.VisitSegment(this);

@@ -20,7 +20,7 @@
             VisitLeaf(node);
         }
 
-        protected internal virtual void VisitSegment(SegmentlNode node)
+        protected internal virtual void VisitSegment(SegmentNode node)
         {
             VisitLeaf(node);
         }
