@@ -3,7 +3,7 @@
     /// <summary>
     /// Validates that each URL segment only includes a maximum of one variable
     /// </summary>
-    internal sealed class OneVariablePerSegmentValidator : PatternNodeVisitor
+    internal sealed class OneVariablePerSegmentValidator : PatternValidatorBase
     {
         private bool fail;
 

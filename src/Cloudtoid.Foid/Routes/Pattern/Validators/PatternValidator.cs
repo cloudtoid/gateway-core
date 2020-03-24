@@ -10,10 +10,10 @@
         {
             try
             {
-                new NoConsecutiveSegmentStartValidator().Visit(pattern);
-                new NoConsecutiveWildcardValidator().Visit(pattern);
-                new OneVariablePerSegmentValidator().Visit(pattern);
-                new NoVariableFollowedByWildcardValidator().Visit(pattern);
+                Validate<NoConsecutiveSegmentStartValidator>(pattern);
+                Validate<NoConsecutiveWildcardValidator>(pattern);
+                Validate<OneVariablePerSegmentValidator>(pattern);
+                Validate<NoVariableFollowedByWildcardValidator>(pattern);
             }
             catch (PatternException pe)
             {
@@ -23,6 +23,12 @@
 
             error = null;
             return true;
+        }
+
+        private static void Validate<TValidator>(PatternNode pattern)
+            where TValidator : PatternValidatorBase, new()
+        {
+            new TValidator().Validate(pattern);
         }
     }
 }

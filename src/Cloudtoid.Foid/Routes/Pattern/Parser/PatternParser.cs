@@ -128,21 +128,30 @@
 
             private VariableNode? ReadVariableNode(SeekableStringReader reader)
             {
+                int start = reader.NextPosition;
                 int len = 0;
-                int c;
-                while ((c = reader.Peek()) > -1 && VariableNames.IsValidVariableChar(c))
+
+                int c = reader.Peek();
+                if (c > -1 && char.IsDigit((char)c))
+                {
+                    error.AppendLine("The route pattern has a variable with an invalid name. Variables names cannot start with a number. The valid characters are 'a-zA-Z0-9_' and the first character cannot be a number.");
+                    return null;
+                }
+
+                while (c > -1 && VariableNames.IsValidVariableChar(c))
                 {
                     reader.Read();
+                    c = reader.Peek();
                     len++;
                 }
 
                 if (len == 0)
                 {
-                    error.AppendLine("The route pattern has a variable with an empty or invalid name. The valid characters are 'a-zA-Z0-9'.");
+                    error.AppendLine("The route pattern has a variable with an empty or invalid name. The valid characters are 'a-zA-Z0-9_' and the first character cannot be a number.");
                     return null;
                 }
 
-                return new VariableNode(route.Substring(reader.NextPosition - len, len));
+                return new VariableNode(route.Substring(start, len));
             }
 
             private OptionalNode? ReadOptionalNode(SeekableStringReader reader)

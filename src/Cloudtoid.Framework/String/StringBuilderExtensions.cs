@@ -31,6 +31,10 @@
             => CheckValue(builder, nameof(builder)).Append('$');
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static StringBuilder AppendQuestionMark(this StringBuilder builder)
+            => CheckValue(builder, nameof(builder)).Append('?');
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static StringBuilder AppendOpenParentheses(this StringBuilder builder)
             => CheckValue(builder, nameof(builder)).Append('(');
 
@@ -47,13 +51,28 @@
             => CheckValue(builder, nameof(builder)).Append(']');
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static StringBuilder AppendUnderscore(this StringBuilder builder) => builder.Append('_');
+        public static StringBuilder AppendOpenAngleBracket(this StringBuilder builder)
+           => CheckValue(builder, nameof(builder)).Append('<');
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static StringBuilder AppendGreaterThan(this StringBuilder builder) => builder.Append('>');
+        public static StringBuilder AppendCloseAngleBracket(this StringBuilder builder)
+            => CheckValue(builder, nameof(builder)).Append('>');
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static StringBuilder AppendLessThan(this StringBuilder builder) => builder.Append('<');
+        public static StringBuilder AppendSlash(this StringBuilder builder)
+            => CheckValue(builder, nameof(builder)).Append('/');
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static StringBuilder AppendUnderscore(this StringBuilder builder)
+            => CheckValue(builder, nameof(builder)).Append('_');
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static StringBuilder AppendGreaterThan(this StringBuilder builder)
+            => CheckValue(builder, nameof(builder)).Append('>');
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static StringBuilder AppendLessThan(this StringBuilder builder)
+            => CheckValue(builder, nameof(builder)).Append('<');
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static StringBuilder AppendInParentheses(this StringBuilder builder, string value)
@@ -62,6 +81,10 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static StringBuilder AppendInBrackets(this StringBuilder builder, string value)
             => CheckValue(builder, nameof(builder)).AppendOpenBracket().Append(value).AppendCloseBracket();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static StringBuilder AppendInAngleBrackets(this StringBuilder builder, string value)
+            => CheckValue(builder, nameof(builder)).AppendOpenAngleBracket().Append(value).AppendCloseAngleBracket();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static StringBuilder AppendInQuotes(this StringBuilder builder, string value)
@@ -79,7 +102,7 @@
             if (separator is null)
             {
                 foreach (var item in items)
-                    builder.Append(item);
+                    CheckValue(builder, nameof(builder)).Append(item);
 
                 return builder;
             }
@@ -88,11 +111,11 @@
             foreach (var item in items)
             {
                 if (appendSeparator)
-                    builder.Append(separator);
+                    CheckValue(builder, nameof(builder)).Append(separator);
                 else
                     appendSeparator = true;
 
-                builder.Append(item);
+                CheckValue(builder, nameof(builder)).Append(item);
             }
 
             return builder;
@@ -107,11 +130,11 @@
             foreach (var item in items)
             {
                 if (appendSeparator)
-                    builder.Append(separator);
+                    CheckValue(builder, nameof(builder)).Append(separator);
                 else
                     appendSeparator = true;
 
-                builder.Append(item);
+                CheckValue(builder, nameof(builder)).Append(item);
             }
 
             return builder;

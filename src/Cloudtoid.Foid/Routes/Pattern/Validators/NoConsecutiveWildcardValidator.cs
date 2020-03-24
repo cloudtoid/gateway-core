@@ -3,7 +3,7 @@
     /// <summary>
     /// Validates that there are no consecutive <see cref="PatternConstants.Wildcard"/> characters.
     /// </summary>
-    internal sealed class NoConsecutiveWildcardValidator : PatternNodeVisitor
+    internal sealed class NoConsecutiveWildcardValidator : PatternValidatorBase
     {
         private bool fail;
 

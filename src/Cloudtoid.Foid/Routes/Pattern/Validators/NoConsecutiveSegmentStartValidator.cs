@@ -3,7 +3,7 @@
     /// <summary>
     /// Validates that there are no consecutive <see cref="PatternConstants.SegmentStart"/> characters.
     /// </summary>
-    internal sealed class NoConsecutiveSegmentStartValidator : PatternNodeVisitor
+    internal sealed class NoConsecutiveSegmentStartValidator : PatternValidatorBase
     {
         private bool fail;
 

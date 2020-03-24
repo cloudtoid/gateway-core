@@ -3,7 +3,7 @@
     /// <summary>
     /// Validates that the wild-card character <see cref="PatternConstants.Wildcard"/> cannot not follow a variable.
     /// </summary>
-    internal sealed class NoVariableFollowedByWildcardValidator : PatternNodeVisitor
+    internal sealed class NoVariableFollowedByWildcardValidator : PatternValidatorBase
     {
         private bool fail;
 

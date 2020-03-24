@@ -80,9 +80,6 @@
             error.Should().BeNull();
         }
 
-        // TODO: More tests and validators:
-        // *placeholder:var0/    -- perfectly valid
-
         private static PatternNode Parse(string pattern)
         {
             var parser = new PatternParser();

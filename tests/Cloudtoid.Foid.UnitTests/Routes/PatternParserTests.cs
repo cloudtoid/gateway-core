@@ -110,12 +110,41 @@
         }
 
         [TestMethod]
+        public void TryParse_WhenVariableNmeStartsWithNumber_Fails()
+        {
+            var parser = new PatternParser();
+            parser.TryParse(":0variable", out var pattern, out var error).Should().BeFalse();
+            pattern.Should().BeNull();
+            error.Should().Contain("The route pattern has a variable with an invalid name. Variables names cannot start with a number.");
+        }
+
+        [TestMethod]
+        public void TryParse_WhenVariableNmeStartsWithSpace_Fails()
+        {
+            var parser = new PatternParser();
+            parser.TryParse(": variable", out var pattern, out var error).Should().BeFalse();
+            pattern.Should().BeNull();
+            error.Should().Contain("The route pattern has a variable with an empty or invalid name.");
+        }
+
+        [TestMethod]
         public void TryParse_WhenSimpleVariable_ReturnsVariableNode()
         {
             var parser = new PatternParser();
             parser.TryParse(":variable", out var pattern, out var error).Should().BeTrue();
             pattern.Should().BeEquivalentTo(
                 new VariableNode("variable"),
+                o => o.RespectingRuntimeTypes());
+            error.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void TryParse_WhenVariableWithNumber_ReturnsVariableNode()
+        {
+            var parser = new PatternParser();
+            parser.TryParse(":variable0", out var pattern, out var error).Should().BeTrue();
+            pattern.Should().BeEquivalentTo(
+                new VariableNode("variable0"),
                 o => o.RespectingRuntimeTypes());
             error.Should().BeNull();
         }
