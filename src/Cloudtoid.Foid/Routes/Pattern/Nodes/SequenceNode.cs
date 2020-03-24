@@ -25,6 +25,8 @@
 
         public IReadOnlyList<PatternNode> Nodes { get; }
 
+        public override string ToString() => string.Join(null, Nodes);
+
         internal override void Accept(PatternNodeVisitor visitor)
             => visitor.VisitSequence(this);
 

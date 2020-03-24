@@ -65,7 +65,7 @@
                     switch (c)
                     {
                         case PatternConstants.SegmentStart:
-                            next = SegmentNode.Instance;
+                            next = SegmentStartNode.Instance;
                             break;
 
                         case PatternConstants.Wildcard:

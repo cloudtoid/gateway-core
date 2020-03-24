@@ -14,6 +14,8 @@
 
         public string Name { get; }
 
+        public override string ToString() => ":" + Name;
+
         internal override void Accept(PatternNodeVisitor visitor)
             => visitor.VisitVariable(this);
     }

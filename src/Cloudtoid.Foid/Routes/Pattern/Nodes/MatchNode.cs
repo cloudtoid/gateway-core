@@ -21,6 +21,8 @@
 
         internal static MatchNode Empty { get; } = new MatchNode();
 
+        public override string ToString() => Value;
+
         internal override void Accept(PatternNodeVisitor visitor)
             => visitor.VisitMatch(this);
     }

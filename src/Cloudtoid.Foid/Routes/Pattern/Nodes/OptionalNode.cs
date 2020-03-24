@@ -18,6 +18,8 @@
 
         public PatternNode Node { get; }
 
+        public override string ToString() => $"({Node})";
+
         internal override void Accept(PatternNodeVisitor visitor)
             => visitor.VisitOptional(this);
     }

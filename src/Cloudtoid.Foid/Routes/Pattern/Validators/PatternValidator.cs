@@ -10,8 +10,9 @@
         {
             try
             {
-                new SegmentStartValidator().Visit(pattern);
-                new WildcardValidator().Visit(pattern);
+                new NoConsecutiveSegmentStartValidator().Visit(pattern);
+                new NoConsecutiveWildcardValidator().Visit(pattern);
+                new OneVariablePerSegmentValidator().Visit(pattern);
             }
             catch (PatternException pe)
             {
