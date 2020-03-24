@@ -13,6 +13,7 @@
                 new NoConsecutiveSegmentStartValidator().Visit(pattern);
                 new NoConsecutiveWildcardValidator().Visit(pattern);
                 new OneVariablePerSegmentValidator().Visit(pattern);
+                new NoVariableFollowedByWildcardValidator().Visit(pattern);
             }
             catch (PatternException pe)
             {

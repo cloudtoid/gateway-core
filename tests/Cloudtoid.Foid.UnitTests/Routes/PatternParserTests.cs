@@ -121,6 +121,17 @@
         }
 
         [TestMethod]
+        public void TryParse_WhenVariableNameStops_ReturnsVariableNodeAndMatch()
+        {
+            var parser = new PatternParser();
+            parser.TryParse(":variable-placeholder", out var pattern, out var error).Should().BeTrue();
+            pattern.Should().BeEquivalentTo(
+                new VariableNode("variable") + new MatchNode("-placeholder"),
+                o => o.RespectingRuntimeTypes());
+            error.Should().BeNull();
+        }
+
+        [TestMethod]
         public void TryParse_WhenEmptyVariable_ReturnsNullPatternAndError()
         {
             var parser = new PatternParser();
@@ -441,6 +452,20 @@
         {
             new PatternParser().TryParse(value, out var pattern, out var error).Should().BeTrue();
             pattern.Should().BeEquivalentTo(new MatchNode("a") + new MatchNode(value.Substring(3)), o => o.RespectingRuntimeTypes());
+            error.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void TryParse_WhenWildcardPlusMatchPlusVariableVariableNameStops_Success()
+        {
+            var parser = new PatternParser();
+            parser.TryParse("*placeholder:variable/", out var pattern, out var error).Should().BeTrue();
+            pattern.Should().BeEquivalentTo(
+                WildcardNode.Instance
+                + new MatchNode("placeholder")
+                + new VariableNode("variable")
+                + SegmentStartNode.Instance,
+                o => o.RespectingRuntimeTypes());
             error.Should().BeNull();
         }
 

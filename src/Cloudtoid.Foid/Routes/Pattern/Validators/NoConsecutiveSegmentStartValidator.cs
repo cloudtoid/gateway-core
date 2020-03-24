@@ -5,20 +5,20 @@
     /// </summary>
     internal sealed class NoConsecutiveSegmentStartValidator : PatternNodeVisitor
     {
-        private bool allow = true;
+        private bool fail;
 
         protected internal override void VisitLeaf(LeafNode node)
         {
             base.VisitLeaf(node);
-            allow = true;
+            fail = false;
         }
 
         protected internal override void VisitSegmentStart(SegmentStartNode node)
         {
-            if (!allow)
+            if (fail)
                 throw new PatternException($"Found consecutive '{PatternConstants.SegmentStart}' which is invalid.");
 
-            allow = false;
+            fail = true;
         }
     }
 }

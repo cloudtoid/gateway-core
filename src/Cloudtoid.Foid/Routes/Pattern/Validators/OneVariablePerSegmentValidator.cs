@@ -5,20 +5,20 @@
     /// </summary>
     internal sealed class OneVariablePerSegmentValidator : PatternNodeVisitor
     {
-        private bool allow = true;
+        private bool fail;
 
         protected internal override void VisitVariable(VariableNode node)
         {
-            if (!allow)
+            if (fail)
                 throw new PatternException($"Each URL segment can only include a single variable definition.");
 
-            allow = false;
+            fail = true;
         }
 
         protected internal override void VisitSegmentStart(SegmentStartNode node)
         {
             base.VisitSegmentStart(node);
-            allow = true;
+            fail = false;
         }
     }
 }

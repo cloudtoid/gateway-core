@@ -5,20 +5,20 @@
     /// </summary>
     internal sealed class NoConsecutiveWildcardValidator : PatternNodeVisitor
     {
-        private bool allow = true;
+        private bool fail;
 
         protected internal override void VisitLeaf(LeafNode node)
         {
             base.VisitLeaf(node);
-            allow = true;
+            fail = false;
         }
 
         protected internal override void VisitWildcard(WildcardNode node)
         {
-            if (!allow)
+            if (fail)
                 throw new PatternException($"Found consecutive '{PatternConstants.Wildcard}' which is invalid.");
 
-            allow = false;
+            fail = true;
         }
     }
 }

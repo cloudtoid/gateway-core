@@ -66,11 +66,22 @@
             error.Should().BeNull();
         }
 
+        [TestMethod]
+        public void Validate_WhenWildcardFollowsVariable_Fail()
+        {
+            validator.Validate(Parse(":var0*/"), out var error).Should().BeFalse();
+            error.Should().Contain($"The wild-card character '{PatternConstants.Wildcard}' cannot not follow a variable.");
+        }
+
+        [TestMethod]
+        public void Validate_WhenWildcardFollowsVariableButNotImmediately_Fail()
+        {
+            validator.Validate(Parse(":var0/*"), out var error).Should().BeTrue();
+            error.Should().BeNull();
+        }
+
         // TODO: More tests and validators:
-        // :var0*/    -- invalid. don't know when to stop
-        // *:var0/    -- invalid. don't know when to start
         // *placeholder:var0/    -- perfectly valid
-        // :var0-placeholder/    -- perfectly valid
 
         private static PatternNode Parse(string pattern)
         {
