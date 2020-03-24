@@ -80,6 +80,20 @@
             error.Should().BeNull();
         }
 
+        [TestMethod]
+        public void Validate_WhenDuplicateVariableName_Fail()
+        {
+            validator.Validate(Parse(":var0/:var0"), out var error).Should().BeFalse();
+            error.Should().Contain("The variable name 'var0' has already been used. Variable names should be unique.");
+        }
+
+        [TestMethod]
+        public void Validate_WhenCollidesWithSystemVariable_Fail()
+        {
+            validator.Validate(Parse(":host"), out var error).Should().BeFalse();
+            error.Should().Contain("The variable name 'host' collides with a system variable with the same name.");
+        }
+
         private static PatternNode Parse(string pattern)
         {
             var parser = new PatternParser();

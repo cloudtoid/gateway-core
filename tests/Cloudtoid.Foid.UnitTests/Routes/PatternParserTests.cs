@@ -115,7 +115,7 @@
             var parser = new PatternParser();
             parser.TryParse(":0variable", out var pattern, out var error).Should().BeFalse();
             pattern.Should().BeNull();
-            error.Should().Contain("The route pattern has a variable with an invalid name. Variables names cannot start with a number.");
+            error.Should().Contain("The route pattern has a variable with an empty or invalid name.");
         }
 
         [TestMethod]

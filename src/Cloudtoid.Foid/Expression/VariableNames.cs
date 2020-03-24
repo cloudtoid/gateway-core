@@ -1,5 +1,7 @@
 ﻿namespace Cloudtoid.Foid.Expression
 {
+    using System;
+    using System.Collections.Generic;
     using System.Runtime.CompilerServices;
 
     // Based on NGINX: https://nginx.org/en/docs/http/ngx_http_core_module.html?&_ga=2.254306688.966016521.1583780354-1842431965.1581627980#variables
@@ -23,12 +25,48 @@
         public const string ServerPort = "server_port";
         public const string ServerProtocol = "server_protocol";
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsValidVariableChar(this char c)
-            => IsValidVariableChar((int)c);
+        public static readonly ISet<string> SystemVariables = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ContentLength,
+            ContentType,
+            CorrelationId,
+            CallId,
+            Host,
+            RequestMethod,
+            RequestScheme,
+            RequestPathBase,
+            RequestPath,
+            RequestQueryString,
+            RequestEncodedUri,
+            RemoteAddress,
+            RemotePort,
+            ServerName,
+            ServerAddress,
+            ServerPort,
+            ServerProtocol
+        };
 
+        /// <summary>
+        /// The valid characters are [a..zA..Z0..9_]. However, the very first character cannot be a number.
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsValidVariableChar(int c)
-            => (c > 47 && c < 58) || (c > 64 && c < 91) || (c > 96 && c < 123) || c == 95;
+        public static bool IsValidVariableChar(this char c, bool isFirstChar)
+            => IsValidVariableChar((int)c, isFirstChar);
+
+        /// <summary>
+        /// The valid characters are [a..zA..Z0..9_]. However, the very first character cannot be a number.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsValidVariableChar(int c, bool isFirstChar)
+        {
+            if ((c > 64 && c < 91) || (c > 96 && c < 123) || c == 95)
+                return true;
+
+            // numbers are only allowed if not the first character in the variable name
+            if (!isFirstChar && c > 47 && c < 58)
+                return true;
+
+            return false;
+        }
     }
 }

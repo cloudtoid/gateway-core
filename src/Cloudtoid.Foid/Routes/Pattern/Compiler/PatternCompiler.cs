@@ -1,57 +1,31 @@
 ﻿namespace Cloudtoid.Foid.Routes.Pattern
 {
     using System;
-    using System.Text;
-    using System.Text.RegularExpressions;
+    using System.Collections.Generic;
+    using static Contract;
 
     internal sealed class PatternCompiler : IPatternCompiler
     {
-        public CompiledPattern Compile(PatternNode pattern) => throw new NotImplementedException();
-
-        private sealed class RegexBuilder : PatternNodeVisitor
+        public CompiledPattern Compile(PatternNode pattern)
         {
-            private static readonly string SegmentStart = Regex.Escape(@"/");
-            private static readonly string Wildcard = $"[^{SegmentStart}]+";  // [^\/]+
-            private readonly StringBuilder builder = new StringBuilder($@"\A(?:{SegmentStart})?");
+            CheckValue(pattern, nameof(pattern));
 
-            internal void Compile(PatternNode pattern)
+            var regex = new PatternRegexBuilder().Build(pattern);
+            var variables = new VariableNamesReader().ReadNames(pattern);
+            return new CompiledPattern(regex, variables);
+        }
+
+        private sealed class VariableNamesReader : PatternNodeVisitor
+        {
+            private readonly ISet<string> names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            public ISet<string> ReadNames(PatternNode node)
             {
-                Visit(pattern);
+                Visit(node);
+                return names;
             }
 
-            protected internal override void VisitMatch(MatchNode node)
-            {
-                builder.Append(Regex.Escape(node.Value));
-            }
-
-            protected internal override void VisitVariable(VariableNode node)
-            {
-                // TODO: Instead of [^/], should we be exact about what characters can be included?
-
-                // - Generates a regex capture with the name of the variable:  (?<variable>[^\/]+)
-                // - Variable name does not need to be escaped or validated. The PatternParser ensures that it only contains 'a-zA-Z0-9_'
-                //   and the first character is not a number.
-                builder.Append($"(?<{node.Name}>[^{SegmentStart}]+)");
-            }
-
-            protected internal override void VisitSegmentStart(SegmentStartNode node)
-            {
-                builder.Append(SegmentStart);
-            }
-
-            protected internal override void VisitWildcard(WildcardNode node)
-            {
-                builder.Append(Wildcard);
-            }
-
-            protected internal override void VisitOptional(OptionalNode node)
-            {
-                // regex: (?:node)?
-
-                builder.Append("(?:");
-                base.VisitOptional(node);
-                builder.Append(")?");
-            }
+            protected internal override void VisitVariable(VariableNode node) => names.Add(node.Name);
         }
     }
 }

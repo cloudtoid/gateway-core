@@ -12,13 +12,20 @@
         public void IsValidVariableChar_AllValidChars_Success()
         {
             var name = "abcdefghijklmnopqrstvuwxyzABCDEFGHIJKLMNOPQRSTVUWXYZ0123456789_";
-            name.All(c => c.IsValidVariableChar()).Should().BeTrue();
+            name.All(c => c.IsValidVariableChar(false)).Should().BeTrue();
         }
 
         [TestMethod]
-        public void IsValidVariableChar_AnInvalidChar_Success()
+        public void IsValidVariableChar_WhenFirstCharIsNumber_Fails()
         {
-            Enumerable.Range(0, 128).Count(c => VariableNames.IsValidVariableChar(c)).Should().Be(63);
+            for (int i = 48; i < 59; i++)
+                ((char)i).IsValidVariableChar(true).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void IsValidVariableChar_WhenAnInvalidChar_Success()
+        {
+            Enumerable.Range(0, 128).Count(c => VariableNames.IsValidVariableChar(c, false)).Should().Be(63);
         }
     }
 }

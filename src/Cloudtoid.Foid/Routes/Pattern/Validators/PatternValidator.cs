@@ -14,6 +14,7 @@
                 Validate<NoConsecutiveWildcardValidator>(pattern);
                 Validate<OneVariablePerSegmentValidator>(pattern);
                 Validate<NoVariableFollowedByWildcardValidator>(pattern);
+                Validate<VariableNameValidator>(pattern);
             }
             catch (PatternException pe)
             {
