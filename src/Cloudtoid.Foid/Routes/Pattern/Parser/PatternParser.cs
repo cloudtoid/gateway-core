@@ -38,18 +38,28 @@
             private PatternNode? ReadNode(SeekableStringReader reader, char? stopChar = null)
             {
                 PatternNode? node = null;
-                int c;
-                int len = 0;
-                int start = reader.NextPosition;
+                int c, len, start;
+
+                Reset();
+
+                void Reset()
+                {
+                    len = 0;
+                    start = reader.NextPosition;
+                }
+
+                PatternNode? AppendMatch(string route)
+                {
+                    if (len > 0)
+                        node += new MatchNode(route.Substring(start, len));
+
+                    return node;
+                }
+
                 while ((c = reader.Read()) > -1)
                 {
                     if (c == stopChar)
-                    {
-                        if (len > 0)
-                            node += new MatchNode(route.Substring(start, len));
-
-                        return node;
-                    }
+                        return AppendMatch(route);
 
                     PatternNode? next;
                     switch (c)
@@ -75,10 +85,15 @@
                             return null;
 
                         case PatternConstants.EscapeSequenceStart:
-                            if (ShouldEscape(reader))
-                                reader.NextPosition += PatternConstants.EscapeSequence.Length;
+                            if (!ShouldEscape(reader))
+                            {
+                                len++;
+                                continue;
+                            }
 
-                            len++;
+                            AppendMatch(route);
+                            start = reader.NextPosition += PatternConstants.EscapeSequence.Length;
+                            len = 1;
                             continue;
 
                         default:
@@ -94,8 +109,7 @@
                         node += new MatchNode(route.Substring(start, len));
 
                     node += next;
-                    start = reader.NextPosition;
-                    len = 0;
+                    Reset();
                 }
 
                 // expected an end char but didn't find it
@@ -145,7 +159,7 @@
             }
 
             // returns true, if escaped an escapable char
-            private bool ShouldEscape(SeekableStringReader reader)
+            private static bool ShouldEscape(SeekableStringReader reader)
             {
                 var value = reader.Value;
                 var start = reader.NextPosition - 1;

@@ -395,7 +395,7 @@
         }
 
         [TestMethod]
-        public void TryParse_WhenEscaped_SpecialCharIsEscaped()
+        public void TryParse_WhenEscapedAtBegining_SpecialCharIsEscaped()
         {
             var values = new[]
             {
@@ -409,13 +409,38 @@
             };
 
             foreach (var value in values)
-                ExpectEscapedMatch(value);
+                ExpectEscapedAtBeginingMatch(value);
         }
 
-        private static void ExpectEscapedMatch(string value)
+        private static void ExpectEscapedAtBeginingMatch(string value)
         {
             new PatternParser().TryParse(value, out var pattern, out var error).Should().BeTrue();
-            pattern.Should().BeEquivalentTo(new MatchNode(value.ReplaceOrdinal(@"\\", string.Empty)), o => o.RespectingRuntimeTypes());
+            pattern.Should().BeEquivalentTo(new MatchNode(value.Substring(2)), o => o.RespectingRuntimeTypes());
+            error.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void TryParse_WhenEscapedInMiddle_SpecialCharIsEscaped()
+        {
+            var values = new[]
+            {
+                @"a\\:var",
+                @"a\\*",
+                @"a\\(",
+                @"a\\)",
+                @"a\\*value",
+                @"a\\(value",
+                @"a\\)value",
+            };
+
+            foreach (var value in values)
+                ExpectEscapedInMiddleMatch(value);
+        }
+
+        private static void ExpectEscapedInMiddleMatch(string value)
+        {
+            new PatternParser().TryParse(value, out var pattern, out var error).Should().BeTrue();
+            pattern.Should().BeEquivalentTo(new MatchNode("a") + new MatchNode(value.Substring(3)), o => o.RespectingRuntimeTypes());
             error.Should().BeNull();
         }
 

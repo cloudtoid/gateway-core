@@ -2,8 +2,9 @@
 {
     internal abstract class PatternNodeVisitor
     {
-        protected virtual void Visit(PatternNode node)
+        protected internal virtual void Visit(PatternNode node)
         {
+            node.Accept(this);
         }
 
         protected internal virtual void VisitLeaf(LeafNode node)

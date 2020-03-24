@@ -86,6 +86,7 @@
                 .TryAddSingleton<Expression.IExpressionEvaluator, Expression.ExpressionEvaluator>()
                 .TryAddSingleton<Routes.IRouteProvider, Routes.RouteProvider>()
                 .TryAddSingleton<Routes.Pattern.IPatternParser, Routes.Pattern.PatternParser>()
+                .TryAddSingleton<Routes.Pattern.IPatternValidator, Routes.Pattern.PatternValidator>()
                 .TryAddSingleton<IUriRewriter, UriRewriter>()
                 .TryAddSingleton<IRequestHeaderSetter, RequestHeaderSetter>()
                 .TryAddSingleton<IRequestHeaderValuesProvider, RequestHeaderValuesProvider>()
