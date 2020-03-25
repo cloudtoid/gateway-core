@@ -20,14 +20,14 @@
         [TestMethod]
         public void Validate_WhenConsecutiveSegmentStart_Fails()
         {
-            validator.Validate(Parse("//"), out var error).Should().BeFalse();
+            validator.Validate(Parse("a//b"), out var error).Should().BeFalse();
             error.Should().Contain($"Found consecutive '{PatternConstants.SegmentStart}' which is invalid.");
         }
 
         [TestMethod]
         public void Validate_WhenConsecutiveSegmentStartOneOptional_Fails()
         {
-            validator.Validate(Parse("/(/)"), out var error).Should().BeFalse();
+            validator.Validate(Parse("a/(/)b"), out var error).Should().BeFalse();
             error.Should().Contain($"Found consecutive '{PatternConstants.SegmentStart}' which is invalid.");
         }
 

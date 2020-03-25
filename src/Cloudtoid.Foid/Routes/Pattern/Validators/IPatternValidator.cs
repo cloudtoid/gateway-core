@@ -6,6 +6,6 @@
     {
         bool Validate(
             PatternNode pattern,
-            [MaybeNullWhen(false)] out string? error);
+            [NotNullWhen(false)] out string? error);
     }
 }

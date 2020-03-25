@@ -9,6 +9,6 @@
     {
         bool TryGetRoute(
            HttpContext context,
-           [MaybeNullWhen(false)] out Route route);
+           [NotNullWhen(true)] out Route? route);
     }
 }

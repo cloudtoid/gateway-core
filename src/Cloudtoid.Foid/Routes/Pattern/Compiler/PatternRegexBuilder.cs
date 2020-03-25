@@ -7,14 +7,18 @@
     {
         private static readonly string SegmentStart = Regex.Escape(@"/");
         private static readonly string Wildcard = $"[^{SegmentStart}]+";  // [^\/]+
-        private readonly StringBuilder builder = new StringBuilder($@"\A(?:{SegmentStart})?");
+        private static readonly RegexOptions Options =
+            RegexOptions.IgnoreCase
+            | RegexOptions.Singleline
+            | RegexOptions.ExplicitCapture
+            | RegexOptions.Compiled;
+
+        private readonly StringBuilder builder = new StringBuilder($@"\A({SegmentStart})?");
 
         internal Regex Build(PatternNode pattern)
         {
             Visit(pattern);
-            return new Regex(
-                builder.ToString(),
-                RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.ExplicitCapture | RegexOptions.Compiled);
+            return new Regex(builder.ToString(), Options);
         }
 
         protected internal override void VisitMatch(MatchNode node)
@@ -44,9 +48,10 @@
 
         protected internal override void VisitOptional(OptionalNode node)
         {
-            // regex: (?:node)?
+            // regex: (node)?
+            // Note that RegexOptions.ExplicitCapture is on so no need to use "(?:node)?".
 
-            builder.Append("(?:");
+            builder.AppendOpenParentheses();
             base.VisitOptional(node);
             builder.Append(")?");
         }

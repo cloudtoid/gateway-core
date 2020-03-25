@@ -1,38 +1,50 @@
 ﻿namespace Cloudtoid.Foid.Routes.Pattern
 {
+    using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using System.Text;
     using Cloudtoid.Foid.Expression;
     using static Contract;
 
     internal sealed class PatternParser : IPatternParser
     {
         public bool TryParse(
-            string route,
-            out PatternNode? pattern,
-            [MaybeNullWhen(true)] out string errors)
+            string pattern,
+            [NotNullWhen(true)] out PatternNode? parsedPattern,
+            [NotNullWhen(false)] out IReadOnlyList<PatternParserError>? errors)
         {
-            CheckValue(route, nameof(route));
+            CheckValue(pattern, nameof(pattern));
 
-            (pattern, errors) = new Parser(route).Parse();
-            return errors is null;
+            pattern = pattern.Trim().Trim('/');
+            (parsedPattern, errors) = new Parser(pattern).Parse();
+
+            if (errors is null)
+            {
+                if (parsedPattern is null)
+                    throw new InvalidOperationException($"Both {nameof(errors)} and {nameof(parsedPattern)} cannot be null");
+
+                return true;
+            }
+
+            parsedPattern = null;
+            return false;
         }
 
         private struct Parser
         {
             private readonly string route;
-            private readonly StringBuilder error;
+            private List<PatternParserError>? errors;
 
             public Parser(string route)
             {
                 this.route = route;
-                error = new StringBuilder();
+                errors = null;
             }
 
-            internal (PatternNode? Pattern, string? Error) Parse()
+            internal (PatternNode? Pattern, IReadOnlyList<PatternParserError>? Errors) Parse()
             {
                 using (var reader = new SeekableStringReader(route))
-                    return (ReadNode(reader), error.Length == 0 ? null : error.ToString());
+                    return (ReadNode(reader), errors);
             }
 
             private PatternNode? ReadNode(SeekableStringReader reader, char? stopChar = null)
@@ -81,7 +93,7 @@
                             break;
 
                         case PatternConstants.OptionalEnd:
-                            error.AppendLine($"There is an unexpected '{(char)c}'.");
+                            AddError($"There is an unexpected '{(char)c}'.", reader.NextPosition - 1);
                             return null;
 
                         case PatternConstants.EscapeSequenceStart:
@@ -115,7 +127,7 @@
                 // expected an end char but didn't find it
                 if (stopChar.HasValue)
                 {
-                    error.AppendLine($"There is a missing '{stopChar}'.");
+                    AddError($"There is a missing '{stopChar}'.");
                     return null;
                 }
 
@@ -138,7 +150,10 @@
 
                 if (len == 0)
                 {
-                    error.AppendLine("The route pattern has a variable with an empty or invalid name. The valid characters are 'a-zA-Z0-9_' and the first character cannot be a number.");
+                    AddError(
+                        "There is a variable with an empty or invalid name. The valid characters are 'a-zA-Z0-9_' and the first character cannot be a number.",
+                        start);
+
                     return null;
                 }
 
@@ -147,15 +162,25 @@
 
             private OptionalNode? ReadOptionalNode(SeekableStringReader reader)
             {
+                var start = reader.NextPosition;
                 var node = ReadNode(reader, PatternConstants.OptionalEnd);
 
                 if (node == null)
                 {
-                    error.AppendLine("The route pattern has an optional element that seems to be empty or invalid.");
+                    AddError("There is an optional element that is either empty or invalid.", start);
                     return null;
                 }
 
                 return new OptionalNode(node);
+            }
+
+            private void AddError(string message, int? location = null)
+            {
+                if (errors is null)
+                    errors = new List<PatternParserError>();
+
+                var error = new PatternParserError(message, location);
+                errors.Add(error);
             }
 
             // returns true, if escaped an escapable char
