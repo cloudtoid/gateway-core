@@ -4,6 +4,7 @@
     using System.Net.Http;
     using Cloudtoid.Foid.Downstream;
     using Cloudtoid.Foid.Proxy;
+    using Cloudtoid.Foid.Routes.Pattern;
     using Cloudtoid.Foid.Upstream;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
@@ -85,9 +86,10 @@
                 .TryAddSingleton<Host.IHostProvider, Host.HostProvider>()
                 .TryAddSingleton<Expression.IExpressionEvaluator, Expression.ExpressionEvaluator>()
                 .TryAddSingleton<Routes.IRouteProvider, Routes.RouteProvider>()
-                .TryAddSingleton<Routes.Pattern.IPatternParser, Routes.Pattern.PatternParser>()
-                .TryAddSingleton<Routes.Pattern.IPatternValidator, Routes.Pattern.PatternValidator>()
-                .TryAddSingleton<Routes.Pattern.IPatternCompiler, Routes.Pattern.PatternCompiler>()
+                .TryAddSingleton<IPatternParser, PatternParser>()
+                .TryAddSingleton<IPatternValidator, PatternValidator>()
+                .TryAddSingleton<IPatternCompiler, PatternCompiler>()
+                .TryAddSingleton<IPatternMatcher, PatternMatcher>()
                 .TryAddSingleton<IUriRewriter, UriRewriter>()
                 .TryAddSingleton<IRequestHeaderSetter, RequestHeaderSetter>()
                 .TryAddSingleton<IRequestHeaderValuesProvider, RequestHeaderValuesProvider>()
