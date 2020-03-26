@@ -7,13 +7,24 @@
         /// <summary>
         /// Normalizes the incoming downstream route  by:
         /// <list type="bullet">
-        /// <item>Adds '/' to the beginning and the end of the route.</item>
         /// <item>Trimming white spaces from the beginning and the end of the route. White spaces are defined by <see cref="char.IsWhiteSpace(char)"/>.</item>
+        /// <item>Adds '/' to the beginning and the end of the route.</item>
         /// </list>
         /// </summary>
         public string Normalize(string route)
         {
-            route = route.Trim();
+            route = TrimWhiteSpaces(route);
+            route = AppenSlashes(route);
+            return route;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static string TrimWhiteSpaces(string route)
+            => route.Trim();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static string AppenSlashes(string route)
+        {
             var len = route.Length;
 
             if (len == 0)

@@ -41,8 +41,6 @@
             ShouldMatch("(/product)/(1*/)", "/1234");
             ShouldMatch("(/product)/(1*/)", "1234");
             ShouldMatch("(/product)/(1*/)", "1234/");
-
-            // TODO: this should match ParseBuildAndMatch("/product/(1*/)", "product/1234/");
         }
 
         private void ShouldMatch(string pattern, string route)
