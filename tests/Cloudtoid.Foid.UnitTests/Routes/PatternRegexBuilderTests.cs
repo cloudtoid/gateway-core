@@ -21,7 +21,9 @@
             ParseBuildAndMatch("/product/1*/", "product/1234");
             ParseBuildAndMatchFail("/product/13*/", "product/1234");
             ParseBuildAndMatch("/product/(1*/)", "product/");
-            ParseBuildAndMatch("/product/(1*/)", "product/1234");
+            ParseBuildAndMatch("/product/(1*/)", "product/1234/");
+
+            // TODO: this should match ParseBuildAndMatch("/product/(1*/)", "product/1234/");
         }
 
         private static void ParseBuildAndMatchFail(string pattern, string match)

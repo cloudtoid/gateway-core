@@ -23,14 +23,6 @@
         }
 
         [TestMethod]
-        public void SingleValueSet_Smoke()
-        {
-            var set = Set.Empty<string>();
-            set.Should().BeEmpty();
-            set.IsReadOnly.Should().BeTrue();
-        }
-
-        [TestMethod]
         public void SingleValueSet_SameType()
         {
             var set1 = List.Empty<string>();

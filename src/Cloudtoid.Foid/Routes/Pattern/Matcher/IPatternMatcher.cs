@@ -1,10 +1,12 @@
 ﻿namespace Cloudtoid.Foid.Routes.Pattern
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
+    using System.Diagnostics.CodeAnalysis;
 
     internal interface IPatternMatcher
     {
+        bool TryMatch(
+            CompiledPattern pattern,
+            string route,
+            [NotNullWhen(true)] out PatternMatchResult? match);
     }
 }

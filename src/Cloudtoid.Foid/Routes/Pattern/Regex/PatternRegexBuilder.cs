@@ -1,30 +1,32 @@
 ﻿namespace Cloudtoid.Foid.Routes.Pattern
 {
+    using System;
     using System.Text;
     using System.Text.RegularExpressions;
 
     internal sealed class PatternRegexBuilder : PatternNodeVisitor
     {
+        private static readonly TimeSpan MatchTimeout = TimeSpan.FromSeconds(1);
         private static readonly string SegmentStart = Regex.Escape(@"/");
         private static readonly string Wildcard = $"[^{SegmentStart}]+";  // [^\/]+
         private static readonly RegexOptions Options =
             RegexOptions.IgnoreCase
             | RegexOptions.Singleline
             | RegexOptions.ExplicitCapture
-            | RegexOptions.Compiled;
+            | RegexOptions.Compiled
+            | RegexOptions.CultureInvariant;
 
         private readonly StringBuilder builder = new StringBuilder($@"\A({SegmentStart})?");
 
         internal Regex Build(PatternNode pattern)
         {
             Visit(pattern);
-            return new Regex(builder.ToString(), Options);
+            builder.Append('$'); // must match the end of string too
+            return new Regex(builder.ToString(), Options, MatchTimeout);
         }
 
         protected internal override void VisitMatch(MatchNode node)
-        {
-            builder.Append(Regex.Escape(node.Value));
-        }
+            => builder.Append(Regex.Escape(node.Value));
 
         protected internal override void VisitVariable(VariableNode node)
         {
@@ -37,14 +39,10 @@
         }
 
         protected internal override void VisitSegmentStart(SegmentStartNode node)
-        {
-            builder.Append(SegmentStart);
-        }
+            => builder.Append(SegmentStart);
 
         protected internal override void VisitWildcard(WildcardNode node)
-        {
-            builder.Append(Wildcard);
-        }
+            => builder.Append(Wildcard);
 
         protected internal override void VisitOptional(OptionalNode node)
         {

@@ -47,7 +47,12 @@
             // 4- Get variable names
             var variables = new VariableNamesExtractor().Extract(parsedPattern);
 
-            compiledPattern = new CompiledPattern(regex, variables);
+            compiledPattern = new CompiledPattern(
+                pattern,
+                parsedPattern,
+                regex,
+                variables);
+
             return true;
         }
 

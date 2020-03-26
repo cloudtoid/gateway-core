@@ -6,14 +6,24 @@
 
     internal sealed class CompiledPattern
     {
-        internal CompiledPattern(Regex regex, ISet<string> variables)
+        internal CompiledPattern(
+            string pattern,
+            PatternNode parsedPattern,
+            Regex regex,
+            ISet<string> variableNames)
         {
+            Pattern = CheckValue(pattern, nameof(pattern));
+            ParsedPattern = CheckValue(parsedPattern, nameof(parsedPattern));
             Regex = CheckValue(regex, nameof(regex));
-            Variables = CheckValue(variables, nameof(variables));
+            VariableNames = CheckValue(variableNames, nameof(variableNames));
         }
+
+        public string Pattern { get; }
+
+        public PatternNode ParsedPattern { get; }
 
         public Regex Regex { get; }
 
-        public ISet<string> Variables { get; }
+        public ISet<string> VariableNames { get; }
     }
 }

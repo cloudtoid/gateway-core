@@ -6,8 +6,8 @@
     internal interface IPatternParser
     {
         bool TryParse(
-           string pattern,
-           [NotNullWhen(true)] out PatternNode? parsedPattern,
-           [NotNullWhen(false)] out IReadOnlyList<PatternParserError>? errors);
+            string pattern,
+            [NotNullWhen(true)] out PatternNode? parsedPattern,
+            [NotNullWhen(false)] out IReadOnlyList<PatternParserError>? errors);
     }
 }

@@ -5,4 +5,8 @@
     <RootNamespace>Cloudtoid</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Collections.Immutable" Version="1.7.0" />
+  </ItemGroup>
+
 </Project>
