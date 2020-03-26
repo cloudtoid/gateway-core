@@ -86,6 +86,7 @@
                 .TryAddSingleton<Host.IHostProvider, Host.HostProvider>()
                 .TryAddSingleton<Expression.IExpressionEvaluator, Expression.ExpressionEvaluator>()
                 .TryAddSingleton<Routes.IRouteProvider, Routes.RouteProvider>()
+                .TryAddSingleton<Routes.IRouteNormalizer, Routes.RouteNormalizer>()
                 .TryAddSingleton<IPatternParser, PatternParser>()
                 .TryAddSingleton<IPatternValidator, PatternValidator>()
                 .TryAddSingleton<IPatternCompiler, PatternCompiler>()
