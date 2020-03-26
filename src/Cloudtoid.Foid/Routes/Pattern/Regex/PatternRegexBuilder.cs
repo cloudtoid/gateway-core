@@ -9,6 +9,8 @@
         private static readonly TimeSpan MatchTimeout = TimeSpan.FromSeconds(1);
         private static readonly string SegmentStart = Regex.Escape(@"/");
         private static readonly string Wildcard = $"[^{SegmentStart}]+";  // [^\/]+
+        private static readonly string Start = $@"\A({SegmentStart})?"; // \A(\/)?
+        private static readonly string End = $@"({SegmentStart})?$"; // (\/)?$
         private static readonly RegexOptions Options =
             RegexOptions.IgnoreCase
             | RegexOptions.Singleline
@@ -16,12 +18,12 @@
             | RegexOptions.Compiled
             | RegexOptions.CultureInvariant;
 
-        private readonly StringBuilder builder = new StringBuilder($@"\A({SegmentStart})?");
+        private readonly StringBuilder builder = new StringBuilder(Start);
 
         internal Regex Build(PatternNode pattern)
         {
             Visit(pattern);
-            builder.Append('$'); // must match the end of string too
+            builder.Append(End);
             return new Regex(builder.ToString(), Options, MatchTimeout);
         }
 

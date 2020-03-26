@@ -1,6 +1,6 @@
 ﻿namespace Cloudtoid.Foid.UnitTests
 {
-    using System.Text.RegularExpressions;
+    using Cloudtoid.Foid.Routes;
     using Cloudtoid.Foid.Routes.Pattern;
     using FluentAssertions;
     using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +9,7 @@
     [TestClass]
     public class PatternMatcherTests
     {
+        private readonly IRouteNormalizer normalizer;
         private readonly IPatternCompiler compiler;
         private readonly IPatternMatcher matcher;
 
@@ -16,6 +17,7 @@
         {
             var services = new ServiceCollection().AddTest();
             var serviceProvider = services.BuildServiceProvider();
+            normalizer = serviceProvider.GetRequiredService<IRouteNormalizer>();
             compiler = serviceProvider.GetRequiredService<IPatternCompiler>();
             matcher = serviceProvider.GetRequiredService<IPatternMatcher>();
         }
@@ -34,6 +36,11 @@
             ShouldNotMatch("/product/13*/", "product/1234");
             ShouldMatch("/product/(1*/)", "product/");
             ShouldMatch("/product/(1*/)", "product/1234/");
+            ShouldMatch("/product/(1*/)", "product/1234");
+            ShouldMatch("(/product)/(1*/)", "product/1234");
+            ShouldMatch("(/product)/(1*/)", "/1234");
+            ShouldMatch("(/product)/(1*/)", "1234");
+            ShouldMatch("(/product)/(1*/)", "1234/");
 
             // TODO: this should match ParseBuildAndMatch("/product/(1*/)", "product/1234/");
         }
@@ -41,14 +48,14 @@
         private void ShouldMatch(string pattern, string route)
         {
             var compiledPattern = Compile(pattern);
-            matcher.TryMatch(compiledPattern!, route, out var matched).Should().BeTrue();
+            matcher.TryMatch(compiledPattern, normalizer.Normalize(route), out var matched).Should().BeTrue();
             matched.Should().NotBeNull();
         }
 
         private void ShouldNotMatch(string pattern, string route)
         {
             var compiledPattern = Compile(pattern);
-            matcher.TryMatch(compiledPattern!, route, out var matched).Should().BeFalse();
+            matcher.TryMatch(compiledPattern, normalizer.Normalize(route), out var matched).Should().BeFalse();
             matched.Should().BeNull();
         }
 

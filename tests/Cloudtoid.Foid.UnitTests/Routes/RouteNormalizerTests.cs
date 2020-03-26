@@ -1,9 +1,7 @@
 ﻿namespace Cloudtoid.Foid.UnitTests
 {
-    using System.IO;
     using Cloudtoid.Foid.Routes;
     using FluentAssertions;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -22,16 +20,15 @@
         [TestMethod]
         public void NormalizeTests()
         {
-            Normalize(string.Empty, string.Empty);
-            Normalize("/", string.Empty);
-            Normalize("/ ", string.Empty);
-            Normalize(" /", string.Empty);
-            Normalize(" / ", string.Empty);
-            Normalize(" /// ", string.Empty);
-            Normalize("/product/", "product");
-            Normalize(" /product/ ", "product");
-            Normalize("/product", "product");
-            Normalize("/product/1234/", "product/1234");
+            Normalize(string.Empty, "/");
+            Normalize("/", "/");
+            Normalize("/ ", "/");
+            Normalize(" /", "/");
+            Normalize(" / ", "/");
+            Normalize("/product/", "/product/");
+            Normalize(" /product/ ", "/product/");
+            Normalize("/product", "/product/");
+            Normalize("/product/1234/", "/product/1234/");
         }
 
         private void Normalize(string route, string expected)

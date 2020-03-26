@@ -7,40 +7,25 @@
         /// <summary>
         /// Normalizes the incoming downstream route  by:
         /// <list type="bullet">
-        /// <item>Trimming '/' from the beginning and the end of the route.</item>
+        /// <item>Adds '/' to the beginning and the end of the route.</item>
         /// <item>Trimming white spaces from the beginning and the end of the route. White spaces are defined by <see cref="char.IsWhiteSpace(char)"/>.</item>
         /// </list>
         /// </summary>
         public string Normalize(string route)
         {
+            route = route.Trim();
             var len = route.Length;
 
-            int left = 0;
-            while (left < len)
-            {
-                if (!ShouldTrim(route[left]))
-                    break;
+            if (len == 0)
+                return "/";
 
-                left++;
-            }
+            if (route[len - 1] != '/')
+                route += '/';
 
-            int right = len - 1;
-            while (right > left)
-            {
-                if (!ShouldTrim(route[right]))
-                    break;
+            if (len > 1 && route[0] != '/')
+                route = '/' + route;
 
-                right--;
-            }
-
-            if (left == 0 && right == len - 1)
-                return route;
-
-            return route.Substring(left, right - left + 1);
+            return route;
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool ShouldTrim(char c)
-            => c == '/' || char.IsWhiteSpace(c);
     }
 }
