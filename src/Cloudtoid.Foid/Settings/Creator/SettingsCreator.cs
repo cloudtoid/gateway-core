@@ -36,7 +36,9 @@
             return new ReverseProxySettings(routes);
         }
 
-        private RouteSettings? Create(string route, RouteOptions options)
+        private RouteSettings? Create(
+            string route,
+            RouteOptions options)
         {
             if (string.IsNullOrWhiteSpace(route))
             {
