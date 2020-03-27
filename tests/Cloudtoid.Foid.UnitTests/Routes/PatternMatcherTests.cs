@@ -1,5 +1,6 @@
 ﻿namespace Cloudtoid.Foid.UnitTests
 {
+    using System.Linq;
     using Cloudtoid.Foid.Routes;
     using Cloudtoid.Foid.Routes.Pattern;
     using FluentAssertions;
@@ -41,13 +42,83 @@
             ShouldMatch("(/product)/(1*/)", "/1234");
             ShouldMatch("(/product)/(1*/)", "1234");
             ShouldMatch("(/product)/(1*/)", "1234/");
+
+            ShouldMatch("/product/:id", "product/1234", ("id", "1234"));
+            ShouldMatch("/product(/:id)", "product/1234", ("id", "1234"));
+            ShouldMatch("/product(/:id)", "product");
+
+            ShouldMatch(
+                pattern: "/category/:category/product/:product",
+                route: "category/bike/product/1234",
+                ("category", "bike"),
+                ("product", "1234"));
+
+            ShouldMatch(
+                pattern: "/category/:category(/product/:product)",
+                route: "category/bike/product/1234",
+                ("category", "bike"),
+                ("product", "1234"));
+
+            ShouldMatch(
+                pattern: "/category/:category(/product/:product)",
+                route: "category/bike/",
+                ("category", "bike"));
+
+            ShouldMatch(
+               pattern: "/category/*(/product/:product)",
+               route: "category/bike/product/1234",
+               ("product", "1234"));
+
+            ShouldMatch(
+               pattern: "/category/*(/product/:product)",
+               route: "category/bike");
+
+            ShouldNotMatch(
+               pattern: "/category/*(/product/:product)",
+               route: "/bike(/product/:product)");
+
+            ShouldMatch(
+               pattern: "/category/*(/product/:product)",
+               route: "category/bike");
+
+            ShouldNotMatch(
+              pattern: "/category/*(/product/:product)",
+              route: "/bike(/product/:product)");
+
+            ShouldMatch(
+               pattern: @"/category/\\*(/product/:product)",
+               route: "category/*/product/1234",
+               ("product", "1234"));
+
+            ShouldMatch(
+               pattern: @"/category/\\*(/product/:product)",
+               route: "category/*/");
+
+            ShouldMatch(
+               pattern: @"/category/\\*/product/:product",
+               route: "category/*/product/1234",
+               ("product", "1234"));
+
+            ShouldMatch(
+               pattern: @"/category/\\:product",
+               route: "category/:product/");
+
+            ShouldMatch(
+               pattern: @"/category/\\(:product\\)",
+               route: "category/(1234)/",
+               ("product", "1234"));
+
+            ShouldNotMatch(
+               pattern: @"/category/\\(:product\\)",
+               route: "category/1234/");
         }
 
-        private void ShouldMatch(string pattern, string route)
+        private void ShouldMatch(string pattern, string route, params (string Name, string Value)[] variables)
         {
             var compiledPattern = Compile(pattern);
             matcher.TryMatch(compiledPattern, normalizer.Normalize(route), out var matched).Should().BeTrue();
             matched.Should().NotBeNull();
+            matched!.Variables.Select(v => (v.Key, v.Value)).Should().BeEquivalentTo(variables);
         }
 
         private void ShouldNotMatch(string pattern, string route)

@@ -104,7 +104,8 @@
                             }
 
                             AppendMatch(route);
-                            start = reader.NextPosition += PatternConstants.EscapeSequence.Length;
+                            reader.NextPosition += PatternConstants.EscapeSequence.Length;
+                            start = reader.NextPosition - 1;
                             len = 1;
                             continue;
 
