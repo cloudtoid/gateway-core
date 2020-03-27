@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Linq;
     using Cloudtoid.Foid.Host;
-    using Cloudtoid.Foid.Options;
     using Cloudtoid.Foid.Routes;
     using Cloudtoid.Foid.Trace;
     using Microsoft.AspNetCore.Http;
@@ -32,10 +31,10 @@
 
         public static IServiceCollection AddTestOptions(
             this IServiceCollection services,
-            FoidOptions? options = null)
+            ReverseProxyOptions? options = null)
         {
             options ??= CreateDefaultOptions();
-            var monitor = Substitute.For<IOptionsMonitor<FoidOptions>>();
+            var monitor = Substitute.For<IOptionsMonitor<ReverseProxyOptions>>();
             monitor.CurrentValue.Returns(options);
             services.TryAddSingleton(monitor);
             return services;
@@ -57,15 +56,15 @@
                 new Route(routeOptions));
         }
 
-        public static FoidOptions CreateDefaultOptions()
+        public static ReverseProxyOptions CreateDefaultOptions()
         {
-            return new FoidOptions
+            return new ReverseProxyOptions
             {
-                Routes = new Dictionary<string, FoidOptions.RouteOptions>
+                Routes = new Dictionary<string, ReverseProxyOptions.RouteOptions>
                 {
-                    ["/api/"] = new FoidOptions.RouteOptions
+                    ["/api/"] = new ReverseProxyOptions.RouteOptions
                     {
-                        Proxy = new FoidOptions.RouteOptions.ProxyOptions
+                        Proxy = new ReverseProxyOptions.RouteOptions.ProxyOptions
                         {
                             To = "/upstream/api/"
                         }

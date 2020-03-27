@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using Cloudtoid.Foid.Options;
+    using Cloudtoid.Foid.Settings;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Options;
     using static Contract;
@@ -12,13 +12,13 @@
     internal sealed class RouteProvider : IRouteProvider, IReadOnlyCollection<RouteSettings>
     {
         private static readonly object RouteKey = new object();
-        private readonly IOptionsMonitor<FoidOptions> options;
+        private readonly IOptionsMonitor<ReverseProxyOptions> options;
         private readonly IRouteSettingsCreator settingsCreator;
         private IReadOnlyList<RouteSettings> routes;
 
         public RouteProvider(
             IRouteSettingsCreator settingsCreator,
-            IOptionsMonitor<FoidOptions> options)
+            IOptionsMonitor<ReverseProxyOptions> options)
         {
             this.options = CheckValue(options, nameof(options));
             this.settingsCreator = CheckValue(settingsCreator, nameof(settingsCreator));

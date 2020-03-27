@@ -1,13 +1,12 @@
-﻿namespace Cloudtoid.Foid.Routes
+﻿namespace Cloudtoid.Foid.Settings
 {
     using System.Diagnostics.CodeAnalysis;
-    using Cloudtoid.Foid.Options;
 
     internal interface IRouteSettingsCreator
     {
         bool TryCreate(
             string route,
-            FoidOptions.RouteOptions options,
+            ReverseProxyOptions.RouteOptions options,
             [NotNullWhen(true)] out RouteSettings? result);
     }
 }

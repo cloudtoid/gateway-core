@@ -5,7 +5,6 @@
     using System.Net.Http;
     using System.Threading.Tasks;
     using Cloudtoid.Foid.Downstream;
-    using Cloudtoid.Foid.Options;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
@@ -136,7 +135,7 @@
         private static async Task<HttpResponse> SetContentAsync(
             HttpResponseMessage message,
             HttpContext? httpContext = null,
-            FoidOptions? options = null)
+            ReverseProxyOptions? options = null)
         {
             var services = new ServiceCollection().AddTest().AddTestOptions(options);
             var serviceProvider = services.BuildServiceProvider();

@@ -5,7 +5,6 @@
     using System.Linq;
     using System.Threading;
     using Cloudtoid.Foid.Host;
-    using Cloudtoid.Foid.Options;
     using Cloudtoid.Foid.Routes;
     using Cloudtoid.Foid.Trace;
     using FluentAssertions;
@@ -158,11 +157,11 @@
 
                 var services = new ServiceCollection()
                     .AddTest()
-                    .Configure<FoidOptions>(config);
+                    .Configure<ReverseProxyOptions>(config);
 
                 var serviceProvider = services.BuildServiceProvider();
                 var routeProvider = serviceProvider.GetRequiredService<IRouteProvider>();
-                var monitor = serviceProvider.GetRequiredService<IOptionsMonitor<FoidOptions>>();
+                var monitor = serviceProvider.GetRequiredService<IOptionsMonitor<ReverseProxyOptions>>();
 
                 var httpContext = new DefaultHttpContext();
                 var options = routeProvider.First();
@@ -223,7 +222,7 @@
 
             var services = new ServiceCollection()
                 .AddTest()
-                .Configure<FoidOptions>(config);
+                .Configure<ReverseProxyOptions>(config);
 
             var routeProvider = services
                 .BuildServiceProvider()

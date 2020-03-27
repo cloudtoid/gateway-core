@@ -1,4 +1,4 @@
-﻿namespace Cloudtoid.Foid.Routes
+﻿namespace Cloudtoid.Foid.Settings
 {
     using System;
 

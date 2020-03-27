@@ -6,7 +6,6 @@
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using Cloudtoid.Foid.Options;
     using Cloudtoid.Foid.Upstream;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
@@ -713,7 +712,7 @@
 
         private static async Task<HttpRequestMessage> SetHeadersAsync(
             HttpContext httpContext,
-            FoidOptions? options = null,
+            ReverseProxyOptions? options = null,
             IServiceCollection? services = null)
         {
             services ??= new ServiceCollection();

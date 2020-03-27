@@ -2,7 +2,7 @@
 {
     using System.Diagnostics;
     using Cloudtoid.Foid.Host;
-    using Cloudtoid.Foid.Routes;
+    using Cloudtoid.Foid.Settings;
     using Cloudtoid.Foid.Trace;
     using Microsoft.AspNetCore.Http;
     using static Contract;

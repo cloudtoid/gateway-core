@@ -1,9 +1,9 @@
-﻿namespace Cloudtoid.Foid.Options
+﻿namespace Cloudtoid.Foid
 {
     using System;
     using System.Collections.Generic;
 
-    public sealed class FoidOptions
+    public sealed class ReverseProxyOptions
     {
         /// <summary>
         /// Gets or sets the list of proxy server route configurations

@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using Cloudtoid.Foid.Settings;
     using Microsoft.AspNetCore.Http;
 
     public interface IRouteProvider : IReadOnlyCollection<RouteSettings>

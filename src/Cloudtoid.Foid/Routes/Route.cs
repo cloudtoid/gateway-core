@@ -1,6 +1,6 @@
 ﻿namespace Cloudtoid.Foid
 {
-    using Cloudtoid.Foid.Routes;
+    using Cloudtoid.Foid.Settings;
 
     public sealed class Route
     {

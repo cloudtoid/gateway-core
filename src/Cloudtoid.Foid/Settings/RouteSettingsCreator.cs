@@ -1,18 +1,17 @@
-﻿namespace Cloudtoid.Foid.Routes
+﻿namespace Cloudtoid.Foid.Settings
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using Cloudtoid.Foid.Expression;
-    using Cloudtoid.Foid.Options;
     using Microsoft.Extensions.Logging;
-    using static Cloudtoid.Foid.Options.FoidOptions;
-    using static Cloudtoid.Foid.Options.FoidOptions.RouteOptions;
-    using static Cloudtoid.Foid.Options.FoidOptions.RouteOptions.ProxyOptions;
-    using static Cloudtoid.Foid.Routes.RouteSettings;
-    using static Cloudtoid.Foid.Routes.RouteSettings.ProxySettings;
-    using static Cloudtoid.Foid.Routes.RouteSettings.ProxySettings.UpstreamRequestSettings;
+    using static Cloudtoid.Foid.ReverseProxyOptions;
+    using static Cloudtoid.Foid.ReverseProxyOptions.RouteOptions;
+    using static Cloudtoid.Foid.ReverseProxyOptions.RouteOptions.ProxyOptions;
+    using static Cloudtoid.Foid.Settings.RouteSettings;
+    using static Cloudtoid.Foid.Settings.RouteSettings.ProxySettings;
+    using static Cloudtoid.Foid.Settings.RouteSettings.ProxySettings.UpstreamRequestSettings;
     using static Contract;
 
     internal sealed class RouteSettingsCreator : IRouteSettingsCreator
@@ -165,12 +164,12 @@
         }
 
         private void LogError(string message)
-            => logger.LogError($"{nameof(FoidOptions)} error: {message}");
+            => logger.LogError($"{nameof(ReverseProxyOptions)} error: {message}");
 
         private void LogError(RouteSettingsContext context, string message)
-            => logger.LogError($"{nameof(FoidOptions)} ({context.Route}) error: {message}");
+            => logger.LogError($"{nameof(ReverseProxyOptions)} ({context.Route}) error: {message}");
 
         private void LogWarning(RouteSettingsContext context, string message)
-            => logger.LogWarning($"{nameof(FoidOptions)} warning: ({context.Route}) {message}");
+            => logger.LogWarning($"{nameof(ReverseProxyOptions)} warning: ({context.Route}) {message}");
     }
 }
