@@ -4,6 +4,7 @@
     using System.IO;
     using System.Linq;
     using System.Threading;
+    using Cloudtoid.Foid;
     using Cloudtoid.Foid.Host;
     using Cloudtoid.Foid.Settings;
     using Cloudtoid.Foid.Trace;
@@ -11,6 +12,7 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using NSubstitute;
@@ -214,6 +216,76 @@
             }
         }
 
+        [TestMethod]
+        public void New_NoRoutes_CorrectError()
+        {
+            var options = new ReverseProxyOptions();
+            CreateSettingsAndCheckLogs(options, "No routes are specified");
+        }
+
+        [TestMethod]
+        public void New_EmptyRoute_CorrectError()
+        {
+            var options = new ReverseProxyOptions();
+            options.Routes.Add(string.Empty, new ReverseProxyOptions.RouteOptions());
+            CreateSettingsAndCheckLogs(options, "A route cannot be an empty string");
+        }
+
+        [TestMethod]
+        public void New_NullProxyTo_CorrectError()
+        {
+            var options = new ReverseProxyOptions();
+            options.Routes.Add("/a/b/c/", new ReverseProxyOptions.RouteOptions
+            {
+                Proxy = new ReverseProxyOptions.RouteOptions.ProxyOptions
+                {
+                    To = null
+                }
+            });
+
+            CreateSettingsAndCheckLogs(options, "The 'To' cannot be empty or skipped.");
+        }
+
+        [TestMethod]
+        public void New_EmptyProxyTo_CorrectError()
+        {
+            var options = new ReverseProxyOptions();
+            options.Routes.Add("/a/b/c/", new ReverseProxyOptions.RouteOptions
+            {
+                Proxy = new ReverseProxyOptions.RouteOptions.ProxyOptions
+                {
+                    To = "    "
+                }
+            });
+
+            CreateSettingsAndCheckLogs(options, "The 'To' cannot be empty or skipped.");
+        }
+
+        [TestMethod]
+        public void New_InvalidHeaderName_CorrectError()
+        {
+            var options = new ReverseProxyOptions();
+            options.Routes.Add("/a/b/c/", new ReverseProxyOptions.RouteOptions
+            {
+                Proxy = new ReverseProxyOptions.RouteOptions.ProxyOptions
+                {
+                    To = "/e/f/g/",
+                    UpstreamRequest = new ReverseProxyOptions.RouteOptions.ProxyOptions.UpstreamRequestOptions
+                    {
+                        Headers = new ReverseProxyOptions.RouteOptions.ProxyOptions.UpstreamRequestOptions.HeadersOptions
+                        {
+                            Overrides = new System.Collections.Generic.Dictionary<string, string[]>()
+                            {
+                                [" bad-header\\"] = new[] { "value" }
+                            }
+                        }
+                    }
+                }
+            });
+
+            CreateSettingsAndCheckLogs(options, "The ' bad-header\\' is not a valid HTTP header name. It will be ignored.");
+        }
+
         private static ProxyContext GetProxyContext(string jsonFile)
         {
             var config = new ConfigurationBuilder()
@@ -236,6 +308,16 @@
                 Substitute.For<ITraceIdProvider>(),
                 httpContext,
                 new Route(settings));
+        }
+
+        private static void CreateSettingsAndCheckLogs(ReverseProxyOptions options, params string[] messages)
+        {
+            var services = new ServiceCollection().AddTest().AddTestOptions(options);
+            var serviceProvider = services.BuildServiceProvider();
+            var logger = (Logger<SettingsCreator>)serviceProvider.GetRequiredService<ILogger<SettingsCreator>>();
+            serviceProvider.GetRequiredService<ISettingsProvider>();
+            foreach (var message in messages)
+                logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase(message)).Should().BeTrue();
         }
     }
 }

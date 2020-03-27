@@ -8,6 +8,8 @@
     using Cloudtoid.Foid.Trace;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using NSubstitute;
     using static Contract;
@@ -23,7 +25,7 @@
 
             services
                 .AddSingleton(GuidProvider.Instance)
-                .AddLogging()
+                .Replace(ServiceDescriptor.Singleton(typeof(ILogger<>), typeof(Logger<>)))
                 .AddFoidProxy();
 
             return services;
