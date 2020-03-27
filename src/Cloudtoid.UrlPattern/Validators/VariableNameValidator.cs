@@ -4,7 +4,7 @@
     using System.Collections.Generic;
 
     /// <summary>
-    /// Validates that all variable names are unique and that they don't conflict with system variable names
+    /// Validates that all variable names are unique
     /// </summary>
     internal sealed class VariableNameValidator : PatternValidatorBase
     {
