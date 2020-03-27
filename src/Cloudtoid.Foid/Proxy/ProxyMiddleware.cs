@@ -21,7 +21,7 @@
         private readonly IRequestCreator requestCreator;
         private readonly IRequestSender sender;
         private readonly IResponseSender responseSender;
-        private readonly IRouteProvider routeProvider;
+        private readonly IRouteResolver routeResolver;
         private readonly IHostProvider hostProvider;
         private readonly ITraceIdProvider traceIdProvider;
         private readonly ILogger<ProxyMiddleware> logger;
@@ -31,7 +31,7 @@
             IRequestCreator requestCreator,
             IRequestSender sender,
             IResponseSender responseSender,
-            IRouteProvider routeProvider,
+            IRouteResolver routeResolver,
             IHostProvider hostProvider,
             ITraceIdProvider traceIdProvider,
             ILogger<ProxyMiddleware> logger)
@@ -40,7 +40,7 @@
             this.requestCreator = CheckValue(requestCreator, nameof(requestCreator));
             this.sender = CheckValue(sender, nameof(sender));
             this.responseSender = CheckValue(responseSender, nameof(responseSender));
-            this.routeProvider = CheckValue(routeProvider, nameof(routeProvider));
+            this.routeResolver = CheckValue(routeResolver, nameof(routeResolver));
             this.hostProvider = CheckValue(hostProvider, nameof(hostProvider));
             this.traceIdProvider = CheckValue(traceIdProvider, nameof(traceIdProvider));
             this.logger = CheckValue(logger, nameof(logger));
@@ -56,7 +56,7 @@
             var cancellationToken = httpContext.RequestAborted;
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (routeProvider.TryGetRoute(httpContext, out var route))
+            if (routeResolver.TryResolve(httpContext, out var route))
             {
                 var context = new ProxyContext(
                     hostProvider,

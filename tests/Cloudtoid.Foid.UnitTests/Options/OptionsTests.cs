@@ -5,7 +5,7 @@
     using System.Linq;
     using System.Threading;
     using Cloudtoid.Foid.Host;
-    using Cloudtoid.Foid.Routes;
+    using Cloudtoid.Foid.Settings;
     using Cloudtoid.Foid.Trace;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
@@ -160,11 +160,11 @@
                     .Configure<ReverseProxyOptions>(config);
 
                 var serviceProvider = services.BuildServiceProvider();
-                var routeProvider = serviceProvider.GetRequiredService<IRouteProvider>();
+                var settingsProvider = serviceProvider.GetRequiredService<ISettingsProvider>();
                 var monitor = serviceProvider.GetRequiredService<IOptionsMonitor<ReverseProxyOptions>>();
 
                 var httpContext = new DefaultHttpContext();
-                var options = routeProvider.First();
+                var options = settingsProvider.CurrentValue.Routes.First();
 
                 var context = new ProxyContext(
                     Substitute.For<IHostProvider>(),
@@ -187,7 +187,7 @@
                     File.Copy(@"Options\Options2.json", @"Options\OptionsReload.json", true);
                     changeEvent.WaitOne(2000);
 
-                    options = routeProvider.First();
+                    options = settingsProvider.CurrentValue.Routes.First();
                     context = new ProxyContext(
                         Substitute.For<IHostProvider>(),
                         Substitute.For<ITraceIdProvider>(),
@@ -198,7 +198,7 @@
 
                     File.Copy(@"Options\Options1.json", @"Options\OptionsReload.json", true);
                     changeEvent.WaitOne(2000);
-                    options = routeProvider.First();
+                    options = settingsProvider.CurrentValue.Routes.First();
                     context = new ProxyContext(
                         Substitute.For<IHostProvider>(),
                         Substitute.For<ITraceIdProvider>(),
@@ -224,12 +224,12 @@
                 .AddTest()
                 .Configure<ReverseProxyOptions>(config);
 
-            var routeProvider = services
+            var settingsProvider = services
                 .BuildServiceProvider()
-                .GetRequiredService<IRouteProvider>();
+                .GetRequiredService<ISettingsProvider>();
 
             var httpContext = new DefaultHttpContext();
-            var options = routeProvider.First();
+            var options = settingsProvider.CurrentValue.Routes.First();
 
             return new ProxyContext(
                 Substitute.For<IHostProvider>(),

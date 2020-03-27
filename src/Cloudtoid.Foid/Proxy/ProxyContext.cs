@@ -88,14 +88,14 @@
 
         internal RouteSettings Settings => Route.Settings;
 
-        internal RouteSettings.ProxySettings ProxySettings => Settings.Proxy!;
+        internal ProxySettings ProxySettings => Settings.Proxy!;
 
-        internal RouteSettings.ProxySettings.UpstreamRequestSettings ProxyUpstreamRequestSettings => ProxySettings.UpstreamRequest;
+        internal UpstreamRequestSettings ProxyUpstreamRequestSettings => ProxySettings.UpstreamRequest;
 
-        internal RouteSettings.ProxySettings.UpstreamRequestSettings.HeadersSettings ProxyUpstreamRequestHeadersSettings => ProxyUpstreamRequestSettings.Headers;
+        internal UpstreamRequestHeadersSettings ProxyUpstreamRequestHeadersSettings => ProxyUpstreamRequestSettings.Headers;
 
-        internal RouteSettings.ProxySettings.DownstreamResponseSettings ProxyDownstreamResponseSettings => ProxySettings.DownstreamResponse;
+        internal DownstreamResponseSettings ProxyDownstreamResponseSettings => ProxySettings.DownstreamResponse;
 
-        internal RouteSettings.ProxySettings.DownstreamResponseSettings.HeadersSettings ProxyDownstreamResponseHeaderSettings => ProxyDownstreamResponseSettings.Headers;
+        internal DownstreamResponseHeadersSettings ProxyDownstreamResponseHeaderSettings => ProxyDownstreamResponseSettings.Headers;
     }
 }

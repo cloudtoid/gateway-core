@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using Cloudtoid.Foid.Host;
-    using Cloudtoid.Foid.Routes;
+    using Cloudtoid.Foid.Settings;
     using Cloudtoid.Foid.Trace;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
@@ -44,8 +44,8 @@
             this IServiceProvider provider,
             HttpContext? httpContext = null)
         {
-            var routeProvider = provider.GetRequiredService<IRouteProvider>();
-            var routeOptions = routeProvider.First();
+            var settingsProvider = provider.GetRequiredService<ISettingsProvider>();
+            var routeOptions = settingsProvider.CurrentValue.Routes.First();
 
             httpContext ??= new DefaultHttpContext();
 

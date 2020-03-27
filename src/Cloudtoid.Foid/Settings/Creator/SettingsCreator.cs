@@ -2,38 +2,38 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using Cloudtoid.Foid.Expression;
     using Microsoft.Extensions.Logging;
     using static Cloudtoid.Foid.ReverseProxyOptions;
     using static Cloudtoid.Foid.ReverseProxyOptions.RouteOptions;
     using static Cloudtoid.Foid.ReverseProxyOptions.RouteOptions.ProxyOptions;
-    using static Cloudtoid.Foid.Settings.RouteSettings;
-    using static Cloudtoid.Foid.Settings.RouteSettings.ProxySettings;
-    using static Cloudtoid.Foid.Settings.RouteSettings.ProxySettings.UpstreamRequestSettings;
     using static Contract;
 
-    internal sealed class RouteSettingsCreator : IRouteSettingsCreator
+    internal sealed class SettingsCreator : ISettingsCreator
     {
         private readonly IExpressionEvaluator evaluator;
-        private readonly ILogger<RouteSettingsCreator> logger;
+        private readonly ILogger<SettingsCreator> logger;
 
-        public RouteSettingsCreator(
+        public SettingsCreator(
             IExpressionEvaluator evaluator,
-            ILogger<RouteSettingsCreator> logger)
+            ILogger<SettingsCreator> logger)
         {
             this.evaluator = CheckValue(evaluator, nameof(evaluator));
             this.logger = CheckValue(logger, nameof(logger));
         }
 
-        public bool TryCreate(
-           string route,
-           RouteOptions options,
-           [NotNullWhen(true)] out RouteSettings? result)
+        public ReverseProxySettings Create(ReverseProxyOptions options)
         {
-            result = Create(route, options);
-            return result != null;
+            var routes = options.Routes
+                .Select(o => Create(o.Key, o.Value))
+                .WhereNotNull()
+                .ToArray();
+
+            if (routes.Length == 0)
+                LogError("No routes are specified.");
+
+            return new ReverseProxySettings(routes);
         }
 
         private RouteSettings? Create(string route, RouteOptions options)
@@ -86,11 +86,11 @@
                 Create(options.Sender));
         }
 
-        private HeadersSettings Create(
+        private UpstreamRequestHeadersSettings Create(
             RouteSettingsContext context,
             UpstreamRequestOptions.HeadersOptions options)
         {
-            return new HeadersSettings(
+            return new UpstreamRequestHeadersSettings(
                 context,
                 options.DefaultHost,
                 options.ProxyName,
@@ -107,10 +107,10 @@
                 Create(context, options.Overrides));
         }
 
-        private SenderSettings Create(
+        private UpstreamRequestSenderSettings Create(
             UpstreamRequestOptions.SenderOptions options)
         {
-            return new SenderSettings(
+            return new UpstreamRequestSenderSettings(
                 options.AllowAutoRedirect,
                 options.UseCookies);
         }
@@ -133,11 +133,11 @@
                 Create(context, options.Headers));
         }
 
-        private DownstreamResponseSettings.HeadersSettings Create(
+        private DownstreamResponseHeadersSettings Create(
             RouteSettingsContext context,
             DownstreamResponseOptions.HeadersOptions options)
         {
-            return new DownstreamResponseSettings.HeadersSettings(
+            return new DownstreamResponseHeadersSettings(
                 options.AllowHeadersWithEmptyValue,
                 options.AllowHeadersWithUnderscoreInName,
                 options.IgnoreAllUpstreamHeaders,
