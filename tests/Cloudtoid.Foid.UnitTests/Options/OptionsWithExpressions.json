@@ -10,7 +10,7 @@
           "headers": {
             "proxyName": "ProxyName:$server_name",
             "defaultHost": "DefaultHost:$server_name",
-            "headers": {
+            "overrides": {
               "x-extra-1": [ "x-extra-1:v1:$server_name", "x-extra-1:v2:$server_name" ],
               "x-extra-2": [ "x-extra-2:v1:$server_name", "x-extra-2:v2:$server_name" ]
             }
@@ -18,7 +18,7 @@
         },
         "downstreamResponse": {
           "headers": {
-            "headers": {
+            "overrides": {
               "x-extra-1": [ "x-extra-1:v1:$server_name", "x-extra-1:v2:$server_name" ],
               "x-extra-2": [ "x-extra-2:v1:$server_name", "x-extra-2:v2:$server_name" ]
             }

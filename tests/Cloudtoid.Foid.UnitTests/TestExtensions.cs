@@ -41,7 +41,7 @@
             return services;
         }
 
-        public static ProxyContext GetCallContext(
+        public static ProxyContext GetProxyContext(
             this IServiceProvider provider,
             HttpContext? httpContext = null)
         {

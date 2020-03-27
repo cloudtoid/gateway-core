@@ -255,7 +255,7 @@
             var services = new ServiceCollection().AddTest().AddTestOptions();
             var serviceProvider = services.BuildServiceProvider();
             var evaluator = serviceProvider.GetRequiredService<IExpressionEvaluator>();
-            var context = serviceProvider.GetCallContext(httpContext);
+            var context = serviceProvider.GetProxyContext(httpContext);
             return evaluator.Evaluate(context, expression);
         }
     }

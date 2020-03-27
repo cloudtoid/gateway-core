@@ -2,7 +2,7 @@
 {
     using System.Diagnostics;
     using Cloudtoid.Foid.Host;
-    using Cloudtoid.Foid.Options;
+    using Cloudtoid.Foid.Routes;
     using Cloudtoid.Foid.Trace;
     using Microsoft.AspNetCore.Http;
     using static Contract;
@@ -24,8 +24,8 @@
             Route route)
         {
             CheckValue(
-                route.Options.Proxy,
-                nameof(route.Options.Proxy),
+                route.Settings.Proxy,
+                nameof(route.Settings.Proxy),
                 "This is the actual proxy context. We should never get here if the proxy is null!");
 
             this.hostProvider = hostProvider;
@@ -86,16 +86,16 @@
             }
         }
 
-        internal RouteOptions Options => Route.Options;
+        internal RouteSettings Settings => Route.Settings;
 
-        internal RouteOptions.ProxyOptions ProxyOptions => Options.Proxy!;
+        internal RouteSettings.ProxySettings ProxySettings => Settings.Proxy!;
 
-        internal RouteOptions.ProxyOptions.UpstreamRequestOptions ProxyUpstreamRequestOptions => ProxyOptions.UpstreamRequest;
+        internal RouteSettings.ProxySettings.UpstreamRequestSettings ProxyUpstreamRequestSettings => ProxySettings.UpstreamRequest;
 
-        internal RouteOptions.ProxyOptions.UpstreamRequestOptions.HeadersOptions ProxyUpstreamRequestHeadersOptions => ProxyUpstreamRequestOptions.Headers;
+        internal RouteSettings.ProxySettings.UpstreamRequestSettings.HeadersSettings ProxyUpstreamRequestHeadersSettings => ProxyUpstreamRequestSettings.Headers;
 
-        internal RouteOptions.ProxyOptions.DownstreamResponseOptions ProxyDownstreamResponseOptions => ProxyOptions.DownstreamResponse;
+        internal RouteSettings.ProxySettings.DownstreamResponseSettings ProxyDownstreamResponseSettings => ProxySettings.DownstreamResponse;
 
-        internal RouteOptions.ProxyOptions.DownstreamResponseOptions.HeadersOptions ProxyDownstreamResponseHeaderOptions => ProxyDownstreamResponseOptions.Headers;
+        internal RouteSettings.ProxySettings.DownstreamResponseSettings.HeadersSettings ProxyDownstreamResponseHeaderSettings => ProxyDownstreamResponseSettings.Headers;
     }
 }

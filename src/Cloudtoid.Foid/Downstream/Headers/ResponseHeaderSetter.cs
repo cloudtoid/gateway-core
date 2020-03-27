@@ -69,7 +69,7 @@
             ProxyContext context,
             HttpResponseMessage upstreamResponse)
         {
-            var options = context.ProxyDownstreamResponseHeaderOptions;
+            var options = context.ProxyDownstreamResponseHeaderSettings;
             if (options.IgnoreAllUpstreamHeaders)
                 return;
 
@@ -79,7 +79,7 @@
             var allowHeadersWithEmptyValue = options.AllowHeadersWithEmptyValue;
             var allowHeadersWithUnderscoreInName = options.AllowHeadersWithUnderscoreInName;
             var correlationIdHeader = context.CorrelationIdHeader;
-            var headersWithOverride = options.HeaderNames;
+            var headersWithOverride = options.OverrideNames;
 
             foreach (var header in upstreamResponse.Headers)
             {
@@ -109,7 +109,7 @@
 
         protected virtual void AddCorrelationIdHeader(ProxyContext context, HttpResponseMessage upstreamResponse)
         {
-            if (!context.ProxyDownstreamResponseHeaderOptions.IncludeCorrelationId)
+            if (!context.ProxyDownstreamResponseHeaderSettings.IncludeCorrelationId)
                 return;
 
             AddHeaderValues(
@@ -120,7 +120,7 @@
 
         protected virtual void AddCallIdHeader(ProxyContext context, HttpResponseMessage upstreamResponse)
         {
-            if (!context.ProxyDownstreamResponseHeaderOptions.IncludeCallId)
+            if (!context.ProxyDownstreamResponseHeaderSettings.IncludeCallId)
                 return;
 
             AddHeaderValues(
@@ -133,8 +133,11 @@
         {
             var headers = context.Response.Headers;
 
-            foreach (var header in context.ProxyDownstreamResponseHeaderOptions.Headers)
-                headers.AddOrAppendHeaderValues(header.Name, header.GetValues(context));
+            foreach (var header in context.ProxyDownstreamResponseHeaderSettings.Overrides)
+            {
+                if (header.HasValues)
+                    headers.AddOrAppendHeaderValues(header.Name, header.GetValues(context));
+            }
         }
 
         protected virtual void AddHeaderValues(

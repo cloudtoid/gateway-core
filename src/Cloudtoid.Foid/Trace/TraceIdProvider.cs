@@ -12,11 +12,11 @@
         }
 
         public virtual string GetCorrelationIdHeader(ProxyContext context)
-            => context.ProxyOptions.GetCorrelationIdHeader(context);
+            => context.ProxySettings.GetCorrelationIdHeader(context);
 
         public virtual string GetOrCreateCorrelationId(ProxyContext context)
         {
-            if (context.ProxyUpstreamRequestHeadersOptions.IgnoreAllDownstreamHeaders)
+            if (context.ProxyUpstreamRequestHeadersSettings.IgnoreAllDownstreamHeaders)
                 return CreateCorrelationId();
 
             var correlationIdHeader = GetCorrelationIdHeader(context);

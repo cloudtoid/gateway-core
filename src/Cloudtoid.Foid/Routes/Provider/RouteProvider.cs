@@ -4,26 +4,24 @@
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using Cloudtoid.Foid.Expression;
     using Cloudtoid.Foid.Options;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Options;
     using static Contract;
-    using Options = Options.FoidOptions;
 
-    internal sealed class RouteProvider : IRouteProvider, IReadOnlyCollection<RouteOptions>
+    internal sealed class RouteProvider : IRouteProvider, IReadOnlyCollection<RouteSettings>
     {
         private static readonly object RouteKey = new object();
-        private readonly IOptionsMonitor<Options> options;
-        private readonly OptionsContext context;
-        private IReadOnlyList<RouteOptions> routes;
+        private readonly IOptionsMonitor<FoidOptions> options;
+        private readonly IRouteSettingsCreator settingsCreator;
+        private IReadOnlyList<RouteSettings> routes;
 
         public RouteProvider(
-            IExpressionEvaluator evaluator,
-            IOptionsMonitor<Options> options)
+            IRouteSettingsCreator settingsCreator,
+            IOptionsMonitor<FoidOptions> options)
         {
             this.options = CheckValue(options, nameof(options));
-            context = new OptionsContext(CheckValue(evaluator, nameof(evaluator)));
+            this.settingsCreator = CheckValue(settingsCreator, nameof(settingsCreator));
 
             options.OnChange(_ => routes = CreateRoutes());
             routes = CreateRoutes();
@@ -31,9 +29,11 @@
 
         public int Count => routes.Count;
 
-        public IEnumerator<RouteOptions> GetEnumerator() => routes.GetEnumerator();
+        public IEnumerator<RouteSettings> GetEnumerator()
+            => routes.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => routes.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+            => routes.GetEnumerator();
 
         public bool TryGetRoute(
             HttpContext context,
@@ -52,10 +52,11 @@
             return false;
         }
 
-        private IReadOnlyList<RouteOptions> CreateRoutes()
+        private IReadOnlyList<RouteSettings> CreateRoutes()
         {
             return options.CurrentValue.Routes
-                .Select(r => new RouteOptions(context, r.Key, r.Value))
+                .Select(r => settingsCreator.TryCreate(r.Key, r.Value, out var setting) ? setting : null)
+                .WhereNotNull()
                 .AsReadOnlyList();
         }
     }

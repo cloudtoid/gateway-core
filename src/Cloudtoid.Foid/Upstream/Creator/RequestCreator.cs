@@ -55,7 +55,7 @@
 
         private void SetHttpVersion(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            upstreamRequest.Version = context.ProxyUpstreamRequestOptions.GetHttpVersion(context);
+            upstreamRequest.Version = context.ProxyUpstreamRequestSettings.GetHttpVersion(context);
         }
 
         private async Task SetUriAsync(

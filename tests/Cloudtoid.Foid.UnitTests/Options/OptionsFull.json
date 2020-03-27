@@ -19,7 +19,7 @@
             "ignoreForwardedHost": true,
             "ignoreCorrelationId": true,
             "ignoreCallId": true,
-            "headers": {
+            "overrides": {
               "x-extra-1": [ "value1_1", "value1_2" ],
               "x-extra-2": [ "value2_1", "value2_2" ]
             }
@@ -36,7 +36,7 @@
             "ignoreAllUpstreamHeaders": true,
             "includeCorrelationId": true,
             "includeCallId": true,
-            "headers": {
+            "overrides": {
               "x-extra-1": [ "value1_1", "value1_2" ],
               "x-extra-2": [ "value2_1", "value2_2" ]
             }

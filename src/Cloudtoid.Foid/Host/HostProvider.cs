@@ -12,7 +12,7 @@
         {
             CheckValue(context, nameof(context));
 
-            if (context.ProxyUpstreamRequestHeadersOptions.IgnoreAllDownstreamHeaders)
+            if (context.ProxyUpstreamRequestHeadersSettings.IgnoreAllDownstreamHeaders)
                 return GetDefaultHost(context);
 
             var hostHeader = context.Request.Host;
@@ -25,7 +25,7 @@
         }
 
         private string GetDefaultHost(ProxyContext context)
-            => context.ProxyUpstreamRequestHeadersOptions.GetDefaultHost(context);
+            => context.ProxyUpstreamRequestHeadersSettings.GetDefaultHost(context);
 
         private static string GetHostWithoutPortNumber(string host)
         {

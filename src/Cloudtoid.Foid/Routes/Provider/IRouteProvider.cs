@@ -2,13 +2,12 @@
 {
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using Cloudtoid.Foid.Options;
     using Microsoft.AspNetCore.Http;
 
-    public interface IRouteProvider : IReadOnlyCollection<RouteOptions>
+    public interface IRouteProvider : IReadOnlyCollection<RouteSettings>
     {
         bool TryGetRoute(
-           HttpContext context,
-           [NotNullWhen(true)] out Route? route);
+            HttpContext context,
+            [NotNullWhen(true)] out Route? route);
     }
 }

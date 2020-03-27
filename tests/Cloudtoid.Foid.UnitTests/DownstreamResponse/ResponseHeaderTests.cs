@@ -283,7 +283,7 @@
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes.First().Value.Proxy!.DownstreamResponse.Headers;
-            headersOptions.Headers = new Dictionary<string, string[]>()
+            headersOptions.Overrides = new Dictionary<string, string[]>()
             {
                 ["x-extra-1"] = new[] { "value1_1", "value1_2" },
                 ["x-extra-2"] = new[] { "value2_1", "value2_2" },
@@ -316,7 +316,7 @@
             services ??= new ServiceCollection();
             var serviceProvider = services.AddTest().AddTestOptions(options).BuildServiceProvider();
             var setter = serviceProvider.GetRequiredService<IResponseHeaderSetter>();
-            var context = serviceProvider.GetCallContext();
+            var context = serviceProvider.GetProxyContext();
             await setter.SetHeadersAsync(context, message, default);
             return context.Response;
         }

@@ -1,14 +1,14 @@
 ﻿namespace Cloudtoid.Foid
 {
-    using Cloudtoid.Foid.Options;
+    using Cloudtoid.Foid.Routes;
 
     public sealed class Route
     {
-        internal Route(RouteOptions options)
+        internal Route(RouteSettings settings)
         {
-            Options = options;
+            Settings = settings;
         }
 
-        public RouteOptions Options { get; }
+        public RouteSettings Settings { get; }
     }
 }

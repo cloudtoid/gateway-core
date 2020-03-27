@@ -30,21 +30,13 @@
         }
 
         public static IEnumerable<string> WhereNotNullOrEmpty(this IEnumerable<string?> items)
-        {
-            var result = items.Where(s => !string.IsNullOrEmpty(s));
-            return result!;
-        }
+            => items.Where(s => !string.IsNullOrEmpty(s))!;
 
         public static IEnumerable<TItem> WhereNotNull<TItem>(this IEnumerable<TItem?> items) where TItem : class
-        {
-            var result = items.Where(i => !(i is null));
-            return result!;
-        }
+            => items.Where(i => !(i is null))!;
 
         public static IEnumerable<TItem> WhereNotNull<TItem>(this IEnumerable<TItem?> items) where TItem : struct
-        {
-            return items.Where(i => i.HasValue).Select(i => i!.Value);
-        }
+            => items.Where(i => i.HasValue).Select(i => i!.Value);
 
         public static int IndexOf<TItem>(this IEnumerable<TItem> items, TItem item, IEqualityComparer<TItem>? comparer = null)
         {

@@ -128,7 +128,7 @@
                         /// If a header already exists, it is replaced with the new value.
                         /// To remove a header, add it here with no values.
                         /// </summary>
-                        public Dictionary<string, string[]> Headers { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
+                        public Dictionary<string, string[]> Overrides { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
                     }
 
                     public sealed class SenderOptions
@@ -189,7 +189,7 @@
                         /// If a header already exists, it is replaced with the new value.
                         /// To remove a header, add it here with no values.
                         /// </summary>
-                        public Dictionary<string, string[]> Headers { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
+                        public Dictionary<string, string[]> Overrides { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
                     }
                 }
             }

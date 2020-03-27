@@ -93,7 +93,7 @@
             HttpResponseMessage upstreamResponse,
             CancellationToken cancellationToken)
         {
-            var options = context.ProxyDownstreamResponseHeaderOptions;
+            var options = context.ProxyDownstreamResponseHeaderSettings;
             if (options.IgnoreAllUpstreamHeaders)
                 return Task.CompletedTask;
 

@@ -101,7 +101,7 @@
             var services = new ServiceCollection().AddTest().AddTestOptions(options);
             var serviceProvider = services.BuildServiceProvider();
             var setter = serviceProvider.GetRequiredService<IRequestContentSetter>();
-            var context = serviceProvider.GetCallContext(httpContext);
+            var context = serviceProvider.GetProxyContext(httpContext);
             context.Request.ContentLength = 10;
             var message = new HttpRequestMessage();
             await setter.SetContentAsync(context, message, default);

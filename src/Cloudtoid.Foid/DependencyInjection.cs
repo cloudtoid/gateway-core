@@ -63,7 +63,8 @@
         {
             CheckValue(builder, nameof(builder));
 
-            var marker = builder.ApplicationServices.GetService<Marker>();
+            var serviceProvider = builder.ApplicationServices;
+            var marker = serviceProvider.GetService<Marker>();
             if (marker is null)
                 throw new InvalidOperationException($"Call {nameof(AddFoidProxy)} before calling {nameof(UseFoidProxy)}");
 
@@ -85,8 +86,9 @@
                 .TryAddSingleton<Trace.ITraceIdProvider, Trace.TraceIdProvider>()
                 .TryAddSingleton<Host.IHostProvider, Host.HostProvider>()
                 .TryAddSingleton<Expression.IExpressionEvaluator, Expression.ExpressionEvaluator>()
-                .TryAddSingleton<Routes.IRouteProvider, Routes.RouteProvider>()
+                .TryAddSingleton<Routes.IRouteSettingsCreator, Routes.RouteSettingsCreator>()
                 .TryAddSingleton<Routes.IRouteNormalizer, Routes.RouteNormalizer>()
+                .TryAddSingleton<Routes.IRouteProvider, Routes.RouteProvider>()
                 .TryAddSingleton<IPatternParser, PatternParser>()
                 .TryAddSingleton<IPatternValidator, PatternValidator>()
                 .TryAddSingleton<IPatternCompiler, PatternCompiler>()

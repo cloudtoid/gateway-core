@@ -1,17 +1,21 @@
-﻿namespace Cloudtoid.Foid.Options
+﻿namespace Cloudtoid.Foid.Routes
 {
     using System.Diagnostics.CodeAnalysis;
     using Cloudtoid.Foid.Expression;
 
-    internal sealed class OptionsContext
+    internal sealed class RouteSettingsContext
     {
         private readonly IExpressionEvaluator evaluator;
 
-        internal OptionsContext(
+        internal RouteSettingsContext(
+            string route,
             IExpressionEvaluator evaluator)
         {
+            Route = route;
             this.evaluator = evaluator;
         }
+
+        public string Route { get; set; }
 
         [return: NotNullIfNotNull("expression")]
         internal string? Evaluate(ProxyContext context, string? expression)

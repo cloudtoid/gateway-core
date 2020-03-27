@@ -56,7 +56,7 @@
             CheckValue(context, nameof(context));
             CheckValue(upstreamResponse, nameof(upstreamResponse));
 
-            var options = context.ProxyDownstreamResponseHeaderOptions;
+            var options = context.ProxyDownstreamResponseHeaderSettings;
             if (options.IgnoreAllUpstreamHeaders)
                 return Task.CompletedTask;
 

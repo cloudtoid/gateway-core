@@ -83,7 +83,7 @@
             ProxyContext context,
             HttpRequestMessage upstreamRequest)
         {
-            var options = context.ProxyUpstreamRequestHeadersOptions;
+            var options = context.ProxyUpstreamRequestHeadersSettings;
             if (options.IgnoreAllDownstreamHeaders)
                 return;
 
@@ -94,7 +94,7 @@
             var allowHeadersWithEmptyValue = options.AllowHeadersWithEmptyValue;
             var allowHeadersWithUnderscoreInName = options.AllowHeadersWithUnderscoreInName;
             var correlationIdHeader = context.CorrelationIdHeader;
-            var headersWithOverride = options.HeaderNames;
+            var headersWithOverride = options.OverrideNames;
 
             foreach (var header in headers)
             {
@@ -128,7 +128,7 @@
 
         protected virtual void AddHostHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            if (context.ProxyUpstreamRequestHeadersOptions.IgnoreHost)
+            if (context.ProxyUpstreamRequestHeadersSettings.IgnoreHost)
                 return;
 
             upstreamRequest.Headers.TryAddWithoutValidation(
@@ -138,7 +138,7 @@
 
         protected virtual void AddExternalAddressHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            if (!context.ProxyUpstreamRequestHeadersOptions.IncludeExternalAddress)
+            if (!context.ProxyUpstreamRequestHeadersSettings.IncludeExternalAddress)
                 return;
 
             var clientAddress = GetRemoteIpAddressOrDefault(context);
@@ -154,7 +154,7 @@
 
         protected virtual void AddForwardedForHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            if (context.ProxyUpstreamRequestHeadersOptions.IgnoreForwardedFor)
+            if (context.ProxyUpstreamRequestHeadersSettings.IgnoreForwardedFor)
                 return;
 
             var clientAddress = GetRemoteIpAddressOrDefault(context);
@@ -170,7 +170,7 @@
 
         protected virtual void AddForwardedProtocolHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            if (context.ProxyUpstreamRequestHeadersOptions.IgnoreForwardedProtocol)
+            if (context.ProxyUpstreamRequestHeadersSettings.IgnoreForwardedProtocol)
                 return;
 
             if (string.IsNullOrEmpty(context.Request.Scheme))
@@ -185,7 +185,7 @@
 
         protected virtual void AddForwardedHostHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            if (context.ProxyUpstreamRequestHeadersOptions.IgnoreForwardedHost)
+            if (context.ProxyUpstreamRequestHeadersSettings.IgnoreForwardedHost)
                 return;
 
             var host = context.Request.Host;
@@ -201,7 +201,7 @@
 
         protected virtual void AddCorrelationIdHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            if (context.ProxyUpstreamRequestHeadersOptions.IgnoreCorrelationId)
+            if (context.ProxyUpstreamRequestHeadersSettings.IgnoreCorrelationId)
                 return;
 
             AddHeaderValues(
@@ -213,7 +213,7 @@
 
         protected virtual void AddCallIdHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            if (context.ProxyUpstreamRequestHeadersOptions.IgnoreCallId)
+            if (context.ProxyUpstreamRequestHeadersSettings.IgnoreCallId)
                 return;
 
             AddHeaderValues(
@@ -225,7 +225,7 @@
 
         protected virtual void AddProxyNameHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            if (!context.ProxyUpstreamRequestHeadersOptions.TryGetProxyName(context, out var name))
+            if (!context.ProxyUpstreamRequestHeadersSettings.TryGetProxyName(context, out var name))
                 return;
 
             AddHeaderValues(
@@ -237,8 +237,11 @@
 
         protected virtual void AddExtraHeaders(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            foreach (var header in context.ProxyUpstreamRequestHeadersOptions.Headers)
-                upstreamRequest.Headers.TryAddWithoutValidation(header.Name, header.GetValues(context));
+            foreach (var header in context.ProxyUpstreamRequestHeadersSettings.Overrides)
+            {
+                if (header.HasValues)
+                    upstreamRequest.Headers.TryAddWithoutValidation(header.Name, header.GetValues(context));
+            }
         }
 
         protected virtual void AddHeaderValues(

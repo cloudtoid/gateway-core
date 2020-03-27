@@ -22,8 +22,8 @@
         [TestMethod]
         public void New_FullyPopulatedOptions_AllValuesAreReadCorrectly()
         {
-            var context = GetCallContext(@"Options\OptionsFull.json");
-            var options = context.Route.Options;
+            var context = GetProxyContext(@"Options\OptionsFull.json");
+            var options = context.Route.Settings;
 
             options.Proxy!.GetCorrelationIdHeader(context).Should().Be("x-request-id");
 
@@ -44,7 +44,7 @@
             requestHeaders.IgnoreForwardedHost.Should().BeTrue();
             requestHeaders.IgnoreCorrelationId.Should().BeTrue();
             requestHeaders.IncludeExternalAddress.Should().BeTrue();
-            requestHeaders.Headers.Select(h => (h.Name, Values: h.GetValues(context)))
+            requestHeaders.Overrides.Select(h => (h.Name, Values: h.GetValues(context)))
                 .Should()
                 .BeEquivalentTo(
                     new[]
@@ -61,7 +61,7 @@
             var responseHeaders = response.Headers;
             responseHeaders.AllowHeadersWithEmptyValue.Should().BeTrue();
             responseHeaders.AllowHeadersWithUnderscoreInName.Should().BeTrue();
-            responseHeaders.Headers.Select(h => (h.Name, Values: h.GetValues(context)))
+            responseHeaders.Overrides.Select(h => (h.Name, Values: h.GetValues(context)))
                 .Should()
                 .BeEquivalentTo(
                     new[]
@@ -74,8 +74,8 @@
         [TestMethod]
         public void New_AllOptionsThatAllowExpressions_AllValuesAreEvaluatedCorrectly()
         {
-            var context = GetCallContext(@"Options\OptionsWithExpressions.json");
-            var options = context.Route.Options;
+            var context = GetProxyContext(@"Options\OptionsWithExpressions.json");
+            var options = context.Route.Settings;
 
             var expressionValue = Environment.MachineName;
             options.Proxy!.GetCorrelationIdHeader(context).Should().Be("CorrelationIdHeader:" + expressionValue);
@@ -88,7 +88,7 @@
             requestHeaders.TryGetProxyName(context, out var proxyName).Should().BeTrue();
             proxyName.Should().Be("ProxyName:" + expressionValue);
             requestHeaders.GetDefaultHost(context).Should().Be("DefaultHost:" + expressionValue);
-            requestHeaders.Headers.Select(h => (h.Name, Values: h.GetValues(context)))
+            requestHeaders.Overrides.Select(h => (h.Name, Values: h.GetValues(context)))
                 .Should()
                 .BeEquivalentTo(
                     new[]
@@ -99,7 +99,7 @@
 
             var response = options.Proxy.DownstreamResponse;
             var responseHeaders = response.Headers;
-            responseHeaders.Headers.Select(h => (h.Name, Values: h.GetValues(context)))
+            responseHeaders.Overrides.Select(h => (h.Name, Values: h.GetValues(context)))
                 .Should()
                 .BeEquivalentTo(
                     new[]
@@ -112,8 +112,8 @@
         [TestMethod]
         public void New_EmptyOptions_AllValuesSetToDefault()
         {
-            var context = GetCallContext(@"Options\OptionsEmpty.json");
-            var options = context.Route.Options;
+            var context = GetProxyContext(@"Options\OptionsEmpty.json");
+            var options = context.Route.Settings;
 
             var request = options.Proxy!.UpstreamRequest;
             request.GetHttpVersion(context).Should().Be(HttpVersion.Version20);
@@ -132,7 +132,7 @@
             requestHeaders.IgnoreForwardedHost.Should().BeFalse();
             requestHeaders.IgnoreCorrelationId.Should().BeFalse();
             requestHeaders.IncludeExternalAddress.Should().BeFalse();
-            requestHeaders.Headers.Should().BeEmpty();
+            requestHeaders.Overrides.Should().BeEmpty();
 
             var requestSender = request.Sender;
             requestSender.AllowAutoRedirect.Should().BeFalse();
@@ -142,7 +142,7 @@
             var responseHeaders = response.Headers;
             responseHeaders.AllowHeadersWithEmptyValue.Should().BeFalse();
             responseHeaders.AllowHeadersWithUnderscoreInName.Should().BeFalse();
-            responseHeaders.Headers.Should().BeEmpty();
+            responseHeaders.Overrides.Should().BeEmpty();
         }
 
         [TestMethod]
@@ -215,7 +215,7 @@
             }
         }
 
-        private static ProxyContext GetCallContext(string jsonFile)
+        private static ProxyContext GetProxyContext(string jsonFile)
         {
             var config = new ConfigurationBuilder()
                 .AddJsonFile(jsonFile, optional: false)

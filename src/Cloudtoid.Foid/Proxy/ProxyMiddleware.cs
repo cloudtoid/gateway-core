@@ -86,7 +86,7 @@
             HttpRequestMessage upstreamRequest,
             CancellationToken cancellationToken)
         {
-            var upstreamTimeout = context.ProxyUpstreamRequestOptions.GetTimeout(context);
+            var upstreamTimeout = context.ProxyUpstreamRequestSettings.GetTimeout(context);
 
             try
             {
