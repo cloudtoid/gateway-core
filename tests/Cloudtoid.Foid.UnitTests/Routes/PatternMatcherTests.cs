@@ -113,6 +113,11 @@
                route: "category/1234/");
 
             ShouldMatch(
+               pattern: @"/category/\(:product\)",
+               route: @"category/\1234\/",
+               ("product", "1234"));
+
+            ShouldMatch(
                pattern: @"/category/*",
                route: "category/1234/");
 
