@@ -8,7 +8,7 @@
     {
         private static readonly TimeSpan MatchTimeout = TimeSpan.FromSeconds(1);
         private static readonly string SegmentStart = Regex.Escape(@"/");
-        private static readonly string Wildcard = $"[^{SegmentStart}]+";  // [^\/]+
+        private static readonly string Wildcard = $"[^{SegmentStart}]*";  // [^\/]*
         private static readonly string Start = $@"\A({SegmentStart})?"; // \A(\/)?
         private static readonly string End = $@"({SegmentStart})?$"; // (\/)?$
         private static readonly RegexOptions Options =
@@ -32,8 +32,6 @@
 
         protected internal override void VisitVariable(VariableNode node)
         {
-            // TODO: Instead of [^/], should we be exact about what characters can be included?
-
             // - Generates a regex capture with the name of the variable:  (?<variable>[^\/]+)
             // - Variable name does not need to be escaped or validated. The PatternParser ensures that it only contains 'a-zA-Z0-9_'
             //   and the first character is not a number.

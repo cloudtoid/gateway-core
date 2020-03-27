@@ -111,6 +111,18 @@
             ShouldNotMatch(
                pattern: @"/category/\\(:product\\)",
                route: "category/1234/");
+
+            ShouldMatch(
+               pattern: @"/category/*",
+               route: "category/1234/");
+
+            ShouldMatch(
+               pattern: @"/category/*",
+               route: "category/");
+
+            ShouldMatch(
+               pattern: @"/category/*/product",
+               route: "category/bike/product");
         }
 
         private void ShouldMatch(string pattern, string route, params (string Name, string Value)[] variables)
