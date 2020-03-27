@@ -5,13 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="..\Cloudtoid.Framework\Cloudtoid.Framework.csproj" />
-    <ProjectReference Include="..\Cloudtoid.UrlPattern\Cloudtoid.UrlPattern.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>

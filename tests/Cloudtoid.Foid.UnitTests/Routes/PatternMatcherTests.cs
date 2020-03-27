@@ -2,7 +2,7 @@
 {
     using System.Linq;
     using Cloudtoid.Foid.Routes;
-    using Cloudtoid.Foid.Routes.Pattern;
+    using Cloudtoid.UrlPattern;
     using FluentAssertions;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.VisualStudio.TestTools.UnitTesting;

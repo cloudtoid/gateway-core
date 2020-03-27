@@ -24,6 +24,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cloudtoid.Foid.FunctionalTe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cloudtoid.Foid.Cli", "src\Cloudtoid.Foid.Cli\Cloudtoid.Foid.Cli.csproj", "{13A48A98-E113-4461-914B-6001AED60874}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cloudtoid.UrlPattern", "src\Cloudtoid.UrlPattern\Cloudtoid.UrlPattern.csproj", "{072C2E73-84EA-45C1-B571-82C2E2E3B722}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -53,6 +55,10 @@ Global
 		{13A48A98-E113-4461-914B-6001AED60874}.Debug|x64.Build.0 = Debug|x64
 		{13A48A98-E113-4461-914B-6001AED60874}.Release|x64.ActiveCfg = Release|x64
 		{13A48A98-E113-4461-914B-6001AED60874}.Release|x64.Build.0 = Release|x64
+		{072C2E73-84EA-45C1-B571-82C2E2E3B722}.Debug|x64.ActiveCfg = Debug|x64
+		{072C2E73-84EA-45C1-B571-82C2E2E3B722}.Debug|x64.Build.0 = Debug|x64
+		{072C2E73-84EA-45C1-B571-82C2E2E3B722}.Release|x64.ActiveCfg = Release|x64
+		{072C2E73-84EA-45C1-B571-82C2E2E3B722}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -4,8 +4,8 @@
     using System.Net.Http;
     using Cloudtoid.Foid.Downstream;
     using Cloudtoid.Foid.Proxy;
-    using Cloudtoid.Foid.Routes.Pattern;
     using Cloudtoid.Foid.Upstream;
+    using Cloudtoid.UrlPattern;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using static Contract;
@@ -81,8 +81,9 @@
 
             return services
                 .TryAddSingleton<Marker>()
-                .AddFramework()
                 .AddOptions()
+                .AddFramework()
+                .AddUrlPattern()
                 .TryAddSingleton<Settings.ISettingsCreator, Settings.SettingsCreator>()
                 .TryAddSingleton<Settings.ISettingsProvider, Settings.SettingsProvider>()
                 .TryAddSingleton<Trace.ITraceIdProvider, Trace.TraceIdProvider>()
@@ -90,10 +91,6 @@
                 .TryAddSingleton<Expression.IExpressionEvaluator, Expression.ExpressionEvaluator>()
                 .TryAddSingleton<Routes.IRouteNormalizer, Routes.RouteNormalizer>()
                 .TryAddSingleton<Routes.IRouteResolver, Routes.RouteResolver>()
-                .TryAddSingleton<IPatternParser, PatternParser>()
-                .TryAddSingleton<IPatternValidator, PatternValidator>()
-                .TryAddSingleton<IPatternCompiler, PatternCompiler>()
-                .TryAddSingleton<IPatternMatcher, PatternMatcher>()
                 .TryAddSingleton<IUriRewriter, UriRewriter>()
                 .TryAddSingleton<IRequestHeaderSetter, RequestHeaderSetter>()
                 .TryAddSingleton<IRequestHeaderValuesProvider, RequestHeaderValuesProvider>()

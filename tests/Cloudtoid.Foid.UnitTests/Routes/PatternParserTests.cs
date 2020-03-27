@@ -1,7 +1,7 @@
 ﻿namespace Cloudtoid.Foid.UnitTests
 {
     using System.Collections.Generic;
-    using Cloudtoid.Foid.Routes.Pattern;
+    using Cloudtoid.UrlPattern;
     using FluentAssertions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 

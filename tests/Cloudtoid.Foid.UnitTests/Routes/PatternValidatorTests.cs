@@ -1,6 +1,6 @@
 ﻿namespace Cloudtoid.Foid.UnitTests
 {
-    using Cloudtoid.Foid.Routes.Pattern;
+    using Cloudtoid.UrlPattern;
     using FluentAssertions;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,28 +21,28 @@
         public void Validate_WhenConsecutiveSegmentStart_Fails()
         {
             validator.Validate(Parse("a//b"), out var error).Should().BeFalse();
-            error.Should().Contain($"Found consecutive '{PatternConstants.SegmentStart}' which is invalid.");
+            error.Should().Contain($"Found consecutive '{Constants.SegmentStart}' which is invalid.");
         }
 
         [TestMethod]
         public void Validate_WhenConsecutiveSegmentStartOneOptional_Fails()
         {
             validator.Validate(Parse("a/(/)b"), out var error).Should().BeFalse();
-            error.Should().Contain($"Found consecutive '{PatternConstants.SegmentStart}' which is invalid.");
+            error.Should().Contain($"Found consecutive '{Constants.SegmentStart}' which is invalid.");
         }
 
         [TestMethod]
         public void Validate_WhenConsecutiveWildcard_Fails()
         {
             validator.Validate(Parse("**"), out var error).Should().BeFalse();
-            error.Should().Contain($"Found consecutive '{PatternConstants.Wildcard}' which is invalid.");
+            error.Should().Contain($"Found consecutive '{Constants.Wildcard}' which is invalid.");
         }
 
         [TestMethod]
         public void Validate_WhenConsecutiveWildcardOneOptional_Fails()
         {
             validator.Validate(Parse("*(*)"), out var error).Should().BeFalse();
-            error.Should().Contain($"Found consecutive '{PatternConstants.Wildcard}' which is invalid.");
+            error.Should().Contain($"Found consecutive '{Constants.Wildcard}' which is invalid.");
         }
 
         [TestMethod]
@@ -70,7 +70,7 @@
         public void Validate_WhenWildcardFollowsVariable_Fail()
         {
             validator.Validate(Parse(":var0*/"), out var error).Should().BeFalse();
-            error.Should().Contain($"The wild-card character '{PatternConstants.Wildcard}' cannot not follow a variable.");
+            error.Should().Contain($"The wild-card character '{Constants.Wildcard}' cannot not follow a variable.");
         }
 
         [TestMethod]
