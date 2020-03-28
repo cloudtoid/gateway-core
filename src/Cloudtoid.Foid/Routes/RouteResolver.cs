@@ -10,20 +10,23 @@
     {
         private readonly ISettingsProvider settings;
         private readonly IPatternMatcher matcher;
+        private readonly IRouteNormalizer normalizer;
 
         public RouteResolver(
             ISettingsProvider settings,
-            IPatternMatcher matcher)
+            IPatternMatcher matcher,
+            IRouteNormalizer normalizer)
         {
             this.settings = CheckValue(settings, nameof(settings));
             this.matcher = CheckValue(matcher, nameof(matcher));
+            this.normalizer = CheckValue(normalizer, nameof(normalizer));
         }
 
         public bool TryResolve(
             HttpContext httpContext,
             [NotNullWhen(true)] out Route? route)
         {
-            var path = httpContext.Request.Path;
+            var path = normalizer.Normalize(httpContext.Request.Path);
             var routes = settings.CurrentValue.Routes;
             foreach (var routeSetting in routes)
             {
