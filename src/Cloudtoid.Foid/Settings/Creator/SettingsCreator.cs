@@ -51,17 +51,34 @@
             }
 
             var context = new RouteSettingsContext(route, evaluator);
-
-            if (!compiler.TryCompile(route, out var compiledRoute, out var compilerErrors))
-            {
-                LogErrors(context, compilerErrors);
+            var compiledRoute = Compile(context);
+            if (compiledRoute is null)
                 return null;
-            }
 
             return new RouteSettings(
                 route,
                 compiledRoute,
                 Create(context, options.Proxy));
+        }
+
+        private CompiledPattern? Compile(RouteSettingsContext context)
+        {
+            if (!compiler.TryCompile(context.Route, out var compiledRoute, out var compilerErrors))
+            {
+                LogErrors(context, compilerErrors);
+                return null;
+            }
+
+            foreach (var variableName in compiledRoute.VariableNames)
+            {
+                if (VariableNames.SystemVariables.Contains(variableName))
+                {
+                    LogError(context, $"The variable name '{variableName}' collides with a system variable with the same name.");
+                    return null;
+                }
+            }
+
+            return compiledRoute;
         }
 
         private ProxySettings? Create(
