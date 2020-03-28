@@ -27,8 +27,7 @@
             [NotNullWhen(true)] out Route? route)
         {
             var path = normalizer.Normalize(httpContext.Request.Path);
-            var routes = settings.CurrentValue.Routes;
-            foreach (var routeSetting in routes)
+            foreach (var routeSetting in settings.CurrentValue.Routes)
             {
                 if (matcher.TryMatch(routeSetting.CompiledRoute, path, out var match))
                 {
