@@ -1,30 +1,31 @@
 ﻿namespace Cloudtoid.UrlPattern
 {
-    using System;
     using System.Text;
     using System.Text.RegularExpressions;
 
     internal sealed class PatternRegexBuilder : PatternNodeVisitor
     {
-        private static readonly TimeSpan MatchTimeout = TimeSpan.FromSeconds(1);
         private static readonly string SegmentStart = Regex.Escape(@"/");
         private static readonly string Wildcard = $"[^{SegmentStart}]*";  // [^\/]*
         private static readonly string Start = $@"\A({SegmentStart})?"; // \A(\/)?
-        private static readonly string End = $@"({SegmentStart})?$"; // (\/)?$
-        private static readonly RegexOptions Options =
-            RegexOptions.IgnoreCase
-            | RegexOptions.Singleline
-            | RegexOptions.ExplicitCapture
-            | RegexOptions.Compiled
-            | RegexOptions.CultureInvariant;
-
+        private static readonly string End = $@"({SegmentStart})?"; // (\/)?
         private readonly StringBuilder builder = new StringBuilder(Start);
 
-        internal Regex Build(PatternNode pattern)
+        private PatternRegexBuilder()
+        {
+        }
+
+        internal static Regex Build(PatternNode pattern, bool exactMatch)
+            => new PatternRegexBuilder().BuildCore(pattern, exactMatch);
+
+        private Regex BuildCore(PatternNode pattern, bool exactMatch)
         {
             Visit(pattern);
             builder.Append(End);
-            return new Regex(builder.ToString(), Options, MatchTimeout);
+            if (exactMatch)
+                builder.AppendDollar();
+
+            return RegexFactory.Create(builder.ToString());
         }
 
         protected internal override void VisitMatch(MatchNode node)

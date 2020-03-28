@@ -13,7 +13,8 @@
             fail = false;
         }
 
-        protected internal override void VisitVariable(VariableNode node) => fail = true;
+        protected internal override void VisitVariable(VariableNode node)
+            => fail = true;
 
         protected internal override void VisitWildcard(WildcardNode node)
         {

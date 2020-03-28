@@ -124,6 +124,14 @@
                pattern: @"/category/*",
                route: "category/");
 
+            ShouldNotMatch(
+               pattern: @"exact: /category/",
+               route: "category/test");
+
+            ShouldMatch(
+               pattern: @"/category/",
+               route: "category/bike/");
+
             ShouldMatch(
                pattern: @"/category/*/product",
                route: "category/bike/product");

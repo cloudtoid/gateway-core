@@ -18,6 +18,7 @@
                 .AddOptions()
                 .AddFramework()
                 .TryAddSingleton<IUrlPathNormalizer, UrlPathNormalizer>()
+                .TryAddSingleton<IPatternTypeResolver, PatternTypeResolver>()
                 .TryAddSingleton<IPatternParser, PatternParser>()
                 .TryAddSingleton<IPatternValidator, PatternValidator>()
                 .TryAddSingleton<IPatternCompiler, PatternCompiler>()

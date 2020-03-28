@@ -10,7 +10,7 @@
         protected internal override void VisitVariable(VariableNode node)
         {
             if (fail)
-                throw new PatternException($"Each URL segment can only include a single variable definition.");
+                throw new PatternException("Each URL segment can only include a single variable definition.");
 
             fail = true;
         }
