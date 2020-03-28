@@ -1,20 +1,19 @@
-﻿namespace Cloudtoid.Foid.UnitTests
+﻿namespace Cloudtoid.UrlPattern.UnitTests
 {
-    using Cloudtoid.Foid.Routes;
     using FluentAssertions;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-    public class RouteNormalizerTests
+    public class UrlPathNormalizerTests
     {
-        private readonly IRouteNormalizer normalizer;
+        private readonly IUrlPathNormalizer normalizer;
 
-        public RouteNormalizerTests()
+        public UrlPathNormalizerTests()
         {
-            var services = new ServiceCollection().AddTest();
+            var services = new ServiceCollection().AddUrlPattern();
             var serviceProvider = services.BuildServiceProvider();
-            normalizer = serviceProvider.GetRequiredService<IRouteNormalizer>();
+            normalizer = serviceProvider.GetRequiredService<IUrlPathNormalizer>();
         }
 
         [TestMethod]

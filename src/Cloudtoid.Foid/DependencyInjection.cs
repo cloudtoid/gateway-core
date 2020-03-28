@@ -89,7 +89,6 @@
                 .TryAddSingleton<Trace.ITraceIdProvider, Trace.TraceIdProvider>()
                 .TryAddSingleton<Host.IHostProvider, Host.HostProvider>()
                 .TryAddSingleton<Expression.IExpressionEvaluator, Expression.ExpressionEvaluator>()
-                .TryAddSingleton<Routes.IRouteNormalizer, Routes.RouteNormalizer>()
                 .TryAddSingleton<Routes.IRouteResolver, Routes.RouteResolver>()
                 .TryAddSingleton<IUriRewriter, UriRewriter>()
                 .TryAddSingleton<IRequestHeaderSetter, RequestHeaderSetter>()

@@ -1,4 +1,4 @@
-﻿namespace Cloudtoid.Foid.UnitTests
+﻿namespace Cloudtoid.UrlPattern.UnitTests
 {
     using Cloudtoid.UrlPattern;
     using FluentAssertions;

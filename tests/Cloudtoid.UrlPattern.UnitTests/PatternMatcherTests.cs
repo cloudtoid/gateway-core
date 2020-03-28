@@ -1,7 +1,6 @@
-﻿namespace Cloudtoid.Foid.UnitTests
+﻿namespace Cloudtoid.UrlPattern.UnitTests
 {
     using System.Linq;
-    using Cloudtoid.Foid.Routes;
     using Cloudtoid.UrlPattern;
     using FluentAssertions;
     using Microsoft.Extensions.DependencyInjection;
@@ -10,15 +9,15 @@
     [TestClass]
     public class PatternMatcherTests
     {
-        private readonly IRouteNormalizer normalizer;
+        private readonly IUrlPathNormalizer normalizer;
         private readonly IPatternCompiler compiler;
         private readonly IPatternMatcher matcher;
 
         public PatternMatcherTests()
         {
-            var services = new ServiceCollection().AddTest();
+            var services = new ServiceCollection().AddUrlPattern();
             var serviceProvider = services.BuildServiceProvider();
-            normalizer = serviceProvider.GetRequiredService<IRouteNormalizer>();
+            normalizer = serviceProvider.GetRequiredService<IUrlPathNormalizer>();
             compiler = serviceProvider.GetRequiredService<IPatternCompiler>();
             matcher = serviceProvider.GetRequiredService<IPatternMatcher>();
         }

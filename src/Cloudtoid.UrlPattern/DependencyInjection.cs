@@ -14,8 +14,10 @@
 
             return services
                 .TryAddSingleton<Marker>()
-                .AddFramework()
+                .AddLogging()
                 .AddOptions()
+                .AddFramework()
+                .TryAddSingleton<IUrlPathNormalizer, UrlPathNormalizer>()
                 .TryAddSingleton<IPatternParser, PatternParser>()
                 .TryAddSingleton<IPatternValidator, PatternValidator>()
                 .TryAddSingleton<IPatternCompiler, PatternCompiler>()

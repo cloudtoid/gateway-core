@@ -10,12 +10,12 @@
     {
         private readonly ISettingsProvider settings;
         private readonly IPatternMatcher matcher;
-        private readonly IRouteNormalizer normalizer;
+        private readonly IUrlPathNormalizer normalizer;
 
         public RouteResolver(
             ISettingsProvider settings,
             IPatternMatcher matcher,
-            IRouteNormalizer normalizer)
+            IUrlPathNormalizer normalizer)
         {
             this.settings = CheckValue(settings, nameof(settings));
             this.matcher = CheckValue(matcher, nameof(matcher));

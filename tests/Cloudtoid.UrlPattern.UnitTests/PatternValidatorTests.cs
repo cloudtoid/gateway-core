@@ -1,4 +1,4 @@
-﻿namespace Cloudtoid.Foid.UnitTests
+﻿namespace Cloudtoid.UrlPattern.UnitTests
 {
     using System.Linq;
     using Cloudtoid.UrlPattern;
@@ -13,7 +13,7 @@
 
         public PatternValidatorTests()
         {
-            var services = new ServiceCollection().AddTest();
+            var services = new ServiceCollection().AddUrlPattern();
             var serviceProvider = services.BuildServiceProvider();
             validator = serviceProvider.GetRequiredService<IPatternValidator>();
         }
