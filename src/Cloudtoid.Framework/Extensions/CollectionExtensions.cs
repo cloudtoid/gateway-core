@@ -10,6 +10,9 @@
     public static class CollectionExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsEmpty<T>(this List<T> value) => value.Count == 0;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsEmpty<T>(this ICollection<T> value) => value.Count == 0;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -17,6 +20,9 @@
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsEmpty<T>(this T[] value) => value.Length == 0;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsNullOrEmpty<T>(this List<T>? value) => value is null || value.Count == 0;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNullOrEmpty<T>(this ICollection<T>? value) => value is null || value.Count == 0;

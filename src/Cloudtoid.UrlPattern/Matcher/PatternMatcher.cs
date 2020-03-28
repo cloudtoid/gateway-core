@@ -19,45 +19,45 @@
 
         public bool TryMatch(
             CompiledPattern pattern,
-            string route,
+            string path,
             [NotNullWhen(true)] out PatternMatchResult? match)
         {
             CheckValue(pattern, nameof(pattern));
-            CheckValue(route, nameof(route));
+            CheckValue(path, nameof(path));
 
-            logger.LogDebug("Matching path '{0}' with pattern '{1}'.", route, pattern.Pattern);
+            logger.LogDebug("Matching path '{0}' with pattern '{1}'.", path, pattern.Pattern);
 
-            match = Match(pattern, route);
+            match = Match(pattern, path);
 
             if (match is null)
             {
-                logger.LogDebug("Path '{0}' is not a match for pattern '{1}'.", route, pattern.Pattern);
+                logger.LogDebug("Path '{0}' is not a match for pattern '{1}'.", path, pattern.Pattern);
                 return false;
             }
 
-            logger.LogDebug("Matched '{0}' path with '{1}' pattern.", route, pattern.Pattern);
+            logger.LogDebug("Matched '{0}' path with '{1}' pattern.", path, pattern.Pattern);
             return true;
         }
 
         private PatternMatchResult? Match(
-            CompiledPattern pattern,
-            string route)
+            CompiledPattern compiledPattern,
+            string path)
         {
             Match regexMatch;
             try
             {
-                regexMatch = pattern.Regex.Match(route);
+                regexMatch = compiledPattern.Regex.Match(path);
             }
             catch (RegexMatchTimeoutException tex)
             {
-                logger.LogError(tex, "The attempt to match path '{0}' with pattern '{1}' timed out.", route, pattern.Pattern);
+                logger.LogError(tex, "The attempt to match path '{0}' with pattern '{1}' timed out.", path, compiledPattern.Pattern);
                 return null;
             }
 
             if (!regexMatch.Success)
                 return null;
 
-            var variables = GetVariables(regexMatch, pattern.VariableNames);
+            var variables = GetVariables(regexMatch, compiledPattern.VariableNames);
             return new PatternMatchResult(variables);
         }
 

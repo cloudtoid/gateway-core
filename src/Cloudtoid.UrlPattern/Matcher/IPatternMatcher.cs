@@ -6,7 +6,7 @@
     {
         bool TryMatch(
             CompiledPattern pattern,
-            string route,
+            string path,
             [NotNullWhen(true)] out PatternMatchResult? match);
     }
 }

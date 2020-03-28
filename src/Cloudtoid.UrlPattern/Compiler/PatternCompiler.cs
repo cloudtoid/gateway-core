@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
-    using System.Text;
     using static Contract;
 
     internal sealed class PatternCompiler : IPatternCompiler
@@ -22,22 +21,25 @@
         public bool TryCompile(
             string pattern,
             [NotNullWhen(true)] out CompiledPattern? compiledPattern,
-            [NotNullWhen(false)] out string? errors)
+            [NotNullWhen(false)] out IReadOnlyList<PatternCompilerError>? errors)
         {
             CheckValue(pattern, nameof(pattern));
 
+            var errorsSink = new PatternCompilerErrorsSink();
+
             // 1- Parse
-            if (!parser.TryParse(pattern, out var parsedPattern, out var parserErrors))
+            if (!parser.TryParse(pattern, errorsSink, out var parsedPattern))
             {
                 compiledPattern = null;
-                errors = ConvertToString(pattern, parserErrors);
+                errors = errorsSink.Errors;
                 return false;
             }
 
             // 2- Validate
-            if (!validator.Validate(parsedPattern, out errors))
+            if (!validator.Validate(parsedPattern, errorsSink))
             {
                 compiledPattern = null;
+                errors = errorsSink.Errors;
                 return false;
             }
 
@@ -53,23 +55,8 @@
                 regex,
                 variables);
 
+            errors = null;
             return true;
-        }
-
-        private string ConvertToString(string route, IReadOnlyList<PatternParserError> errors)
-        {
-            var builder = new StringBuilder($"Route '{route}' failed to parse with the following error(s):");
-            builder.AppendLine();
-            for (int i = 0; i < errors.Count; i++)
-            {
-                var error = errors[i];
-                builder.Append(error.Message);
-
-                if (error.Location != null)
-                    builder.AppendFormatInvariant(" (location:{0})", error.Location);
-            }
-
-            return builder.ToString();
         }
 
         private sealed class VariableNamesExtractor : PatternNodeVisitor

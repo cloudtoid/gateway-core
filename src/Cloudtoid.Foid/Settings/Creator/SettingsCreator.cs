@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using Cloudtoid.Foid.Expression;
+    using Cloudtoid.UrlPattern;
     using Microsoft.Extensions.Logging;
     using static Cloudtoid.Foid.ReverseProxyOptions;
     using static Cloudtoid.Foid.ReverseProxyOptions.RouteOptions;
@@ -13,13 +14,16 @@
     internal sealed class SettingsCreator : ISettingsCreator
     {
         private readonly IExpressionEvaluator evaluator;
+        private readonly IPatternCompiler compiler;
         private readonly ILogger<SettingsCreator> logger;
 
         public SettingsCreator(
             IExpressionEvaluator evaluator,
+            IPatternCompiler compiler,
             ILogger<SettingsCreator> logger)
         {
             this.evaluator = CheckValue(evaluator, nameof(evaluator));
+            this.compiler = CheckValue(compiler, nameof(compiler));
             this.logger = CheckValue(logger, nameof(logger));
         }
 
@@ -48,8 +52,15 @@
 
             var context = new RouteSettingsContext(route, evaluator);
 
+            if (!compiler.TryCompile(route, out var compiledRoute, out var compilerErrors))
+            {
+                LogErrors(context, compilerErrors);
+                return null;
+            }
+
             return new RouteSettings(
                 route,
+                compiledRoute,
                 Create(context, options.Proxy));
         }
 
@@ -166,12 +177,18 @@
         }
 
         private void LogError(string message)
-            => logger.LogError($"{nameof(ReverseProxyOptions)} error: {message}");
+            => logger.LogError($"Configuration error: {message}");
 
         private void LogError(RouteSettingsContext context, string message)
-            => logger.LogError($"{nameof(ReverseProxyOptions)} ({context.Route}) error: {message}");
+            => logger.LogError($"Configuration error: ({context.Route}) {message}");
 
         private void LogWarning(RouteSettingsContext context, string message)
-            => logger.LogWarning($"{nameof(ReverseProxyOptions)} warning: ({context.Route}) {message}");
+            => logger.LogWarning($"Configuration warning: ({context.Route}) {message}");
+
+        private void LogErrors(RouteSettingsContext context, IReadOnlyList<PatternCompilerError> errors)
+        {
+            foreach (var error in errors)
+                LogError(context, error.ToString());
+        }
     }
 }

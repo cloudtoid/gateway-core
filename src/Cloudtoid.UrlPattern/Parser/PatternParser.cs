@@ -1,7 +1,5 @@
 ﻿namespace Cloudtoid.UrlPattern
 {
-    using System;
-    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using static Contract;
 
@@ -9,41 +7,31 @@
     {
         public bool TryParse(
             string pattern,
-            [NotNullWhen(true)] out PatternNode? parsedPattern,
-            [NotNullWhen(false)] out IReadOnlyList<PatternParserError>? errors)
+            PatternCompilerErrorsSink errorsSink,
+            [NotNullWhen(true)] out PatternNode? parsedPattern)
         {
             CheckValue(pattern, nameof(pattern));
 
             pattern = pattern.Trim().Trim('/');
-            (parsedPattern, errors) = new Parser(pattern).Parse();
-
-            if (errors is null)
-            {
-                if (parsedPattern is null)
-                    throw new InvalidOperationException($"Both {nameof(errors)} and {nameof(parsedPattern)} cannot be null");
-
-                return true;
-            }
-
-            parsedPattern = null;
-            return false;
+            parsedPattern = new Parser(pattern, errorsSink).Parse();
+            return parsedPattern != null;
         }
 
         private struct Parser
         {
-            private readonly string route;
-            private List<PatternParserError>? errors;
+            private readonly string pattern;
+            private readonly PatternCompilerErrorsSink errorsSink;
 
-            public Parser(string route)
+            public Parser(string pattern, PatternCompilerErrorsSink errorsSink)
             {
-                this.route = route;
-                errors = null;
+                this.pattern = pattern;
+                this.errorsSink = errorsSink;
             }
 
-            internal (PatternNode? Pattern, IReadOnlyList<PatternParserError>? Errors) Parse()
+            internal PatternNode? Parse()
             {
-                using (var reader = new SeekableStringReader(route))
-                    return (ReadNode(reader), errors);
+                using (var reader = new SeekableStringReader(pattern))
+                    return ReadNode(reader);
             }
 
             private PatternNode? ReadNode(SeekableStringReader reader, char? stopChar = null)
@@ -59,10 +47,10 @@
                     start = reader.NextPosition;
                 }
 
-                PatternNode? AppendMatch(string route)
+                PatternNode? AppendMatch(string pattern)
                 {
                     if (len > 0)
-                        node += new MatchNode(route.Substring(start, len));
+                        node += new MatchNode(pattern.Substring(start, len));
 
                     return node;
                 }
@@ -70,7 +58,7 @@
                 while ((c = reader.Read()) > -1)
                 {
                     if (c == stopChar)
-                        return AppendMatch(route);
+                        return AppendMatch(pattern);
 
                     PatternNode? next;
                     switch (c)
@@ -92,7 +80,7 @@
                             break;
 
                         case Constants.OptionalEnd:
-                            AddError($"There is an unexpected '{(char)c}'.", reader.NextPosition - 1);
+                            errorsSink.AddError($"There is an unexpected '{(char)c}'.", reader.NextPosition - 1);
                             return null;
 
                         case Constants.EscapeSequenceStart:
@@ -102,7 +90,7 @@
                                 continue;
                             }
 
-                            AppendMatch(route);
+                            AppendMatch(pattern);
                             reader.NextPosition += Constants.EscapeSequence.Length;
                             start = reader.NextPosition - 1;
                             len = 1;
@@ -118,7 +106,7 @@
                         return null;
 
                     if (len > 0)
-                        node += new MatchNode(route.Substring(start, len));
+                        node += new MatchNode(pattern.Substring(start, len));
 
                     node += next;
                     Reset();
@@ -127,13 +115,13 @@
                 // expected an end char but didn't find it
                 if (stopChar.HasValue)
                 {
-                    AddError($"There is a missing '{stopChar}'.");
+                    errorsSink.AddError($"There is a missing '{stopChar}'.");
                     return null;
                 }
 
                 node += len == 0
                     ? MatchNode.Empty
-                    : new MatchNode(route.Substring(reader.NextPosition - len, len));
+                    : new MatchNode(pattern.Substring(reader.NextPosition - len, len));
 
                 return node;
             }
@@ -150,14 +138,14 @@
 
                 if (len == 0)
                 {
-                    AddError(
+                    errorsSink.AddError(
                         "There is a variable with an empty or invalid name. The valid characters are 'a-zA-Z0-9_' and the first character cannot be a number.",
                         start);
 
                     return null;
                 }
 
-                return new VariableNode(route.Substring(start, len));
+                return new VariableNode(pattern.Substring(start, len));
             }
 
             private OptionalNode? ReadOptionalNode(SeekableStringReader reader)
@@ -167,20 +155,11 @@
 
                 if (node == null)
                 {
-                    AddError("There is an optional element that is either empty or invalid.", start);
+                    errorsSink.AddError("There is an optional element that is either empty or invalid.", start);
                     return null;
                 }
 
                 return new OptionalNode(node);
-            }
-
-            private void AddError(string message, int? location = null)
-            {
-                if (errors is null)
-                    errors = new List<PatternParserError>();
-
-                var error = new PatternParserError(message, location);
-                errors.Add(error);
             }
 
             // returns true, if escaped an escapable char
