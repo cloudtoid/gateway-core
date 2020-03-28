@@ -7,6 +7,6 @@
     {
         bool TryResolve(
             HttpContext httpContext,
-            [NotNullWhen(true)] out Route route);
+            [NotNullWhen(true)] out Route? route);
     }
 }

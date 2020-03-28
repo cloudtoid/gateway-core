@@ -1,6 +1,7 @@
 ﻿namespace Cloudtoid.Foid.UnitTests
 {
     using System;
+    using System.Collections.Immutable;
     using System.IO;
     using System.Linq;
     using System.Threading;
@@ -172,7 +173,7 @@
                     Substitute.For<IHostProvider>(),
                     Substitute.For<ITraceIdProvider>(),
                     httpContext,
-                    new Route(settings));
+                    new Route(settings, ImmutableDictionary<string, string>.Empty));
 
                 using (var changeEvent = new AutoResetEvent(false))
                 {
@@ -194,7 +195,7 @@
                         Substitute.For<IHostProvider>(),
                         Substitute.For<ITraceIdProvider>(),
                         httpContext,
-                        new Route(settings));
+                        new Route(settings, ImmutableDictionary<string, string>.Empty));
 
                     settings.Proxy!.UpstreamRequest.GetTimeout(context).TotalMilliseconds.Should().Be(2000);
 
@@ -205,7 +206,7 @@
                         Substitute.For<IHostProvider>(),
                         Substitute.For<ITraceIdProvider>(),
                         httpContext,
-                        new Route(settings));
+                        new Route(settings, ImmutableDictionary<string, string>.Empty));
 
                     settings.Proxy!.UpstreamRequest.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
                 }
@@ -307,7 +308,7 @@
                 Substitute.For<IHostProvider>(),
                 Substitute.For<ITraceIdProvider>(),
                 httpContext,
-                new Route(settings));
+                new Route(settings, ImmutableDictionary<string, string>.Empty));
         }
 
         private static void CreateSettingsAndCheckLogs(ReverseProxyOptions options, params string[] messages)

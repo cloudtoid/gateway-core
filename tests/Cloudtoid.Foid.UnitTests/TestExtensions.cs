@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using Cloudtoid.Foid.Host;
     using Cloudtoid.Foid.Settings;
@@ -55,7 +56,7 @@
                 provider.GetRequiredService<IHostProvider>(),
                 provider.GetRequiredService<ITraceIdProvider>(),
                 httpContext,
-                new Route(routeOptions));
+                new Route(routeOptions, ImmutableDictionary<string, string>.Empty));
         }
 
         public static ReverseProxyOptions CreateDefaultOptions()
