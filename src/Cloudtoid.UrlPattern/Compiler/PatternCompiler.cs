@@ -43,7 +43,10 @@
 
             if (type == PatternType.Regex)
             {
+                // 2- Build regex
                 regex = RegexFactory.Create(pattern);
+
+                // 3- Get variable names
                 var names = regex.GetGroupNames().Where(n => !short.TryParse(n, NumberStyles.None, null, out var _));
                 variables = new HashSet<string>(names, StringComparer.OrdinalIgnoreCase);
             }
