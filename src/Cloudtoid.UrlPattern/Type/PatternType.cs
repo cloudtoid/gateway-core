@@ -1,6 +1,6 @@
 ﻿namespace Cloudtoid.UrlPattern
 {
-    internal enum PatternType
+    public enum PatternType
     {
         PrefixMatch,
         ExactMatch,

@@ -135,6 +135,11 @@
             ShouldMatch(
                pattern: @"/category/*/product",
                route: "category/bike/product");
+
+            ShouldMatch(
+               pattern: @"regex: \/category\/(?<category>.+)\/product",
+               route: "category/bike/product",
+               ("category", "bike"));
         }
 
         private void ShouldMatch(string pattern, string route, params (string Name, string Value)[] variables)

@@ -3,6 +3,8 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
+    using System.Linq;
     using System.Text.RegularExpressions;
     using static Contract;
 
@@ -33,15 +35,17 @@
 
             // 1- Resolve the type of the pattern
             var resolvedPattern = resolver.Resolve(pattern);
+            var type = resolvedPattern.Type;
             pattern = resolvedPattern.Pattern;
 
             Regex regex;
             ISet<string> variables;
 
-            if (resolvedPattern.Type == PatternType.Regex)
+            if (type == PatternType.Regex)
             {
-                regex = RegexFactory.Create(resolvedPattern.Pattern);
-                variables = new HashSet<string>(regex.GetGroupNames(), StringComparer.OrdinalIgnoreCase);
+                regex = RegexFactory.Create(pattern);
+                var names = regex.GetGroupNames().Where(n => !short.TryParse(n, NumberStyles.None, null, out var _));
+                variables = new HashSet<string>(names, StringComparer.OrdinalIgnoreCase);
             }
             else
             {
@@ -62,9 +66,7 @@
                 }
 
                 // 4- Build regex
-                regex = PatternRegexBuilder.Build(
-                    parsedPattern,
-                    resolvedPattern.Type == PatternType.ExactMatch);
+                regex = PatternRegexBuilder.Build(parsedPattern, type == PatternType.ExactMatch);
 
                 // 5- Get variable names
                 variables = VariableNamesExtractor.Extract(parsedPattern);
@@ -72,6 +74,7 @@
 
             compiledPattern = new CompiledPattern(
                 pattern,
+                type,
                 regex,
                 variables);
 
