@@ -20,7 +20,7 @@
     {
         /// <summary>
         /// By implementing this method, one can change the values of a given header.
-        /// Return <c>false</c> if the header should be omitted.
+        /// Return <c>false</c> if the header must be omitted.
         /// </summary>
         bool TryGetHeaderValues(
             ProxyContext context,

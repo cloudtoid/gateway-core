@@ -13,7 +13,7 @@
         protected internal override void VisitVariable(VariableNode node)
         {
             if (!names.Add(node.Name))
-                throw new PatternException($"The variable name '{node.Name}' has already been used. Variable names should be unique.");
+                throw new PatternException($"The variable name '{node.Name}' has already been used. Variable names must be unique.");
         }
     }
 }

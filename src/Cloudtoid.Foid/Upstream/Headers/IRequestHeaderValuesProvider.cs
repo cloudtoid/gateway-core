@@ -23,7 +23,7 @@
         /// <summary>
         /// By implementing this method, one can change the values of a given request header.
         /// This interface is only used for request headers. See <see cref="IRequestContentHeaderValuesProvider"/> for content headers.
-        /// Return <c>false</c> if the header should be omitted.
+        /// Return <c>false</c> if the header must be omitted.
         /// </summary>
         bool TryGetHeaderValues(
             ProxyContext context,

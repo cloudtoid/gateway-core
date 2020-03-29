@@ -15,7 +15,7 @@
                 return right;
 
             if (right is null)
-                return null;
+                return left;
 
             if (Equals(left, MatchNode.Empty))
                 return right;

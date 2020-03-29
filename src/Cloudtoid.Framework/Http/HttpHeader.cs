@@ -20,23 +20,23 @@
                 tokenChars[i] = true;
 
             // Remove separators: these are not valid token characters.
-            tokenChars[(int)'('] = false;
-            tokenChars[(int)')'] = false;
-            tokenChars[(int)'<'] = false;
-            tokenChars[(int)'>'] = false;
-            tokenChars[(int)'@'] = false;
-            tokenChars[(int)','] = false;
-            tokenChars[(int)';'] = false;
-            tokenChars[(int)':'] = false;
-            tokenChars[(int)'\\'] = false;
-            tokenChars[(int)'"'] = false;
-            tokenChars[(int)'/'] = false;
-            tokenChars[(int)'['] = false;
-            tokenChars[(int)']'] = false;
-            tokenChars[(int)'?'] = false;
-            tokenChars[(int)'='] = false;
-            tokenChars[(int)'{'] = false;
-            tokenChars[(int)'}'] = false;
+            tokenChars['('] = false;
+            tokenChars[')'] = false;
+            tokenChars['<'] = false;
+            tokenChars['>'] = false;
+            tokenChars['@'] = false;
+            tokenChars[','] = false;
+            tokenChars[';'] = false;
+            tokenChars[':'] = false;
+            tokenChars['\\'] = false;
+            tokenChars['"'] = false;
+            tokenChars['/'] = false;
+            tokenChars['['] = false;
+            tokenChars[']'] = false;
+            tokenChars['?'] = false;
+            tokenChars['='] = false;
+            tokenChars['{'] = false;
+            tokenChars['}'] = false;
             return tokenChars;
         }
 

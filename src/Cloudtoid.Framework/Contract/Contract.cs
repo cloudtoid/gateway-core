@@ -1333,7 +1333,7 @@
         {
             return new ArgumentOutOfRangeException(
                 paramName,
-                GetMessage($"{paramName} parameter should be greater than or equal to {min}.", message, args));
+                GetMessage($"{paramName} parameter must be greater than or equal to {min}.", message, args));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1341,7 +1341,7 @@
         {
             return new ArgumentOutOfRangeException(
                 paramName,
-                GetMessage($"{paramName} parameter should be less than or equal to {max}.", message, args));
+                GetMessage($"{paramName} parameter must be less than or equal to {max}.", message, args));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

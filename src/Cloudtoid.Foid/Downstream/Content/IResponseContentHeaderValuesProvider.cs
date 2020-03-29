@@ -21,7 +21,7 @@
         /// <summary>
         /// By implementing this method, one can change the values of a given response header.
         /// This interface is only used for content headers. See <see cref="IResponseHeaderValuesProvider"/> for response headers.
-        /// Return <c>false</c> if the header should be omitted.
+        /// Return <c>false</c> if the header must be omitted.
         /// </summary>
         bool TryGetHeaderValues(
             ProxyContext context,

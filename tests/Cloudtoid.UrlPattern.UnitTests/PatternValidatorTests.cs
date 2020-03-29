@@ -75,7 +75,7 @@
         [TestMethod]
         public void Validate_WhenDuplicateVariableName_Fail()
         {
-            Validate(":var0/:var0", "The variable name 'var0' has already been used. Variable names should be unique.");
+            Validate(":var0/:var0", "The variable name 'var0' has already been used. Variable names must be unique.");
         }
 
         [TestMethod]
