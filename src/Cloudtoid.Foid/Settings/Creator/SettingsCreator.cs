@@ -50,14 +50,20 @@
                 return null;
             }
 
+            // 1) Compile the route pattern
             var context = new RouteSettingsContext(route, evaluator);
             var compiledRoute = Compile(context);
             if (compiledRoute is null)
                 return null;
 
+            // 2) Build a trie of the variables found in the route pattern. This trie will be used when evaluating expressions.
+            var variableTrie = new VariableTrie<string>(
+                compiledRoute.VariableNames.Select(v => (v, v)));
+
             return new RouteSettings(
                 route,
                 compiledRoute,
+                variableTrie,
                 Create(context, options.Proxy));
         }
 
@@ -71,7 +77,7 @@
 
             foreach (var variableName in compiledRoute.VariableNames)
             {
-                if (VariableNames.SystemVariables.Contains(variableName))
+                if (SystemVariableNames.Names.Contains(variableName))
                 {
                     LogError(context, $"The variable name '{variableName}' collides with a system variable with the same name.");
                     return null;

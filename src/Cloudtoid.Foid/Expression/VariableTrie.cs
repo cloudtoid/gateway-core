@@ -4,12 +4,24 @@
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using Cloudtoid.UrlPattern;
+    using static Contract;
 
     internal sealed class VariableTrie<TValue> where TValue : class
     {
-        // 37 == 26 * alphabet + 1 * underscore
-        private readonly VariableTrie<TValue>?[] map = new VariableTrie<TValue>?[27];
+        private readonly VariableTrie<TValue>?[] map = new VariableTrie<TValue>?[PatternVariables.ValidVariableCharacters.Length];
         private TValue? value;
+
+        internal VariableTrie()
+        {
+        }
+
+        internal VariableTrie(IEnumerable<(string Key, TValue Value)> list)
+        {
+            CheckValue(list, nameof(list));
+            foreach (var (key, value) in list)
+                AddValue(key, value);
+        }
 
         internal VariableTrie<TValue> AddValue(string key, TValue value)
         {
@@ -48,14 +60,14 @@
         }
 
         private VariableTrie<TValue>? GetNodeOrDefault(char c)
-            => !TryGetIndex(c, out var index) ? null : map[index];
+            => !PatternVariables.TryGetIndex(c, out var index) ? null : map[index];
 
         private VariableTrie<TValue> GetNode(char c)
         {
-            if (!TryGetIndex(c, out var index))
+            if (!PatternVariables.TryGetIndex(c, out var index))
             {
                 throw new InvalidOperationException(
-                    "The only valid characters in a variable name are alphabets and the underscore character.");
+                    "The only valid characters in a variable name are alphabet, number, and underscore characters.");
             }
 
             var node = map[index];
@@ -63,31 +75,6 @@
                 return node;
 
             return map[index] = new VariableTrie<TValue>();
-        }
-
-        private static bool TryGetIndex(char c, out int index)
-        {
-            if (c == '_')
-            {
-                index = 26;
-                return true;
-            }
-
-            int v = c;
-            if (v > 96 && v < 123)
-            {
-                index = v - 97;
-                return true;
-            }
-
-            if (v > 64 && v < 91)
-            {
-                index = v - 65;
-                return true;
-            }
-
-            index = -1;
-            return false;
         }
     }
 }

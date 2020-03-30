@@ -29,7 +29,7 @@
         {
             var context = new DefaultHttpContext();
             context.Request.ContentLength = 100;
-            Evaluate(" " + GetVarName(VariableNames.ContentLength) + " ", context).Should().Be(" 100 ");
+            Evaluate(" " + GetVarName(SystemVariableNames.ContentLength) + " ", context).Should().Be(" 100 ");
         }
 
         [TestMethod]
@@ -61,7 +61,7 @@
         {
             var context = new DefaultHttpContext();
             context.Request.ContentLength = 100;
-            var expr = GetVarName(VariableNames.ContentLength + ">10");
+            var expr = GetVarName(SystemVariableNames.ContentLength + ">10");
             Evaluate(expr, context).Should().Be("100>10");
         }
 
@@ -70,7 +70,7 @@
         {
             var context = new DefaultHttpContext();
             context.Request.ContentLength = 100;
-            Evaluate(GetVarName(VariableNames.ContentLength), context).Should().Be("100");
+            Evaluate(GetVarName(SystemVariableNames.ContentLength), context).Should().Be("100");
         }
 
         [TestMethod]
@@ -79,7 +79,7 @@
             const string value = "text/html";
             var context = new DefaultHttpContext();
             context.Request.ContentType = value;
-            Evaluate(GetVarName(VariableNames.ContentType), context).Should().Be(value);
+            Evaluate(GetVarName(SystemVariableNames.ContentType), context).Should().Be(value);
         }
 
         [TestMethod]
@@ -88,13 +88,13 @@
             const string value = "abc";
             var context = new DefaultHttpContext();
             context.Request.Headers.Add("x-correlation-id", value);
-            Evaluate(GetVarName(VariableNames.CorrelationId), context).Should().Be(value);
+            Evaluate(GetVarName(SystemVariableNames.CorrelationId), context).Should().Be(value);
         }
 
         [TestMethod]
         public void Evaluate_CallIdVariable_Evaluated()
         {
-            Evaluate(GetVarName(VariableNames.CallId)).Should().Be(GuidProvider.Value.ToStringInvariant("N"));
+            Evaluate(GetVarName(SystemVariableNames.CallId)).Should().Be(GuidProvider.Value.ToStringInvariant("N"));
         }
 
         [TestMethod]
@@ -103,7 +103,7 @@
             const string value = "abc";
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderNames.Host, value);
-            Evaluate(GetVarName(VariableNames.Host), context).Should().Be(value);
+            Evaluate(GetVarName(SystemVariableNames.Host), context).Should().Be(value);
         }
 
         [TestMethod]
@@ -112,7 +112,7 @@
             string value = HttpMethods.Get;
             var context = new DefaultHttpContext();
             context.Request.Method = value;
-            Evaluate(GetVarName(VariableNames.RequestMethod), context).Should().Be(value);
+            Evaluate(GetVarName(SystemVariableNames.RequestMethod), context).Should().Be(value);
         }
 
         [TestMethod]
@@ -121,7 +121,7 @@
             const string value = "/api";
             var context = new DefaultHttpContext();
             context.Request.PathBase = new PathString(value);
-            Evaluate(GetVarName(VariableNames.RequestPathBase), context).Should().Be(value);
+            Evaluate(GetVarName(SystemVariableNames.RequestPathBase), context).Should().Be(value);
         }
 
         [TestMethod]
@@ -130,7 +130,7 @@
             const string value = "/repos";
             var context = new DefaultHttpContext();
             context.Request.Path = new PathString(value);
-            Evaluate(GetVarName(VariableNames.RequestPath), context).Should().Be(value);
+            Evaluate(GetVarName(SystemVariableNames.RequestPath), context).Should().Be(value);
         }
 
         [TestMethod]
@@ -139,7 +139,7 @@
             const string value = "?a=10&b=20";
             var context = new DefaultHttpContext();
             context.Request.QueryString = new QueryString(value);
-            Evaluate(GetVarName(VariableNames.RequestQueryString), context).Should().Be(value);
+            Evaluate(GetVarName(SystemVariableNames.RequestQueryString), context).Should().Be(value);
         }
 
         [TestMethod]
@@ -151,7 +151,7 @@
             context.Request.PathBase = new PathString("/api");
             context.Request.Path = new PathString("/repos");
             context.Request.QueryString = new QueryString("?a=10&b=20");
-            Evaluate(GetVarName(VariableNames.RequestEncodedUri), context).Should().Be("https://cloudtoid.com/api/repos?a=10&b=20");
+            Evaluate(GetVarName(SystemVariableNames.RequestEncodedUri), context).Should().Be("https://cloudtoid.com/api/repos?a=10&b=20");
         }
 
         [TestMethod]
@@ -160,7 +160,7 @@
             const string value = "1.2.3.4";
             var context = new DefaultHttpContext();
             context.Connection.RemoteIpAddress = IPAddress.Parse(value);
-            Evaluate(GetVarName(VariableNames.RemoteAddress), context).Should().Be(value);
+            Evaluate(GetVarName(SystemVariableNames.RemoteAddress), context).Should().Be(value);
         }
 
         [TestMethod]
@@ -168,7 +168,7 @@
         {
             var context = new DefaultHttpContext();
             context.Connection.RemotePort = 10;
-            Evaluate(GetVarName(VariableNames.RemotePort), context).Should().Be("10");
+            Evaluate(GetVarName(SystemVariableNames.RemotePort), context).Should().Be("10");
         }
 
         [TestMethod]
@@ -177,13 +177,13 @@
             const string value = "HTTPS";
             var context = new DefaultHttpContext();
             context.Request.Scheme = value;
-            Evaluate(GetVarName(VariableNames.RequestScheme), context).Should().Be(value);
+            Evaluate(GetVarName(SystemVariableNames.RequestScheme), context).Should().Be(value);
         }
 
         [TestMethod]
         public void Evaluate_ServerNameVariable_Evaluated()
         {
-            Evaluate(GetVarName(VariableNames.ServerName)).Should().Be(Environment.MachineName);
+            Evaluate(GetVarName(SystemVariableNames.ServerName)).Should().Be(Environment.MachineName);
         }
 
         [TestMethod]
@@ -192,7 +192,7 @@
             const string value = "1.2.3.4";
             var context = new DefaultHttpContext();
             context.Connection.LocalIpAddress = IPAddress.Parse(value);
-            Evaluate(GetVarName(VariableNames.ServerAddress), context).Should().Be(value);
+            Evaluate(GetVarName(SystemVariableNames.ServerAddress), context).Should().Be(value);
         }
 
         [TestMethod]
@@ -200,7 +200,7 @@
         {
             var context = new DefaultHttpContext();
             context.Connection.LocalPort = 10;
-            Evaluate(GetVarName(VariableNames.ServerPort), context).Should().Be("10");
+            Evaluate(GetVarName(SystemVariableNames.ServerPort), context).Should().Be("10");
         }
 
         [TestMethod]
@@ -209,7 +209,7 @@
             const string value = "HTTP/2.0";
             var context = new DefaultHttpContext();
             context.Request.Protocol = value;
-            Evaluate(GetVarName(VariableNames.ServerProtocol), context).Should().Be(value);
+            Evaluate(GetVarName(SystemVariableNames.ServerProtocol), context).Should().Be(value);
         }
 
         [TestMethod]
@@ -221,7 +221,7 @@
             context.Request.PathBase = new PathString("/api");
             context.Request.Path = new PathString("/repos");
             context.Request.QueryString = new QueryString("?a=10&b=20");
-            Evaluate($"url = ${VariableNames.RequestScheme}://${VariableNames.Host}${VariableNames.RequestPathBase}${VariableNames.RequestPath}${VariableNames.RequestQueryString}&c=30", context)
+            Evaluate($"url = ${SystemVariableNames.RequestScheme}://${SystemVariableNames.Host}${SystemVariableNames.RequestPathBase}${SystemVariableNames.RequestPath}${SystemVariableNames.RequestQueryString}&c=30", context)
                 .Should()
                 .Be("url = https://cloudtoid.com/api/repos?a=10&b=20&c=30");
         }
@@ -231,7 +231,7 @@
         {
             var context = new DefaultHttpContext();
             context.Request.Scheme = "https";
-            Evaluate($"${VariableNames.RequestScheme}test", context)
+            Evaluate($"${SystemVariableNames.RequestScheme}test", context)
                 .Should()
                 .Be("httpstest");
         }
@@ -241,7 +241,7 @@
         {
             var context = new DefaultHttpContext();
             context.Request.Scheme = "https";
-            Evaluate($"${VariableNames.RequestScheme}test${VariableNames.RequestScheme}", context)
+            Evaluate($"${SystemVariableNames.RequestScheme}test${SystemVariableNames.RequestScheme}", context)
                 .Should()
                 .Be("httpstesthttps");
         }

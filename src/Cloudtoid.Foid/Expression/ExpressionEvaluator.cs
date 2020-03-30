@@ -4,15 +4,16 @@
     using System.Collections.Generic;
     using System.Text;
     using System.Threading;
+    using Cloudtoid.UrlPattern;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Http.Extensions;
     using static Contract;
     using Cache = System.Collections.Generic.IReadOnlyDictionary<string, ExpressionEvaluator.ParsedExpression>;
-    using VariableEvaluator = System.Func<ProxyContext, string?>;
+    using SystemVariableEvaluator = System.Func<ProxyContext, string?>;
 
     internal sealed class ExpressionEvaluator : IExpressionEvaluator
     {
-        private static readonly VariableTrie<VariableEvaluator> VariableEvaluatorTrie = BuildTrie();
+        private static readonly VariableTrie<SystemVariableEvaluator> SystemVariablesTrie = BuildTrie();
         private Cache cache = new Dictionary<string, ParsedExpression>(0, StringComparer.Ordinal);
 
         public string Evaluate(ProxyContext context, string expression)
@@ -28,7 +29,7 @@
             {
                 Cache snapshot, newCache;
 
-                parsedExpression = Parse(expression);
+                parsedExpression = Parse(context, expression);
                 do
                 {
                     snapshot = cache;
@@ -155,12 +156,27 @@
         private static string? GetServerProtocol(ProxyContext context)
             => context.Request.Protocol;
 
-        private static ParsedExpression Parse(string expression)
+        /// <summary>
+        /// Returns the value of a variable that is specified in the inbound downstream request.
+        /// </summary>
+        private static string? GetVariableValueFromRoute(ProxyContext context, string name)
+            => context.Route.Variables.TryGetValue(name, out var value) ? value : null;
+
+        private static ParsedExpression Parse(ProxyContext context, string expression)
         {
             var instructions = new List<dynamic>();
             int index = 0;
             int len = expression.Length;
             var sb = new StringBuilder(expression.Length);
+
+            void ProcessLastSegment()
+            {
+                if (sb.Length == 0)
+                    return;
+
+                instructions.Add(sb.ToString());
+                sb.Clear();
+            }
 
             while (index < len)
             {
@@ -175,7 +191,7 @@
                 int varNameStartIndex = index;
                 while (index < len)
                 {
-                    if (!expression[index].IsValidVariableChar(isFirstChar: varNameStartIndex == index))
+                    if (!PatternVariables.IsValidVariableChar(expression[index], isFirstChar: varNameStartIndex == index))
                         break;
 
                     index++;
@@ -187,53 +203,52 @@
                     continue;
                 }
 
+                // Is it a system variable?
                 var varName = expression[varNameStartIndex..index];
-                if (!VariableEvaluatorTrie.TryGetBestMatch(varName, out var varEvaluator, out var lengthMatched))
+                if (SystemVariablesTrie.TryGetBestMatch(varName, out var varEvaluator, out var lengthMatched))
                 {
-                    sb.AppendDollar().Append(varName);
+                    ProcessLastSegment();
+                    index -= varName.Length - lengthMatched;
+                    instructions.Add(varEvaluator);
                     continue;
                 }
 
-                index -= varName.Length - lengthMatched;
-                if (sb.Length > 0)
+                // Is it a variable extracted from the path section of the inbound downstream URL?
+                if (context.Settings.VariableTrie.TryGetBestMatch(varName, out _, out lengthMatched))
                 {
-                    var str = sb.ToString();
-                    instructions.Add(str);
-                    sb.Clear();
+                    ProcessLastSegment();
+                    index -= varName.Length - lengthMatched;
+                    instructions.Add(new RouteVariable(varName));
+                    continue;
                 }
 
-                instructions.Add(varEvaluator);
+                sb.AppendDollar().Append(varName);
             }
 
-            if (sb.Length > 0)
-            {
-                var str = sb.ToString();
-                instructions.Add(str);
-            }
-
+            ProcessLastSegment();
             return new ParsedExpression(instructions);
         }
 
-        private static VariableTrie<VariableEvaluator> BuildTrie()
+        private static VariableTrie<SystemVariableEvaluator> BuildTrie()
         {
-            return new VariableTrie<VariableEvaluator>()
-                .AddValue(VariableNames.ContentLength, GetContentLength)
-                .AddValue(VariableNames.ContentType, GetContentType)
-                .AddValue(VariableNames.CorrelationId, GetCorrelationId)
-                .AddValue(VariableNames.CallId, GetCallId)
-                .AddValue(VariableNames.Host, GetHost)
-                .AddValue(VariableNames.RequestMethod, GetRequestMethod)
-                .AddValue(VariableNames.RequestScheme, GetRequestScheme)
-                .AddValue(VariableNames.RequestPathBase, GetRequestPathBase)
-                .AddValue(VariableNames.RequestPath, GetRequestPath)
-                .AddValue(VariableNames.RequestQueryString, GetRequestQueryString)
-                .AddValue(VariableNames.RequestEncodedUri, GetRequestEncodedUri)
-                .AddValue(VariableNames.RemoteAddress, GetRemoteAddress)
-                .AddValue(VariableNames.RemotePort, GetRemotePort)
-                .AddValue(VariableNames.ServerAddress, GetServerAddress)
-                .AddValue(VariableNames.ServerName, GetServerName)
-                .AddValue(VariableNames.ServerPort, GetServerPort)
-                .AddValue(VariableNames.ServerProtocol, GetServerProtocol);
+            return new VariableTrie<SystemVariableEvaluator>()
+                .AddValue(SystemVariableNames.ContentLength, GetContentLength)
+                .AddValue(SystemVariableNames.ContentType, GetContentType)
+                .AddValue(SystemVariableNames.CorrelationId, GetCorrelationId)
+                .AddValue(SystemVariableNames.CallId, GetCallId)
+                .AddValue(SystemVariableNames.Host, GetHost)
+                .AddValue(SystemVariableNames.RequestMethod, GetRequestMethod)
+                .AddValue(SystemVariableNames.RequestScheme, GetRequestScheme)
+                .AddValue(SystemVariableNames.RequestPathBase, GetRequestPathBase)
+                .AddValue(SystemVariableNames.RequestPath, GetRequestPath)
+                .AddValue(SystemVariableNames.RequestQueryString, GetRequestQueryString)
+                .AddValue(SystemVariableNames.RequestEncodedUri, GetRequestEncodedUri)
+                .AddValue(SystemVariableNames.RemoteAddress, GetRemoteAddress)
+                .AddValue(SystemVariableNames.RemotePort, GetRemotePort)
+                .AddValue(SystemVariableNames.ServerAddress, GetServerAddress)
+                .AddValue(SystemVariableNames.ServerName, GetServerName)
+                .AddValue(SystemVariableNames.ServerPort, GetServerPort)
+                .AddValue(SystemVariableNames.ServerProtocol, GetServerProtocol);
         }
 
         internal struct ParsedExpression
@@ -255,15 +270,33 @@
                 {
                     if (instruction is string value)
                     {
+                        // Just a string
                         sb.Append(value);
-                        continue;
                     }
-
-                    sb.Append(instruction(context));
+                    else if (instruction is RouteVariable routeVariable)
+                    {
+                        // The value of the variable found in the route
+                        sb.Append(GetVariableValueFromRoute(context, routeVariable.Name));
+                    }
+                    else
+                    {
+                        // The value of a system variable
+                        sb.Append(instruction(context));
+                    }
                 }
 
                 return sb.ToString();
             }
+        }
+
+        private struct RouteVariable
+        {
+            internal RouteVariable(string name)
+            {
+                Name = name;
+            }
+
+            internal string Name { get; }
         }
     }
 }

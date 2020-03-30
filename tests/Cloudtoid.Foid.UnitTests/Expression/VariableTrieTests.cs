@@ -41,23 +41,23 @@
             // Arrange
             var items = new[]
             {
-                VariableNames.ContentLength,
-                VariableNames.ContentType,
-                VariableNames.CorrelationId,
-                VariableNames.CallId,
-                VariableNames.Host,
-                VariableNames.RequestMethod,
-                VariableNames.RequestScheme,
-                VariableNames.RequestPathBase,
-                VariableNames.RequestPath,
-                VariableNames.RequestQueryString,
-                VariableNames.RequestEncodedUri,
-                VariableNames.RemoteAddress,
-                VariableNames.RemotePort,
-                VariableNames.ServerAddress,
-                VariableNames.ServerName,
-                VariableNames.ServerPort,
-                VariableNames.ServerProtocol,
+                SystemVariableNames.ContentLength,
+                SystemVariableNames.ContentType,
+                SystemVariableNames.CorrelationId,
+                SystemVariableNames.CallId,
+                SystemVariableNames.Host,
+                SystemVariableNames.RequestMethod,
+                SystemVariableNames.RequestScheme,
+                SystemVariableNames.RequestPathBase,
+                SystemVariableNames.RequestPath,
+                SystemVariableNames.RequestQueryString,
+                SystemVariableNames.RequestEncodedUri,
+                SystemVariableNames.RemoteAddress,
+                SystemVariableNames.RemotePort,
+                SystemVariableNames.ServerAddress,
+                SystemVariableNames.ServerName,
+                SystemVariableNames.ServerPort,
+                SystemVariableNames.ServerProtocol,
             };
 
             // Act
@@ -73,13 +73,13 @@
             trie.TryGetBestMatch(string.Empty, out _, out _).Should().BeFalse();
             trie.TryGetBestMatch("*&-", out _, out _).Should().BeFalse();
 
-            trie.GetMatches(VariableNames.RequestPathBase)
+            trie.GetMatches(SystemVariableNames.RequestPathBase)
                 .Should()
                 .BeEquivalentTo(
                     new[]
                     {
-                        (VariableNames.RequestPathBase, VariableNames.RequestPathBase.Length),
-                        (VariableNames.RequestPath, VariableNames.RequestPath.Length)
+                        (SystemVariableNames.RequestPathBase, SystemVariableNames.RequestPathBase.Length),
+                        (SystemVariableNames.RequestPath, SystemVariableNames.RequestPath.Length)
                     });
 
             foreach (var item in items)
@@ -89,7 +89,7 @@
                 l.Should().Be(item.Length);
             }
 
-            var value = VariableNames.RequestPathBase;
+            var value = SystemVariableNames.RequestPathBase;
             trie.TryGetBestMatch(value, out var res, out var lm).Should().BeTrue();
             res.Should().Be(value);
             lm.Should().Be(value.Length);

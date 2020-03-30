@@ -23,7 +23,7 @@
             HttpContext httpContext,
             Route route)
         {
-            CheckValue(
+            ProxySettings = CheckValue(
                 route.Settings.Proxy,
                 nameof(route.Settings.Proxy),
                 "This is the actual proxy context. We should never get here if the proxy is null!");
@@ -43,52 +43,20 @@
         public HttpResponse Response => HttpContext.Response;
 
         public string Host
-        {
-            get
-            {
-                if (host is null)
-                    host = hostProvider.GetHost(this);
-
-                return host;
-            }
-        }
+            => host is null ? host = hostProvider.GetHost(this) : host;
 
         public string CorrelationIdHeader
-        {
-            get
-            {
-                if (correlationIdHeader is null)
-                    correlationIdHeader = traceIdProvider.GetCorrelationIdHeader(this);
-
-                return correlationIdHeader;
-            }
-        }
+            => correlationIdHeader is null ? correlationIdHeader = traceIdProvider.GetCorrelationIdHeader(this) : correlationIdHeader;
 
         public string CorrelationId
-        {
-            get
-            {
-                if (correlationId is null)
-                    correlationId = traceIdProvider.GetOrCreateCorrelationId(this);
-
-                return correlationId;
-            }
-        }
+            => correlationId is null ? correlationId = traceIdProvider.GetOrCreateCorrelationId(this) : correlationId;
 
         public string CallId
-        {
-            get
-            {
-                if (callId is null)
-                    callId = traceIdProvider.CreateCallId(this);
-
-                return callId;
-            }
-        }
+            => callId is null ? callId = traceIdProvider.CreateCallId(this) : callId;
 
         internal RouteSettings Settings => Route.Settings;
 
-        internal ProxySettings ProxySettings => Settings.Proxy!;
+        internal ProxySettings ProxySettings { get; }
 
         internal UpstreamRequestSettings ProxyUpstreamRequestSettings => ProxySettings.UpstreamRequest;
 
