@@ -63,13 +63,14 @@
             HttpRequestMessage upstreamRequest,
             CancellationToken cancellationToken)
         {
-            logger.LogDebug("Rewriting the URL by calling an instance of {0}", uriRewriter.GetType().FullName);
+            var type = uriRewriter.GetType().FullName;
+            logger.LogDebug("Rewriting the URL by calling an instance of {0}", type);
 
             upstreamRequest.RequestUri = await uriRewriter
                 .RewriteUrlAsync(context, cancellationToken)
                 .TraceOnFaulted(logger, "Failed to rewrite a URL", cancellationToken);
 
-            logger.LogDebug("Rewrote the URL by calling an instance of {0}", uriRewriter.GetType().FullName);
+            logger.LogDebug("Rewrote the URL by calling an instance of {0}", type);
         }
 
         private async Task SetHeadersAsync(
