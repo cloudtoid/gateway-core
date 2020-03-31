@@ -25,7 +25,7 @@
         [TestMethod]
         public void New_FullyPopulatedOptions_AllValuesAreReadCorrectly()
         {
-            var context = GetProxyContext(@"Options\OptionsFull.json");
+            var context = GetProxyContext(@"Settings\OptionsFull.json");
             var settings = context.Route.Settings;
 
             settings.Proxy!.GetCorrelationIdHeader(context).Should().Be("x-request-id");
@@ -77,7 +77,7 @@
         [TestMethod]
         public void New_AllOptionsThatAllowExpressions_AllValuesAreEvaluatedCorrectly()
         {
-            var context = GetProxyContext(@"Options\OptionsWithExpressions.json");
+            var context = GetProxyContext(@"Settings\OptionsWithExpressions.json");
             var settings = context.Route.Settings;
 
             var expressionValue = Environment.MachineName;
@@ -115,7 +115,7 @@
         [TestMethod]
         public void New_EmptyOptions_AllValuesSetToDefault()
         {
-            var context = GetProxyContext(@"Options\OptionsEmpty.json");
+            var context = GetProxyContext(@"Settings\OptionsEmpty.json");
             var settings = context.Route.Settings;
 
             var request = settings.Proxy!.UpstreamRequest;
@@ -153,10 +153,10 @@
         {
             try
             {
-                File.Copy(@"Options\Options1.json", @"Options\OptionsReload.json", true);
+                File.Copy(@"Settings\Options1.json", @"Settings\OptionsReload.json", true);
 
                 var config = new ConfigurationBuilder()
-                    .AddJsonFile(@"Options\OptionsReload.json", optional: false, reloadOnChange: true)
+                    .AddJsonFile(@"Settings\OptionsReload.json", optional: false, reloadOnChange: true)
                     .Build();
 
                 var services = new ServiceCollection()
@@ -174,7 +174,7 @@
                     Substitute.For<IHostProvider>(),
                     Substitute.For<ITraceIdProvider>(),
                     httpContext,
-                    new Route(settings, ImmutableDictionary<string, string>.Empty));
+                    new Route(settings, string.Empty, ImmutableDictionary<string, string>.Empty));
 
                 using (var changeEvent = new AutoResetEvent(false))
                 {
@@ -188,7 +188,7 @@
 
                     settings.Proxy!.UpstreamRequest.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
 
-                    File.Copy(@"Options\Options2.json", @"Options\OptionsReload.json", true);
+                    File.Copy(@"Settings\Options2.json", @"Settings\OptionsReload.json", true);
                     changeEvent.WaitOne(2000);
 
                     settings = settingsProvider.CurrentValue.Routes.First();
@@ -196,25 +196,25 @@
                         Substitute.For<IHostProvider>(),
                         Substitute.For<ITraceIdProvider>(),
                         httpContext,
-                        new Route(settings, ImmutableDictionary<string, string>.Empty));
+                        new Route(settings, string.Empty, ImmutableDictionary<string, string>.Empty));
 
                     settings.Proxy!.UpstreamRequest.GetTimeout(context).TotalMilliseconds.Should().Be(2000);
 
-                    File.Copy(@"Options\Options1.json", @"Options\OptionsReload.json", true);
+                    File.Copy(@"Settings\Options1.json", @"Settings\OptionsReload.json", true);
                     changeEvent.WaitOne(2000);
                     settings = settingsProvider.CurrentValue.Routes.First();
                     context = new ProxyContext(
                         Substitute.For<IHostProvider>(),
                         Substitute.For<ITraceIdProvider>(),
                         httpContext,
-                        new Route(settings, ImmutableDictionary<string, string>.Empty));
+                        new Route(settings, string.Empty, ImmutableDictionary<string, string>.Empty));
 
                     settings.Proxy!.UpstreamRequest.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
                 }
             }
             finally
             {
-                File.Delete(@"Options\OptionsReload.json");
+                File.Delete(@"Settings\OptionsReload.json");
             }
         }
 
@@ -339,7 +339,7 @@
                 Substitute.For<IHostProvider>(),
                 Substitute.For<ITraceIdProvider>(),
                 httpContext,
-                new Route(settings, ImmutableDictionary<string, string>.Empty));
+                new Route(settings, string.Empty, ImmutableDictionary<string, string>.Empty));
         }
 
         private static void CreateSettingsAndCheckLogs(ReverseProxyOptions options, params string[] messages)

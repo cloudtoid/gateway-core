@@ -58,7 +58,9 @@
                 return null;
 
             var variables = GetVariables(regexMatch, compiledPattern.VariableNames);
-            return new PatternMatchResult(variables);
+            var pathSuffix = GetPathSuffix(regexMatch, path);
+
+            return new PatternMatchResult(pathSuffix, variables);
         }
 
         private static IReadOnlyDictionary<string, string> GetVariables(Match match, ISet<string> variableNames)
@@ -81,6 +83,28 @@
                 return ImmutableDictionary<string, string>.Empty;
 
             return result;
+        }
+
+        private string GetPathSuffix(Match regexMatch, string path)
+        {
+            var len = regexMatch.Length;
+
+            if (len == path.Length)
+                return string.Empty;
+
+            if (len == 0)
+                return path;
+
+            var start = len;
+            var end = path.Length - 1;
+
+            while (start <= end && path[start] == '/')
+                start++;
+
+            while (start < end && path[end] == '/')
+                end--;
+
+            return path.Substring(start, end - start + 1);
         }
     }
 }

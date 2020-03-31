@@ -57,7 +57,7 @@
                 provider.GetRequiredService<IHostProvider>(),
                 provider.GetRequiredService<ITraceIdProvider>(),
                 httpContext,
-                new Route(routeOptions, variables ?? ImmutableDictionary<string, string>.Empty));
+                new Route(routeOptions, string.Empty, variables ?? ImmutableDictionary<string, string>.Empty));
         }
 
         public static ReverseProxyOptions CreateDefaultOptions(string route = "/api/")
