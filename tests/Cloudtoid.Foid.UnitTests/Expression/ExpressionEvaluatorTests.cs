@@ -228,6 +228,14 @@
         }
 
         [TestMethod]
+        public void Evaluate_RouteVariableThatDoesntExistInPattern_EvaluatedToNull()
+        {
+            var options = TestExtensions.CreateDefaultOptions("/product/");
+            var variables = new Dictionary<string, string> { ["id"] = "some-prod-id" };
+            Evaluate("$id", options: options, variables: variables).Should().Be("$id");
+        }
+
+        [TestMethod]
         public void Evaluate_RouteVariables_Evaluated()
         {
             const string idValue = "some-prod-id";
