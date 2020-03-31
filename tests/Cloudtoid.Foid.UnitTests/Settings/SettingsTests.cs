@@ -20,7 +20,7 @@
     using NSubstitute;
 
     [TestClass]
-    public sealed class OptionsTests
+    public sealed class SettingsTests
     {
         [TestMethod]
         public void New_FullyPopulatedOptions_AllValuesAreReadCorrectly()
@@ -261,6 +261,21 @@
             });
 
             CreateSettingsAndCheckLogs(options, "The 'To' cannot be empty or skipped.");
+        }
+
+        [TestMethod]
+        public void New_WhenFailsToCompileRoutePattern_Fail()
+        {
+            var options = new ReverseProxyOptions();
+            options.Routes.Add($"/category/:id/product/:id", new ReverseProxyOptions.RouteOptions
+            {
+                Proxy = new ReverseProxyOptions.RouteOptions.ProxyOptions
+                {
+                    To = "/somevalue"
+                }
+            });
+
+            CreateSettingsAndCheckLogs(options, "The variable name 'id' has already been used. Variable names must be unique.");
         }
 
         [TestMethod]
