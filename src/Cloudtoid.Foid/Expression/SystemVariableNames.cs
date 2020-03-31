@@ -16,7 +16,7 @@
         public const string RequestPathBase = "request_path_base";
         public const string RequestPath = "request_path";
         public const string RequestQueryString = "request_query_string";
-        public const string RequestEncodedUri = "request_encoded_uri";
+        public const string RequestEncodedUrl = "request_encoded_url";
         public const string RemoteAddress = "remote_address";
         public const string RemotePort = "remote_port";
         public const string ServerName = "server_name";
@@ -36,7 +36,7 @@
             RequestPathBase,
             RequestPath,
             RequestQueryString,
-            RequestEncodedUri,
+            RequestEncodedUrl,
             RemoteAddress,
             RemotePort,
             ServerName,

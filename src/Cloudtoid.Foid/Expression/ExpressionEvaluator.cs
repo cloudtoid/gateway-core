@@ -23,6 +23,7 @@
             this.logger = CheckValue(logger, nameof(logger));
         }
 
+        /// <inheritdoc/>
         public string Evaluate(ProxyContext context, string expression)
         {
             CheckValue(context, nameof(context));
@@ -120,11 +121,11 @@
             => context.Request.QueryString.Value;
 
         /// <summary>
-        /// The original escaped request URI including the query string portion.
+        /// The original escaped request URL including the query string portion.
         /// scheme + host + path-base + path + query-string
         /// This is identical to <see cref="UriHelper.GetEncodedUrl(HttpRequest)"/>.
         /// </summary>
-        private static string? GetRequestEncodedUri(ProxyContext context)
+        private static string? GetRequestEncodedUrl(ProxyContext context)
             => context.Request.GetEncodedUrl();
 
         /// <summary>
@@ -252,7 +253,7 @@
                 .AddValue(SystemVariableNames.RequestPathBase, GetRequestPathBase)
                 .AddValue(SystemVariableNames.RequestPath, GetRequestPath)
                 .AddValue(SystemVariableNames.RequestQueryString, GetRequestQueryString)
-                .AddValue(SystemVariableNames.RequestEncodedUri, GetRequestEncodedUri)
+                .AddValue(SystemVariableNames.RequestEncodedUrl, GetRequestEncodedUrl)
                 .AddValue(SystemVariableNames.RemoteAddress, GetRemoteAddress)
                 .AddValue(SystemVariableNames.RemotePort, GetRemotePort)
                 .AddValue(SystemVariableNames.ServerAddress, GetServerAddress)

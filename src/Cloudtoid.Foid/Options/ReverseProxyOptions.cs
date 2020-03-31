@@ -7,14 +7,14 @@
     {
         /// <summary>
         /// Gets or sets the list of proxy server route configurations
-        /// The string key here is the relative request URI.
+        /// The key here is the relative URL of the inbound downstream request.
         /// </summary>
         public Dictionary<string, RouteOptions> Routes { get; set; } = new Dictionary<string, RouteOptions>(StringComparer.OrdinalIgnoreCase);
 
         public sealed class RouteOptions
         {
             /// <summary>
-            /// Gets or sets the proxy configuration depending on a relative request URI specified by <see cref="Route"/>.
+            /// Gets or sets the proxy configuration depending on a relative request URL specified by <see cref="Route"/>.
             /// </summary>
             public ProxyOptions? Proxy { get; set; }
 

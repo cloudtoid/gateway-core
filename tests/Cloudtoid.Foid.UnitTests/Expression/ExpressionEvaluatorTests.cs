@@ -149,7 +149,7 @@
         }
 
         [TestMethod]
-        public void Evaluate_RequestEncodedUriVariable_Evaluated()
+        public void Evaluate_RequestEncodedUrlVariable_Evaluated()
         {
             var context = new DefaultHttpContext();
             context.Request.Scheme = "https";
@@ -157,7 +157,7 @@
             context.Request.PathBase = new PathString("/api");
             context.Request.Path = new PathString("/repos");
             context.Request.QueryString = new QueryString("?a=10&b=20");
-            Evaluate(GetVarName(SystemVariableNames.RequestEncodedUri), context).Should().Be("https://cloudtoid.com/api/repos?a=10&b=20");
+            Evaluate(GetVarName(SystemVariableNames.RequestEncodedUrl), context).Should().Be("https://cloudtoid.com/api/repos?a=10&b=20");
         }
 
         [TestMethod]

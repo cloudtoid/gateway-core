@@ -57,7 +57,7 @@
                 SystemVariableNames.RequestPathBase,
                 SystemVariableNames.RequestPath,
                 SystemVariableNames.RequestQueryString,
-                SystemVariableNames.RequestEncodedUri,
+                SystemVariableNames.RequestEncodedUrl,
                 SystemVariableNames.RemoteAddress,
                 SystemVariableNames.RemotePort,
                 SystemVariableNames.ServerAddress,

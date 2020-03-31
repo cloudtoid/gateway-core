@@ -8,18 +8,18 @@
 
     internal sealed class RequestCreator : IRequestCreator
     {
-        private readonly IUrlRewriter uriRewriter;
+        private readonly IUrlRewriter urlRewriter;
         private readonly IRequestHeaderSetter headerSetter;
         private readonly IRequestContentSetter contentSetter;
         private readonly ILogger<RequestCreator> logger;
 
         public RequestCreator(
-            IUrlRewriter uriRewriter,
+            IUrlRewriter urlRewriter,
             IRequestHeaderSetter headerSetter,
             IRequestContentSetter contentSetter,
             ILogger<RequestCreator> logger)
         {
-            this.uriRewriter = CheckValue(uriRewriter, nameof(uriRewriter));
+            this.urlRewriter = CheckValue(urlRewriter, nameof(urlRewriter));
             this.headerSetter = CheckValue(headerSetter, nameof(headerSetter));
             this.contentSetter = CheckValue(contentSetter, nameof(contentSetter));
             this.logger = CheckValue(logger, nameof(logger));
@@ -63,10 +63,10 @@
             HttpRequestMessage upstreamRequest,
             CancellationToken cancellationToken)
         {
-            var type = uriRewriter.GetType().FullName;
+            var type = urlRewriter.GetType().FullName;
             logger.LogDebug("Rewriting the URL by calling an instance of {0}", type);
 
-            upstreamRequest.RequestUri = await uriRewriter
+            upstreamRequest.RequestUri = await urlRewriter
                 .RewriteUrlAsync(context, cancellationToken)
                 .TraceOnFaulted(logger, "Failed to rewrite a URL", cancellationToken);
 
