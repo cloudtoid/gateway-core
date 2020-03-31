@@ -167,6 +167,7 @@
             var instructions = new List<dynamic>();
             int index = 0;
             int len = expression.Length;
+            var routeVariables = context.Settings.VariableTrie;
             var sb = new StringBuilder(expression.Length);
 
             void ProcessLastSegment()
@@ -214,7 +215,7 @@
                 }
 
                 // Is it a variable extracted from the path section of the inbound downstream URL?
-                if (context.Settings.VariableTrie.TryGetBestMatch(varName, out _, out lengthMatched))
+                if (routeVariables.TryGetBestMatch(varName, out _, out lengthMatched))
                 {
                     ProcessLastSegment();
                     index -= varName.Length - lengthMatched;

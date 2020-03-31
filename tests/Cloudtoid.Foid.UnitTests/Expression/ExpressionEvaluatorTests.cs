@@ -1,6 +1,7 @@
 ﻿namespace Cloudtoid.Foid.UnitTests
 {
     using System;
+    using System.Collections.Generic;
     using System.Net;
     using Cloudtoid.Foid.Expression;
     using FluentAssertions;
@@ -213,6 +214,31 @@
         }
 
         [TestMethod]
+        public void Evaluate_RouteVariable_Evaluated()
+        {
+            const string value = "some-prod-id";
+            var options = TestExtensions.CreateDefaultOptions("/product/:id");
+            var variables = new Dictionary<string, string> { ["id"] = value };
+            Evaluate(GetVarName("id"), options: options, variables: variables).Should().Be(value);
+        }
+
+        [TestMethod]
+        public void Evaluate_RouteVariables_Evaluated()
+        {
+            const string idValue = "some-prod-id";
+            const string catValue = "some-cat-id";
+            var options = TestExtensions.CreateDefaultOptions("/category/:catid/product/:id");
+            var variables = new Dictionary<string, string>
+            {
+                ["id"] = idValue,
+                ["catid"] = catValue
+            };
+
+            Evaluate("cat-id = $catid, id = $id", options: options, variables: variables)
+                .Should().Be($"cat-id = {catValue}, id = {idValue}");
+        }
+
+        [TestMethod]
         public void Evaluate_WhenMultipleVariable_Evaluated()
         {
             var context = new DefaultHttpContext();
@@ -250,12 +276,14 @@
 
         private static string Evaluate(
             string expression,
-            HttpContext? httpContext = null)
+            HttpContext? httpContext = null,
+            ReverseProxyOptions? options = null,
+            IReadOnlyDictionary<string, string>? variables = null)
         {
-            var services = new ServiceCollection().AddTest().AddTestOptions();
+            var services = new ServiceCollection().AddTest().AddTestOptions(options);
             var serviceProvider = services.BuildServiceProvider();
             var evaluator = serviceProvider.GetRequiredService<IExpressionEvaluator>();
-            var context = serviceProvider.GetProxyContext(httpContext);
+            var context = serviceProvider.GetProxyContext(httpContext, variables);
             return evaluator.Evaluate(context, expression);
         }
     }

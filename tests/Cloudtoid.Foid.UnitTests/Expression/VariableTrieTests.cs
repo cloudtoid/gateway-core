@@ -21,7 +21,13 @@
             foreach (char c in Enumerable.Range('A', 26))
                 trie.AddValue(c.ToString(), c.ToString());
 
+            foreach (char c in Enumerable.Range('0', 10))
+                trie.AddValue(c.ToString(), c.ToString());
+
             foreach (char c in Enumerable.Range('a', 26))
+                trie.GetMatches(c.ToString()).Should().HaveCount(1);
+
+            foreach (char c in Enumerable.Range('0', 10))
                 trie.GetMatches(c.ToString()).Should().HaveCount(1);
 
             trie.GetMatches("_").Should().HaveCount(1);

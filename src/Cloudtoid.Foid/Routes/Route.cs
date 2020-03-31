@@ -15,6 +15,9 @@
 
         public RouteSettings Settings { get; }
 
+        /// <summary>
+        /// These are the variables and their values extracted from the route pattern and the inbound URL path respectively.
+        /// </summary>
         public IReadOnlyDictionary<string, string> Variables { get; }
     }
 }
