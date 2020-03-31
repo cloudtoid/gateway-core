@@ -78,12 +78,6 @@
             Validate(":var0/:var0", "The variable name 'var0' has already been used. Variable names must be unique.");
         }
 
-        [TestMethod]
-        public void Validate_WhenCollidesWithSystemVariable_Fail()
-        {
-            Validate(":host", "The variable name 'host' collides with a system variable with the same name.");
-        }
-
         private void Validate(string pattern)
         {
             var parser = new PatternParser();

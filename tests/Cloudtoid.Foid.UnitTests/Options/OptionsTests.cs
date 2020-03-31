@@ -6,6 +6,7 @@
     using System.Linq;
     using System.Threading;
     using Cloudtoid.Foid;
+    using Cloudtoid.Foid.Expression;
     using Cloudtoid.Foid.Host;
     using Cloudtoid.Foid.Settings;
     using Cloudtoid.Foid.Trace;
@@ -260,6 +261,21 @@
             });
 
             CreateSettingsAndCheckLogs(options, "The 'To' cannot be empty or skipped.");
+        }
+
+        [TestMethod]
+        public void New_WhenCollidesWithSystemVariable_Fail()
+        {
+            var options = new ReverseProxyOptions();
+            options.Routes.Add($"/:{SystemVariableNames.Host}/", new ReverseProxyOptions.RouteOptions
+            {
+                Proxy = new ReverseProxyOptions.RouteOptions.ProxyOptions
+                {
+                    To = "/somevalue"
+                }
+            });
+
+            CreateSettingsAndCheckLogs(options, "The variable name 'host' collides with a system variable with the same name.");
         }
 
         [TestMethod]
