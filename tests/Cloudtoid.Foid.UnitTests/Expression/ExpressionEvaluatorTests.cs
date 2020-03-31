@@ -2,17 +2,22 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
     using Cloudtoid.Foid.Expression;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public sealed class ExpressionEvaluatorTests
     {
+        private readonly IServiceCollection services = new ServiceCollection();
+        private IServiceProvider? serviceProvider;
+
         [TestMethod]
         public void Evaluate_EmptyExpression_NothingToEvaluate()
         {
@@ -272,16 +277,30 @@
                 .Be("httpstesthttps");
         }
 
+        [TestMethod]
+        public void Evaluate_SameExpressionMultipleTimes_MustUseParserCache()
+        {
+            var context = new DefaultHttpContext();
+            context.Request.Scheme = "https";
+
+            Evaluate("abc", context).Should().Be("abc");
+            Evaluate("abc", context).Should().Be("abc");
+            Evaluate("abc", context).Should().Be("abc");
+
+            var logger = (Logger<ExpressionEvaluator>)serviceProvider.GetRequiredService<ILogger<ExpressionEvaluator>>();
+            logger.Logs.Where(l => l.ContainsOrdinalIgnoreCase("Parsing an expression: abc")).Should().HaveCount(1);
+        }
+
         private static string GetVarName(string varName) => $"${varName}";
 
-        private static string Evaluate(
+        private string Evaluate(
             string expression,
             HttpContext? httpContext = null,
             ReverseProxyOptions? options = null,
             IReadOnlyDictionary<string, string>? variables = null)
         {
-            var services = new ServiceCollection().AddTest().AddTestOptions(options);
-            var serviceProvider = services.BuildServiceProvider();
+            services.AddTest().AddTestOptions(options);
+            serviceProvider = services.BuildServiceProvider();
             var evaluator = serviceProvider.GetRequiredService<IExpressionEvaluator>();
             var context = serviceProvider.GetProxyContext(httpContext, variables);
             return evaluator.Evaluate(context, expression);

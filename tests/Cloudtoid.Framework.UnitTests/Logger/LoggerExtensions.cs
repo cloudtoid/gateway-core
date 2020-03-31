@@ -9,7 +9,8 @@
 
     public static class LoggerExtensions
     {
-        private static readonly MethodInfo LogMethodInfo = typeof(ILogger).GetMethod("Log") ?? throw new NotSupportedException("Expected a single method called Log on ILogger");
+        private static readonly MethodInfo LogMethodInfo = typeof(ILogger).GetMethod("Log")
+            ?? throw new NotSupportedException("Expected a single method called Log on ILogger");
 
         public static ILogger<TCategory> ReceivedLog<TCategory>(
             this ILogger<TCategory> substitute,

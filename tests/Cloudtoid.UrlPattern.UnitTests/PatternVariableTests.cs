@@ -24,6 +24,16 @@
         }
 
         [TestMethod]
+        public void TryGetIndex_InvalidChar_Fail()
+        {
+            PatternVariables.TryGetIndex('}', out var index).Should().BeFalse();
+            index.Should().Be(-1);
+
+            PatternVariables.TryGetIndex((char)180, out index).Should().BeFalse();
+            index.Should().Be(-1);
+        }
+
+        [TestMethod]
         public void IsValidVariableChar_WhenFirstCharIsNumber_Fails()
         {
             for (int i = 48; i < 59; i++)

@@ -32,7 +32,7 @@
         public static bool TryGetIndex(char c, out int index)
         {
             int v = c;
-            if (v >= 123)
+            if (v >= CharToIndex.Length)
             {
                 index = -1;
                 return false;

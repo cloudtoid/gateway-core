@@ -7,6 +7,7 @@
     using Cloudtoid.UrlPattern;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Http.Extensions;
+    using Microsoft.Extensions.Logging;
     using static Contract;
     using Cache = System.Collections.Generic.IReadOnlyDictionary<string, ExpressionEvaluator.ParsedExpression>;
     using SystemVariableEvaluator = System.Func<ProxyContext, string?>;
@@ -14,7 +15,13 @@
     internal sealed class ExpressionEvaluator : IExpressionEvaluator
     {
         private static readonly VariableTrie<SystemVariableEvaluator> SystemVariablesTrie = BuildTrie();
+        private readonly ILogger<ExpressionEvaluator> logger;
         private Cache cache = new Dictionary<string, ParsedExpression>(0, StringComparer.Ordinal);
+
+        public ExpressionEvaluator(ILogger<ExpressionEvaluator> logger)
+        {
+            this.logger = CheckValue(logger, nameof(logger));
+        }
 
         public string Evaluate(ProxyContext context, string expression)
         {
@@ -162,8 +169,10 @@
         private static string? GetVariableValueFromRoute(ProxyContext context, string name)
             => context.Route.Variables.TryGetValue(name, out var value) ? value : null;
 
-        private static ParsedExpression Parse(ProxyContext context, string expression)
+        private ParsedExpression Parse(ProxyContext context, string expression)
         {
+            logger.LogDebug("Parsing an expression: {0}", expression);
+
             var instructions = new List<dynamic>();
             int index = 0;
             int len = expression.Length;

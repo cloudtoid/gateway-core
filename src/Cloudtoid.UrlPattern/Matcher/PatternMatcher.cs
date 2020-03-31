@@ -68,7 +68,7 @@
 
             foreach (var variableName in variableNames)
             {
-                if (groups.TryGetValue(variableName, out var group) && group.Success)
+                if (groups.TryGetValue(variableName, out var group))
                 {
                     if (result is null)
                         result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);

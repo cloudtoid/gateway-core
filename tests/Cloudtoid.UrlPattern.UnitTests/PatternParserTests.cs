@@ -422,6 +422,7 @@
             var parser = new PatternParser();
             var errorsSink = new PatternCompilerErrorsSink();
             parser.TryParse(pattern, errorsSink, out var parsedPattern).Should().BeTrue();
+            errorsSink.Errors.Should().HaveCount(0);
             errorsSink.HasErrors.Should().BeFalse();
             parsedPattern.Should().NotBeNull();
             return parsedPattern!;
