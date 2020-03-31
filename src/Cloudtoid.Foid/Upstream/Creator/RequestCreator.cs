@@ -8,13 +8,13 @@
 
     internal sealed class RequestCreator : IRequestCreator
     {
-        private readonly IUriRewriter uriRewriter;
+        private readonly IUrlRewriter uriRewriter;
         private readonly IRequestHeaderSetter headerSetter;
         private readonly IRequestContentSetter contentSetter;
         private readonly ILogger<RequestCreator> logger;
 
         public RequestCreator(
-            IUriRewriter uriRewriter,
+            IUrlRewriter uriRewriter,
             IRequestHeaderSetter headerSetter,
             IRequestContentSetter contentSetter,
             ILogger<RequestCreator> logger)
@@ -39,7 +39,7 @@
 
             SetHttpMethod(context, upstreamRequest);
             SetHttpVersion(context, upstreamRequest);
-            await SetUriAsync(context, upstreamRequest, cancellationToken);
+            await SetUrlAsync(context, upstreamRequest, cancellationToken);
             await SetHeadersAsync(context, upstreamRequest, cancellationToken);
             await SetContentAsync(context, upstreamRequest, cancellationToken);
 
@@ -58,18 +58,18 @@
             upstreamRequest.Version = context.ProxyUpstreamRequestSettings.GetHttpVersion(context);
         }
 
-        private async Task SetUriAsync(
+        private async Task SetUrlAsync(
             ProxyContext context,
             HttpRequestMessage upstreamRequest,
             CancellationToken cancellationToken)
         {
-            logger.LogDebug("Rewriting the Uri by calling an instance of {0}", uriRewriter.GetType().FullName);
+            logger.LogDebug("Rewriting the URL by calling an instance of {0}", uriRewriter.GetType().FullName);
 
             upstreamRequest.RequestUri = await uriRewriter
-                .RewriteUriAsync(context, cancellationToken)
-                .TraceOnFaulted(logger, "Failed to rewrite a URI", cancellationToken);
+                .RewriteUrlAsync(context, cancellationToken)
+                .TraceOnFaulted(logger, "Failed to rewrite a URL", cancellationToken);
 
-            logger.LogDebug("Rewrote the Uri by calling an instance of {0}", uriRewriter.GetType().FullName);
+            logger.LogDebug("Rewrote the URL by calling an instance of {0}", uriRewriter.GetType().FullName);
         }
 
         private async Task SetHeadersAsync(

@@ -4,9 +4,9 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    public interface IUriRewriter
+    public interface IUrlRewriter
     {
-        Task<Uri> RewriteUriAsync(
+        Task<Uri> RewriteUrlAsync(
             ProxyContext context,
             CancellationToken cancellationToken);
     }
