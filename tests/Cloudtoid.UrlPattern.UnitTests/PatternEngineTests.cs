@@ -190,6 +190,15 @@
             act.Should().ThrowExactly<PatternException>("*There is a variable with an empty or invalid name*");
         }
 
+        [TestMethod]
+        public void PatternEngineMatchSimple()
+        {
+            var pattern = @"/:variable";
+            var path = "/value";
+            Action act = () => engine.Match(pattern, path);
+            act.Should().NotThrow();
+        }
+
         private void ShouldMatch(
         string pattern,
         string path,
