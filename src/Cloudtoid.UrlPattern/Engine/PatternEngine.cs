@@ -9,18 +9,13 @@
 
     public sealed class PatternEngine : IPatternEngine
     {
-        private static readonly PatternEngineOptions DefaultOptions = new PatternEngineOptions();
-
-        private readonly PatternEngineOptions options;
         private readonly IPatternCompiler compiler;
         private readonly IPatternMatcher matcher;
         private readonly IUrlPathNormalizer normalizer;
         private readonly ConcurrentDictionary<string, CompiledPatternInfo> compiledPatterns;
 
-        public PatternEngine(PatternEngineOptions? options = null)
+        public PatternEngine()
         {
-            this.options = options ?? DefaultOptions;
-
             var resolver = new PatternTypeResolver();
             var parser = new PatternParser();
             var validator = new PatternValidator();
@@ -84,6 +79,7 @@
             {
                 error = GetCompileErrorMessage(errors);
                 compiledPatterns.TryAdd(pattern, new CompiledPatternInfo(error));
+                error += Environment.NewLine + "// not from cache";
                 return false;
             }
 
@@ -103,9 +99,9 @@
 
         private static string GetCompileErrorMessage(IReadOnlyList<PatternCompilerError> errors)
         {
-            var builder = new StringBuilder("Failed to compile the pattern with the following errors:").AppendLine();
+            var builder = new StringBuilder("Failed to compile the pattern with the following errors:");
             foreach (var error in errors)
-                builder.AppendLine(error.ToString());
+                builder.AppendLine().Append(error.ToString());
 
             return builder.ToString();
         }

@@ -33,7 +33,7 @@
 
             if (!regexMatch.Success)
             {
-                why = $"The path '{path}' with pattern '{compiledPattern.Pattern}'";
+                why = $"The path '{path}' is not a match for pattern '{compiledPattern.Pattern}'";
                 match = null;
                 return false;
             }

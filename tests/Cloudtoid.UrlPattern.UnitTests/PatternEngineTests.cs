@@ -1,5 +1,6 @@
 ﻿namespace Cloudtoid.UrlPattern.UnitTests
 {
+    using System;
     using System.Linq;
     using Cloudtoid.UrlPattern;
     using FluentAssertions;
@@ -166,11 +167,34 @@
                variables: ("category", "bike"));
         }
 
+        [TestMethod]
+        public void PatternEngineCacheTests()
+        {
+            var pattern = @"/: variable";
+            var path = "category/test";
+
+            engine.TryMatch(pattern, path, out var _, out var why).Should().BeFalse();
+            why.Should().Contain("// not from cache");
+
+            engine.TryMatch(pattern, path, out var _, out why).Should().BeFalse();
+            why.Should().NotContain("// not from cache");
+        }
+
+        [TestMethod]
+        public void PatternEngineMatchShouldThrow()
+        {
+            var pattern = @"/: variable";
+            var path = "category/test";
+            Action act = () => engine.Match(pattern, path);
+
+            act.Should().ThrowExactly<PatternException>("*There is a variable with an empty or invalid name*");
+        }
+
         private void ShouldMatch(
-            string pattern,
-            string path,
-            string? pathSuffix = null,
-            params (string Name, string Value)[] variables)
+        string pattern,
+        string path,
+        string? pathSuffix = null,
+        params (string Name, string Value)[] variables)
         {
             engine.TryMatch(pattern, path, out var match, out var why).Should().BeTrue();
             why.Should().BeNull();
