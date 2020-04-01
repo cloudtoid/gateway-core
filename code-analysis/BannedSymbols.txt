@@ -29,7 +29,6 @@ M:System.String.IndexOf(System.String,System.Int32,System.StringComparison); Don
 M:System.String.IndexOf(System.Char,System.Int32,System.Int32); Don't use String.IndexOf, use StringUtil.IndexOfOrdinal or StringUtil.IndexOfOrdinalIgnoreCase instead.
 M:System.String.IndexOf(System.String,System.StringComparison); Don't use String.IndexOf, use StringUtil.IndexOfOrdinal or StringUtil.IndexOfOrdinalIgnoreCase instead.
 M:System.String.IndexOf(System.Char,System.StringComparison); Don't use String.IndexOf, use StringUtil.IndexOfOrdinal or StringUtil.IndexOfOrdinalIgnoreCase instead.
-M:System.String.IndexOf(System.Char,System.Int32); Don't use String.IndexOf, use StringUtil.IndexOfOrdinal or StringUtil.IndexOfOrdinalIgnoreCase instead.
 M:System.String.IndexOf(System.String); Don't use String.IndexOf, use StringUtil.IndexOfOrdinal or StringUtil.IndexOfOrdinalIgnoreCase instead.
 M:System.String.IndexOf(System.Char); Don't use String.IndexOf, use StringUtil.IndexOfOrdinal or StringUtil.IndexOfOrdinalIgnoreCase instead.
 M:System.String.IndexOf(System.String,System.Int32); Don't use String.IndexOf, use StringUtil.IndexOfOrdinal or StringUtil.IndexOfOrdinalIgnoreCase instead.

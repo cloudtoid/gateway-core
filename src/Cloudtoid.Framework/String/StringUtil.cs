@@ -139,14 +139,7 @@
         /// <param name="str">The original string.</param>
         /// <param name="value">The char to seek.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int IndexOfOrdinal(this string str, char value)
-        {
-#if NETSTANDARD2_0
-            return CheckValue(str, nameof(str)).IndexOf(value);
-#else
-            return CheckValue(str, nameof(str)).IndexOf(value, StringComparison.Ordinal);
-#endif
-        }
+        public static int IndexOfOrdinal(this string str, char value) => CheckValue(str, nameof(str)).IndexOf(value, StringComparison.Ordinal);
 
         /// <summary>
         /// Reports the zero-based index of the first occurrence of the specified string in the current <see cref="string"/> object. The search uses <see cref="StringComparison.Ordinal"/> comparison.

@@ -60,7 +60,7 @@
                 new Route(routeOptions, string.Empty, variables ?? ImmutableDictionary<string, string>.Empty));
         }
 
-        public static ReverseProxyOptions CreateDefaultOptions(string route = "/api/")
+        public static ReverseProxyOptions CreateDefaultOptions(string route = "/api/", string to = "/upstream/api/")
         {
             return new ReverseProxyOptions
             {
@@ -70,7 +70,7 @@
                     {
                         Proxy = new ReverseProxyOptions.RouteOptions.ProxyOptions
                         {
-                            To = "/upstream/api/"
+                            To = to
                         }
                     }
                 }

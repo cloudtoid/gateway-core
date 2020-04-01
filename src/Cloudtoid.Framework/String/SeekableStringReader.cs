@@ -117,7 +117,7 @@
 
             var s = pos == 0
                 ? Value
-                : Value.Substring(pos, length - pos);
+                : Value[pos..length];
 
             pos = length;
             return s;
@@ -140,7 +140,7 @@
                 char ch = Value[i];
                 if (ch == '\r' || ch == '\n')
                 {
-                    string result = Value.Substring(pos, i - pos);
+                    string result = Value[pos..i];
                     pos = i + 1;
                     if (ch == '\r' && pos < length && Value[pos] == '\n')
                     {
@@ -155,7 +155,7 @@
 
             if (i > pos)
             {
-                string result = Value.Substring(pos, i - pos);
+                string result = Value[pos..i];
                 pos = i;
                 return result;
             }

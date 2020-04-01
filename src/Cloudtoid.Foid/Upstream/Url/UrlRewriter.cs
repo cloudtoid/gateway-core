@@ -4,6 +4,8 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Cloudtoid.Foid.Expression;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Http.Extensions;
     using Microsoft.Extensions.Logging;
     using static Contract;
 
@@ -22,25 +24,53 @@
 
         public Task<Uri> RewriteUrlAsync(ProxyContext context, CancellationToken cancellationToken)
         {
-            var url = evaluator.Evaluate(context, context.ProxySettings.To) + context.Route.PathSuffix;
-            if (context.Request.QueryString.HasValue)
-                url += context.Request.QueryString.Value;
+            var toExpression = context.ProxySettings.To;
+            var to = evaluator.Evaluate(context, toExpression);
+
+            string scheme;
+            HostString host;
+            PathString toPath;
+            QueryString toQueryString;
+            FragmentString fragment;
 
             try
             {
-                return Task.FromResult(new Uri(url));
+                UriHelper.FromAbsolute(
+                    to,
+                    out scheme,
+                    out host,
+                    out toPath,
+                    out toQueryString,
+                    out fragment);
             }
             catch (FormatException ufe)
             {
-                logger.LogError(
-                    ufe,
-                    "Using '{0}' expression to rewrite request URL path '{1}' to '{2}'. However, the rewritten URL is not a valid URL format.",
-                    context.ProxySettings.To,
-                    context.Request.Path,
-                    url);
-
-                throw;
+                var message = $"Using '{context.ProxySettings.To}' expression to rewrite request URL '{context.Request.Path}'. However, the rewritten URL is not a valid URL format.";
+                logger.LogError(ufe, message);
+                throw new UriFormatException(message, ufe);
             }
+
+            if (!Uri.CheckSchemeName(scheme))
+                throw new UriFormatException($"The HTTP scheme '{scheme}' specified by '{toExpression}' expression is invalid.");
+
+            if (!host.HasValue || Uri.CheckHostName(host.Value) == UriHostNameType.Unknown)
+                throw new UriFormatException($"The URL host '{host}' specified by '{toExpression}' expression is invalid.");
+
+            var path = toPath + context.Route.PathSuffix;
+            var queryString = context.Request.QueryString + toQueryString;
+
+            var url = UriHelper.BuildAbsolute(
+                scheme,
+                host,
+                PathString.Empty,
+                path,
+                queryString,
+                fragment);
+
+            if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
+                return Task.FromResult(uri);
+
+            throw new UriFormatException($"The URL '{url}' specified by '{toExpression}' expression is an invalid absolute HTTP URL.");
         }
     }
 }

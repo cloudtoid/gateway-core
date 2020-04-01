@@ -31,7 +31,7 @@
             {
                 if (matcher.TryMatch(routeSetting.CompiledRoute, path, out var match))
                 {
-                    route = new Route(routeSetting, match.PathSuffix, match.Variables);
+                    route = new Route(routeSetting, PathString.FromUriComponent(match.PathSuffix), match.Variables);
                     return true;
                 }
             }
