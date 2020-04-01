@@ -14,7 +14,6 @@
 
             return services
                 .TryAddSingleton<Marker>()
-                .AddLogging()
                 .AddOptions()
                 .AddFramework()
                 .TryAddSingleton<IUrlPathNormalizer, UrlPathNormalizer>()
@@ -22,7 +21,8 @@
                 .TryAddSingleton<IPatternParser, PatternParser>()
                 .TryAddSingleton<IPatternValidator, PatternValidator>()
                 .TryAddSingleton<IPatternCompiler, PatternCompiler>()
-                .TryAddSingleton<IPatternMatcher, PatternMatcher>();
+                .TryAddSingleton<IPatternMatcher, PatternMatcher>()
+                .TryAddSingleton<IPatternEngine, PatternEngine>();
         }
 
         // This class prevents multiple registrations of this library with DI

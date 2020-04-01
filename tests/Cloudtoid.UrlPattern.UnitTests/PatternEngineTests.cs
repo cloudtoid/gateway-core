@@ -7,19 +7,15 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
-    public class PatternMatcherTests
+    public class PatternEngineTests
     {
-        private readonly IUrlPathNormalizer normalizer;
-        private readonly IPatternCompiler compiler;
-        private readonly IPatternMatcher matcher;
+        private readonly IPatternEngine engine;
 
-        public PatternMatcherTests()
+        public PatternEngineTests()
         {
             var services = new ServiceCollection().AddUrlPattern();
             var serviceProvider = services.BuildServiceProvider();
-            normalizer = serviceProvider.GetRequiredService<IUrlPathNormalizer>();
-            compiler = serviceProvider.GetRequiredService<IPatternCompiler>();
-            matcher = serviceProvider.GetRequiredService<IPatternMatcher>();
+            engine = serviceProvider.GetRequiredService<IPatternEngine>();
         }
 
         [TestMethod]
@@ -48,154 +44,146 @@
 
             ShouldMatch(
                 pattern: "/category/:category/product/:product",
-                route: "category/bike/product/1234",
+                path: "category/bike/product/1234",
                 string.Empty,
                 ("category", "bike"),
                 ("product", "1234"));
 
             ShouldMatch(
                 pattern: "/category/:category(/product/:product)",
-                route: "category/bike/product/1234",
+                path: "category/bike/product/1234",
                 string.Empty,
                 ("category", "bike"),
                 ("product", "1234"));
 
             ShouldMatch(
                 pattern: "/category/:category(/product/:product)",
-                route: "category/bike/",
+                path: "category/bike/",
                 variables: ("category", "bike"));
 
             ShouldMatch(
                pattern: "/category/*(/product/:product)",
-               route: "category/bike/product/1234",
+               path: "category/bike/product/1234",
                variables: ("product", "1234"));
 
             ShouldMatch(
                pattern: "/category/*(/product/:product)",
-               route: "category/bike");
+               path: "category/bike");
 
             ShouldNotMatch(
                pattern: "/category/*(/product/:product)",
-               route: "/bike(/product/:product)");
+               path: "/bike(/product/:product)");
 
             ShouldMatch(
                pattern: "/category/*(/product/:product)",
-               route: "category/bike");
+               path: "category/bike");
 
             ShouldNotMatch(
               pattern: "/category/*(/product/:product)",
-              route: "/bike(/product/:product)");
+              path: "/bike(/product/:product)");
 
             ShouldMatch(
                pattern: @"/category/\\*(/product/:product)",
-               route: "category/*/product/1234",
+               path: "category/*/product/1234",
                variables: ("product", "1234"));
 
             ShouldMatch(
                pattern: @"/category/\\*(/product/:product)",
-               route: "category/*/");
+               path: "category/*/");
 
             ShouldMatch(
                pattern: @"/category/\\*/product/:product",
-               route: "category/*/product/1234",
+               path: "category/*/product/1234",
                variables: ("product", "1234"));
 
             ShouldMatch(
                pattern: @"/category/\\:product",
-               route: "category/:product/");
+               path: "category/:product/");
 
             ShouldMatch(
                pattern: @"/category/\\(:product\\)",
-               route: "category/(1234)/",
+               path: "category/(1234)/",
                variables: ("product", "1234"));
 
             ShouldNotMatch(
                pattern: @"/category/\\(:product\\)",
-               route: "category/1234/");
+               path: "category/1234/");
 
             ShouldMatch(
                pattern: @"/category/\(:product\)",
-               route: @"category/\1234\/",
+               path: @"category/\1234\/",
                variables: ("product", "1234"));
 
             ShouldMatch(
                pattern: @"/category/*",
-               route: "category/1234/");
+               path: "category/1234/");
 
             ShouldMatch(
                pattern: @"/category/*",
-               route: "category/");
+               path: "category/");
 
             ShouldNotMatch(
                pattern: @"exact: /category/",
-               route: "category/test");
+               path: "category/test");
 
             ShouldMatch(
                pattern: @"/category/",
-               route: "category/bike/",
+               path: "category/bike/",
                pathSuffix: "bike");
 
             ShouldMatch(
                pattern: @"/category/",
-               route: "category/bike/product/1234",
+               path: "category/bike/product/1234",
                pathSuffix: "bike/product/1234");
 
             ShouldMatch(
                pattern: @"/catego",
-               route: "category/bike/product/1234",
+               path: "category/bike/product/1234",
                pathSuffix: "ry/bike/product/1234");
 
             ShouldMatch(
                pattern: @"/category/*/product",
-               route: "category/bike/product");
+               path: "category/bike/product");
 
             ShouldMatch(
                pattern: @"/",
-               route: "/////category/bike/product/////",
+               path: "/////category/bike/product/////",
                pathSuffix: "category/bike/product");
 
             ShouldMatch(
                pattern: @"/",
-               route: "///////");
+               path: "///////");
 
             ShouldMatch(
                pattern: @"regex: \/category\/(?<category>.+)\/product",
-               route: "category/bike/product",
+               path: "category/bike/product",
                variables: ("category", "bike"));
 
             ShouldMatch(
                pattern: @"regex: \/category\/(?<category>.+)\/product",
-               route: "category/bike/product/123/test/",
+               path: "category/bike/product/123/test/",
                pathSuffix: "123/test",
                variables: ("category", "bike"));
         }
 
         private void ShouldMatch(
             string pattern,
-            string route,
+            string path,
             string? pathSuffix = null,
             params (string Name, string Value)[] variables)
         {
-            var compiledPattern = Compile(pattern);
-            matcher.TryMatch(compiledPattern, normalizer.Normalize(route), out var matched).Should().BeTrue();
-            matched.Should().NotBeNull();
-            matched!.PathSuffix.Should().BeEquivalentTo(pathSuffix ?? string.Empty);
-            matched.Variables.Select(v => (v.Key, v.Value)).Should().BeEquivalentTo(variables);
+            engine.TryMatch(pattern, path, out var match, out var why).Should().BeTrue();
+            why.Should().BeNull();
+            match.Should().NotBeNull();
+            match!.PathSuffix.Should().BeEquivalentTo(pathSuffix ?? string.Empty);
+            match.Variables.Select(v => (v.Key, v.Value)).Should().BeEquivalentTo(variables);
         }
 
-        private void ShouldNotMatch(string pattern, string route)
+        private void ShouldNotMatch(string pattern, string path)
         {
-            var compiledPattern = Compile(pattern);
-            matcher.TryMatch(compiledPattern, normalizer.Normalize(route), out var matched).Should().BeFalse();
-            matched.Should().BeNull();
-        }
-
-        private CompiledPattern Compile(string pattern)
-        {
-            compiler.TryCompile(pattern, out var compiledPattern, out var errors).Should().BeTrue();
-            errors.Should().BeNull();
-            compiledPattern.Should().NotBeNull();
-            return compiledPattern!;
+            engine.TryMatch(pattern, path, out var match, out var why).Should().BeFalse();
+            why.Should().NotBeNull();
+            match.Should().BeNull();
         }
     }
 }

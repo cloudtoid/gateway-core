@@ -5,62 +5,45 @@
     using System.Collections.Immutable;
     using System.Diagnostics.CodeAnalysis;
     using System.Text.RegularExpressions;
-    using Microsoft.Extensions.Logging;
     using static Contract;
 
     internal sealed class PatternMatcher : IPatternMatcher
     {
-        private readonly ILogger<PatternMatcher> logger;
-
-        public PatternMatcher(ILogger<PatternMatcher> logger)
-        {
-            this.logger = CheckValue(logger, nameof(logger));
-        }
-
+        /// <inheritdoc/>
         public bool TryMatch(
-            CompiledPattern pattern,
+            CompiledPattern compiledPattern,
             string path,
-            [NotNullWhen(true)] out PatternMatchResult? match)
+            [NotNullWhen(true)] out PatternMatchResult? match,
+            [NotNullWhen(false)] out string? why)
         {
-            CheckValue(pattern, nameof(pattern));
+            CheckValue(compiledPattern, nameof(compiledPattern));
             CheckValue(path, nameof(path));
 
-            logger.LogDebug("Matching path '{0}' with pattern '{1}'.", path, pattern.Pattern);
-
-            match = Match(pattern, path);
-
-            if (match is null)
-            {
-                logger.LogDebug("Path '{0}' is not a match for pattern '{1}'.", path, pattern.Pattern);
-                return false;
-            }
-
-            logger.LogDebug("Matched '{0}' path with '{1}' pattern.", path, pattern.Pattern);
-            return true;
-        }
-
-        private PatternMatchResult? Match(
-            CompiledPattern compiledPattern,
-            string path)
-        {
             Match regexMatch;
             try
             {
                 regexMatch = compiledPattern.Regex.Match(path);
             }
-            catch (RegexMatchTimeoutException tex)
+            catch (RegexMatchTimeoutException)
             {
-                logger.LogError(tex, "The attempt to match path '{0}' with pattern '{1}' timed out.", path, compiledPattern.Pattern);
-                return null;
+                why = $"The attempt to match path '{path}' with pattern '{compiledPattern.Pattern}' timed out.";
+                match = null;
+                return false;
             }
 
             if (!regexMatch.Success)
-                return null;
+            {
+                why = $"The path '{path}' with pattern '{compiledPattern.Pattern}'";
+                match = null;
+                return false;
+            }
 
             var variables = GetVariables(regexMatch, compiledPattern.VariableNames);
             var pathSuffix = GetPathSuffix(regexMatch, path);
 
-            return new PatternMatchResult(pathSuffix, variables);
+            why = null;
+            match = new PatternMatchResult(pathSuffix, variables);
+            return true;
         }
 
         private static IReadOnlyDictionary<string, string> GetVariables(Match match, ISet<string> variableNames)
@@ -85,7 +68,7 @@
             return result;
         }
 
-        private string GetPathSuffix(Match regexMatch, string path)
+        private static string GetPathSuffix(Match regexMatch, string path)
         {
             var len = regexMatch.Length;
 
