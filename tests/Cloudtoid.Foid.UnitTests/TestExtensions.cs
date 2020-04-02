@@ -46,18 +46,23 @@
         public static ProxyContext GetProxyContext(
             this IServiceProvider provider,
             HttpContext? httpContext = null,
+            string? pathSuffix = null,
             IReadOnlyDictionary<string, string>? variables = null)
         {
             var settingsProvider = provider.GetRequiredService<ISettingsProvider>();
             var routeOptions = settingsProvider.CurrentValue.Routes.First();
 
             httpContext ??= new DefaultHttpContext();
+            var route = new Route(
+                routeOptions,
+                pathSuffix ?? string.Empty,
+                variables ?? ImmutableDictionary<string, string>.Empty);
 
             return new ProxyContext(
                 provider.GetRequiredService<IHostProvider>(),
                 provider.GetRequiredService<ITraceIdProvider>(),
                 httpContext,
-                new Route(routeOptions, string.Empty, variables ?? ImmutableDictionary<string, string>.Empty));
+                route);
         }
 
         public static ReverseProxyOptions CreateDefaultOptions(string route = "/api/", string to = "/upstream/api/")

@@ -130,30 +130,21 @@
             ShouldMatch(
                pattern: @"/category/",
                path: "category/bike/",
-               pathSuffix: "bike");
+               pathSuffix: "bike/");
 
             ShouldMatch(
                pattern: @"/category/",
                path: "category/bike/product/1234",
-               pathSuffix: "bike/product/1234");
+               pathSuffix: "bike/product/1234/");
 
             ShouldMatch(
                pattern: @"/catego",
                path: "category/bike/product/1234",
-               pathSuffix: "ry/bike/product/1234");
+               pathSuffix: "ry/bike/product/1234/");
 
             ShouldMatch(
                pattern: @"/category/*/product",
                path: "category/bike/product");
-
-            ShouldMatch(
-               pattern: @"/",
-               path: "/////category/bike/product/////",
-               pathSuffix: "category/bike/product");
-
-            ShouldMatch(
-               pattern: @"/",
-               path: "///////");
 
             ShouldMatch(
                pattern: @"regex: \/category\/(?<category>.+)\/product",
@@ -161,9 +152,14 @@
                variables: ("category", "bike"));
 
             ShouldMatch(
+               pattern: @"regex: \/category\/(?<category>.+)\/product/",
+               path: "category/bike/product",
+               variables: ("category", "bike"));
+
+            ShouldMatch(
                pattern: @"regex: \/category\/(?<category>.+)\/product",
                path: "category/bike/product/123/test/",
-               pathSuffix: "123/test",
+               pathSuffix: "/123/test/",
                variables: ("category", "bike"));
         }
 

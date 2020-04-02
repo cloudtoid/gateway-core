@@ -11,21 +11,40 @@
     {
         private readonly IPatternCompiler compiler;
         private readonly IPatternMatcher matcher;
-        private readonly IUrlPathNormalizer normalizer;
-        private readonly ConcurrentDictionary<string, CompiledPatternInfo> compiledPatterns;
+        private readonly ConcurrentDictionary<string, CompiledPatternInfo> compiledPatterns =
+            new ConcurrentDictionary<string, CompiledPatternInfo>(StringComparer.Ordinal);
 
         public PatternEngine()
         {
-            var resolver = new PatternTypeResolver();
-            var parser = new PatternParser();
-            var validator = new PatternValidator();
-            compiler = new PatternCompiler(resolver, parser, validator);
-            matcher = new PatternMatcher();
-            normalizer = new UrlPathNormalizer();
-            compiledPatterns = new ConcurrentDictionary<string, CompiledPatternInfo>(StringComparer.Ordinal);
+            compiler = new PatternCompiler(new PatternTypeResolver(), new PatternParser(), new PatternValidator());
+            matcher = new PatternMatcher(new UrlPathNormalizer());
+        }
+
+        // This constructor is used by the dependency injection engine
+        public PatternEngine(IPatternCompiler compiler, IPatternMatcher matcher)
+        {
+            this.compiler = CheckValue(compiler, nameof(compiler));
+            this.matcher = CheckValue(matcher, nameof(matcher));
         }
 
         public bool TryMatch(
+            string pattern,
+            string path,
+            [NotNullWhen(true)] out PatternMatchResult? match,
+            [NotNullWhen(false)] out string? why)
+        {
+            return TryMatchCore(pattern, path, out match, out why);
+        }
+
+        public PatternMatchResult Match(string pattern, string path)
+        {
+            if (TryMatchCore(pattern, path, out var match, out var why))
+                return match;
+
+            throw new PatternException(why);
+        }
+
+        private bool TryMatchCore(
             string pattern,
             string path,
             [NotNullWhen(true)] out PatternMatchResult? match,
@@ -40,19 +59,7 @@
                 return false;
             }
 
-            path = normalizer.Normalize(path);
             return TryMatch(compiledPattern, path, out match, out why);
-        }
-
-        public PatternMatchResult Match(string pattern, string path)
-        {
-            CheckValue(pattern, nameof(pattern));
-            CheckValue(path, nameof(path));
-
-            if (TryMatch(pattern, path, out var match, out var why))
-                return match;
-
-            throw new PatternException(why);
         }
 
         private bool TryCompile(
@@ -88,13 +95,21 @@
             return true;
         }
 
-        private bool TryMatch(
+        public bool TryMatch(
             CompiledPattern compiledPattern,
             string path,
             [NotNullWhen(true)] out PatternMatchResult? match,
             [NotNullWhen(false)] out string? why)
         {
             return matcher.TryMatch(compiledPattern, path, out match, out why);
+        }
+
+        public bool TryCompile(
+            string pattern,
+            [NotNullWhen(true)] out CompiledPattern? compiledPattern,
+            [NotNullWhen(false)] out IReadOnlyList<PatternCompilerError>? errors)
+        {
+            return compiler.TryCompile(pattern, out compiledPattern, out errors);
         }
 
         private static string GetCompileErrorMessage(IReadOnlyList<PatternCompilerError> errors)

@@ -1,6 +1,6 @@
 ﻿namespace Cloudtoid.UrlPattern
 {
-    public interface IUrlPathNormalizer
+    internal interface IUrlPathNormalizer
     {
         /// <summary>
         /// Normalizes the path segment of a URL.

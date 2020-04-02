@@ -10,19 +10,16 @@
     internal sealed class RouteResolver : IRouteResolver
     {
         private readonly ISettingsProvider settings;
-        private readonly IPatternMatcher matcher;
-        private readonly IUrlPathNormalizer normalizer;
+        private readonly IPatternEngine patternEngine;
         private readonly ILogger<RouteResolver> logger;
 
         public RouteResolver(
             ISettingsProvider settings,
-            IPatternMatcher matcher,
-            IUrlPathNormalizer normalizer,
+            IPatternEngine patternEngine,
             ILogger<RouteResolver> logger)
         {
             this.settings = CheckValue(settings, nameof(settings));
-            this.matcher = CheckValue(matcher, nameof(matcher));
-            this.normalizer = CheckValue(normalizer, nameof(normalizer));
+            this.patternEngine = CheckValue(patternEngine, nameof(patternEngine));
             this.logger = CheckValue(logger, nameof(logger));
         }
 
@@ -30,12 +27,12 @@
             HttpContext httpContext,
             [NotNullWhen(true)] out Route? route)
         {
-            var path = normalizer.Normalize(httpContext.Request.Path);
+            var path = httpContext.Request.Path;
             foreach (var routeSetting in settings.CurrentValue.Routes)
             {
-                if (matcher.TryMatch(routeSetting.CompiledRoute, path, out var match, out var why))
+                if (patternEngine.TryMatch(routeSetting.CompiledRoute, path, out var match, out var why))
                 {
-                    route = new Route(routeSetting, PathString.FromUriComponent(match.PathSuffix), match.Variables);
+                    route = new Route(routeSetting, match.PathSuffix, match.Variables);
                     return true;
                 }
 

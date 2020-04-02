@@ -9,20 +9,22 @@
     using Microsoft.Extensions.Logging;
     using static Contract;
 
-    internal sealed class UrlRewriter : IUrlRewriter
+    /// <inheritdoc/>
+    internal sealed class UpstreamUrlCreator : IUpstreamUrlCreator
     {
         private readonly IExpressionEvaluator evaluator;
-        private readonly ILogger<UrlRewriter> logger;
+        private readonly ILogger<UpstreamUrlCreator> logger;
 
-        public UrlRewriter(
+        public UpstreamUrlCreator(
             IExpressionEvaluator evaluator,
-            ILogger<UrlRewriter> logger)
+            ILogger<UpstreamUrlCreator> logger)
         {
             this.evaluator = CheckValue(evaluator, nameof(evaluator));
             this.logger = CheckValue(logger, nameof(logger));
         }
 
-        public Task<Uri> RewriteUrlAsync(ProxyContext context, CancellationToken cancellationToken)
+        /// <inheritdoc/>
+        public Task<Uri> CreateAsync(ProxyContext context, CancellationToken cancellationToken)
         {
             var toExpression = context.ProxySettings.To;
             var to = evaluator.Evaluate(context, toExpression);
@@ -56,7 +58,7 @@
             if (!host.HasValue || Uri.CheckHostName(host.Value) == UriHostNameType.Unknown)
                 throw new UriFormatException($"The URL host '{host}' specified by '{toExpression}' expression is invalid.");
 
-            var path = toPath + context.Route.PathSuffix;
+            var path = toPath.ToString() + context.Route.PathSuffix;
             var queryString = context.Request.QueryString + toQueryString;
 
             var url = UriHelper.BuildAbsolute(

@@ -310,7 +310,7 @@
             services.AddTest().AddTestOptions(options);
             serviceProvider = services.BuildServiceProvider();
             var evaluator = serviceProvider.GetRequiredService<IExpressionEvaluator>();
-            var context = serviceProvider.GetProxyContext(httpContext, variables);
+            var context = serviceProvider.GetProxyContext(httpContext, variables: variables);
             return evaluator.Evaluate(context, expression);
         }
     }

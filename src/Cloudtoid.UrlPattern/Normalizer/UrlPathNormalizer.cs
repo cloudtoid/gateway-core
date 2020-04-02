@@ -1,6 +1,6 @@
 ﻿namespace Cloudtoid.UrlPattern
 {
-    using System.Runtime.CompilerServices;
+    using System.Text;
 
     internal sealed class UrlPathNormalizer : IUrlPathNormalizer
     {
@@ -13,30 +13,37 @@
         /// </summary>
         public string Normalize(string path)
         {
-            path = TrimWhiteSpaces(path);
-            path = AppendSlashes(path);
-            return path;
-        }
+            int len = path.Length;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static string TrimWhiteSpaces(string path)
-            => path.Trim();
+            int startIndex = 0;
+            while (startIndex < len)
+            {
+                var c = path[startIndex];
+                if (!char.IsWhiteSpace(c) && c != '/')
+                    break;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static string AppendSlashes(string path)
-        {
-            var len = path.Length;
+                startIndex++;
+            }
 
-            if (len == 0)
-                return "/";
+            int endIndex = len - 1;
+            while (startIndex < endIndex)
+            {
+                var c = path[endIndex];
+                if (!char.IsWhiteSpace(c) && c != '/')
+                    break;
 
-            if (path[len - 1] != '/')
-                path += '/';
+                endIndex--;
+            }
 
-            if (len > 1 && path[0] != '/')
-                path = '/' + path;
+            var sublen = endIndex - startIndex + 1;
+            var builder = new StringBuilder(sublen + 2)
+                .AppendSlash()
+                .Append(path, startIndex, sublen);
 
-            return path;
+            if (builder[builder.Length - 1] != '/')
+                builder.AppendSlash();
+
+            return builder.ToString();
         }
     }
 }

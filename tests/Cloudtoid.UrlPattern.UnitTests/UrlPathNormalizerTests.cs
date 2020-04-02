@@ -28,6 +28,7 @@
             Normalize(" /product/ ", "/product/");
             Normalize("/product", "/product/");
             Normalize("/product/1234/", "/product/1234/");
+            Normalize("////product/1234// ", "/product/1234/");
         }
 
         private void Normalize(string route, string expected)

@@ -90,7 +90,7 @@
                 .TryAddSingleton<Host.IHostProvider, Host.HostProvider>()
                 .TryAddSingleton<Expression.IExpressionEvaluator, Expression.ExpressionEvaluator>()
                 .TryAddSingleton<Routes.IRouteResolver, Routes.RouteResolver>()
-                .TryAddSingleton<IUrlRewriter, UrlRewriter>()
+                .TryAddSingleton<IUpstreamUrlCreator, UpstreamUrlCreator>()
                 .TryAddSingleton<IRequestHeaderSetter, RequestHeaderSetter>()
                 .TryAddSingleton<IRequestHeaderValuesProvider, RequestHeaderValuesProvider>()
                 .TryAddSingleton<IRequestContentSetter, RequestContentSetter>()

@@ -14,16 +14,16 @@
     internal sealed class SettingsCreator : ISettingsCreator
     {
         private readonly IExpressionEvaluator evaluator;
-        private readonly IPatternCompiler compiler;
+        private readonly IPatternEngine patternEngine;
         private readonly ILogger<SettingsCreator> logger;
 
         public SettingsCreator(
             IExpressionEvaluator evaluator,
-            IPatternCompiler compiler,
+            IPatternEngine patternEngine,
             ILogger<SettingsCreator> logger)
         {
             this.evaluator = CheckValue(evaluator, nameof(evaluator));
-            this.compiler = CheckValue(compiler, nameof(compiler));
+            this.patternEngine = CheckValue(patternEngine, nameof(patternEngine));
             this.logger = CheckValue(logger, nameof(logger));
         }
 
@@ -69,7 +69,7 @@
 
         private CompiledPattern? Compile(RouteSettingsContext context)
         {
-            if (!compiler.TryCompile(context.Route, out var compiledRoute, out var compilerErrors))
+            if (!patternEngine.TryCompile(context.Route, out var compiledRoute, out var compilerErrors))
             {
                 LogErrors(context, compilerErrors);
                 return null;

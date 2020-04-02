@@ -9,6 +9,13 @@
 
     internal sealed class PatternMatcher : IPatternMatcher
     {
+        private readonly IUrlPathNormalizer normalizer;
+
+        public PatternMatcher(IUrlPathNormalizer normalizer)
+        {
+            this.normalizer = CheckValue(normalizer, nameof(normalizer));
+        }
+
         /// <inheritdoc/>
         public bool TryMatch(
             CompiledPattern compiledPattern,
@@ -19,10 +26,11 @@
             CheckValue(compiledPattern, nameof(compiledPattern));
             CheckValue(path, nameof(path));
 
+            var normalizedPath = normalizer.Normalize(path);
             Match regexMatch;
             try
             {
-                regexMatch = compiledPattern.Regex.Match(path);
+                regexMatch = compiledPattern.Regex.Match(normalizedPath);
             }
             catch (RegexMatchTimeoutException)
             {
@@ -39,7 +47,7 @@
             }
 
             var variables = GetVariables(regexMatch, compiledPattern.VariableNames);
-            var pathSuffix = GetPathSuffix(regexMatch, path);
+            var pathSuffix = GetPathSuffix(regexMatch, normalizedPath);
 
             why = null;
             match = new PatternMatchResult(pathSuffix, variables);
@@ -62,32 +70,12 @@
                 }
             }
 
-            if (result is null)
-                return ImmutableDictionary<string, string>.Empty;
-
-            return result;
+            return result is null
+                ? ImmutableDictionary<string, string>.Empty
+                : (IReadOnlyDictionary<string, string>)result;
         }
 
         private static string GetPathSuffix(Match regexMatch, string path)
-        {
-            var len = regexMatch.Length;
-
-            if (len == path.Length)
-                return string.Empty;
-
-            if (len == 0)
-                return path;
-
-            var start = len;
-            var end = path.Length - 1;
-
-            while (start <= end && path[start] == '/')
-                start++;
-
-            while (start < end && path[end] == '/')
-                end--;
-
-            return path.Substring(start, end - start + 1);
-        }
+           => path.Substring(regexMatch.Length);
     }
 }

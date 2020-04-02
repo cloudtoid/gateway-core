@@ -15,7 +15,6 @@
 
         /// <summary>
         /// Gets the suffix portion of the URL path that was not matched to the pattern.
-        /// This will not have a prefix or a suffix '/'.
         /// </summary>
         public string PathSuffix { get; }
 
