@@ -12,7 +12,7 @@
         {
             CheckValue(pattern, nameof(pattern));
 
-            pattern = pattern.Trim().Trim('/');
+            pattern = pattern.Trim().Trim(Constants.Slash);
             parsedPattern = new Parser(pattern, errorsSink).Parse();
             return parsedPattern != null;
         }
@@ -63,7 +63,7 @@
                     PatternNode? next;
                     switch (c)
                     {
-                        case Constants.SegmentStart:
+                        case Constants.Slash:
                             next = SegmentStartNode.Instance;
                             break;
 

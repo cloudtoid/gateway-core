@@ -1,7 +1,7 @@
 ﻿namespace Cloudtoid.UrlPattern
 {
     /// <summary>
-    /// Validates that there are no consecutive <see cref="Constants.SegmentStart"/> characters.
+    /// Validates that there are no consecutive <see cref="Constants.Slash"/> characters.
     /// </summary>
     internal sealed class NoConsecutiveSegmentStartValidator : PatternValidatorBase
     {
@@ -16,7 +16,7 @@
         protected internal override void VisitSegmentStart(SegmentStartNode node)
         {
             if (fail)
-                throw new PatternException($"Found consecutive '{Constants.SegmentStart}' which is invalid.");
+                throw new PatternException($"Found consecutive '{Constants.Slash}' which is invalid.");
 
             fail = true;
         }

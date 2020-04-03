@@ -19,7 +19,7 @@
             while (startIndex < len)
             {
                 var c = path[startIndex];
-                if (!char.IsWhiteSpace(c) && c != '/')
+                if (!char.IsWhiteSpace(c) && c != Constants.Slash)
                     break;
 
                 startIndex++;
@@ -29,7 +29,7 @@
             while (startIndex < endIndex)
             {
                 var c = path[endIndex];
-                if (!char.IsWhiteSpace(c) && c != '/')
+                if (!char.IsWhiteSpace(c) && c != Constants.Slash)
                     break;
 
                 endIndex--;
@@ -40,7 +40,7 @@
                 .AppendSlash()
                 .Append(path, startIndex, sublen);
 
-            if (builder[builder.Length - 1] != '/')
+            if (builder[builder.Length - 1] != Constants.Slash)
                 builder.AppendSlash();
 
             return builder.ToString();

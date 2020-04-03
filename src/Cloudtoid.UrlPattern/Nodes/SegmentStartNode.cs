@@ -5,7 +5,7 @@
     /// </summary>
     internal sealed class SegmentStartNode : LeafNode
     {
-        private static readonly string Value = Constants.SegmentStart.ToString();
+        private static readonly string Value = Constants.Slash.ToString();
 
         private SegmentStartNode()
         {

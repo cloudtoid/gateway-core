@@ -21,13 +21,13 @@
         [TestMethod]
         public void Validate_WhenConsecutiveSegmentStart_Fails()
         {
-            Validate("a//b", $"Found consecutive '{Constants.SegmentStart}' which is invalid.");
+            Validate("a//b", $"Found consecutive '{Constants.Slash}' which is invalid.");
         }
 
         [TestMethod]
         public void Validate_WhenConsecutiveSegmentStartOneOptional_Fails()
         {
-            Validate("a/(/)b", $"Found consecutive '{Constants.SegmentStart}' which is invalid.");
+            Validate("a/(/)b", $"Found consecutive '{Constants.Slash}' which is invalid.");
         }
 
         [TestMethod]
