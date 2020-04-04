@@ -19,7 +19,6 @@
 
         /// <summary>
         /// Gets the suffix portion of the URL path that was not matched to the pattern and should be added to the outbound upstream request.
-        /// This will not have a prefix or a suffix '/'.
         /// </summary>
         public string PathSuffix { get; }
 
