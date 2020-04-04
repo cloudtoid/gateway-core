@@ -12,7 +12,7 @@
         {
             CheckValue(pattern, nameof(pattern));
 
-            pattern = pattern.Trim().Trim(Constants.Slash);
+            pattern = pattern.Trim();
             parsedPattern = new Parser(pattern, errorsSink).Parse();
             return parsedPattern != null;
         }

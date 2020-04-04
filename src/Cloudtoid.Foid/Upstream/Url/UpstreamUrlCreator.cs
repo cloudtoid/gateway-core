@@ -58,7 +58,7 @@
             if (!host.HasValue || Uri.CheckHostName(host.Value) == UriHostNameType.Unknown)
                 throw new UriFormatException($"The URL host '{host}' specified by '{toExpression}' expression is invalid.");
 
-            var path = toPath.ToString() + context.Route.PathSuffix;
+            var path = ConcatPathWithSuffix(toPath, context.Route.PathSuffix);
             var queryString = context.Request.QueryString + toQueryString;
 
             var url = UriHelper.BuildAbsolute(
@@ -73,6 +73,20 @@
                 return Task.FromResult(uri);
 
             throw new UriFormatException($"The URL '{url}' specified by '{toExpression}' expression is an invalid absolute HTTP URL.");
+        }
+
+        private static PathString ConcatPathWithSuffix(PathString path, string suffix)
+        {
+            if (path.HasValue)
+            {
+                return path.Value[^1] == '/' && suffix.Length > 0 && suffix[0] == '/'
+                    ? new PathString(path.Value + suffix.Substring(1))
+                    : new PathString(path.Value + suffix);
+            }
+
+            return suffix.Length > 0 && suffix[0] == '/'
+                ? new PathString(suffix)
+                : new PathString("/" + suffix);
         }
     }
 }

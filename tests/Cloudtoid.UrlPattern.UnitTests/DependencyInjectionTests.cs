@@ -19,7 +19,6 @@
                 .AddUrlPattern();
 
             var serviceProvider = services.BuildServiceProvider();
-            serviceProvider.GetServices<IUrlPathNormalizer>().Should().HaveCount(1);
             serviceProvider.GetServices<IPatternTypeResolver>().Should().HaveCount(1);
             serviceProvider.GetServices<IPatternParser>().Should().HaveCount(1);
             serviceProvider.GetServices<IPatternValidator>().Should().HaveCount(1);

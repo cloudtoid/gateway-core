@@ -6,9 +6,8 @@
     internal sealed class PatternRegexBuilder : PatternNodeVisitor
     {
         private static readonly string SegmentStart = Regex.Escape(@"/");
-        private static readonly string Wildcard = $"[^{SegmentStart}]*";  // [^\/]*
-        private static readonly string Start = $@"\A({SegmentStart})?"; // \A(\/)?
-        private static readonly string End = $@"({SegmentStart})?"; // (\/)?
+        private static readonly string Wildcard = $"[^{SegmentStart}]*";  // [^/]*
+        private static readonly string Start = @"\A";
         private readonly StringBuilder builder = new StringBuilder(Start);
 
         private PatternRegexBuilder()
@@ -21,7 +20,7 @@
         private Regex BuildCore(PatternNode pattern, bool exactMatch)
         {
             Visit(pattern);
-            builder.Append(End);
+
             if (exactMatch)
                 builder.AppendDollar();
 
@@ -33,7 +32,7 @@
 
         protected internal override void VisitVariable(VariableNode node)
         {
-            // - Generates a regex capture with the name of the variable:  (?<variable>[^\/]+)
+            // - Generates a regex capture with the name of the variable:  (?<variable>[^/]+)
             // - Variable name does not need to be escaped or validated. The PatternParser ensures that it only contains 'a-zA-Z0-9_'
             //   and the first character is not a number.
             builder.Append($"(?<{node.Name}>[^{SegmentStart}]+)");

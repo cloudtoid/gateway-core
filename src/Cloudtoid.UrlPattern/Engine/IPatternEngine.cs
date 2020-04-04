@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using Microsoft.AspNetCore.Http;
 
     public interface IPatternEngine
     {
@@ -13,7 +14,7 @@
         /// </summary>
         bool TryMatch(
             string pattern,
-            string path,
+            PathString path,
             [NotNullWhen(true)] out PatternMatchResult? match,
             [NotNullWhen(false)] out string? why);
 
@@ -23,7 +24,7 @@
         /// <exception cref="PatternException">is thrown if the compilation of the pattern times out or if the pattern is invalid.</exception>
         PatternMatchResult Match(
             string pattern,
-            string path);
+            PathString path);
 
         /// <summary>
         /// Matches the <paramref name="path"/> against the <paramref name="compiledPattern"/>.
@@ -32,7 +33,7 @@
         /// </summary>
         bool TryMatch(
             CompiledPattern compiledPattern,
-            string path,
+            PathString path,
             [NotNullWhen(true)] out PatternMatchResult? match,
             [NotNullWhen(false)] out string? why);
 

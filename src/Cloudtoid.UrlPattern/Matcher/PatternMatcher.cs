@@ -5,49 +5,43 @@
     using System.Collections.Immutable;
     using System.Diagnostics.CodeAnalysis;
     using System.Text.RegularExpressions;
+    using Microsoft.AspNetCore.Http;
     using static Contract;
 
     internal sealed class PatternMatcher : IPatternMatcher
     {
-        private readonly IUrlPathNormalizer normalizer;
-
-        public PatternMatcher(IUrlPathNormalizer normalizer)
-        {
-            this.normalizer = CheckValue(normalizer, nameof(normalizer));
-        }
-
         /// <inheritdoc/>
         public bool TryMatch(
             CompiledPattern compiledPattern,
-            string path,
+            PathString path,
             [NotNullWhen(true)] out PatternMatchResult? match,
             [NotNullWhen(false)] out string? why)
         {
             CheckValue(compiledPattern, nameof(compiledPattern));
-            CheckValue(path, nameof(path));
+            CheckParam(path.HasValue, nameof(path));
 
-            var normalizedPath = normalizer.Normalize(path);
+            var pathValue = path.Value;
             Match regexMatch;
             try
             {
-                regexMatch = compiledPattern.Regex.Match(normalizedPath);
+                regexMatch = compiledPattern.Regex.Match(pathValue);
             }
             catch (RegexMatchTimeoutException)
             {
-                why = $"The attempt to match path '{path}' with pattern '{compiledPattern.Pattern}' timed out.";
+                why = $"The attempt to match path '{pathValue}' with pattern '{compiledPattern.Pattern}' timed out.";
                 match = null;
                 return false;
             }
 
             if (!regexMatch.Success)
             {
-                why = $"The path '{path}' is not a match for pattern '{compiledPattern.Pattern}'";
+                why = $"The path '{pathValue}' is not a match for pattern '{compiledPattern.Pattern}'";
                 match = null;
                 return false;
             }
 
             var variables = GetVariables(regexMatch, compiledPattern.VariableNames);
-            var pathSuffix = GetPathSuffix(regexMatch, normalizedPath);
+            var pathSuffix = GetPathSuffix(regexMatch, pathValue);
 
             why = null;
             match = new PatternMatchResult(pathSuffix, variables);

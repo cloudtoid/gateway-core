@@ -37,7 +37,7 @@
         {
             var pattern = ParseAndValidate("/");
             pattern.Should().BeEquivalentTo(
-                MatchNode.Empty,
+                SegmentStartNode.Instance,
                 o => o.RespectingRuntimeTypes());
         }
 
@@ -138,17 +138,21 @@
 
             pattern.Should().BeEquivalentTo(
                 new SequenceNode(
+                    SegmentStartNode.Instance,
                     new MatchNode("api"),
                     SegmentStartNode.Instance,
                     new MatchNode("v"),
-                    new VariableNode("version")),
+                    new VariableNode("version"),
+                    SegmentStartNode.Instance),
                 o => o.RespectingRuntimeTypes());
 
             pattern.Should().BeEquivalentTo(
-                new MatchNode("api")
+                SegmentStartNode.Instance
+                + new MatchNode("api")
                 + SegmentStartNode.Instance
                 + new MatchNode("v")
-                + new VariableNode("version"),
+                + new VariableNode("version")
+                + SegmentStartNode.Instance,
                 o => o.RespectingRuntimeTypes());
         }
 
@@ -159,6 +163,7 @@
 
             pattern.Should().BeEquivalentTo(
                 new SequenceNode(
+                    SegmentStartNode.Instance,
                     new MatchNode("api"),
                     SegmentStartNode.Instance,
                     new MatchNode("v"),
@@ -166,7 +171,8 @@
                 o => o.RespectingRuntimeTypes());
 
             pattern.Should().BeEquivalentTo(
-                new MatchNode("api")
+                SegmentStartNode.Instance
+                + new MatchNode("api")
                 + SegmentStartNode.Instance
                 + new MatchNode("v")
                 + new VariableNode("version"),
@@ -179,14 +185,16 @@
             var pattern = ParseAndValidate("/api/v:version/product/:id/");
 
             pattern.Should().BeEquivalentTo(
-                new MatchNode("api")
+                SegmentStartNode.Instance
+                + new MatchNode("api")
                 + SegmentStartNode.Instance
                 + new MatchNode("v")
                 + new VariableNode("version")
                 + SegmentStartNode.Instance
                 + new MatchNode("product")
                 + SegmentStartNode.Instance
-                + new VariableNode("id"),
+                + new VariableNode("id")
+                + SegmentStartNode.Instance,
                 o => o.RespectingRuntimeTypes());
         }
 
@@ -196,7 +204,8 @@
             var pattern = ParseAndValidate("/api/v:version/product/:id");
 
             pattern.Should().BeEquivalentTo(
-                new MatchNode("api")
+                SegmentStartNode.Instance
+                + new MatchNode("api")
                 + SegmentStartNode.Instance
                 + new MatchNode("v")
                 + new VariableNode("version")
@@ -213,7 +222,8 @@
             var pattern = ParseAndValidate("/api(/v1.0)/product/:id");
 
             pattern.Should().BeEquivalentTo(
-                new MatchNode("api")
+                SegmentStartNode.Instance
+                + new MatchNode("api")
                 + new OptionalNode((SegmentStartNode.Instance + new MatchNode("v1.0"))!)
                 + SegmentStartNode.Instance
                 + new MatchNode("product")
@@ -228,7 +238,8 @@
             var pattern = ParseAndValidate("/api(/v:version)/product(/:id)");
 
             pattern.Should().BeEquivalentTo(
-                new MatchNode("api")
+                SegmentStartNode.Instance
+                + new MatchNode("api")
                 + new OptionalNode((SegmentStartNode.Instance + new MatchNode("v") + new VariableNode("version"))!)
                 + SegmentStartNode.Instance
                 + new MatchNode("product")
@@ -242,7 +253,8 @@
             var pattern = ParseAndValidate("/api(/v:version)/product/(:id)");
 
             pattern.Should().BeEquivalentTo(
-                new MatchNode("api")
+                SegmentStartNode.Instance
+                + new MatchNode("api")
                 + new OptionalNode((SegmentStartNode.Instance + new MatchNode("v") + new VariableNode("version"))!)
                 + SegmentStartNode.Instance
                 + new MatchNode("product")
@@ -257,13 +269,15 @@
             var pattern = ParseAndValidate("/(api/v:version/)product/");
 
             pattern.Should().BeEquivalentTo(
-                new OptionalNode(
+                SegmentStartNode.Instance
+                + new OptionalNode(
                     (new MatchNode("api")
                     + SegmentStartNode.Instance
                     + new MatchNode("v")
                     + new VariableNode("version")
                     + SegmentStartNode.Instance)!)
-                + new MatchNode("product"),
+                + new MatchNode("product")
+                + SegmentStartNode.Instance,
                 o => o.RespectingRuntimeTypes());
         }
 
@@ -413,7 +427,8 @@
             pattern.Should().BeEquivalentTo(
                 WildcardNode.Instance
                 + new MatchNode("placeholder")
-                + new VariableNode("variable"),
+                + new VariableNode("variable")
+                + SegmentStartNode.Instance,
                 o => o.RespectingRuntimeTypes());
         }
 

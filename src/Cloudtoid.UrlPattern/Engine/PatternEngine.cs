@@ -5,6 +5,7 @@
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Text;
+    using Microsoft.AspNetCore.Http;
     using static Contract;
 
     public sealed class PatternEngine : IPatternEngine
@@ -17,7 +18,7 @@
         public PatternEngine()
         {
             compiler = new PatternCompiler(new PatternTypeResolver(), new PatternParser(), new PatternValidator());
-            matcher = new PatternMatcher(new UrlPathNormalizer());
+            matcher = new PatternMatcher();
         }
 
         // This constructor is used by the dependency injection engine
@@ -29,14 +30,14 @@
 
         public bool TryMatch(
             string pattern,
-            string path,
+            PathString path,
             [NotNullWhen(true)] out PatternMatchResult? match,
             [NotNullWhen(false)] out string? why)
         {
             return TryMatchCore(pattern, path, out match, out why);
         }
 
-        public PatternMatchResult Match(string pattern, string path)
+        public PatternMatchResult Match(string pattern, PathString path)
         {
             if (TryMatchCore(pattern, path, out var match, out var why))
                 return match;
@@ -46,12 +47,12 @@
 
         private bool TryMatchCore(
             string pattern,
-            string path,
+            PathString path,
             [NotNullWhen(true)] out PatternMatchResult? match,
             [NotNullWhen(false)] out string? why)
         {
             CheckValue(pattern, nameof(pattern));
-            CheckValue(path, nameof(path));
+            CheckParam(path.HasValue, nameof(path));
 
             if (!TryCompile(pattern, out var compiledPattern, out why))
             {
@@ -97,7 +98,7 @@
 
         public bool TryMatch(
             CompiledPattern compiledPattern,
-            string path,
+            PathString path,
             [NotNullWhen(true)] out PatternMatchResult? match,
             [NotNullWhen(false)] out string? why)
         {

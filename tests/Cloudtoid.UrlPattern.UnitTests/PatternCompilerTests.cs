@@ -21,31 +21,31 @@
         [TestMethod]
         public void CompileExactMatch()
         {
-            CompileAndValidate("exact: /product/", @"\A(/)?product(/)?$", PatternType.ExactMatch);
+            CompileAndValidate("exact: /product/", @"\A/product/$", PatternType.ExactMatch);
         }
 
         [TestMethod]
         public void CompileImplicitPrefixMatch()
         {
-            CompileAndValidate("/product/", @"\A(/)?product(/)?", PatternType.PrefixMatch);
+            CompileAndValidate("/product/", @"\A/product/", PatternType.PrefixMatch);
         }
 
         [TestMethod]
         public void CompileExplicitPrefixMatch()
         {
-            CompileAndValidate("prefix: /product/", @"\A(/)?product(/)?", PatternType.PrefixMatch);
+            CompileAndValidate("prefix: /product/", @"\A/product/", PatternType.PrefixMatch);
         }
 
         [TestMethod]
         public void CompileRegexMatch()
         {
-            CompileAndValidate(@"regex: \A(/)?product(/)?", @"\A(/)?product(/)?", PatternType.Regex);
+            CompileAndValidate(@"regex: \A/product(/)?", @"\A/product(/)?", PatternType.Regex);
         }
 
         [TestMethod]
         public void CompileRegexWithVariableMatch()
         {
-            CompileAndValidate(@"regex: \A(/)?product(/(?<id>.+))?", @"\A(/)?product(/(?<id>.+))?", PatternType.Regex, "id");
+            CompileAndValidate(@"regex: \A/product(/(?<id>.+))?", @"\A/product(/(?<id>.+))?", PatternType.Regex, "id");
         }
 
         [TestMethod]
@@ -53,7 +53,7 @@
         {
             CompileAndVerifyErrors(
                 "/: variable",
-                @"(location:1) There is a variable with an empty or invalid name. The valid characters are 'a-zA-Z0-9_' and the first character cannot be a number.");
+                @"(location:2) There is a variable with an empty or invalid name. The valid characters are 'a-zA-Z0-9_' and the first character cannot be a number.");
         }
 
         [TestMethod]

@@ -1,6 +1,7 @@
 ﻿namespace Cloudtoid.UrlPattern
 {
     using System.Diagnostics.CodeAnalysis;
+    using Microsoft.AspNetCore.Http;
 
     public interface IPatternMatcher
     {
@@ -11,7 +12,7 @@
         /// </summary>
         bool TryMatch(
             CompiledPattern compiledPattern,
-            string path,
+            PathString path,
             [NotNullWhen(true)] out PatternMatchResult? match,
             [NotNullWhen(false)] out string? why);
     }

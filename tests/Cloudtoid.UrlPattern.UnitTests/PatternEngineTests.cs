@@ -4,6 +4,7 @@
     using System.Linq;
     using Cloudtoid.UrlPattern;
     using FluentAssertions;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -25,51 +26,52 @@
             ShouldNotMatch("/segment", "/product");
 
             ShouldMatch("/product", "/product");
-            ShouldMatch("/product/", "/product");
-            ShouldMatch(" /product/ ", "/product");
-            ShouldMatch("/product", "product");
-            ShouldMatch("/product/*/", "product/1234");
-            ShouldMatch("/product/1*/", "product/1234");
-            ShouldNotMatch("/product/13*/", "product/1234");
-            ShouldMatch("/product/(1*/)", "product/");
-            ShouldMatch("/product/(1*/)", "product/1234/");
-            ShouldMatch("/product/(1*/)", "product/1234");
-            ShouldMatch("(/product)/(1*/)", "product/1234");
-            ShouldMatch("(/product)/(1*/)", "/1234");
-            ShouldMatch("(/product)/(1*/)", "1234");
-            ShouldMatch("(/product)/(1*/)", "1234/");
+            ShouldNotMatch("/product/", "/product");
+            ShouldMatch("/product/", "/product/");
+            ShouldNotMatch("/product/*/", "/product/1234");
+            ShouldMatch("/product/*/", "/product/1234/");
+            ShouldMatch("/product/1*/", "/product/1234/");
+            ShouldNotMatch("/product/13*/", "/product/1234");
+            ShouldMatch("/product/(1*/)", "/product/");
+            ShouldMatch("/product/(1*/)", "/product/1234/");
+            ShouldMatch("/product/(1*/)", "/product/1234", "1234");
+            ShouldMatch("/product/(1*(/))", "/product/1234");
+            ShouldMatch("(/product)/(1*(/))", "/product/1234");
+            ShouldMatch("(/product)/(1*(/))", "/1234");
+            ShouldMatch("(/product)/(1*(/))", "/1234/");
+            ShouldMatch("(/product)/(1*/)", "/1234/");
 
-            ShouldMatch("/product/:id", "product/1234", variables: ("id", "1234"));
-            ShouldMatch("/product(/:id)", "product/1234", variables: ("id", "1234"));
-            ShouldMatch("/product(/:id)", "product");
+            ShouldMatch("/product/:id", "/product/1234", variables: ("id", "1234"));
+            ShouldMatch("/product(/:id)", "/product/1234", variables: ("id", "1234"));
+            ShouldMatch("/product(/:id)", "/product");
 
             ShouldMatch(
                 pattern: "/category/:category/product/:product",
-                path: "category/bike/product/1234",
+                path: "/category/bike/product/1234",
                 string.Empty,
                 ("category", "bike"),
                 ("product", "1234"));
 
             ShouldMatch(
                 pattern: "/category/:category(/product/:product)",
-                path: "category/bike/product/1234",
+                path: "/category/bike/product/1234",
                 string.Empty,
                 ("category", "bike"),
                 ("product", "1234"));
 
             ShouldMatch(
                 pattern: "/category/:category(/product/:product)",
-                path: "category/bike/",
+                path: "/category/bike",
                 variables: ("category", "bike"));
 
             ShouldMatch(
                pattern: "/category/*(/product/:product)",
-               path: "category/bike/product/1234",
+               path: "/category/bike/product/1234",
                variables: ("product", "1234"));
 
             ShouldMatch(
                pattern: "/category/*(/product/:product)",
-               path: "category/bike");
+               path: "/category/bike");
 
             ShouldNotMatch(
                pattern: "/category/*(/product/:product)",
@@ -77,7 +79,7 @@
 
             ShouldMatch(
                pattern: "/category/*(/product/:product)",
-               path: "category/bike");
+               path: "/category/bike");
 
             ShouldNotMatch(
               pattern: "/category/*(/product/:product)",
@@ -85,81 +87,86 @@
 
             ShouldMatch(
                pattern: @"/category/\\*(/product/:product)",
-               path: "category/*/product/1234",
+               path: "/category/*/product/1234",
                variables: ("product", "1234"));
 
             ShouldMatch(
                pattern: @"/category/\\*(/product/:product)",
-               path: "category/*/");
+               path: "/category/*");
 
             ShouldMatch(
                pattern: @"/category/\\*/product/:product",
-               path: "category/*/product/1234",
+               path: "/category/*/product/1234",
                variables: ("product", "1234"));
 
             ShouldMatch(
-               pattern: @"/category/\\:product",
-               path: "category/:product/");
+               pattern: @"/category/\\:product/",
+               path: "/category/:product/");
 
             ShouldMatch(
                pattern: @"/category/\\(:product\\)",
-               path: "category/(1234)/",
+               path: "/category/(1234)",
                variables: ("product", "1234"));
 
             ShouldNotMatch(
                pattern: @"/category/\\(:product\\)",
-               path: "category/1234/");
+               path: "/category/1234");
 
             ShouldMatch(
                pattern: @"/category/\(:product\)",
-               path: @"category/\1234\/",
+               path: @"/category/\1234\",
                variables: ("product", "1234"));
 
             ShouldMatch(
                pattern: @"/category/*",
-               path: "category/1234/");
+               path: "/category/1234");
 
             ShouldMatch(
                pattern: @"/category/*",
-               path: "category/");
+               path: "/category/1234/",
+               pathSuffix: "/");
+
+            ShouldMatch(
+               pattern: @"/category/*",
+               path: "/category/");
 
             ShouldNotMatch(
                pattern: @"exact: /category/",
-               path: "category/test");
+               path: "/category/test");
 
             ShouldMatch(
                pattern: @"/category/",
-               path: "category/bike/",
+               path: "/category/bike/",
                pathSuffix: "bike/");
 
             ShouldMatch(
                pattern: @"/category/",
-               path: "category/bike/product/1234",
-               pathSuffix: "bike/product/1234/");
+               path: "/category/bike/product/1234",
+               pathSuffix: "bike/product/1234");
 
             ShouldMatch(
                pattern: @"/catego",
-               path: "category/bike/product/1234",
-               pathSuffix: "ry/bike/product/1234/");
+               path: "/category/bike/product/1234",
+               pathSuffix: "ry/bike/product/1234");
 
             ShouldMatch(
                pattern: @"/category/*/product",
-               path: "category/bike/product");
+               path: "/category/bike/product");
 
             ShouldMatch(
                pattern: @"regex: \/category\/(?<category>.+)\/product",
-               path: "category/bike/product",
+               path: "/category/bike/product",
                variables: ("category", "bike"));
 
             ShouldMatch(
-               pattern: @"regex: \/category\/(?<category>.+)\/product/",
-               path: "category/bike/product",
+               pattern: @"regex: \/category\/(?<category>.+)\/product/?",
+               path: "/category/bike/product",
                variables: ("category", "bike"));
 
             ShouldMatch(
                pattern: @"regex: \/category\/(?<category>.+)\/product",
-               path: "category/bike/product/123/test/",
-               pathSuffix: "/123/test/",
+               path: "/category/bike/product/123/test",
+               pathSuffix: "/123/test",
                variables: ("category", "bike"));
         }
 
@@ -167,7 +174,7 @@
         public void PatternEngineCacheTests()
         {
             var pattern = @"/: variable";
-            var path = "category/test";
+            var path = "/category/test";
 
             engine.TryMatch(pattern, path, out var _, out var why).Should().BeFalse();
             why.Should().Contain("// not from cache");
@@ -180,7 +187,7 @@
         public void PatternEngineMatchShouldThrow()
         {
             var pattern = @"/: variable";
-            var path = "category/test";
+            var path = "/category/test";
             Action act = () => engine.Match(pattern, path);
 
             act.Should().ThrowExactly<PatternException>("*There is a variable with an empty or invalid name*");
@@ -196,10 +203,10 @@
         }
 
         private void ShouldMatch(
-        string pattern,
-        string path,
-        string? pathSuffix = null,
-        params (string Name, string Value)[] variables)
+            string pattern,
+            PathString path,
+            string? pathSuffix = null,
+            params (string Name, string Value)[] variables)
         {
             engine.TryMatch(pattern, path, out var match, out var why).Should().BeTrue();
             why.Should().BeNull();

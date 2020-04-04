@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.*" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Cloudtoid.Framework\Cloudtoid.Framework.csproj" />
   </ItemGroup>
 
