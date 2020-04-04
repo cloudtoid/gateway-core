@@ -58,6 +58,25 @@
                 expectedUrl: "https://upstream/c1/category/p1/part/part1");
         }
 
+        [TestMethod]
+        public void PathConcatTests()
+        {
+            UpstreamUrlCreator.ConcatPathWithSuffix(PathString.Empty, string.Empty).Value.Should().Be("/");
+            UpstreamUrlCreator.ConcatPathWithSuffix(new PathString("/"), string.Empty).Value.Should().Be("/");
+            UpstreamUrlCreator.ConcatPathWithSuffix(PathString.Empty, "/").Value.Should().Be("/");
+            UpstreamUrlCreator.ConcatPathWithSuffix(new PathString("/"), "/").Value.Should().Be("/");
+
+            UpstreamUrlCreator.ConcatPathWithSuffix("/left", string.Empty).Value.Should().Be("/left");
+            UpstreamUrlCreator.ConcatPathWithSuffix(PathString.Empty, "/right").Value.Should().Be("/right");
+            UpstreamUrlCreator.ConcatPathWithSuffix("/", "/right").Value.Should().Be("/right");
+            UpstreamUrlCreator.ConcatPathWithSuffix("/left", "/").Value.Should().Be("/left/");
+            UpstreamUrlCreator.ConcatPathWithSuffix("/left", "right").Value.Should().Be("/leftright");
+            UpstreamUrlCreator.ConcatPathWithSuffix("/left", "/right").Value.Should().Be("/left/right");
+            UpstreamUrlCreator.ConcatPathWithSuffix("/left/", "/right").Value.Should().Be("/left/right");
+            UpstreamUrlCreator.ConcatPathWithSuffix("/left/", "right").Value.Should().Be("/left/right");
+            UpstreamUrlCreator.ConcatPathWithSuffix("/left/", "right/").Value.Should().Be("/left/right/");
+        }
+
         private static async Task CreateAndValidateAsync(
             string routePattern,
             string toExpression,

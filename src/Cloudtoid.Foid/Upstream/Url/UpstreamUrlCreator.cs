@@ -75,7 +75,8 @@
             throw new UriFormatException($"The URL '{url}' specified by '{toExpression}' expression is an invalid absolute HTTP URL.");
         }
 
-        private static PathString ConcatPathWithSuffix(PathString path, string suffix)
+        // internal only for testing
+        internal static PathString ConcatPathWithSuffix(PathString path, string suffix)
         {
             if (path.HasValue)
             {
