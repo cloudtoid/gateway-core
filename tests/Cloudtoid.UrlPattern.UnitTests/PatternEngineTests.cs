@@ -21,6 +21,16 @@
         }
 
         [TestMethod]
+        public void PatternEngineUseAsLibrary()
+        {
+            var engine = new PatternEngine();
+            engine.TryMatch("/category", "/category/abc/product/efg", out var match, out var why).Should().BeTrue();
+            match.Should().NotBeNull();
+            match!.PathSuffix.Should().Be("/abc/product/efg");
+            why.Should().BeNull();
+        }
+
+        [TestMethod]
         public void TryMatchTests()
         {
             ShouldNotMatch("/segment", "/product");
