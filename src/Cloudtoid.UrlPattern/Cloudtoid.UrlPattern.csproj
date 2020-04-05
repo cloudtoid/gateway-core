@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(FoidAppDotNetVersion)</TargetFramework>
+    <TargetFramework>$(AppDotNetVersion)</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,4 +1,4 @@
-# foid
+# GatewayCore
 An API Gateway for .NET Core
 
 ## TODO

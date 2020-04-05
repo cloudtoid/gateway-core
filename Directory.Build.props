@@ -7,8 +7,8 @@
 
   <!-- .NET Runtime Versions -->
   <PropertyGroup>
-    <FoidLibraryDotNetVersion>netstandard2.1</FoidLibraryDotNetVersion>
-    <FoidAppDotNetVersion>netcoreapp3.1</FoidAppDotNetVersion>
+    <LibraryDotNetVersion>netstandard2.1</LibraryDotNetVersion>
+    <AppDotNetVersion>netcoreapp3.1</AppDotNetVersion>
   </PropertyGroup>
 
   <!-- Build Settings -->
