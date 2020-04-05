@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Cloudtoid.UrlPattern\Cloudtoid.UrlPattern.csproj" />
-    <ProjectReference Include="..\..\src\Cloudtoid.Framework\Cloudtoid.Framework.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,8 +2,7 @@
 
   <!-- Paths -->
   <PropertyGroup>
-    <FoidRoot>$(MSBuildThisFileDirectory)</FoidRoot>
-    <FoidCodeAnalysis>$(FoidRoot)code-analysis\</FoidCodeAnalysis>
+    <Root>$(MSBuildThisFileDirectory)</Root>
   </PropertyGroup>
 
   <!-- .NET Runtime Versions -->
@@ -23,6 +22,7 @@
 
   <!-- Product Package Versions -->
   <PropertyGroup>
+    <CloudtoidFrameworkVersion>1.0.8</CloudtoidFrameworkVersion>
     <MicrosoftExtensionsVersion>3.1.*</MicrosoftExtensionsVersion>
   </PropertyGroup>
 
@@ -42,25 +42,12 @@
     <BannedApiAnalyzersVersion>2.9.*</BannedApiAnalyzersVersion>
   </PropertyGroup>
 
-  <!-- Code Analyzer Settings -->
-  <PropertyGroup>
-    <CodeAnalysisRuleSet>$(FoidCodeAnalysis)stylecop.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-
-  <!-- Code Analyzer Assets -->
-  <ItemGroup>
-    <AdditionalFiles Include="$(FoidCodeAnalysis)stylecop.json" Visible="false" />
-    <AdditionalFiles Include="$(FoidCodeAnalysis)BannedSymbols.txt" Visible="false" />
-  </ItemGroup>
-
   <!-- Package dependencies -->
   <ItemGroup>
+    <PackageReference Include="Cloudtoid.Framework" Version="$(CloudtoidFrameworkVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(MicrosoftExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(MicrosoftExtensionsVersion)" />
-    <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="$(BannedApiAnalyzersVersion)" IncludeAssets="all"/>
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="$(ThreadingAnalyzersVersion)" IncludeAssets="all" />
-    <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopAnalyzersVersion)" IncludeAssets="all"  />
   </ItemGroup>
 
 </Project>
