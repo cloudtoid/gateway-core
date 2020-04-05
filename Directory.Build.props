@@ -35,13 +35,6 @@
     <CoverletVersion>2.8.*</CoverletVersion>
   </PropertyGroup>
 
-  <!-- Code Analyzer Versions -->
-  <PropertyGroup>
-    <StyleCopAnalyzersVersion>1.2.0-beta.113</StyleCopAnalyzersVersion>
-    <ThreadingAnalyzersVersion>16.5.*</ThreadingAnalyzersVersion>
-    <BannedApiAnalyzersVersion>2.9.*</BannedApiAnalyzersVersion>
-  </PropertyGroup>
-
   <!-- Package dependencies -->
   <ItemGroup>
     <PackageReference Include="Cloudtoid.Framework" Version="$(CloudtoidFrameworkVersion)" />
