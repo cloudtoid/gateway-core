@@ -13,10 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cloudtoid.GatewayCore.Funct
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cloudtoid.GatewayCore.Cli", "src\Cloudtoid.GatewayCore.Cli\Cloudtoid.GatewayCore.Cli.csproj", "{13A48A98-E113-4461-914B-6001AED60874}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cloudtoid.UrlPattern", "src\Cloudtoid.UrlPattern\Cloudtoid.UrlPattern.csproj", "{072C2E73-84EA-45C1-B571-82C2E2E3B722}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cloudtoid.UrlPattern.UnitTests", "tests\Cloudtoid.UrlPattern.UnitTests\Cloudtoid.UrlPattern.UnitTests.csproj", "{FD4E435E-478F-46DA-8686-9C15B12C9516}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -38,14 +34,6 @@ Global
 		{13A48A98-E113-4461-914B-6001AED60874}.Debug|x64.Build.0 = Debug|x64
 		{13A48A98-E113-4461-914B-6001AED60874}.Release|x64.ActiveCfg = Release|x64
 		{13A48A98-E113-4461-914B-6001AED60874}.Release|x64.Build.0 = Release|x64
-		{072C2E73-84EA-45C1-B571-82C2E2E3B722}.Debug|x64.ActiveCfg = Debug|x64
-		{072C2E73-84EA-45C1-B571-82C2E2E3B722}.Debug|x64.Build.0 = Debug|x64
-		{072C2E73-84EA-45C1-B571-82C2E2E3B722}.Release|x64.ActiveCfg = Release|x64
-		{072C2E73-84EA-45C1-B571-82C2E2E3B722}.Release|x64.Build.0 = Release|x64
-		{FD4E435E-478F-46DA-8686-9C15B12C9516}.Debug|x64.ActiveCfg = Debug|x64
-		{FD4E435E-478F-46DA-8686-9C15B12C9516}.Debug|x64.Build.0 = Debug|x64
-		{FD4E435E-478F-46DA-8686-9C15B12C9516}.Release|x64.ActiveCfg = Release|x64
-		{FD4E435E-478F-46DA-8686-9C15B12C9516}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -53,7 +41,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{7F344450-BA16-4879-B5C5-A45FCAF6CC44} = {B34B66C7-7A6A-4AAD-935C-7B44462FBF23}
 		{E437A712-9670-44F4-BA29-C26098FC05A5} = {B34B66C7-7A6A-4AAD-935C-7B44462FBF23}
-		{FD4E435E-478F-46DA-8686-9C15B12C9516} = {B34B66C7-7A6A-4AAD-935C-7B44462FBF23}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0C13DFE5-70DB-4B4D-9144-0E5231A28B5F}

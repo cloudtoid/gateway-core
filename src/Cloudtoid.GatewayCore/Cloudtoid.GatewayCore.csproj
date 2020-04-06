@@ -6,11 +6,10 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <ProjectReference Include="..\Cloudtoid.UrlPattern\Cloudtoid.UrlPattern.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Properties\" />
+    <PackageReference Include="Cloudtoid.UrlPattern" Version="1.0.2" />
   </ItemGroup>
 
 </Project>
