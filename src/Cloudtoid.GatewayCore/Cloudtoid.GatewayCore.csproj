@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>$(AppDotNetVersion)</TargetFramework>
@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cloudtoid.UrlPattern" Version="1.0.2" />
+    <PackageReference Include="Cloudtoid.UrlPattern" Version="1.0.19" />
   </ItemGroup>
 
 </Project>
