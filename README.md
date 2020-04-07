@@ -1,5 +1,10 @@
-# GatewayCore
-An API Gateway for .NET Core
+<img src="https://raw.githubusercontent.com/cloudtoid/assets/master/logos/cloudtoid-black-red.png" width="100">
+
+# Gateway Core
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/cloudtoid/url-patterns/blob/master/LICENSE)
+
+A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 
 ## TODO
 - Protocols
