@@ -59,7 +59,7 @@
                 throw new UriFormatException($"The URL host '{host}' specified by '{toExpression}' expression is invalid.");
 
             var path = ConcatPathWithSuffix(toPath, context.Route.PathSuffix);
-            var queryString = context.Request.QueryString + toQueryString;
+            var queryString = toQueryString + context.Request.QueryString;
 
             var url = UriHelper.BuildAbsolute(
                 scheme,

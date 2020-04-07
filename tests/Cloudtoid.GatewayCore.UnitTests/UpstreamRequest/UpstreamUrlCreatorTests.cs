@@ -1,5 +1,6 @@
 ﻿namespace Cloudtoid.GatewayCore.UnitTests
 {
+    using System;
     using System.Threading.Tasks;
     using Cloudtoid.GatewayCore.Upstream;
     using Cloudtoid.UrlPattern;
@@ -56,6 +57,54 @@
                 toExpression: "https://upstream/$id/category/$pid",
                 url: "https://gateway/catc1/product/p1/part/part1",
                 expectedUrl: "https://upstream/c1/category/p1/part/part1");
+
+            await CreateAndValidateAsync(
+                routePattern: "/cat/:cid/product/:pid",
+                toExpression: "https://upstream/$cid/$pid?q0=5#f1",
+                url: "https://gateway/cat/c1/product/p1/part1/part2?q1=10&q2=20",
+                expectedUrl: "https://upstream/c1/p1/part1/part2?q0=5&q1=10&q2=20#f1");
+
+            await CreateAndValidateAsync(
+                routePattern: "/cat/:cid/product/:pid",
+                toExpression: "https://upstream/inventory?cid=$cid#$pid",
+                url: "https://gateway/cat/c1/product/p1/part1/part2?top=10",
+                expectedUrl: "https://upstream/inventory/part1/part2?cid=c1&top=10#p1");
+        }
+
+        [TestMethod]
+        public void ToUrlWithMalformedScheme()
+        {
+            Func<Task> act = () => CreateAndValidateAsync(
+                routePattern: "/category",
+                toExpression: "https:::://upstream/category/",
+                url: "https://gateway/category/",
+                expectedUrl: "https://upstream/");
+
+            act.Should().ThrowExactly<UriFormatException>("The HTTP scheme 'https:::' specified by 'https:::://upstream/category/' expression is invalid.");
+        }
+
+        [TestMethod]
+        public void ToUrlWithMalformedHost()
+        {
+            Func<Task> act = () => CreateAndValidateAsync(
+                routePattern: "/category",
+                toExpression: "https:///category/",
+                url: "https://gateway/category/",
+                expectedUrl: "https://upstream/");
+
+            act.Should().ThrowExactly<UriFormatException>("The URL host '' specified by 'https:///category/' expression is invalid.");
+        }
+
+        [TestMethod]
+        public void ToUrlFullyMalformed()
+        {
+            Func<Task> act = () => CreateAndValidateAsync(
+                routePattern: "/category",
+                toExpression: "https: / /category/",
+                url: "https://gateway/category/",
+                expectedUrl: "https://upstream/");
+
+            act.Should().ThrowExactly<UriFormatException>("Using 'https: / /category/' expression to rewrite request URL '/category/'. However, the rewritten URL is not a valid URL format.");
         }
 
         [TestMethod]
@@ -95,11 +144,11 @@
                 out var host,
                 out var path,
                 out var query,
-                out var fragment);
+                out var _);
 
             patternEngine.TryMatch(
                 routePattern,
-                path.ToString() + query.ToString() + fragment.ToString(),
+                path.ToString(),
                 out var match,
                 out var why).Should().BeTrue();
 

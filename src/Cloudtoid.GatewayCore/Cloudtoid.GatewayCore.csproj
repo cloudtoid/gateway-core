@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cloudtoid.UrlPattern" Version="1.0.19" />
+    <PackageReference Include="Cloudtoid.UrlPattern" Version="1.0.*" />
   </ItemGroup>
 
 </Project>

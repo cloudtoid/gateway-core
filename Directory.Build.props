@@ -22,7 +22,7 @@
 
   <!-- Product Package Versions -->
   <PropertyGroup>
-    <CloudtoidFrameworkVersion>1.0.19</CloudtoidFrameworkVersion>
+    <CloudtoidFrameworkVersion>1.0.*</CloudtoidFrameworkVersion>
     <MicrosoftExtensionsVersion>3.1.*</MicrosoftExtensionsVersion>
   </PropertyGroup>
 
