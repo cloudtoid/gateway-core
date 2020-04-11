@@ -1,5 +1,6 @@
 ﻿namespace Cloudtoid.GatewayCore.Upstream
 {
+    using System;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
@@ -15,6 +16,7 @@
     {
         Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage upstreamMessage,
+            TimeSpan requestTimeout,
             CancellationToken cancellationToken);
     }
 }

@@ -90,8 +90,8 @@
 
             try
             {
-                return await Async
-                    .WithTimeout(sender.SendAsync, upstreamRequest, upstreamTimeout, cancellationToken)
+                return await sender
+                    .SendAsync(upstreamRequest, upstreamTimeout, cancellationToken)
                     .TraceOnFaulted(logger, "Failed to forward the request to the upstream system.", cancellationToken);
             }
             catch (HttpRequestException hre)

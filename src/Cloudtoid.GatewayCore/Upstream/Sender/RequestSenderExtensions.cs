@@ -17,8 +17,8 @@
             // TODO: Commented out until fixed
             // TODO: Commented out until fixed
 
-            //// var options = serviceProvider.GetRequiredService<RouteProvider>();
-            //// var senderOptions = options.Proxy.Upstream.Request.Sender;
+            ////var settings = serviceProvider.GetRequiredService<ISettingsProvider>();
+            ////var senderOptions = settings.CurrentValue..Proxy.Upstream.Request.Sender;
             return new SocketsHttpHandler
             {
                 AllowAutoRedirect = false, //// senderOptions.AllowAutoRedirect,

@@ -1,5 +1,6 @@
 ﻿namespace Cloudtoid.GatewayCore.Upstream
 {
+    using System;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
@@ -16,6 +17,7 @@
 
         public async Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage upstreamMessage,
+            TimeSpan requestTimeout,
             CancellationToken cancellationToken)
         {
             CheckValue(upstreamMessage, nameof(upstreamMessage));
@@ -23,6 +25,7 @@
             cancellationToken.ThrowIfCancellationRequested();
 
             var client = httpClientFactory.CreateClient();
+            client.Timeout = requestTimeout;
             return await client.SendAsync(upstreamMessage, cancellationToken);
         }
     }
