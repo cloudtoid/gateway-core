@@ -19,7 +19,7 @@
             var app = new CommandLineApplication
             {
                 Name = assembly.GetName().Name,
-                Description = "Cloudtoid FOID Reverse Proxy CLI"
+                Description = "Cloudtoid Gateway Core CLI"
             };
             app.HelpOption("-?|-h|--help");
 

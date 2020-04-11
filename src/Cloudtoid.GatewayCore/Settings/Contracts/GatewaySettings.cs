@@ -2,12 +2,15 @@
 {
     using System.Collections.Generic;
 
-    public sealed class ReverseProxySettings
+    public sealed class GatewaySettings
     {
-        internal ReverseProxySettings(IReadOnlyList<RouteSettings> routes)
+        internal GatewaySettings(SystemSettings system, IReadOnlyList<RouteSettings> routes)
         {
+            System = system;
             Routes = routes;
         }
+
+        public SystemSettings System { get; }
 
         public IReadOnlyList<RouteSettings> Routes { get; }
     }

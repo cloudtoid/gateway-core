@@ -309,7 +309,7 @@
 
         private static async Task<HttpResponse> SetHeadersAsync(
             HttpResponseMessage message,
-            ReverseProxyOptions? options = null,
+            GatewayOptions? options = null,
             IServiceCollection? services = null)
         {
             services ??= new ServiceCollection();

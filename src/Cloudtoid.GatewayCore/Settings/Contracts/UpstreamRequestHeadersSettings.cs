@@ -74,7 +74,7 @@
         {
             var eval = context.Evaluate(proxyContext, defaultHostExpression);
             return string.IsNullOrWhiteSpace(eval)
-                ? Defaults.Proxy.Upstream.Request.Headers.Host
+                ? Defaults.Route.Proxy.Upstream.Request.Headers.Host
                 : eval;
         }
 
@@ -84,7 +84,7 @@
         {
             if (proxyNameExpression is null)
             {
-                proxyName = Defaults.Proxy.Upstream.Request.Headers.ProxyName;
+                proxyName = Defaults.Route.Proxy.Upstream.Request.Headers.ProxyName;
                 return true;
             }
 

@@ -4,23 +4,31 @@
 
     internal static class Defaults
     {
-        internal static class Proxy
+        internal static class System
         {
-            internal static class Upstream
+            internal static int RouteCacheMaxCount { get; } = 100000;
+        }
+
+        internal static class Route
+        {
+            internal static class Proxy
             {
-                internal static class Request
+                internal static class Upstream
                 {
-                    internal static Version HttpVersion { get; } = Cloudtoid.HttpVersion.Version20;
-
-                    internal static TimeSpan Timeout { get; } = TimeSpan.FromMinutes(4);
-
-                    internal static class Headers
+                    internal static class Request
                     {
-                        internal const string CorrelationIdHeader = GatewayCore.Headers.Names.CorrelationId;
+                        internal static Version HttpVersion { get; } = Cloudtoid.HttpVersion.Version20;
 
-                        internal const string ProxyName = "gwcore";
+                        internal static TimeSpan Timeout { get; } = TimeSpan.FromMinutes(4);
 
-                        internal static string Host { get; } = Environment.MachineName;
+                        internal static class Headers
+                        {
+                            internal const string CorrelationIdHeader = GatewayCore.Headers.Names.CorrelationId;
+
+                            internal const string ProxyName = "gwcore";
+
+                            internal static string Host { get; } = Environment.MachineName;
+                        }
                     }
                 }
             }

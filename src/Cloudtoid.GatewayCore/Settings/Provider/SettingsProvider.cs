@@ -6,11 +6,11 @@
     internal sealed class SettingsProvider : ISettingsProvider
     {
         private readonly ISettingsCreator settingsCreator;
-        private readonly IOptionsMonitor<ReverseProxyOptions> options;
+        private readonly IOptionsMonitor<GatewayOptions> options;
 
         public SettingsProvider(
             ISettingsCreator settingsCreator,
-            IOptionsMonitor<ReverseProxyOptions> options)
+            IOptionsMonitor<GatewayOptions> options)
         {
             this.settingsCreator = CheckValue(settingsCreator, nameof(settingsCreator));
             this.options = CheckValue(options, nameof(options));
@@ -19,9 +19,9 @@
             CurrentValue = CreateSettings();
         }
 
-        public ReverseProxySettings CurrentValue { get; private set; }
+        public GatewaySettings CurrentValue { get; private set; }
 
-        private ReverseProxySettings CreateSettings()
+        private GatewaySettings CreateSettings()
             => settingsCreator.Create(options.CurrentValue);
     }
 }

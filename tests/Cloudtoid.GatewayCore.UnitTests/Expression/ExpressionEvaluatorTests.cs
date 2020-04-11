@@ -304,7 +304,7 @@
         private string Evaluate(
             string expression,
             HttpContext? httpContext = null,
-            ReverseProxyOptions? options = null,
+            GatewayOptions? options = null,
             IReadOnlyDictionary<string, string>? variables = null)
         {
             services.AddTest().AddTestOptions(options);

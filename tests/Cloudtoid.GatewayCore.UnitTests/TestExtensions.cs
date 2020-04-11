@@ -34,10 +34,10 @@
 
         public static IServiceCollection AddTestOptions(
             this IServiceCollection services,
-            ReverseProxyOptions? options = null)
+            GatewayOptions? options = null)
         {
             options ??= CreateDefaultOptions();
-            var monitor = Substitute.For<IOptionsMonitor<ReverseProxyOptions>>();
+            var monitor = Substitute.For<IOptionsMonitor<GatewayOptions>>();
             monitor.CurrentValue.Returns(options);
             services.TryAddSingleton(monitor);
             return services;
@@ -65,15 +65,15 @@
                 route);
         }
 
-        public static ReverseProxyOptions CreateDefaultOptions(string route = "/api/", string to = "/upstream/api/")
+        public static GatewayOptions CreateDefaultOptions(string route = "/api/", string to = "/upstream/api/")
         {
-            return new ReverseProxyOptions
+            return new GatewayOptions
             {
-                Routes = new Dictionary<string, ReverseProxyOptions.RouteOptions>
+                Routes = new Dictionary<string, GatewayOptions.RouteOptions>
                 {
-                    [route] = new ReverseProxyOptions.RouteOptions
+                    [route] = new GatewayOptions.RouteOptions
                     {
-                        Proxy = new ReverseProxyOptions.RouteOptions.ProxyOptions
+                        Proxy = new GatewayOptions.RouteOptions.ProxyOptions
                         {
                             To = to
                         }

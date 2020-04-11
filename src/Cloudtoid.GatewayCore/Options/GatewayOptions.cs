@@ -3,13 +3,27 @@
     using System;
     using System.Collections.Generic;
 
-    public sealed class ReverseProxyOptions
+    public sealed class GatewayOptions
     {
+        /// <summary>
+        /// Gets or sets the system-wide configurations.
+        /// </summary>
+        public SystemOptions System { get; set; } = new SystemOptions();
+
         /// <summary>
         /// Gets or sets the list of proxy server route configurations
         /// The key here is the relative URL of the inbound downstream request.
         /// </summary>
         public Dictionary<string, RouteOptions> Routes { get; set; } = new Dictionary<string, RouteOptions>(StringComparer.OrdinalIgnoreCase);
+
+        public sealed class SystemOptions
+        {
+            /// <summary>
+            /// Gets or sets the number of "inbound downstream request path" to "outbound upstream request URL" that are cached in memory.
+            /// The default value is 100,000 entries.
+            /// </summary>
+            public int? RouteCacheMaxCount { get; set; }
+        }
 
         public sealed class RouteOptions
         {

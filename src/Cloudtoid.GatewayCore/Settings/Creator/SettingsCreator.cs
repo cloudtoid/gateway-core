@@ -6,9 +6,9 @@
     using Cloudtoid.GatewayCore.Expression;
     using Cloudtoid.UrlPattern;
     using Microsoft.Extensions.Logging;
-    using static Cloudtoid.GatewayCore.ReverseProxyOptions;
-    using static Cloudtoid.GatewayCore.ReverseProxyOptions.RouteOptions;
-    using static Cloudtoid.GatewayCore.ReverseProxyOptions.RouteOptions.ProxyOptions;
+    using static Cloudtoid.GatewayCore.GatewayOptions;
+    using static Cloudtoid.GatewayCore.GatewayOptions.RouteOptions;
+    using static Cloudtoid.GatewayCore.GatewayOptions.RouteOptions.ProxyOptions;
     using static Contract;
 
     internal sealed class SettingsCreator : ISettingsCreator
@@ -27,8 +27,10 @@
             this.logger = CheckValue(logger, nameof(logger));
         }
 
-        public ReverseProxySettings Create(ReverseProxyOptions options)
+        public GatewaySettings Create(GatewayOptions options)
         {
+            var system = Create(options.System);
+
             var routes = options.Routes
                 .Select(o => Create(o.Key, o.Value))
                 .WhereNotNull()
@@ -37,7 +39,21 @@
             if (routes.Length == 0)
                 LogError("No routes are specified.");
 
-            return new ReverseProxySettings(routes);
+            return new GatewaySettings(system, routes);
+        }
+
+        private SystemSettings Create(SystemOptions options)
+        {
+            if (!options.RouteCacheMaxCount.HasValue)
+                return new SystemSettings(Defaults.System.RouteCacheMaxCount);
+
+            if (options.RouteCacheMaxCount.Value < 1000)
+            {
+                LogError($"{nameof(options.RouteCacheMaxCount)} must be set to at least 1000. Using the default value which is {Defaults.System.RouteCacheMaxCount} instead.");
+                return new SystemSettings(Defaults.System.RouteCacheMaxCount);
+            }
+
+            return new SystemSettings(options.RouteCacheMaxCount.Value);
         }
 
         private RouteSettings? Create(

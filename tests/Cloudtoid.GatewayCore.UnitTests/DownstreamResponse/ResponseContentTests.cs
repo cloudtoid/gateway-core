@@ -135,7 +135,7 @@
         private static async Task<HttpResponse> SetContentAsync(
             HttpResponseMessage message,
             HttpContext? httpContext = null,
-            ReverseProxyOptions? options = null)
+            GatewayOptions? options = null)
         {
             var services = new ServiceCollection().AddTest().AddTestOptions(options);
             var serviceProvider = services.BuildServiceProvider();

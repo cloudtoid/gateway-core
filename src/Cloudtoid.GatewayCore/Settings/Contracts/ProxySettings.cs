@@ -30,7 +30,7 @@
             var eval = context.Evaluate(proxyContext, correlationIdHeaderExpression);
 
             return string.IsNullOrWhiteSpace(eval)
-                ? Defaults.Proxy.Upstream.Request.Headers.CorrelationIdHeader
+                ? Defaults.Route.Proxy.Upstream.Request.Headers.CorrelationIdHeader
                 : eval;
         }
     }

@@ -29,7 +29,7 @@
         public Version GetHttpVersion(ProxyContext proxyContext)
         {
             var result = context.Evaluate(proxyContext, httpVersionExpression);
-            return HttpVersion.ParseOrDefault(result) ?? Defaults.Proxy.Upstream.Request.HttpVersion;
+            return HttpVersion.ParseOrDefault(result) ?? Defaults.Route.Proxy.Upstream.Request.HttpVersion;
         }
 
         public TimeSpan GetTimeout(ProxyContext proxyContext)
@@ -38,7 +38,7 @@
 
             return long.TryParse(result, out var timeout) && timeout > 0
                 ? TimeSpan.FromMilliseconds(timeout)
-                : Defaults.Proxy.Upstream.Request.Timeout;
+                : Defaults.Route.Proxy.Upstream.Request.Timeout;
         }
     }
 }

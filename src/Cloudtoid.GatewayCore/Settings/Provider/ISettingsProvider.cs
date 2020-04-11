@@ -2,6 +2,6 @@
 {
     public interface ISettingsProvider
     {
-        ReverseProxySettings CurrentValue { get; }
+        GatewaySettings CurrentValue { get; }
     }
 }

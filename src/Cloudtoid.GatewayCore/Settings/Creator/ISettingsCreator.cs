@@ -2,6 +2,6 @@
 {
     internal interface ISettingsCreator
     {
-        ReverseProxySettings Create(ReverseProxyOptions options);
+        GatewaySettings Create(GatewayOptions options);
     }
 }

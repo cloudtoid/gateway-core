@@ -1,4 +1,7 @@
 {
+  "system": {
+    "routeCacheMaxCount": 1024
+  },
   "routes": {
     "/api/": {
       "proxy": {

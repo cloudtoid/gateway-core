@@ -25,12 +25,15 @@
         [TestMethod]
         public void New_FullyPopulatedOptions_AllValuesAreReadCorrectly()
         {
-            var context = GetProxyContext(@"Settings\OptionsFull.json");
-            var settings = context.Route.Settings;
+            var settings = GetSettings(@"Settings\OptionsFull.json");
+            settings.System.RouteCacheMaxCount.Should().Be(1024);
 
-            settings.Proxy!.GetCorrelationIdHeader(context).Should().Be("x-request-id");
+            var context = GetProxyContext(settings);
+            var routeSettings = context.Route.Settings;
 
-            var request = settings.Proxy.UpstreamRequest;
+            routeSettings.Proxy!.GetCorrelationIdHeader(context).Should().Be("x-request-id");
+
+            var request = routeSettings.Proxy.UpstreamRequest;
             request.GetHttpVersion(context).Should().Be(HttpVersion.Version30);
             request.GetTimeout(context).TotalMilliseconds.Should().Be(5200);
 
@@ -60,7 +63,7 @@
             requestSender.AllowAutoRedirect.Should().BeTrue();
             requestSender.UseCookies.Should().BeTrue();
 
-            var response = settings.Proxy.DownstreamResponse;
+            var response = routeSettings.Proxy.DownstreamResponse;
             var responseHeaders = response.Headers;
             responseHeaders.AllowHeadersWithEmptyValue.Should().BeTrue();
             responseHeaders.AllowHeadersWithUnderscoreInName.Should().BeTrue();
@@ -115,10 +118,13 @@
         [TestMethod]
         public void New_EmptyOptions_AllValuesSetToDefault()
         {
-            var context = GetProxyContext(@"Settings\OptionsEmpty.json");
-            var settings = context.Route.Settings;
+            var settings = GetSettings(@"Settings\OptionsEmpty.json");
+            settings.System.RouteCacheMaxCount.Should().Be(100000);
 
-            var request = settings.Proxy!.UpstreamRequest;
+            var context = GetProxyContext(settings);
+            var routeSettings = context.Route.Settings;
+
+            var request = routeSettings.Proxy!.UpstreamRequest;
             request.GetHttpVersion(context).Should().Be(HttpVersion.Version20);
             request.GetTimeout(context).TotalMilliseconds.Should().Be(240000);
 
@@ -141,7 +147,7 @@
             requestSender.AllowAutoRedirect.Should().BeFalse();
             requestSender.UseCookies.Should().BeFalse();
 
-            var response = settings.Proxy.DownstreamResponse;
+            var response = routeSettings.Proxy.DownstreamResponse;
             var responseHeaders = response.Headers;
             responseHeaders.AllowHeadersWithEmptyValue.Should().BeFalse();
             responseHeaders.AllowHeadersWithUnderscoreInName.Should().BeFalse();
@@ -161,11 +167,11 @@
 
                 var services = new ServiceCollection()
                     .AddTest()
-                    .Configure<ReverseProxyOptions>(config);
+                    .Configure<GatewayOptions>(config);
 
                 var serviceProvider = services.BuildServiceProvider();
                 var settingsProvider = serviceProvider.GetRequiredService<ISettingsProvider>();
-                var monitor = serviceProvider.GetRequiredService<IOptionsMonitor<ReverseProxyOptions>>();
+                var monitor = serviceProvider.GetRequiredService<IOptionsMonitor<GatewayOptions>>();
 
                 var httpContext = new DefaultHttpContext();
                 var settings = settingsProvider.CurrentValue.Routes.First();
@@ -221,25 +227,25 @@
         [TestMethod]
         public void New_NoRoutes_CorrectError()
         {
-            var options = new ReverseProxyOptions();
+            var options = new GatewayOptions();
             CreateSettingsAndCheckLogs(options, "No routes are specified");
         }
 
         [TestMethod]
         public void New_EmptyRoute_CorrectError()
         {
-            var options = new ReverseProxyOptions();
-            options.Routes.Add(string.Empty, new ReverseProxyOptions.RouteOptions());
+            var options = new GatewayOptions();
+            options.Routes.Add(string.Empty, new GatewayOptions.RouteOptions());
             CreateSettingsAndCheckLogs(options, "A route cannot be an empty string");
         }
 
         [TestMethod]
         public void New_NullProxyTo_CorrectError()
         {
-            var options = new ReverseProxyOptions();
-            options.Routes.Add("/a/b/c/", new ReverseProxyOptions.RouteOptions
+            var options = new GatewayOptions();
+            options.Routes.Add("/a/b/c/", new GatewayOptions.RouteOptions
             {
-                Proxy = new ReverseProxyOptions.RouteOptions.ProxyOptions
+                Proxy = new GatewayOptions.RouteOptions.ProxyOptions
                 {
                     To = null
                 }
@@ -251,10 +257,10 @@
         [TestMethod]
         public void New_EmptyProxyTo_CorrectError()
         {
-            var options = new ReverseProxyOptions();
-            options.Routes.Add("/a/b/c/", new ReverseProxyOptions.RouteOptions
+            var options = new GatewayOptions();
+            options.Routes.Add("/a/b/c/", new GatewayOptions.RouteOptions
             {
-                Proxy = new ReverseProxyOptions.RouteOptions.ProxyOptions
+                Proxy = new GatewayOptions.RouteOptions.ProxyOptions
                 {
                     To = "    "
                 }
@@ -266,10 +272,10 @@
         [TestMethod]
         public void New_WhenFailsToCompileRoutePattern_Fail()
         {
-            var options = new ReverseProxyOptions();
-            options.Routes.Add($"/category/:id/product/:id", new ReverseProxyOptions.RouteOptions
+            var options = new GatewayOptions();
+            options.Routes.Add($"/category/:id/product/:id", new GatewayOptions.RouteOptions
             {
-                Proxy = new ReverseProxyOptions.RouteOptions.ProxyOptions
+                Proxy = new GatewayOptions.RouteOptions.ProxyOptions
                 {
                     To = "/somevalue"
                 }
@@ -281,10 +287,10 @@
         [TestMethod]
         public void New_WhenCollidesWithSystemVariable_Fail()
         {
-            var options = new ReverseProxyOptions();
-            options.Routes.Add($"/:{SystemVariableNames.Host}/", new ReverseProxyOptions.RouteOptions
+            var options = new GatewayOptions();
+            options.Routes.Add($"/:{SystemVariableNames.Host}/", new GatewayOptions.RouteOptions
             {
-                Proxy = new ReverseProxyOptions.RouteOptions.ProxyOptions
+                Proxy = new GatewayOptions.RouteOptions.ProxyOptions
                 {
                     To = "/somevalue"
                 }
@@ -296,15 +302,15 @@
         [TestMethod]
         public void New_InvalidHeaderName_CorrectError()
         {
-            var options = new ReverseProxyOptions();
-            options.Routes.Add("/a/b/c/", new ReverseProxyOptions.RouteOptions
+            var options = new GatewayOptions();
+            options.Routes.Add("/a/b/c/", new GatewayOptions.RouteOptions
             {
-                Proxy = new ReverseProxyOptions.RouteOptions.ProxyOptions
+                Proxy = new GatewayOptions.RouteOptions.ProxyOptions
                 {
                     To = "/e/f/g/",
-                    UpstreamRequest = new ReverseProxyOptions.RouteOptions.ProxyOptions.UpstreamRequestOptions
+                    UpstreamRequest = new GatewayOptions.RouteOptions.ProxyOptions.UpstreamRequestOptions
                     {
-                        Headers = new ReverseProxyOptions.RouteOptions.ProxyOptions.UpstreamRequestOptions.HeadersOptions
+                        Headers = new GatewayOptions.RouteOptions.ProxyOptions.UpstreamRequestOptions.HeadersOptions
                         {
                             Overrides = new System.Collections.Generic.Dictionary<string, string[]>()
                             {
@@ -318,7 +324,7 @@
             CreateSettingsAndCheckLogs(options, "The ' bad-header\\' is not a valid HTTP header name. It will be ignored.");
         }
 
-        private static ProxyContext GetProxyContext(string jsonFile)
+        private static GatewaySettings GetSettings(string jsonFile)
         {
             var config = new ConfigurationBuilder()
                 .AddJsonFile(jsonFile, optional: false)
@@ -326,23 +332,33 @@
 
             var services = new ServiceCollection()
                 .AddTest()
-                .Configure<ReverseProxyOptions>(config);
+                .Configure<GatewayOptions>(config);
 
-            var settingsProvider = services
+            return services
                 .BuildServiceProvider()
-                .GetRequiredService<ISettingsProvider>();
+                .GetRequiredService<ISettingsProvider>()
+                .CurrentValue;
+        }
 
+        private static ProxyContext GetProxyContext(GatewaySettings settings)
+        {
             var httpContext = new DefaultHttpContext();
-            var settings = settingsProvider.CurrentValue.Routes.First();
+            var routeSettings = settings.Routes.First();
 
             return new ProxyContext(
                 Substitute.For<IHostProvider>(),
                 Substitute.For<ITraceIdProvider>(),
                 httpContext,
-                new Route(settings, string.Empty, ImmutableDictionary<string, string>.Empty));
+                new Route(routeSettings, string.Empty, ImmutableDictionary<string, string>.Empty));
         }
 
-        private static void CreateSettingsAndCheckLogs(ReverseProxyOptions options, params string[] messages)
+        private static ProxyContext GetProxyContext(string jsonFile)
+        {
+            var settings = GetSettings(jsonFile);
+            return GetProxyContext(settings);
+        }
+
+        private static void CreateSettingsAndCheckLogs(GatewayOptions options, params string[] messages)
         {
             var services = new ServiceCollection().AddTest().AddTestOptions(options);
             var serviceProvider = services.BuildServiceProvider();
