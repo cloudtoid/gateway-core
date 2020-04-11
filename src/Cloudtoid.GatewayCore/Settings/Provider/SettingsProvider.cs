@@ -47,10 +47,11 @@
 
         private void CreateHttpClientFactoryOptions(UpstreamRequestSenderSettings settings)
         {
+            httpFactoryOptionsMonitorCache.TryRemove(settings.HttpClientName);
+
             var options = new HttpClientFactoryOptions();
             options.HttpMessageHandlerBuilderActions.Add(builder => ConfigureHttpMessageHandlerBuilder(builder, settings));
 
-            httpFactoryOptionsMonitorCache.TryRemove(settings.HttpClientName);
             httpFactoryOptionsMonitorCache.TryAdd(settings.HttpClientName, options);
         }
 

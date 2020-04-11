@@ -9,6 +9,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Settings\OptionsSenderHttpClient.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Settings\OptionsFull.json" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Settings\OptionsWithExpressions.json" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Settings\OptionsOld.json" CopyToOutputDirectory="PreserveNewest" />

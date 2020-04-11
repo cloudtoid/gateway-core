@@ -5,7 +5,10 @@
         "to": "http://localhost:85/upstream/",
         "upstreamRequest": {
           "sender": {
-            "timeoutInMilliseconds": 2000
+            "httpClientName": "api-route-http-client-name",
+            "timeoutInMilliseconds": 2000,
+            "allowAutoRedirect": true,
+            "useCookies": false
           }
         }
       }

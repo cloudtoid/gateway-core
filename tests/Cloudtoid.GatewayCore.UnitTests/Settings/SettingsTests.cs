@@ -4,7 +4,10 @@
     using System.Collections.Immutable;
     using System.IO;
     using System.Linq;
+    using System.Net.Http;
+    using System.Reflection;
     using System.Threading;
+    using System.Threading.Tasks;
     using Cloudtoid.GatewayCore;
     using Cloudtoid.GatewayCore.Expression;
     using Cloudtoid.GatewayCore.Host;
@@ -14,6 +17,7 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Http;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -22,6 +26,8 @@
     [TestClass]
     public sealed class SettingsTests
     {
+        private IServiceProvider? serviceProvider;
+
         [TestMethod]
         public void New_FullyPopulatedOptions_AllValuesAreReadCorrectly()
         {
@@ -160,7 +166,7 @@
         }
 
         [TestMethod]
-        public void New_OptionsFileModified_FileIsReloaded()
+        public async Task New_OptionsFileModified_FileIsReloadedAsync()
         {
             try
             {
@@ -174,7 +180,7 @@
                     .AddTest()
                     .Configure<GatewayOptions>(config);
 
-                var serviceProvider = services.BuildServiceProvider();
+                serviceProvider = services.BuildServiceProvider();
                 var settingsProvider = serviceProvider.GetRequiredService<ISettingsProvider>();
                 var monitor = serviceProvider.GetRequiredService<IOptionsMonitor<GatewayOptions>>();
 
@@ -197,10 +203,18 @@
 
                     monitor.OnChange(Reset);
 
-                    settings.Proxy!.UpstreamRequest.Sender.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
+                    var sender = settings.Proxy!.UpstreamRequest.Sender;
+                    sender.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
+                    sender.AllowAutoRedirect.Should().BeFalse();
+                    sender.UseCookies.Should().BeTrue();
+                    ValidateSocketHttpHandler("api-route-http-client-name", sender);
 
                     File.Copy(@"Settings\OptionsNew.json", @"Settings\OptionsReload.json", true);
-                    changeEvent.WaitOne(2000);
+
+                    // this delay is needed because the lifetime of the http handler is set to 1 seconds. We have to wait for it to expire.
+                    await Task.Delay(2000);
+
+                    changeEvent.WaitOne();
 
                     settings = settingsProvider.CurrentValue.Routes.First();
                     context = new ProxyContext(
@@ -209,10 +223,18 @@
                         httpContext,
                         new Route(settings, string.Empty, ImmutableDictionary<string, string>.Empty));
 
-                    settings.Proxy!.UpstreamRequest.Sender.GetTimeout(context).TotalMilliseconds.Should().Be(2000);
+                    sender = settings.Proxy!.UpstreamRequest.Sender;
+                    sender.GetTimeout(context).TotalMilliseconds.Should().Be(2000);
+                    sender.AllowAutoRedirect.Should().BeTrue();
+                    sender.UseCookies.Should().BeFalse();
+                    ValidateSocketHttpHandler("api-route-http-client-name", sender);
 
                     File.Copy(@"Settings\OptionsOld.json", @"Settings\OptionsReload.json", true);
-                    changeEvent.WaitOne(2000);
+
+                    // this delay is needed because the lifetime of the http handler is set to 1 seconds. We have to wait for it to expire.
+                    await Task.Delay(2000);
+
+                    changeEvent.WaitOne();
                     settings = settingsProvider.CurrentValue.Routes.First();
                     context = new ProxyContext(
                         Substitute.For<IHostProvider>(),
@@ -220,13 +242,29 @@
                         httpContext,
                         new Route(settings, string.Empty, ImmutableDictionary<string, string>.Empty));
 
-                    settings.Proxy!.UpstreamRequest.Sender.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
+                    sender = settings.Proxy!.UpstreamRequest.Sender;
+                    sender.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
+                    sender.AllowAutoRedirect.Should().BeFalse();
+                    sender.UseCookies.Should().BeTrue();
+                    ValidateSocketHttpHandler("api-route-http-client-name", sender);
                 }
             }
             finally
             {
                 File.Delete(@"Settings\OptionsReload.json");
             }
+        }
+
+        [TestMethod]
+        public void New_UpstreamSenderWithExplicitHttpClientName_HttpClientIsCorrectlyCreated()
+        {
+            var context = GetProxyContext(@"Settings\OptionsSenderHttpClient.json");
+            var requestSender = context.Route.Settings.Proxy!.UpstreamRequest.Sender;
+            requestSender.HttpClientName.Should().Be("api-route-http-client-name");
+            requestSender.GetTimeout(context).TotalMilliseconds.Should().Be(5200);
+            requestSender.AllowAutoRedirect.Should().BeFalse();
+            requestSender.UseCookies.Should().BeTrue();
+            ValidateSocketHttpHandler("api-route-http-client-name", requestSender);
         }
 
         [TestMethod]
@@ -356,7 +394,7 @@
             CreateSettingsAndCheckLogs(options, "The ' bad-header\\' is not a valid HTTP header name. It will be ignored.");
         }
 
-        private static GatewaySettings GetSettings(string jsonFile)
+        private GatewaySettings GetSettings(string jsonFile)
         {
             var config = new ConfigurationBuilder()
                 .AddJsonFile(jsonFile, optional: false)
@@ -366,13 +404,15 @@
                 .AddTest()
                 .Configure<GatewayOptions>(config);
 
-            return services
-                .BuildServiceProvider()
+            serviceProvider = services
+                .BuildServiceProvider();
+
+            return serviceProvider
                 .GetRequiredService<ISettingsProvider>()
                 .CurrentValue;
         }
 
-        private static ProxyContext GetProxyContext(GatewaySettings settings)
+        private ProxyContext GetProxyContext(GatewaySettings settings)
         {
             var httpContext = new DefaultHttpContext();
             var routeSettings = settings.Routes.First();
@@ -384,24 +424,24 @@
                 new Route(routeSettings, string.Empty, ImmutableDictionary<string, string>.Empty));
         }
 
-        private static ProxyContext GetProxyContext(string jsonFile)
+        private ProxyContext GetProxyContext(string jsonFile)
         {
             var settings = GetSettings(jsonFile);
             return GetProxyContext(settings);
         }
 
-        private static GatewaySettings CreateSettings(GatewayOptions options)
+        private GatewaySettings CreateSettings(GatewayOptions options)
         {
             var services = new ServiceCollection().AddTest().AddTestOptions(options);
-            var serviceProvider = services.BuildServiceProvider();
+            serviceProvider = services.BuildServiceProvider();
             var settingsProvider = serviceProvider.GetRequiredService<ISettingsProvider>();
             return settingsProvider.CurrentValue;
         }
 
-        private static GatewaySettings CreateSettingsAndCheckLogs(GatewayOptions options, params string[] messages)
+        private GatewaySettings CreateSettingsAndCheckLogs(GatewayOptions options, params string[] messages)
         {
             var services = new ServiceCollection().AddTest().AddTestOptions(options);
-            var serviceProvider = services.BuildServiceProvider();
+            serviceProvider = services.BuildServiceProvider();
             var settingsProvider = serviceProvider.GetRequiredService<ISettingsProvider>();
 
             var logger = (Logger<SettingsCreator>)serviceProvider.GetRequiredService<ILogger<SettingsCreator>>();
@@ -409,6 +449,46 @@
                 logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase(message)).Should().BeTrue();
 
             return settingsProvider.CurrentValue;
+        }
+
+        private void ValidateSocketHttpHandler(string httpClientName, UpstreamRequestSenderSettings settings)
+        {
+            // Need to force expire the current handler
+            var cache = serviceProvider!.GetRequiredService<IOptionsMonitorCache<HttpClientFactoryOptions>>();
+            cache.GetOrAdd(
+                httpClientName,
+                () => throw new InvalidOperationException("Should never get here"))
+                .HandlerLifetime = TimeSpan.FromSeconds(1);
+
+            var factory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+            var client = factory.CreateClient(httpClientName);
+
+            // The only way I can check the socket handler is through reflection
+            var handler = typeof(HttpMessageInvoker)
+                .GetField("_handler", BindingFlags.NonPublic | BindingFlags.Instance)!
+                .GetValue(client) as HttpMessageHandler;
+
+            handler.Should().NotBeNull();
+
+            while (handler != null)
+            {
+                if (handler is SocketsHttpHandler socket)
+                {
+                    socket.UseCookies.Should().Be(settings.UseCookies);
+                    socket.AllowAutoRedirect.Should().Be(settings.AllowAutoRedirect);
+                    return;
+                }
+
+                if (handler is DelegatingHandler delegating)
+                {
+                    handler = delegating.InnerHandler;
+                    continue;
+                }
+
+                break;
+            }
+
+            throw new InvalidOperationException("We should never get here!");
         }
     }
 }

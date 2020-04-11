@@ -6,7 +6,7 @@
         "upstreamRequest": {
           "sender": {
             "httpClientName": "api-route-http-client-name",
-            "timeoutInMilliseconds": 5000,
+            "timeoutInMilliseconds": 5200,
             "allowAutoRedirect": false,
             "useCookies": true
           }
