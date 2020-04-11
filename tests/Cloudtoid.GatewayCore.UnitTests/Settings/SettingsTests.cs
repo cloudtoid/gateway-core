@@ -225,6 +225,18 @@
         }
 
         [TestMethod]
+        public void New_BadRouteCacheMaxCount_CorrectError()
+        {
+            var options = new GatewayOptions();
+            options.System.RouteCacheMaxCount = 10;
+            var settings = CreateSettingsAndCheckLogs(
+                options,
+                "RouteCacheMaxCount must be set to at least 1000. Using the default value which is 100000 instead.");
+
+            settings.System.RouteCacheMaxCount.Should().Be(100000);
+        }
+
+        [TestMethod]
         public void New_NoRoutes_CorrectError()
         {
             var options = new GatewayOptions();
@@ -358,14 +370,16 @@
             return GetProxyContext(settings);
         }
 
-        private static void CreateSettingsAndCheckLogs(GatewayOptions options, params string[] messages)
+        private static GatewaySettings CreateSettingsAndCheckLogs(GatewayOptions options, params string[] messages)
         {
             var services = new ServiceCollection().AddTest().AddTestOptions(options);
             var serviceProvider = services.BuildServiceProvider();
             var logger = (Logger<SettingsCreator>)serviceProvider.GetRequiredService<ILogger<SettingsCreator>>();
-            serviceProvider.GetRequiredService<ISettingsProvider>();
+            var settingsProvider = serviceProvider.GetRequiredService<ISettingsProvider>();
             foreach (var message in messages)
                 logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase(message)).Should().BeTrue();
+
+            return settingsProvider.CurrentValue;
         }
     }
 }
