@@ -15,15 +15,18 @@
     {
         private readonly IExpressionEvaluator evaluator;
         private readonly IPatternEngine patternEngine;
+        private readonly IGuidProvider guidProvider;
         private readonly ILogger<SettingsCreator> logger;
 
         public SettingsCreator(
             IExpressionEvaluator evaluator,
             IPatternEngine patternEngine,
+            IGuidProvider guidProvider,
             ILogger<SettingsCreator> logger)
         {
             this.evaluator = CheckValue(evaluator, nameof(evaluator));
             this.patternEngine = CheckValue(patternEngine, nameof(patternEngine));
+            this.guidProvider = CheckValue(guidProvider, nameof(guidProvider));
             this.logger = CheckValue(logger, nameof(logger));
         }
 
@@ -133,9 +136,8 @@
             return new UpstreamRequestSettings(
                 context,
                 options.HttpVersion,
-                options.TimeoutInMilliseconds,
                 Create(context, options.Headers),
-                Create(options.Sender));
+                Create(context, options.Sender));
         }
 
         private UpstreamRequestHeadersSettings Create(
@@ -160,9 +162,18 @@
         }
 
         private UpstreamRequestSenderSettings Create(
+            RouteSettingsContext context,
             UpstreamRequestOptions.SenderOptions options)
         {
+            // every time a route is created, we need to create a new named HTTP Client for it.
+            // This name is used by the IHttpClientFactory to get instances of HttpClient configured
+            // with the settings specified by UpstreamRequestSenderSettings.
+            var httpClientName = options.HttpClientName ?? guidProvider.NewGuid().ToStringInvariant("N");
+
             return new UpstreamRequestSenderSettings(
+                context,
+                httpClientName,
+                options.TimeoutInMilliseconds,
                 options.AllowAutoRedirect,
                 options.UseCookies);
         }

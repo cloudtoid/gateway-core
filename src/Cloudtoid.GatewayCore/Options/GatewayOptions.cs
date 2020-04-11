@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Net.Http;
 
     public sealed class GatewayOptions
     {
@@ -57,11 +58,6 @@
                     /// The default value if HTTP/2.0
                     /// </summary>
                     public string? HttpVersion { get; set; }
-
-                    /// <summary>
-                    /// This is the total timeout in milliseconds to wait for the outbound upstream request to complete
-                    /// </summary>
-                    public string? TimeoutInMilliseconds { get; set; }
 
                     public HeadersOptions Headers { get; set; } = new HeadersOptions();
 
@@ -147,6 +143,17 @@
 
                     public sealed class SenderOptions
                     {
+                        /// <summary>
+                        /// This is the name of the <see cref="HttpClient"/> that will be used to send the request
+                        /// The default value, is a system generated unique value
+                        /// </summary>
+                        public string? HttpClientName { get; set; }
+
+                        /// <summary>
+                        /// This is the total timeout in milliseconds to wait for the outbound upstream request to complete
+                        /// </summary>
+                        public string? TimeoutInMilliseconds { get; set; }
+
                         /// <summary>
                         /// Gets or sets a value that indicates whether the HTTP handler used by the outbound upstream request sender (<see cref="Upstream.IRequestSender"/>)
                         /// should follow redirection responses.

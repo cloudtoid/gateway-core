@@ -86,12 +86,10 @@
             HttpRequestMessage upstreamRequest,
             CancellationToken cancellationToken)
         {
-            var upstreamTimeout = context.ProxyUpstreamRequestSettings.GetTimeout(context);
-
             try
             {
                 return await sender
-                    .SendAsync(upstreamRequest, upstreamTimeout, cancellationToken)
+                    .SendAsync(context, upstreamRequest, cancellationToken)
                     .TraceOnFaulted(logger, "Failed to forward the request to the upstream system.", cancellationToken);
             }
             catch (HttpRequestException hre)

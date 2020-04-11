@@ -19,8 +19,6 @@
                     {
                         internal static Version HttpVersion { get; } = Cloudtoid.HttpVersion.Version20;
 
-                        internal static TimeSpan Timeout { get; } = TimeSpan.FromMinutes(4);
-
                         internal static class Headers
                         {
                             internal const string CorrelationIdHeader = GatewayCore.Headers.Names.CorrelationId;
@@ -28,6 +26,11 @@
                             internal const string ProxyName = "gwcore";
 
                             internal static string Host { get; } = Environment.MachineName;
+                        }
+
+                        internal static class Sender
+                        {
+                            internal static TimeSpan Timeout { get; } = TimeSpan.FromMinutes(4);
                         }
                     }
                 }

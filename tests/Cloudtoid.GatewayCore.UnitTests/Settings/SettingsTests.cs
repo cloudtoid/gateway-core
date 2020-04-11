@@ -36,7 +36,6 @@
 
             var request = routeSettings.Proxy.UpstreamRequest;
             request.GetHttpVersion(context).Should().Be(HttpVersion.Version30);
-            request.GetTimeout(context).TotalMilliseconds.Should().Be(5200);
 
             var requestHeaders = request.Headers;
             requestHeaders.TryGetProxyName(context, out var proxyName).Should().BeTrue();
@@ -61,6 +60,8 @@
                     });
 
             var requestSender = request.Sender;
+            requestSender.HttpClientName.Should().Be("api-route-http-client-name");
+            requestSender.GetTimeout(context).TotalMilliseconds.Should().Be(5200);
             requestSender.AllowAutoRedirect.Should().BeTrue();
             requestSender.UseCookies.Should().BeTrue();
 
@@ -89,7 +90,6 @@
 
             var request = settings.Proxy.UpstreamRequest;
             request.GetHttpVersion(context).Should().Be(HttpVersion.Version11);
-            request.GetTimeout(context).TotalMilliseconds.Should().Be(5200);
 
             var requestHeaders = request.Headers;
             requestHeaders.TryGetProxyName(context, out var proxyName).Should().BeTrue();
@@ -103,6 +103,9 @@
                         (Name: "x-extra-1", Values: new[] { "x-extra-1:v1:" + expressionValue, "x-extra-1:v2:" + expressionValue }),
                         (Name: "x-extra-2", Values: new[] { "x-extra-2:v1:" + expressionValue, "x-extra-2:v2:" + expressionValue })
                     });
+
+            var requestSender = request.Sender;
+            requestSender.GetTimeout(context).TotalMilliseconds.Should().Be(5200);
 
             var response = settings.Proxy.DownstreamResponse;
             var responseHeaders = response.Headers;
@@ -127,7 +130,6 @@
 
             var request = routeSettings.Proxy!.UpstreamRequest;
             request.GetHttpVersion(context).Should().Be(HttpVersion.Version20);
-            request.GetTimeout(context).TotalMilliseconds.Should().Be(240000);
 
             var requestHeaders = request.Headers;
             requestHeaders.TryGetProxyName(context, out var proxyName).Should().BeTrue();
@@ -145,6 +147,8 @@
             requestHeaders.Overrides.Should().BeEmpty();
 
             var requestSender = request.Sender;
+            requestSender.HttpClientName.Should().Be(GuidProvider.StringValue);
+            requestSender.GetTimeout(context).TotalMilliseconds.Should().Be(240000);
             requestSender.AllowAutoRedirect.Should().BeFalse();
             requestSender.UseCookies.Should().BeFalse();
 
@@ -193,7 +197,7 @@
 
                     monitor.OnChange(Reset);
 
-                    settings.Proxy!.UpstreamRequest.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
+                    settings.Proxy!.UpstreamRequest.Sender.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
 
                     File.Copy(@"Settings\Options2.json", @"Settings\OptionsReload.json", true);
                     changeEvent.WaitOne(2000);
@@ -205,7 +209,7 @@
                         httpContext,
                         new Route(settings, string.Empty, ImmutableDictionary<string, string>.Empty));
 
-                    settings.Proxy!.UpstreamRequest.GetTimeout(context).TotalMilliseconds.Should().Be(2000);
+                    settings.Proxy!.UpstreamRequest.Sender.GetTimeout(context).TotalMilliseconds.Should().Be(2000);
 
                     File.Copy(@"Settings\Options1.json", @"Settings\OptionsReload.json", true);
                     changeEvent.WaitOne(2000);
@@ -216,7 +220,7 @@
                         httpContext,
                         new Route(settings, string.Empty, ImmutableDictionary<string, string>.Empty));
 
-                    settings.Proxy!.UpstreamRequest.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
+                    settings.Proxy!.UpstreamRequest.Sender.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
                 }
             }
             finally

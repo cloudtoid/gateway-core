@@ -4,7 +4,9 @@
       "proxy": {
         "to": "http://localhost:85/upstream/",
         "upstreamRequest": {
-          "timeoutInMilliseconds": 5000
+          "sender": {
+            "timeoutInMilliseconds": 5000
+          }
         }
       }
     }

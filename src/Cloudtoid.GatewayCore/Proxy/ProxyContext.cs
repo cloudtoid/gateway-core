@@ -62,6 +62,8 @@
 
         internal UpstreamRequestHeadersSettings ProxyUpstreamRequestHeadersSettings => ProxyUpstreamRequestSettings.Headers;
 
+        internal UpstreamRequestSenderSettings ProxyUpstreamRequestSenderSettings => ProxyUpstreamRequestSettings.Sender;
+
         internal DownstreamResponseSettings ProxyDownstreamResponseSettings => ProxySettings.DownstreamResponse;
 
         internal DownstreamResponseHeadersSettings ProxyDownstreamResponseHeaderSettings => ProxyDownstreamResponseSettings.Headers;

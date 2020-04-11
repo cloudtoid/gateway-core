@@ -9,7 +9,6 @@
         "correlationIdHeader": "x-request-id",
         "upstreamRequest": {
           "httpVersion": "3.0",
-          "timeoutInMilliseconds": 5200,
           "headers": {
             "proxyName": "some-proxy-name",
             "defaultHost": "this-machine-name",
@@ -28,6 +27,8 @@
             }
           },
           "sender": {
+            "httpClientName": "api-route-http-client-name",
+            "timeoutInMilliseconds": 5200,
             "allowAutoRedirect": true,
             "useCookies": true
           }
