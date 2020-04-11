@@ -18,7 +18,7 @@
     public sealed class RequestHeaderTests
     {
         [TestMethod]
-        public async Task GetHostHeaderValue_WhenIgnoreHost_HostHeaderNotIncludedAsync()
+        public async Task GetHostHeaderValue_IgnoreHost_HostHeaderNotIncludedAsync()
         {
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
@@ -37,7 +37,7 @@
         }
 
         [TestMethod]
-        public async Task GetHostHeaderValue_WhenNotIgnoreHostButIgnoreAll_DefaultHostHeaderIncludedAsync()
+        public async Task GetHostHeaderValue_NotIgnoreHostButIgnoreAll_DefaultHostHeaderIncludedAsync()
         {
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
@@ -56,7 +56,7 @@
         }
 
         [TestMethod]
-        public async Task GetHostHeaderValue_WhenHostNameIncludesPortNumber_PortNumberIsRemovedAsync()
+        public async Task GetHostHeaderValue_HostNameIncludesPortNumber_PortNumberIsRemovedAsync()
         {
             // Arrange
             var context = new DefaultHttpContext();
@@ -71,7 +71,7 @@
         }
 
         [TestMethod]
-        public async Task GetHostHeaderValue_WhenHostHeaderNotSpecified_HostHeaderIsMachineNameAsync()
+        public async Task GetHostHeaderValue_HostHeaderNotSpecified_HostHeaderIsMachineNameAsync()
         {
             // Arrange
             var context = new DefaultHttpContext();
@@ -86,7 +86,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenNoHostHeader_HostHeaderIsAddedAsync()
+        public async Task SetHeadersAsync_NoHostHeader_HostHeaderIsAddedAsync()
         {
             // Arrange
             var context = new DefaultHttpContext();
@@ -100,7 +100,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenHostHeaderIncluded_HostHeaderIsNotAddedAsync()
+        public async Task SetHeadersAsync_HostHeaderIncluded_HostHeaderIsNotAddedAsync()
         {
             // Arrange
             var context = new DefaultHttpContext();
@@ -115,7 +115,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenHeaderWithUnderscore_HeaderRemovedAsync()
+        public async Task SetHeadersAsync_HeaderWithUnderscore_HeaderRemovedAsync()
         {
             // Arrange
             var context = new DefaultHttpContext();
@@ -131,7 +131,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenAllowHeadersWithUnderscore_HeaderKeptAsync()
+        public async Task SetHeadersAsync_AllowHeadersWithUnderscore_HeaderKeptAsync()
         {
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
@@ -151,7 +151,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenHeaderWithEmptyValue_HeaderRemovedAsync()
+        public async Task SetHeadersAsync_HeaderWithEmptyValue_HeaderRemovedAsync()
         {
             // Arrange
             var context = new DefaultHttpContext();
@@ -165,7 +165,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenAllowHeaderWithEmptyValue_HeaderIsKeptAsync()
+        public async Task SetHeadersAsync_AllowHeaderWithEmptyValue_HeaderIsKeptAsync()
         {
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
@@ -183,7 +183,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenHasContentHeaders_ContentHeadersNotIncludedAsync()
+        public async Task SetHeadersAsync_HasContentHeaders_ContentHeadersNotIncludedAsync()
         {
             // Arrange
             var context = new DefaultHttpContext();
@@ -198,7 +198,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenCustomHeaderValuesProviderDropsHeaders_HeadersAreNotIncludedAsync()
+        public async Task SetHeadersAsync_CustomHeaderValuesProviderDropsHeaders_HeadersAreNotIncludedAsync()
         {
             // Arrange
             var provider = Substitute.For<IRequestHeaderValuesProvider>();
@@ -238,7 +238,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenHasXForwardHeaders_ExistingHeadersAreIgnoredAsync()
+        public async Task SetHeadersAsync_HasXForwardHeaders_ExistingHeadersAreIgnoredAsync()
         {
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
@@ -265,7 +265,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenIncludeExternalAddress_HeaderIncludedAsync()
+        public async Task SetHeadersAsync_IncludeExternalAddress_HeaderIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-gwcore-external-address";
@@ -286,7 +286,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenNotIncludeExternalAddress_HeaderNotIncludedAsync()
+        public async Task SetHeadersAsync_NotIncludeExternalAddress_HeaderNotIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-gwcore-external-address";
@@ -305,7 +305,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenIgnoreAllDownstreamHeaders_NoDownstreamHeaderIsIncludedAsync()
+        public async Task SetHeadersAsync_IgnoreAllDownstreamHeaders_NoDownstreamHeaderIsIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-custom-test";
@@ -324,7 +324,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenNotIgnoreAllDownstreamHeaders_DownstreamHeadersAreIncludedAsync()
+        public async Task SetHeadersAsync_NotIgnoreAllDownstreamHeaders_DownstreamHeadersAreIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-custom-test";
@@ -343,7 +343,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenIgnoreAllDownstreamHeadersAndCorrelationId_NewCorrelationIdIncludedAsync()
+        public async Task SetHeadersAsync_IgnoreAllDownstreamHeadersAndCorrelationId_NewCorrelationIdIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-correlation-id";
@@ -367,7 +367,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenNotIgnoreAllDownstreamHeadersAndCorrelationId_ExistingCorrelationIdIncludedAsync()
+        public async Task SetHeadersAsync_NotIgnoreAllDownstreamHeadersAndCorrelationId_ExistingCorrelationIdIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-correlation-id";
@@ -391,7 +391,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenIgnoreForwardedFor_HeaderNotIncludedAsync()
+        public async Task SetHeadersAsync_IgnoreForwardedFor_HeaderNotIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-forwarded-for";
@@ -410,7 +410,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenNotIgnoreForwardedFor_HeaderIncludedAsync()
+        public async Task SetHeadersAsync_NotIgnoreForwardedFor_HeaderIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-forwarded-for";
@@ -429,7 +429,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenIgnoreForwardedForButHasValue_OldValueIsIgnoredAsync()
+        public async Task SetHeadersAsync_IgnoreForwardedForButHasValue_OldValueIsIgnoredAsync()
         {
             // Arrange
             const string HeaderName = "x-forwarded-for";
@@ -450,7 +450,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenIgnoreForwardedProtocol_HeaderNotIncludedAsync()
+        public async Task SetHeadersAsync_IgnoreForwardedProtocol_HeaderNotIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-forwarded-proto";
@@ -469,7 +469,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenNotIgnoreForwardedProtocol_HeaderIncludedAsync()
+        public async Task SetHeadersAsync_NotIgnoreForwardedProtocol_HeaderIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-forwarded-proto";
@@ -488,7 +488,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenIgnoreForwardedHost_HeaderNotIncludedAsync()
+        public async Task SetHeadersAsync_IgnoreForwardedHost_HeaderNotIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-forwarded-host";
@@ -507,7 +507,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenNotIgnoreForwardedHost_HeaderIncludedAsync()
+        public async Task SetHeadersAsync_NotIgnoreForwardedHost_HeaderIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-forwarded-host";
@@ -526,7 +526,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenIgnoreCorrelationId_HeaderNotIncludedAsync()
+        public async Task SetHeadersAsync_IgnoreCorrelationId_HeaderNotIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-correlation-id";
@@ -545,7 +545,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenNotIgnoreCorrelationId_HeaderIncludedAsync()
+        public async Task SetHeadersAsync_NotIgnoreCorrelationId_HeaderIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-correlation-id";
@@ -567,7 +567,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenNotIgnoreCorrelationIdWithExistingId_HeaderIncludedAsync()
+        public async Task SetHeadersAsync_NotIgnoreCorrelationIdWithExistingId_HeaderIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-correlation-id";
@@ -586,7 +586,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenIgnoreCallId_HeaderNotIncludedAsync()
+        public async Task SetHeadersAsync_IgnoreCallId_HeaderNotIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-call-id";
@@ -605,7 +605,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenNotIgnoreCallId_HeaderIncludedAsync()
+        public async Task SetHeadersAsync_NotIgnoreCallId_HeaderIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-call-id";
@@ -627,7 +627,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenProxyNameIsEmpty_HeaderNotIncludedAsync()
+        public async Task SetHeadersAsync_ProxyNameIsEmpty_HeaderNotIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-gwcore-proxy-name";
@@ -646,7 +646,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenProxyNameSpecified_HeaderNotIncludedAsync()
+        public async Task SetHeadersAsync_ProxyNameSpecified_HeaderNotIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-gwcore-proxy-name";
@@ -665,7 +665,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenProxyNameDefault_HeaderNotIncludedAsync()
+        public async Task SetHeadersAsync_ProxyNameDefault_HeaderNotIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-gwcore-proxy-name";
@@ -680,7 +680,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenExtraHeaders_HeadersIncludedAsync()
+        public async Task SetHeadersAsync_ExtraHeaders_HeadersIncludedAsync()
         {
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();

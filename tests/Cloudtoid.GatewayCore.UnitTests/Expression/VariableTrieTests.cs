@@ -10,7 +10,7 @@
     public sealed class VariableTrieTests
     {
         [TestMethod]
-        public void Create_WhenSupportedCharacters_DoesNotThrow()
+        public void Create_SupportedCharacters_DoesNotThrow()
         {
             var trie = new VariableTrie<string>();
             trie.AddValue("_", "_");
@@ -34,7 +34,7 @@
         }
 
         [TestMethod]
-        public void Create_WhenNotSupportedCharacters_Throws()
+        public void Create_NotSupportedCharacters_Throws()
         {
             var trie = new VariableTrie<string>();
             Action act = () => trie.AddValue("*", "throws");
@@ -42,7 +42,7 @@
         }
 
         [TestMethod]
-        public void Create_WhenSimpleTry_Success()
+        public void Create_SimpleTry_Success()
         {
             // Arrange
             var items = new[]

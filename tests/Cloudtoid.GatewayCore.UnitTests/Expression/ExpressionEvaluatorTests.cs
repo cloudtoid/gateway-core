@@ -63,7 +63,7 @@
         }
 
         [TestMethod]
-        public void Evaluate_WhenVariableNameGreaterThanValue_PartialEval()
+        public void Evaluate_VariableNameGreaterThanValue_PartialEval()
         {
             var context = new DefaultHttpContext();
             context.Request.ContentLength = 100;
@@ -252,7 +252,7 @@
         }
 
         [TestMethod]
-        public void Evaluate_WhenMultipleVariable_Evaluated()
+        public void Evaluate_MultipleVariable_Evaluated()
         {
             var context = new DefaultHttpContext();
             context.Request.Scheme = "https";
@@ -266,7 +266,7 @@
         }
 
         [TestMethod]
-        public void Evaluate_WhenVariableNameAttachedToText_VariableIsEvaluatedAndExtraTextIsKept()
+        public void Evaluate_VariableNameAttachedToText_VariableIsEvaluatedAndExtraTextIsKept()
         {
             var context = new DefaultHttpContext();
             context.Request.Scheme = "https";
@@ -276,7 +276,7 @@
         }
 
         [TestMethod]
-        public void Evaluate_WhenVariableNameAttachedToTextAndAnotherVariable_VariablesAreEvaluatedAndExtraTextIsKept()
+        public void Evaluate_VariableNameAttachedToTextAndAnotherVariable_VariablesAreEvaluatedAndExtraTextIsKept()
         {
             var context = new DefaultHttpContext();
             context.Request.Scheme = "https";

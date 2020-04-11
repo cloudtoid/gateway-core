@@ -13,7 +13,7 @@
     public sealed class RequestContentTests
     {
         [TestMethod]
-        public async Task SetContentAsync_WhenHasContentHeaders_ContentHeadersIncludedAsync()
+        public async Task SetContentAsync_HasContentHeaders_ContentHeadersIncludedAsync()
         {
             // Arrange
             var context = new DefaultHttpContext();
@@ -29,7 +29,7 @@
         }
 
         [TestMethod]
-        public async Task SetContentAsync_WhenHasCustomContentHeader_ContentHeaderIsIgnoredAsync()
+        public async Task SetContentAsync_HasCustomContentHeader_ContentHeaderIsIgnoredAsync()
         {
             // Arrange
             var context = new DefaultHttpContext();
@@ -44,7 +44,7 @@
         }
 
         [TestMethod]
-        public async Task SetContentAsync_WhenHasContentTypeHeader_ContentTypeHeadersIncludedOnlyOnceAsync()
+        public async Task SetContentAsync_HasContentTypeHeader_ContentTypeHeadersIncludedOnlyOnceAsync()
         {
             // Arrange
             var context = new DefaultHttpContext();
@@ -60,7 +60,7 @@
         }
 
         [TestMethod]
-        public async Task SetContentAsync_WhenIgnoreHeaders_ContentHeadersNotIncludedAsync()
+        public async Task SetContentAsync_IgnoreHeaders_ContentHeadersNotIncludedAsync()
         {
             // Arrange
             var context = new DefaultHttpContext();
@@ -78,7 +78,7 @@
         }
 
         [TestMethod]
-        public async Task SetContentAsync_WhenNoContentHeader_NoContentHeaderAddedAsync()
+        public async Task SetContentAsync_NoContentHeader_NoContentHeaderAddedAsync()
         {
             // Arrange
             var context = new DefaultHttpContext();

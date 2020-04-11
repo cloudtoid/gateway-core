@@ -11,8 +11,8 @@
   <ItemGroup>
     <None Update="Settings\OptionsFull.json" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Settings\OptionsWithExpressions.json" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="Settings\Options1.json" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="Settings\Options2.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Settings\OptionsOld.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Settings\OptionsNew.json" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Settings\OptionsEmpty.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

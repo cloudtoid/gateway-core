@@ -14,7 +14,7 @@
     public sealed class ResponseContentTests
     {
         [TestMethod]
-        public async Task SetContentAsync_WhenHasContentBody_BodyIsCopiedAsync()
+        public async Task SetContentAsync_HasContentBody_BodyIsCopiedAsync()
         {
             // Arrange
             const string value = "some-value";
@@ -35,7 +35,7 @@
         }
 
         [TestMethod]
-        public async Task SetContentAsync_WhenIgnoreHeaders_ContentHeadersNotIncludedAsync()
+        public async Task SetContentAsync_IgnoreHeaders_ContentHeadersNotIncludedAsync()
         {
             // Arrange
             var header = HeaderNames.ContentDisposition;
@@ -53,7 +53,7 @@
         }
 
         [TestMethod]
-        public async Task SetContentAsync_WhenHasContentHeaders_ContentHeadersIncludedAsync()
+        public async Task SetContentAsync_HasContentHeaders_ContentHeadersIncludedAsync()
         {
             // Arrange
             var header = HeaderNames.ContentDisposition;
@@ -68,7 +68,7 @@
         }
 
         [TestMethod]
-        public async Task SetContentAsync_WhenHasTransferEncodingHeader_HeaderIsIgnoredAsync()
+        public async Task SetContentAsync_HasTransferEncodingHeader_HeaderIsIgnoredAsync()
         {
             // Arrange
             var header = HeaderNames.TransferEncoding;
@@ -84,7 +84,7 @@
         }
 
         [TestMethod]
-        public async Task SetContentAsync_WhenNoContentHeader_NoContentHeaderAddedAsync()
+        public async Task SetContentAsync_NoContentHeader_NoContentHeaderAddedAsync()
         {
             // Arrange
             var header = HeaderNames.Accept;
@@ -100,7 +100,7 @@
         }
 
         [TestMethod]
-        public async Task SetContentAsync_WhenHasContentHeaders_ShouldOverrideExistingHeaderAsync()
+        public async Task SetContentAsync_HasContentHeaders_ShouldOverrideExistingHeaderAsync()
         {
             // Arrange
             var header = HeaderNames.ContentDisposition;

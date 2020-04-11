@@ -15,7 +15,7 @@
     public sealed class ResponseHeaderTests
     {
         [TestMethod]
-        public async Task SetHeadersAsync_WhenHeaderWithUnderscore_HeaderRemovedAsync()
+        public async Task SetHeadersAsync_HeaderWithUnderscore_HeaderRemovedAsync()
         {
             // Arrange
             var message = new HttpResponseMessage();
@@ -31,7 +31,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenAllowHeadersWithUnderscore_HeaderKeptAsync()
+        public async Task SetHeadersAsync_AllowHeadersWithUnderscore_HeaderKeptAsync()
         {
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
@@ -51,7 +51,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenHeaderWithEmptyValue_HeaderRemovedAsync()
+        public async Task SetHeadersAsync_HeaderWithEmptyValue_HeaderRemovedAsync()
         {
             // Arrange
             var message = new HttpResponseMessage();
@@ -65,7 +65,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenAllowHeaderWithEmptyValue_HeaderIsKeptAsync()
+        public async Task SetHeadersAsync_AllowHeaderWithEmptyValue_HeaderIsKeptAsync()
         {
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
@@ -83,7 +83,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenContentHeaderValue_HeaderIsNotIncludedAsync()
+        public async Task SetHeadersAsync_ContentHeaderValue_HeaderIsNotIncludedAsync()
         {
             // Arrange
             var header = HeaderNames.ContentLocation;
@@ -102,7 +102,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenCustomHeaderValuesProviderDropsHeaders_HeadersAreNotIncludedAsync()
+        public async Task SetHeadersAsync_CustomHeaderValuesProviderDropsHeaders_HeadersAreNotIncludedAsync()
         {
             // Arrange
             var provider = Substitute.For<IResponseHeaderValuesProvider>();
@@ -142,7 +142,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenIgnoreAllUpstreamResponseHeaders_NoDownstreamHeaderIsIncludedAsync()
+        public async Task SetHeadersAsync_IgnoreAllUpstreamResponseHeaders_NoDownstreamHeaderIsIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-custom-test";
@@ -161,7 +161,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenNotIgnoreAllUpstreamResponseHeaders_DownstreamHeadersAreIncludedAsync()
+        public async Task SetHeadersAsync_NotIgnoreAllUpstreamResponseHeaders_DownstreamHeadersAreIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-custom-test";
@@ -180,7 +180,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenIncludeCorrelationId_HeaderIncludedAsync()
+        public async Task SetHeadersAsync_IncludeCorrelationId_HeaderIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-correlation-id";
@@ -199,7 +199,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenNotIncludeCorrelationId_HeaderNotIncludedAsync()
+        public async Task SetHeadersAsync_NotIncludeCorrelationId_HeaderNotIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-correlation-id";
@@ -218,7 +218,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenIncludeCorrelationIdWithNonDefaultHeaderName_HeaderIncludedAsync()
+        public async Task SetHeadersAsync_IncludeCorrelationIdWithNonDefaultHeaderName_HeaderIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-test-id";
@@ -238,7 +238,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenIncludeCallId_HeaderIncludedAsync()
+        public async Task SetHeadersAsync_IncludeCallId_HeaderIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-call-id";
@@ -257,7 +257,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenNotIncludeCallId_HeaderNotIncludedAsync()
+        public async Task SetHeadersAsync_NotIncludeCallId_HeaderNotIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-call-id";
@@ -276,7 +276,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_WhenExtraHeaders_HeadersIncludedAsync()
+        public async Task SetHeadersAsync_ExtraHeaders_HeadersIncludedAsync()
         {
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();

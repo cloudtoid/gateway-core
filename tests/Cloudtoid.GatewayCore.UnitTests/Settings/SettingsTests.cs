@@ -164,7 +164,7 @@
         {
             try
             {
-                File.Copy(@"Settings\Options1.json", @"Settings\OptionsReload.json", true);
+                File.Copy(@"Settings\OptionsOld.json", @"Settings\OptionsReload.json", true);
 
                 var config = new ConfigurationBuilder()
                     .AddJsonFile(@"Settings\OptionsReload.json", optional: false, reloadOnChange: true)
@@ -199,7 +199,7 @@
 
                     settings.Proxy!.UpstreamRequest.Sender.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
 
-                    File.Copy(@"Settings\Options2.json", @"Settings\OptionsReload.json", true);
+                    File.Copy(@"Settings\OptionsNew.json", @"Settings\OptionsReload.json", true);
                     changeEvent.WaitOne(2000);
 
                     settings = settingsProvider.CurrentValue.Routes.First();
@@ -211,7 +211,7 @@
 
                     settings.Proxy!.UpstreamRequest.Sender.GetTimeout(context).TotalMilliseconds.Should().Be(2000);
 
-                    File.Copy(@"Settings\Options1.json", @"Settings\OptionsReload.json", true);
+                    File.Copy(@"Settings\OptionsOld.json", @"Settings\OptionsReload.json", true);
                     changeEvent.WaitOne(2000);
                     settings = settingsProvider.CurrentValue.Routes.First();
                     context = new ProxyContext(
@@ -302,7 +302,7 @@
         }
 
         [TestMethod]
-        public void New_WhenFailsToCompileRoutePattern_Fail()
+        public void New_FailsToCompileRoutePattern_Fail()
         {
             var options = new GatewayOptions();
             options.Routes.Add($"/category/:id/product/:id", new GatewayOptions.RouteOptions
@@ -317,7 +317,7 @@
         }
 
         [TestMethod]
-        public void New_WhenCollidesWithSystemVariable_Fail()
+        public void New_CollidesWithSystemVariable_Fail()
         {
             var options = new GatewayOptions();
             options.Routes.Add($"/:{SystemVariableNames.Host}/", new GatewayOptions.RouteOptions

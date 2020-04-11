@@ -34,7 +34,7 @@
         }
 
         [TestMethod]
-        public void TryResolve_WhenRouteSeenBefore_ItemIsReadFromCache()
+        public void TryResolve_RouteSeenBefore_ItemIsReadFromCache()
         {
             // Arrange
             var httpContext = new DefaultHttpContext();
@@ -57,7 +57,7 @@
         }
 
         [TestMethod]
-        public void TryResolve_WhenRouteNotFound_ReturnsFalse()
+        public void TryResolve_RouteNotFound_ReturnsFalse()
         {
             // Arrange
             var httpContext = new DefaultHttpContext();
