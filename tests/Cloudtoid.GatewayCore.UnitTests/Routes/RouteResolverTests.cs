@@ -19,6 +19,21 @@
         }
 
         [TestMethod]
+        public void TryResolve_SimpleMatch_Success()
+        {
+            // Arrange
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.Path = "/api/test/";
+
+            // Act
+            resolver.TryResolve(httpContext, out var route).Should().BeTrue();
+
+            // Assert
+            route.Should().NotBeNull();
+            route!.PathSuffix.Should().Be("test/");
+        }
+
+        [TestMethod]
         public void TryResolve_WhenRouteSeenBefore_ItemIsReadFromCache()
         {
             // Arrange
