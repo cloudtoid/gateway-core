@@ -26,7 +26,7 @@
                 return new ProxyBuilder(services);
 
             var httpClientBuilder = services
-                .AddGatewayCoreCore(DefaultRequestSenderHttpClientName)
+                .AddGatewayCoreInternal(DefaultRequestSenderHttpClientName)
                 .AddHttpClient(DefaultRequestSenderHttpClientName)
                 .ConfigureDefaultRequestSenderHttpHandler();
 
@@ -56,7 +56,7 @@
             if (services.Exists<Marker>())
                 return services;
 
-            return services.AddGatewayCoreCore(requestSenderHttpClientName);
+            return services.AddGatewayCoreInternal(requestSenderHttpClientName);
         }
 
         public static IApplicationBuilder UseGatewayCore(this IApplicationBuilder builder)
@@ -73,7 +73,7 @@
                 .UseMiddleware<ProxyMiddleware>();
         }
 
-        private static IServiceCollection AddGatewayCoreCore(
+        private static IServiceCollection AddGatewayCoreInternal(
             this IServiceCollection services,
             string requestSenderHttpClientName)
         {

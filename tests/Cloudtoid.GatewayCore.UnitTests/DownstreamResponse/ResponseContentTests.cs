@@ -1,7 +1,6 @@
 ﻿namespace Cloudtoid.GatewayCore.UnitTests
 {
     using System.IO;
-    using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
     using Cloudtoid.GatewayCore.Downstream;
@@ -44,7 +43,7 @@
             var message = CreateHttpResponseMessage((header, value));
 
             var options = TestExtensions.CreateDefaultOptions();
-            options.Routes.First().Value.Proxy!.DownstreamResponse.Headers.IgnoreAllUpstreamHeaders = true;
+            options.Routes["/api/"].Proxy!.DownstreamResponse.Headers.IgnoreAllUpstreamHeaders = true;
 
             // Act
             var response = await SetContentAsync(message, options: options);

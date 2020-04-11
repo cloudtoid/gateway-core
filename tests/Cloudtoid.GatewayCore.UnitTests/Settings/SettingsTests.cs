@@ -30,6 +30,7 @@
 
             var context = GetProxyContext(settings);
             var routeSettings = context.Route.Settings;
+            routeSettings.Route.Should().Be("/api/");
 
             routeSettings.Proxy!.GetCorrelationIdHeader(context).Should().Be("x-request-id");
 
@@ -252,6 +253,21 @@
         }
 
         [TestMethod]
+        public void New_NullProxy_CorrectError()
+        {
+            const string route = "/a/b/c/";
+            var options = new GatewayOptions();
+            options.Routes.Add(route, new GatewayOptions.RouteOptions
+            {
+                Proxy = null
+            });
+
+            var settings = CreateSettings(options);
+            settings.Routes.Should().HaveCount(1);
+            settings.Routes[0].Proxy.Should().BeNull();
+        }
+
+        [TestMethod]
         public void New_NullProxyTo_CorrectError()
         {
             var options = new GatewayOptions();
@@ -370,12 +386,21 @@
             return GetProxyContext(settings);
         }
 
+        private static GatewaySettings CreateSettings(GatewayOptions options)
+        {
+            var services = new ServiceCollection().AddTest().AddTestOptions(options);
+            var serviceProvider = services.BuildServiceProvider();
+            var settingsProvider = serviceProvider.GetRequiredService<ISettingsProvider>();
+            return settingsProvider.CurrentValue;
+        }
+
         private static GatewaySettings CreateSettingsAndCheckLogs(GatewayOptions options, params string[] messages)
         {
             var services = new ServiceCollection().AddTest().AddTestOptions(options);
             var serviceProvider = services.BuildServiceProvider();
-            var logger = (Logger<SettingsCreator>)serviceProvider.GetRequiredService<ILogger<SettingsCreator>>();
             var settingsProvider = serviceProvider.GetRequiredService<ISettingsProvider>();
+
+            var logger = (Logger<SettingsCreator>)serviceProvider.GetRequiredService<ILogger<SettingsCreator>>();
             foreach (var message in messages)
                 logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase(message)).Should().BeTrue();
 

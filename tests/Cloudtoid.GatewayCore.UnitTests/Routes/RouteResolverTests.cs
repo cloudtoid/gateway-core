@@ -26,11 +26,11 @@
             httpContext.Request.Path = "/api/";
 
             // Act
-            resolver.TryResolve(httpContext, out var route1);
-            resolver.TryResolve(httpContext, out var route2);
+            resolver.TryResolve(httpContext, out var route1).Should().BeTrue();
+            resolver.TryResolve(httpContext, out var route2).Should().BeTrue();
 
             httpContext.Request.Path = "/api/test/";
-            resolver.TryResolve(httpContext, out var route3);
+            resolver.TryResolve(httpContext, out var route3).Should().BeTrue();
 
             // Assert
             route1.Should().NotBeNull();
@@ -39,6 +39,20 @@
 
             route3.Should().NotBeNull();
             ReferenceEquals(route1, route3).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public void TryResolve_WhenRouteNotFound_ReturnsFalse()
+        {
+            // Arrange
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.Path = "/ipa/";
+
+            // Act
+            resolver.TryResolve(httpContext, out var route).Should().BeFalse();
+
+            // Assert
+            route.Should().BeNull();
         }
     }
 }

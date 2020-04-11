@@ -65,7 +65,9 @@
                 route);
         }
 
-        public static GatewayOptions CreateDefaultOptions(string route = "/api/", string to = "/upstream/api/")
+        public static GatewayOptions CreateDefaultOptions(
+            string route = "/api/",
+            string to = "/upstream/api/")
         {
             return new GatewayOptions
             {
@@ -76,6 +78,13 @@
                         Proxy = new GatewayOptions.RouteOptions.ProxyOptions
                         {
                             To = to
+                        }
+                    },
+                    [route + "v2/"] = new GatewayOptions.RouteOptions
+                    {
+                        Proxy = new GatewayOptions.RouteOptions.ProxyOptions
+                        {
+                            To = to + "v2/"
                         }
                     }
                 }

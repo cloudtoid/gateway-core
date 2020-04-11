@@ -51,7 +51,7 @@
                     return true;
                 }
 
-                // Keep this as info because any genuine match also returns the reason.
+                // Keep this as info because any genuine no-match also returns the reason.
                 logger.LogInformation(why);
             }
 
