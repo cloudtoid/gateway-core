@@ -1,5 +1,6 @@
 ﻿namespace Cloudtoid.GatewayCore.Upstream
 {
+    using System;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
@@ -73,12 +74,20 @@
             var body = context.Request.Body;
             if (!body.CanRead)
             {
-                Logger.LogDebug("The inbound downstream request does not have a readable body.");
+                Logger.LogError("The inbound downstream request does not have a readable body.");
+                upstreamRequest.Content = new ByteArrayContent(Array.Empty<byte>());
                 return Task.CompletedTask;
             }
 
-            if (body.CanSeek && body.Position != 0)
+            if (body.Position != 0)
             {
+                if (!body.CanSeek)
+                {
+                    Logger.LogError("The inbound downstream request is not at position zero but the stream is not seek-able.");
+                    upstreamRequest.Content = new ByteArrayContent(Array.Empty<byte>());
+                    return Task.CompletedTask;
+                }
+
                 Logger.LogDebug("The inbound downstream request has a seek-able body stream. Resetting the stream to the beginning.");
                 body.Position = 0;
             }

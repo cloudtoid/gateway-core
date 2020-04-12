@@ -209,7 +209,7 @@
                     Arg.Any<ProxyContext>(),
                     Arg.Is("X-Keep-Header"),
                     Arg.Any<IList<string>>(),
-                    out Arg.Any<IList<string>>())
+                    out Arg.Any<IList<string>?>())
                 .Returns(x =>
                 {
                     x[3] = new[] { "keep-value" };
@@ -221,7 +221,7 @@
                     Arg.Any<ProxyContext>(),
                     Arg.Is("X-Drop-Header"),
                     Arg.Any<IList<string>>(),
-                    out Arg.Any<IList<string>>())
+                    out Arg.Any<IList<string>?>())
                 .Returns(false);
 
             var httpContext = new DefaultHttpContext();

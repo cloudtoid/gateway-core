@@ -113,7 +113,7 @@
                     Arg.Any<ProxyContext>(),
                     Arg.Is("X-Keep-Header"),
                     Arg.Any<string[]>(),
-                    out Arg.Any<string[]>())
+                    out Arg.Any<string[]?>())
                 .Returns(x =>
                 {
                     x[3] = new[] { "keep-value" };
@@ -125,7 +125,7 @@
                     Arg.Any<ProxyContext>(),
                     Arg.Is("X-Drop-Header"),
                     Arg.Any<string[]>(),
-                    out Arg.Any<string[]>())
+                    out Arg.Any<string[]?>())
                 .Returns(false);
 
             var message = new HttpResponseMessage();

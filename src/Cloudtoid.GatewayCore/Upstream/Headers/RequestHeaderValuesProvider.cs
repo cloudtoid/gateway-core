@@ -1,6 +1,7 @@
 ﻿namespace Cloudtoid.GatewayCore.Upstream
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
     /// By inheriting from this class, one can have some control over the outbound upstream request headers. Please consider the following extensibility points:
@@ -24,7 +25,7 @@
             ProxyContext context,
             string name,
             IList<string> downstreamValues,
-            out IList<string> upstreamValues)
+            [NotNullWhen(true)] out IList<string>? upstreamValues)
         {
             upstreamValues = downstreamValues;
             return true;

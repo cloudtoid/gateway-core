@@ -6,7 +6,6 @@
     using Cloudtoid.GatewayCore.Headers;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Primitives;
     using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 

@@ -1,17 +1,28 @@
 ﻿namespace Cloudtoid.GatewayCore.UnitTests
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.IO;
+    using System.Linq;
     using System.Net.Http;
+    using System.Text;
     using System.Threading.Tasks;
+    using Cloudtoid.GatewayCore;
     using Cloudtoid.GatewayCore.Upstream;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public sealed class RequestContentTests
     {
+        private IServiceProvider? serviceProvider;
+
         [TestMethod]
         public async Task SetContentAsync_HasContentHeaders_ContentHeadersIncludedAsync()
         {
@@ -92,18 +103,158 @@
             message.Content.Headers.TryGetValues(header, out _).Should().BeFalse();
         }
 
-        private static async Task<HttpRequestMessage> SetContentAsync(
-            HttpContext httpContext,
-            GatewayOptions? options = null)
+        [TestMethod]
+        public async Task SetContentAsync_BodyIsNull_LogsErrorAsync()
         {
-            var services = new ServiceCollection().AddTest().AddTestOptions(options);
-            var serviceProvider = services.BuildServiceProvider();
+            // Arrange
+            var context = new DefaultHttpContext();
+            context.Request.Body = null;
+
+            // Act
+            var message = await SetContentAsync(context);
+
+            // Assert
+            var logger = (Logger<RequestContentSetter>)serviceProvider.GetRequiredService<ILogger<RequestContentSetter>>();
+            logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase("The inbound downstream request does not have a content body")).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public async Task SetContentAsync_BodyNotReadable_LogsErrorAsync()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            context.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes("some-value"));
+            await context.Request.Body.DisposeAsync();
+
+            // Act
+            var message = await SetContentAsync(context);
+
+            // Assert
+            var logger = (Logger<RequestContentSetter>)serviceProvider.GetRequiredService<ILogger<RequestContentSetter>>();
+            logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase("The inbound downstream request does not have a readable body")).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public async Task SetContentAsync_BodyNotAtPositionZeroButSeekable_LogsDebugAsync()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            var body = context.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes("some-value"));
+            body.Position = 1;
+
+            // Act
+            var message = await SetContentAsync(context);
+
+            // Assert
+            var logger = (Logger<RequestContentSetter>)serviceProvider.GetRequiredService<ILogger<RequestContentSetter>>();
+            logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase("The inbound downstream request has a seek-able body stream. Resetting the stream to the beginning.")).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public async Task SetContentAsync_BodyNotAtPositionZeroNonSeekable_LogsErrorAsync()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            var body = context.Request.Body = new NonSeekableStream();
+
+            // Act
+            var message = await SetContentAsync(context);
+
+            // Assert
+            var logger = (Logger<RequestContentSetter>)serviceProvider.GetRequiredService<ILogger<RequestContentSetter>>();
+            logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase("The inbound downstream request is not at position zero but the stream is not seek-able.")).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public async Task SetContentAsync_NoContentLength_LogsErrorAsync()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+
+            // Act
+            var message = await SetContentAsync(context, contentLength: null);
+
+            // Assert
+            var logger = (Logger<RequestContentSetter>)serviceProvider.GetRequiredService<ILogger<RequestContentSetter>>();
+            logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase("The inbound downstream request does not specify a 'Content-Length'.")).Should().BeTrue();
+        }
+
+        [TestMethod]
+        public async Task SetContentAsync_HeaderRejectedByIRequestContentHeaderValuesProvider_LogsInfoAsync()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(HeaderNames.ContentMD5, "some-value");
+            var provider = new DropContentHeaderValuesProvider();
+
+            // Act
+            var message = await SetContentAsync(context, provider: provider);
+
+            // Assert
+            var logger = (Logger<RequestContentSetter>)serviceProvider.GetRequiredService<ILogger<RequestContentSetter>>();
+            logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase("Header 'Content-MD5' is not added. This was instructed by the IRequestContentHeaderValuesProvider.TryGetHeaderValues.")).Should().BeTrue();
+        }
+
+        private async Task<HttpRequestMessage> SetContentAsync(
+            HttpContext httpContext,
+            long? contentLength = 10,
+            GatewayOptions? options = null,
+            IRequestContentHeaderValuesProvider? provider = null)
+        {
+            var services = new ServiceCollection();
+
+            if (provider != null)
+                services.TryAddSingleton<IRequestContentHeaderValuesProvider>(provider);
+
+            services.AddTest().AddTestOptions(options);
+            serviceProvider = services.BuildServiceProvider();
             var setter = serviceProvider.GetRequiredService<IRequestContentSetter>();
             var context = serviceProvider.GetProxyContext(httpContext);
-            context.Request.ContentLength = 10;
+            context.Request.ContentLength = contentLength;
             var message = new HttpRequestMessage();
             await setter.SetContentAsync(context, message, default);
             return message;
+        }
+
+        private sealed class DropContentHeaderValuesProvider : RequestContentHeaderValuesProvider
+        {
+            public override bool TryGetHeaderValues(
+                ProxyContext context,
+                string name,
+                IList<string> downstreamValues,
+                [NotNullWhen(true)] out IList<string>? upstreamValues)
+            {
+                if (name.EqualsOrdinalIgnoreCase(HeaderNames.ContentMD5))
+                {
+                    upstreamValues = null;
+                    return false;
+                }
+
+                return base.TryGetHeaderValues(context, name, downstreamValues, out upstreamValues);
+            }
+        }
+
+        private sealed class NonSeekableStream : Stream
+        {
+            public override bool CanRead => true;
+
+            public override bool CanSeek => false;
+
+            public override bool CanWrite => false;
+
+            public override long Length => 10;
+
+            public override long Position { get => 10; set => throw new NotImplementedException(); }
+
+            public override void Flush() => throw new NotImplementedException();
+
+            public override int Read(byte[] buffer, int offset, int count) => throw new NotImplementedException();
+
+            public override long Seek(long offset, SeekOrigin origin) => throw new NotImplementedException();
+
+            public override void SetLength(long value) => throw new NotImplementedException();
+
+            public override void Write(byte[] buffer, int offset, int count) => throw new NotImplementedException();
         }
     }
 }
