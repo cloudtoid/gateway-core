@@ -10,6 +10,7 @@
     using static Cloudtoid.GatewayCore.GatewayOptions.RouteOptions;
     using static Cloudtoid.GatewayCore.GatewayOptions.RouteOptions.ProxyOptions;
     using static Contract;
+    using SenderDefaults = Defaults.Route.Proxy.Upstream.Request.Sender;
 
     internal sealed class SettingsCreator : ISettingsCreator
     {
@@ -170,10 +171,39 @@
             // with the settings specified by UpstreamRequestSenderSettings.
             var httpClientName = options.HttpClientName ?? guidProvider.NewGuid().ToStringInvariant("N");
 
+            var connectTimeout = options.ConnectTimeoutInMilliseconds.HasValue
+                ? TimeSpan.FromMilliseconds(options.ConnectTimeoutInMilliseconds.Value)
+                : SenderDefaults.ConnectTimeout;
+
+            var expect100ContinueTimeout = options.Expect100ContinueTimeoutInMilliseconds.HasValue
+                ? TimeSpan.FromMilliseconds(options.Expect100ContinueTimeoutInMilliseconds.Value)
+                : SenderDefaults.Expect100ContinueTimeout;
+
+            var pooledConnectionIdleTimeout = options.PooledConnectionIdleTimeoutInMilliseconds.HasValue
+                ? TimeSpan.FromMilliseconds(options.PooledConnectionIdleTimeoutInMilliseconds.Value)
+                : SenderDefaults.PooledConnectionIdleTimeout;
+
+            var pooledConnectionLifetime = options.PooledConnectionLifetimeInMilliseconds.HasValue
+                ? TimeSpan.FromMilliseconds(options.PooledConnectionLifetimeInMilliseconds.Value)
+                : SenderDefaults.PooledConnectionLifetime;
+
+            var responseDrainTimeout = options.ResponseDrainTimeoutInMilliseconds.HasValue
+                ? TimeSpan.FromMilliseconds(options.ResponseDrainTimeoutInMilliseconds.Value)
+                : SenderDefaults.ResponseDrainTimeout;
+
             return new UpstreamRequestSenderSettings(
                 context,
                 httpClientName,
                 options.TimeoutInMilliseconds,
+                connectTimeout,
+                expect100ContinueTimeout,
+                pooledConnectionIdleTimeout,
+                pooledConnectionLifetime,
+                responseDrainTimeout,
+                options.MaxAutomaticRedirections ?? SenderDefaults.MaxAutomaticRedirections,
+                options.MaxConnectionsPerServer ?? SenderDefaults.MaxConnectionsPerServer,
+                options.MaxResponseDrainSizeInBytes ?? SenderDefaults.MaxResponseDrainSizeInBytes,
+                options.MaxResponseHeadersLengthInKilobytes ?? SenderDefaults.MaxResponseHeadersLengthInKilobytes,
                 options.AllowAutoRedirect,
                 options.UseCookies);
         }

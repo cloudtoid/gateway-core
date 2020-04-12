@@ -61,6 +61,15 @@
 
             builder.PrimaryHandler = new SocketsHttpHandler
             {
+                ConnectTimeout = settings.ConnectTimeout,
+                Expect100ContinueTimeout = settings.Expect100ContinueTimeout,
+                PooledConnectionIdleTimeout = settings.PooledConnectionIdleTimeout,
+                PooledConnectionLifetime = settings.PooledConnectionLifetime,
+                ResponseDrainTimeout = settings.ResponseDrainTimeout,
+                MaxAutomaticRedirections = settings.MaxAutomaticRedirections,
+                MaxConnectionsPerServer = settings.MaxConnectionsPerServer,
+                MaxResponseDrainSize = settings.MaxResponseDrainSizeInBytes,
+                MaxResponseHeadersLength = settings.MaxResponseHeadersLengthInKilobytes,
                 AllowAutoRedirect = settings.AllowAutoRedirect,
                 UseCookies = settings.UseCookies,
             };

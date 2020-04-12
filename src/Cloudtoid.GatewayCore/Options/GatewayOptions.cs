@@ -144,15 +144,69 @@
                     public sealed class SenderOptions
                     {
                         /// <summary>
-                        /// This is the name of the <see cref="HttpClient"/> that will be used to send the request
-                        /// The default value, is a system generated unique value
+                        /// TGets or sets the name of the <see cref="HttpClient"/> that will be used to send the request.
+                        /// The default value is a system generated unique name.
                         /// </summary>
                         public string? HttpClientName { get; set; }
 
                         /// <summary>
-                        /// This is the total timeout in milliseconds to wait for the outbound upstream request to complete
+                        /// Gets or sets the total timeout in milliseconds to wait for the outbound upstream request to complete.
                         /// </summary>
                         public string? TimeoutInMilliseconds { get; set; }
+
+                        /// <summary>
+                        /// Gets or sets the connect timeout in milliseconds.
+                        /// By default, no timeout is set.
+                        /// </summary>
+                        public int? ConnectTimeoutInMilliseconds { get; set; }
+
+                        /// <summary>
+                        /// Gets or sets the expect 100 continue timeout in milliseconds.
+                        /// The default value is 1 second.
+                        /// </summary>
+                        public int? Expect100ContinueTimeoutInMilliseconds { get; set; }
+
+                        /// <summary>
+                        /// Gets or sets how long, in milliseconds, a connection can be idle in the pool to be considered reusable. Also see <see cref="PooledConnectionLifetimeInMilliseconds"/>.
+                        /// The default value is 2 minutes.
+                        /// </summary>
+                        public int? PooledConnectionIdleTimeoutInMilliseconds { get; set; }
+
+                        /// <summary>
+                        /// Gets or sets how long, in milliseconds, a connection can live in the connection pool.
+                        /// By default, no timeout is set and the connection can stay in the pool. Also see <see cref="PooledConnectionIdleTimeoutInMilliseconds"/>.
+                        /// </summary>
+                        public int? PooledConnectionLifetimeInMilliseconds { get; set; }
+
+                        /// <summary>
+                        /// Gets or sets the response drain timeout.
+                        /// The default value is 2 seconds.
+                        /// </summary>
+                        public int? ResponseDrainTimeoutInMilliseconds { get; set; }
+
+                        /// <summary>
+                        /// Gets or sets the maximum number of allowed HTTP redirects.
+                        /// The default value is 50.
+                        /// </summary>
+                        public int? MaxAutomaticRedirections { get; set; }
+
+                        /// <summary>
+                        /// Gets or sets the maximum number of simultaneous TCP connections allowed to a single server.
+                        /// The default value is <see cref="int.MaxValue"/>.
+                        /// </summary>
+                        public int? MaxConnectionsPerServer { get; set; }
+
+                        /// <summary>
+                        /// Gets or sets the maximum amount of data that can be drained from responses in bytes.
+                        /// The default value is <c>1024 * 1024</c>.
+                        /// </summary>
+                        public int? MaxResponseDrainSizeInBytes { get; set; }
+
+                        /// <summary>
+                        /// Gets or sets the maximum length, in kilobytes (1024 bytes), of the response headers.
+                        /// The default value is 64 kilobytes.
+                        /// </summary>
+                        public int? MaxResponseHeadersLengthInKilobytes { get; set; }
 
                         /// <summary>
                         /// Gets or sets a value that indicates whether the HTTP handler used by the outbound upstream request sender (<see cref="Upstream.IRequestSender"/>)
@@ -163,8 +217,7 @@
 
                         /// <summary>
                         /// Gets or sets a value that indicates whether the HTTP handler used by the outbound upstream request sender (<see cref="Upstream.IRequestSender"/>)
-                        /// uses the <see cref="System.Net.Http.HttpClientHandler.CookieContainer"/> property to store server cookies and uses these cookies when sending requests.
-                        /// By default, headers with an empty value are dropped.
+                        /// uses the <see cref="HttpClientHandler.CookieContainer"/> property to store server cookies and uses these cookies when sending requests.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool UseCookies { get; set; }

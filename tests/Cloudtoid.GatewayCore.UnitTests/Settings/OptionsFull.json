@@ -29,6 +29,15 @@
           "sender": {
             "httpClientName": "api-route-http-client-name",
             "timeoutInMilliseconds": 5200,
+            "connectTimeoutInMilliseconds": 1000,
+            "expect100ContinueTimeoutInMilliseconds": 2000,
+            "pooledConnectionIdleTimeoutInMilliseconds": 3000,
+            "pooledConnectionLifetimeInMilliseconds": 4000,
+            "responseDrainTimeoutInMilliseconds": 5000,
+            "maxAutomaticRedirections": 10,
+            "maxConnectionsPerServer": 20,
+            "maxResponseDrainSizeInBytes": 12800,
+            "maxResponseHeadersLengthInKilobytes": 128,
             "allowAutoRedirect": true,
             "useCookies": true
           }

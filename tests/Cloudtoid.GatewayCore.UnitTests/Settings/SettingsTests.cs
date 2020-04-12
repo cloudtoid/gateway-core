@@ -68,6 +68,15 @@
             var requestSender = request.Sender;
             requestSender.HttpClientName.Should().Be("api-route-http-client-name");
             requestSender.GetTimeout(context).TotalMilliseconds.Should().Be(5200);
+            requestSender.ConnectTimeout.TotalMilliseconds.Should().Be(1000);
+            requestSender.Expect100ContinueTimeout.TotalMilliseconds.Should().Be(2000);
+            requestSender.PooledConnectionIdleTimeout.TotalMilliseconds.Should().Be(3000);
+            requestSender.PooledConnectionLifetime.TotalMilliseconds.Should().Be(4000);
+            requestSender.ResponseDrainTimeout.TotalMilliseconds.Should().Be(5000);
+            requestSender.MaxAutomaticRedirections.Should().Be(10);
+            requestSender.MaxConnectionsPerServer.Should().Be(20);
+            requestSender.MaxResponseDrainSizeInBytes.Should().Be(12800);
+            requestSender.MaxResponseHeadersLengthInKilobytes.Should().Be(128);
             requestSender.AllowAutoRedirect.Should().BeTrue();
             requestSender.UseCookies.Should().BeTrue();
 
@@ -155,6 +164,15 @@
             var requestSender = request.Sender;
             requestSender.HttpClientName.Should().Be(GuidProvider.StringValue);
             requestSender.GetTimeout(context).TotalMilliseconds.Should().Be(240000);
+            requestSender.ConnectTimeout.Should().Be(Timeout.InfiniteTimeSpan);
+            requestSender.Expect100ContinueTimeout.TotalMilliseconds.Should().Be(1000);
+            requestSender.PooledConnectionIdleTimeout.Should().Be(TimeSpan.FromMinutes(2));
+            requestSender.PooledConnectionLifetime.Should().Be(Timeout.InfiniteTimeSpan);
+            requestSender.ResponseDrainTimeout.TotalMilliseconds.Should().Be(2000);
+            requestSender.MaxAutomaticRedirections.Should().Be(50);
+            requestSender.MaxConnectionsPerServer.Should().Be(int.MaxValue);
+            requestSender.MaxResponseDrainSizeInBytes.Should().Be(1024 * 1024);
+            requestSender.MaxResponseHeadersLengthInKilobytes.Should().Be(64);
             requestSender.AllowAutoRedirect.Should().BeFalse();
             requestSender.UseCookies.Should().BeFalse();
 
@@ -207,7 +225,7 @@
                     sender.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
                     sender.AllowAutoRedirect.Should().BeFalse();
                     sender.UseCookies.Should().BeTrue();
-                    ValidateSocketHttpHandler("api-route-http-client-name", sender);
+                    ValidateSocketsHttpHandler("api-route-http-client-name", sender);
 
                     File.Copy(@"Settings\OptionsNew.json", @"Settings\OptionsReload.json", true);
 
@@ -227,7 +245,7 @@
                     sender.GetTimeout(context).TotalMilliseconds.Should().Be(2000);
                     sender.AllowAutoRedirect.Should().BeTrue();
                     sender.UseCookies.Should().BeFalse();
-                    ValidateSocketHttpHandler("api-route-http-client-name", sender);
+                    ValidateSocketsHttpHandler("api-route-http-client-name", sender);
 
                     File.Copy(@"Settings\OptionsOld.json", @"Settings\OptionsReload.json", true);
 
@@ -246,7 +264,7 @@
                     sender.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
                     sender.AllowAutoRedirect.Should().BeFalse();
                     sender.UseCookies.Should().BeTrue();
-                    ValidateSocketHttpHandler("api-route-http-client-name", sender);
+                    ValidateSocketsHttpHandler("api-route-http-client-name", sender);
                 }
             }
             finally
@@ -264,7 +282,7 @@
             requestSender.GetTimeout(context).TotalMilliseconds.Should().Be(5200);
             requestSender.AllowAutoRedirect.Should().BeFalse();
             requestSender.UseCookies.Should().BeTrue();
-            ValidateSocketHttpHandler("api-route-http-client-name", requestSender);
+            ValidateSocketsHttpHandler("api-route-http-client-name", requestSender);
         }
 
         [TestMethod]
@@ -451,7 +469,7 @@
             return settingsProvider.CurrentValue;
         }
 
-        private void ValidateSocketHttpHandler(string httpClientName, UpstreamRequestSenderSettings settings)
+        private void ValidateSocketsHttpHandler(string httpClientName, UpstreamRequestSenderSettings settings)
         {
             // Need to force expire the current handler
             var cache = serviceProvider!.GetRequiredService<IOptionsMonitorCache<HttpClientFactoryOptions>>();
@@ -474,6 +492,15 @@
             {
                 if (handler is SocketsHttpHandler socket)
                 {
+                    socket.ConnectTimeout.Should().Be(settings.ConnectTimeout);
+                    socket.Expect100ContinueTimeout.Should().Be(settings.Expect100ContinueTimeout);
+                    socket.PooledConnectionIdleTimeout.Should().Be(settings.PooledConnectionIdleTimeout);
+                    socket.PooledConnectionLifetime.Should().Be(settings.PooledConnectionLifetime);
+                    socket.ResponseDrainTimeout.Should().Be(settings.ResponseDrainTimeout);
+                    socket.MaxAutomaticRedirections.Should().Be(settings.MaxAutomaticRedirections);
+                    socket.MaxConnectionsPerServer.Should().Be(settings.MaxConnectionsPerServer);
+                    socket.MaxResponseDrainSize.Should().Be(settings.MaxResponseDrainSizeInBytes);
+                    socket.MaxResponseHeadersLength.Should().Be(settings.MaxResponseHeadersLengthInKilobytes);
                     socket.UseCookies.Should().Be(settings.UseCookies);
                     socket.AllowAutoRedirect.Should().Be(settings.AllowAutoRedirect);
                     return;
