@@ -104,14 +104,14 @@
         }
 
         [TestMethod]
-        public async Task SetContentAsync_BodyIsNull_LogsErrorAsync()
+        public async Task SetContentAsync_BodyIsNull_LogsDebugAsync()
         {
             // Arrange
             var context = new DefaultHttpContext();
             context.Request.Body = null;
 
             // Act
-            var message = await SetContentAsync(context);
+            await SetContentAsync(context);
 
             // Assert
             var logger = (Logger<RequestContentSetter>)serviceProvider.GetRequiredService<ILogger<RequestContentSetter>>();
@@ -119,7 +119,7 @@
         }
 
         [TestMethod]
-        public async Task SetContentAsync_BodyNotReadable_LogsErrorAsync()
+        public async Task SetContentAsync_BodyNotReadable_ThrowsAsync()
         {
             // Arrange
             var context = new DefaultHttpContext();
@@ -127,11 +127,10 @@
             await context.Request.Body.DisposeAsync();
 
             // Act
-            var message = await SetContentAsync(context);
+            Func<Task> act = () => SetContentAsync(context);
 
             // Assert
-            var logger = (Logger<RequestContentSetter>)serviceProvider.GetRequiredService<ILogger<RequestContentSetter>>();
-            logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase("The inbound downstream request does not have a readable body")).Should().BeTrue();
+            await act.Should().ThrowExactlyAsync<InvalidOperationException>("*The inbound downstream request does not have a readable body*");
         }
 
         [TestMethod]
@@ -143,7 +142,7 @@
             body.Position = 1;
 
             // Act
-            var message = await SetContentAsync(context);
+            await SetContentAsync(context);
 
             // Assert
             var logger = (Logger<RequestContentSetter>)serviceProvider.GetRequiredService<ILogger<RequestContentSetter>>();
@@ -151,28 +150,27 @@
         }
 
         [TestMethod]
-        public async Task SetContentAsync_BodyNotAtPositionZeroNonSeekable_LogsErrorAsync()
+        public async Task SetContentAsync_BodyNotAtPositionZeroNonSeekable_ThrowsAsync()
         {
             // Arrange
             var context = new DefaultHttpContext();
             var body = context.Request.Body = new NonSeekableStream();
 
             // Act
-            var message = await SetContentAsync(context);
+            Func<Task> act = () => SetContentAsync(context);
 
             // Assert
-            var logger = (Logger<RequestContentSetter>)serviceProvider.GetRequiredService<ILogger<RequestContentSetter>>();
-            logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase("The inbound downstream request is not at position zero but the stream is not seek-able.")).Should().BeTrue();
+            await act.Should().ThrowExactlyAsync<InvalidOperationException>("*The inbound downstream request is not at position zero but the stream is not seek-able.*");
         }
 
         [TestMethod]
-        public async Task SetContentAsync_NoContentLength_LogsErrorAsync()
+        public async Task SetContentAsync_NoContentLength_LogsDebugAsync()
         {
             // Arrange
             var context = new DefaultHttpContext();
 
             // Act
-            var message = await SetContentAsync(context, contentLength: null);
+            await SetContentAsync(context, contentLength: null);
 
             // Assert
             var logger = (Logger<RequestContentSetter>)serviceProvider.GetRequiredService<ILogger<RequestContentSetter>>();
@@ -188,7 +186,7 @@
             var provider = new DropContentHeaderValuesProvider();
 
             // Act
-            var message = await SetContentAsync(context, provider: provider);
+            await SetContentAsync(context, provider: provider);
 
             // Assert
             var logger = (Logger<RequestContentSetter>)serviceProvider.GetRequiredService<ILogger<RequestContentSetter>>();
