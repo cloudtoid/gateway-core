@@ -450,6 +450,26 @@
         }
 
         [TestMethod]
+        public async Task SetHeadersAsync_IpAddressV6_SetCorrectlyAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-forwarded-for";
+
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
+            headersOptions.IgnoreForwardedFor = false;
+
+            var context = new DefaultHttpContext();
+            context.Connection.RemoteIpAddress = new IPAddress(new byte[] { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80, 0x90, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 });
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(HeaderName).Should().BeEquivalentTo(new[] { "1020:3040:5060:7080:9010:1112:1314:1516" });
+        }
+
+        [TestMethod]
         public async Task SetHeadersAsync_IgnoreForwardedProtocol_HeaderNotIncludedAsync()
         {
             // Arrange

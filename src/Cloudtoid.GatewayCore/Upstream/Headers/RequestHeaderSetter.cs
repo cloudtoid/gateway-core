@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
-    using System.Net.Sockets;
     using System.Threading;
     using System.Threading.Tasks;
     using Cloudtoid.GatewayCore.Headers;
@@ -264,16 +263,6 @@
         }
 
         private static string? GetRemoteIpAddressOrDefault(ProxyContext context)
-        {
-            var address = context.HttpContext.Connection.RemoteIpAddress;
-            if (address is null)
-                return null;
-
-            var add = address.ToString();
-            if (address.AddressFamily == AddressFamily.InterNetworkV6)
-                return "\\" + add + "\"";
-
-            return add;
-        }
+           => context.HttpContext.Connection.RemoteIpAddress?.ToString();
     }
 }

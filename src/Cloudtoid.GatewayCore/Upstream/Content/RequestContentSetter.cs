@@ -5,7 +5,6 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Cloudtoid.GatewayCore.Headers;
-    using Cloudtoid.GatewayCore.Proxy;
     using Microsoft.Extensions.Logging;
     using static Contract;
 
