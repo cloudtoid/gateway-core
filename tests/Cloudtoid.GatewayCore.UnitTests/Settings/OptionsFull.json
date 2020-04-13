@@ -16,11 +16,10 @@
             "allowHeadersWithUnderscoreInName": true,
             "ignoreAllDownstreamHeaders": true,
             "includeExternalAddress": true,
-            "ignoreForwardedFor": true,
-            "ignoreForwardedProtocol": true,
-            "ignoreForwardedHost": true,
             "ignoreCorrelationId": true,
             "ignoreCallId": true,
+            "ignoreForwarded": true,
+            "useXForwarded": true,
             "overrides": {
               "x-extra-1": [ "value1_1", "value1_2" ],
               "x-extra-2": [ "value2_1", "value2_2" ]

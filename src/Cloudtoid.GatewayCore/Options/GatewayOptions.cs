@@ -94,24 +94,6 @@
                         public bool IgnoreHost { get; set; }
 
                         /// <summary>
-                        /// If false, it will set "x-forwarded-for" header to the IP address of the nearest client.
-                        /// The default value is <c>false</c>.
-                        /// </summary>
-                        public bool IgnoreForwardedFor { get; set; }
-
-                        /// <summary>
-                        /// If false, it will set ""x-forwarded-proto" header to the client protocol (HTTP or HTTPS).
-                        /// The default value is <c>false</c>.
-                        /// </summary>
-                        public bool IgnoreForwardedProtocol { get; set; }
-
-                        /// <summary>
-                        /// If false, it will set ""x-forwarded-host" header to the value of the "HOST" header from the inbound downstream request.
-                        /// The default value is <c>false</c>.
-                        /// </summary>
-                        public bool IgnoreForwardedHost { get; set; }
-
-                        /// <summary>
                         /// If false, it will append a correlation identifier header if not present. The actual header name is defined by <see cref="CorrelationIdHeader"/>
                         /// The default value is <c>false</c>.
                         /// </summary>
@@ -122,6 +104,24 @@
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IgnoreCallId { get; set; }
+
+                        /// <summary>
+                        /// If false, it will set "x-forwarded-*" headers or "Forwarded" header. Also see <see cref="UseXForwarded"/>.
+                        /// The information included in this headers consist of:
+                        /// <list type="bullet">
+                        /// <item>For: The client that initiated the request and subsequent proxies in a chain of proxies.</item>
+                        /// <item>Host: The Host request header field as received by the proxy.</item>
+                        /// <item>Proto: Indicates which protocol was used to make the request (typically "HTTP" or "HTTPS").</item>
+                        /// </list>
+                        /// The default value is <c>false</c>.
+                        /// </summary>
+                        public bool IgnoreForwarded { get; set; }
+
+                        /// <summary>
+                        /// If false, it will use "x-forwarded-*" headers instead of the standard "Forwarded" header. Also see <see cref="IgnoreForwarded"/>.
+                        /// The default value is <c>false</c>.
+                        /// </summary>
+                        public bool UseXForwarded { get; set; }
 
                         /// <summary>
                         /// If the inbound downstream request does not have a HOST header, the value provided here will be used.

@@ -20,11 +20,10 @@
             bool includeExternalAddress,
             bool ignoreAllDownstreamHeaders,
             bool ignoreHost,
-            bool ignoreForwardedFor,
-            bool ignoreForwardedProtocol,
-            bool ignoreForwardedHost,
             bool ignoreCorrelationId,
             bool ignoreCallId,
+            bool ignoreForwarded,
+            bool useXForwarded,
             IReadOnlyList<HeaderOverride> overrides)
         {
             this.context = context;
@@ -35,11 +34,10 @@
             IncludeExternalAddress = includeExternalAddress;
             IgnoreAllDownstreamHeaders = ignoreAllDownstreamHeaders;
             IgnoreHost = ignoreHost;
-            IgnoreForwardedFor = ignoreForwardedFor;
-            IgnoreForwardedProtocol = ignoreForwardedProtocol;
-            IgnoreForwardedHost = ignoreForwardedHost;
             IgnoreCorrelationId = ignoreCorrelationId;
             IgnoreCallId = ignoreCallId;
+            IgnoreForwarded = ignoreForwarded;
+            UseXForwarded = useXForwarded;
             Overrides = overrides;
             OverrideNames = new HashSet<string>(
                 overrides.Select(h => h.Name),
@@ -56,15 +54,13 @@
 
         public bool IgnoreHost { get; }
 
-        public bool IgnoreForwardedFor { get; }
-
-        public bool IgnoreForwardedProtocol { get; }
-
-        public bool IgnoreForwardedHost { get; }
-
         public bool IgnoreCorrelationId { get; }
 
         public bool IgnoreCallId { get; }
+
+        public bool IgnoreForwarded { get; }
+
+        public bool UseXForwarded { get; }
 
         public IReadOnlyList<HeaderOverride> Overrides { get; }
 

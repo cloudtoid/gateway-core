@@ -154,11 +154,10 @@
                 options.IncludeExternalAddress,
                 options.IgnoreAllDownstreamHeaders,
                 options.IgnoreHost,
-                options.IgnoreForwardedFor,
-                options.IgnoreForwardedProtocol,
-                options.IgnoreForwardedHost,
                 options.IgnoreCorrelationId,
                 options.IgnoreCallId,
+                options.IgnoreForwarded,
+                options.UseXForwarded,
                 Create(context, options.Overrides));
         }
 

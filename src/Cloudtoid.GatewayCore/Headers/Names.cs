@@ -4,6 +4,7 @@
     {
         internal const string ExternalAddress = "x-gwcore-external-address";
         internal const string ProxyName = "x-gwcore-proxy-name";
+        internal const string Forwarded = "Forwarded";
         internal const string ForwardedFor = "x-forwarded-for";
         internal const string ForwardedProtocol = "x-forwarded-proto";
         internal const string ForwardedHost = "x-forwarded-host";

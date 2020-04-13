@@ -50,11 +50,10 @@
             requestHeaders.AllowHeadersWithEmptyValue.Should().BeTrue();
             requestHeaders.AllowHeadersWithUnderscoreInName.Should().BeTrue();
             requestHeaders.IgnoreAllDownstreamHeaders.Should().BeTrue();
-            requestHeaders.IgnoreCallId.Should().BeTrue();
-            requestHeaders.IgnoreForwardedFor.Should().BeTrue();
-            requestHeaders.IgnoreForwardedProtocol.Should().BeTrue();
-            requestHeaders.IgnoreForwardedHost.Should().BeTrue();
             requestHeaders.IgnoreCorrelationId.Should().BeTrue();
+            requestHeaders.IgnoreCallId.Should().BeTrue();
+            requestHeaders.IgnoreForwarded.Should().BeTrue();
+            requestHeaders.UseXForwarded.Should().BeTrue();
             requestHeaders.IncludeExternalAddress.Should().BeTrue();
             requestHeaders.Overrides.Select(h => (h.Name, Values: h.GetValues(context)))
                 .Should()
@@ -153,11 +152,10 @@
             requestHeaders.AllowHeadersWithEmptyValue.Should().BeFalse();
             requestHeaders.AllowHeadersWithUnderscoreInName.Should().BeFalse();
             requestHeaders.IgnoreAllDownstreamHeaders.Should().BeFalse();
-            requestHeaders.IgnoreCallId.Should().BeFalse();
-            requestHeaders.IgnoreForwardedFor.Should().BeFalse();
-            requestHeaders.IgnoreForwardedProtocol.Should().BeFalse();
-            requestHeaders.IgnoreForwardedHost.Should().BeFalse();
             requestHeaders.IgnoreCorrelationId.Should().BeFalse();
+            requestHeaders.IgnoreCallId.Should().BeFalse();
+            requestHeaders.IgnoreForwarded.Should().BeFalse();
+            requestHeaders.UseXForwarded.Should().BeFalse();
             requestHeaders.IncludeExternalAddress.Should().BeFalse();
             requestHeaders.Overrides.Should().BeEmpty();
 
