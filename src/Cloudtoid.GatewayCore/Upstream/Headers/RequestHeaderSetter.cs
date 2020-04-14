@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Net.Sockets;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using Cloudtoid.GatewayCore.Headers;
@@ -28,8 +27,13 @@
     /// <item><description><c>TryAddSingleton&lt;<see cref="IRequestHeaderSetter"/>, MyRequestHeaderSetter&gt;()</c></description></item>
     /// </list>
     /// </example>
-    public class RequestHeaderSetter : IRequestHeaderSetter
+    public partial class RequestHeaderSetter : IRequestHeaderSetter
     {
+        private const string ForwardedFor = "for=";
+        private const string ForwardedProto = "proto=";
+        private const string ForwardedHost = "host=";
+        private const char Semicolon = ';';
+
         private static readonly ISet<string> HeaderTransferBlacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             HeaderNames.Host,
@@ -150,105 +154,6 @@
                 upstreamRequest,
                 Names.ExternalAddress,
                 clientAddress);
-        }
-
-        protected virtual void AddForwardedHeaders(ProxyContext context, HttpRequestMessage upstreamRequest)
-        {
-            if (context.ProxyUpstreamRequestHeadersSettings.IgnoreForwarded)
-                return;
-
-            if (context.ProxyUpstreamRequestHeadersSettings.UseXForwarded)
-            {
-                AddForwardedForHeader(context, upstreamRequest);
-                AddForwardedProtocolHeader(context, upstreamRequest);
-                AddForwardedHostHeader(context, upstreamRequest);
-                return;
-            }
-
-            AddForwardedHeader(context, upstreamRequest);
-        }
-
-        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded
-        protected virtual void AddForwardedHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
-        {
-            var builder = new StringBuilder();
-
-            var forAddress = GetRemoteIpAddressOrDefault(context, wrapIpV6: true);
-            if (!string.IsNullOrEmpty(forAddress))
-            {
-                builder.Append("for=");
-                builder.Append(forAddress);
-            }
-
-            var proto = context.Request.Scheme;
-            if (!string.IsNullOrEmpty(proto))
-            {
-                if (builder.Length > 0)
-                    builder.Append(';');
-
-                builder.Append("proto=");
-                builder.Append(proto);
-            }
-
-            var host = context.Request.Host;
-            if (host.HasValue)
-            {
-                if (builder.Length > 0)
-                    builder.Append(';');
-
-                builder.Append("host=");
-                builder.Append(host.Value);
-            }
-
-            if (builder.Length == 0)
-                return;
-
-            AddHeaderValues(
-                context,
-                upstreamRequest,
-                Names.Forwarded,
-                builder.ToString());
-        }
-
-        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For
-        protected virtual void AddForwardedForHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
-        {
-            var forAddress = GetRemoteIpAddressOrDefault(context);
-            if (string.IsNullOrEmpty(forAddress))
-                return;
-
-            AddHeaderValues(
-                context,
-                upstreamRequest,
-                Names.ForwardedFor,
-                forAddress);
-        }
-
-        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Proto
-        protected virtual void AddForwardedProtocolHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
-        {
-            if (string.IsNullOrEmpty(context.Request.Scheme))
-                return;
-
-            AddHeaderValues(
-                context,
-                upstreamRequest,
-                Names.ForwardedProtocol,
-                context.Request.Scheme);
-        }
-
-        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Host
-        protected virtual void AddForwardedHostHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
-        {
-            var host = context.Request.Host;
-            if (!host.HasValue)
-                return;
-
-            AddHeaderValues(
-                context,
-                upstreamRequest,
-                Names.ForwardedHost,
-                host.Value);
         }
 
         protected virtual void AddCorrelationIdHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
