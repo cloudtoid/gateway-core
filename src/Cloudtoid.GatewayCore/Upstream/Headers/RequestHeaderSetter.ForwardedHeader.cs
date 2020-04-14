@@ -1,6 +1,9 @@
 ﻿namespace Cloudtoid.GatewayCore.Upstream
 {
+    using System.Diagnostics.CodeAnalysis;
+    using System.Net;
     using System.Net.Http;
+    using System.Net.Sockets;
     using System.Text;
     using Cloudtoid.GatewayCore.Headers;
 
@@ -30,39 +33,20 @@
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded
         protected virtual void AddForwardedHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            var builder = new StringBuilder();
-
-            var forAddress = GetRemoteIpAddressOrDefault(context, wrapIpV6: true);
-            if (!string.IsNullOrEmpty(forAddress))
-            {
-                builder.Append(ForwardedFor);
-                builder.Append(forAddress);
-            }
-
+            var by = CreateValidForwardedIpAddress(context.HttpContext.Connection.LocalIpAddress);
+            var @for = CreateValidForwardedIpAddress(context.HttpContext.Connection.RemoteIpAddress);
             var host = context.Request.Host;
-            if (host.HasValue)
-            {
-                builder.AppendIfNotEmpty(Semicolon);
-                builder.Append(ForwardedHost);
-                builder.Append(host.Value);
-            }
-
             var proto = context.Request.Scheme;
-            if (!string.IsNullOrEmpty(proto))
-            {
-                builder.AppendIfNotEmpty(Semicolon);
-                builder.Append(ForwardedProto);
-                builder.Append(proto);
-            }
+            var value = CreateForwardHeaderValue(by, @for, host.Value, proto);
 
-            if (builder.Length == 0)
+            if (value is null)
                 return;
 
             AddHeaderValues(
                 context,
                 upstreamRequest,
                 Names.Forwarded,
-                builder.ToString());
+                value);
         }
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For
@@ -104,6 +88,55 @@
                 upstreamRequest,
                 Names.ForwardedHost,
                 host.Value);
+        }
+
+        private static string? CreateForwardHeaderValue(
+            string? by,
+            string? @for,
+            string? host,
+            string? proto)
+        {
+            var builder = new StringBuilder();
+
+            if (!string.IsNullOrEmpty(by))
+            {
+                builder.Append(ForwardedBy);
+                builder.Append(by);
+            }
+
+            if (!string.IsNullOrEmpty(@for))
+            {
+                builder.AppendIfNotEmpty(Semicolon);
+                builder.Append(ForwardedFor);
+                builder.Append(@for);
+            }
+
+            if (!string.IsNullOrEmpty(host))
+            {
+                builder.AppendIfNotEmpty(Semicolon);
+                builder.Append(ForwardedHost);
+                builder.Append(host);
+            }
+
+            if (!string.IsNullOrEmpty(proto))
+            {
+                builder.AppendIfNotEmpty(Semicolon);
+                builder.Append(ForwardedProto);
+                builder.Append(proto);
+            }
+
+            return builder.Length == 0 ? null : builder.ToString();
+        }
+
+        [return: NotNullIfNotNull("ip")]
+        private static string? CreateValidForwardedIpAddress(IPAddress? ip)
+        {
+            if (ip is null)
+                return null;
+
+            return ip.AddressFamily == AddressFamily.InterNetworkV6
+                ? $"\"[{ip}]\""
+                : ip.ToString();
         }
     }
 }

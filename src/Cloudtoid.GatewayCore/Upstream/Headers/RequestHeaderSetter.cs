@@ -29,6 +29,7 @@
     /// </example>
     public partial class RequestHeaderSetter : IRequestHeaderSetter
     {
+        private const string ForwardedBy = "by=";
         private const string ForwardedFor = "for=";
         private const string ForwardedProto = "proto=";
         private const string ForwardedHost = "host=";
@@ -220,16 +221,7 @@
                 nameof(IRequestHeaderValuesProvider.TryGetHeaderValues));
         }
 
-        private static string? GetRemoteIpAddressOrDefault(ProxyContext context, bool wrapIpV6 = false)
-        {
-            var ip = context.HttpContext.Connection.RemoteIpAddress;
-            if (ip is null)
-                return null;
-
-            if (wrapIpV6 && ip.AddressFamily == AddressFamily.InterNetworkV6)
-                return $"\"[{ip}]\"";
-
-            return ip.ToString();
-        }
+        private static string? GetRemoteIpAddressOrDefault(ProxyContext context)
+            => context.HttpContext.Connection.RemoteIpAddress?.ToString();
     }
 }

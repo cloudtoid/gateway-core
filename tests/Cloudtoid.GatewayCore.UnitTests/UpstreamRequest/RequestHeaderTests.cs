@@ -22,6 +22,7 @@
         private const string XForwardedHostHeader = "x-forwarded-host";
         private const string XForwardedProtoHeader = "x-forwarded-proto";
         private static readonly IPAddress IpV4Sample = new IPAddress(new byte[] { 0, 1, 2, 3 });
+        private static readonly IPAddress IpV4Sample2 = new IPAddress(new byte[] { 4, 5, 6, 7 });
         private static readonly IPAddress IpV6Sample = new IPAddress(new byte[] { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80, 0x90, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 });
 
         [TestMethod]
@@ -386,6 +387,7 @@
             context.Request.Host = new HostString("some-host");
             context.Request.Scheme = "HTTPS";
             context.Connection.RemoteIpAddress = IpV4Sample;
+            context.Connection.LocalIpAddress = IpV4Sample2;
 
             // Act
             var message = await SetHeadersAsync(context, options);
@@ -407,6 +409,7 @@
 
             var context = new DefaultHttpContext();
             context.Connection.RemoteIpAddress = IpV4Sample;
+            context.Connection.LocalIpAddress = IpV4Sample2;
 
             // Act
             var message = await SetHeadersAsync(context, options);
@@ -427,6 +430,7 @@
 
             var context = new DefaultHttpContext();
             context.Connection.RemoteIpAddress = IpV4Sample;
+            context.Connection.LocalIpAddress = IpV4Sample2;
 
             // Act
             var message = await SetHeadersAsync(context, options);
@@ -447,6 +451,7 @@
 
             var context = new DefaultHttpContext();
             context.Connection.RemoteIpAddress = IpV4Sample;
+            context.Connection.LocalIpAddress = IpV4Sample2;
             context.Request.Host = new HostString("some-host");
             context.Request.Scheme = "http";
 
@@ -454,7 +459,7 @@
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(ForwardedHeader).SingleOrDefault().Should().Be("for=0.1.2.3;host=some-host;proto=http");
+            message.Headers.GetValues(ForwardedHeader).SingleOrDefault().Should().Be("by=4.5.6.7;for=0.1.2.3;host=some-host;proto=http");
             message.Headers.Contains(XForwardedForHeader).Should().BeFalse();
         }
 
@@ -469,6 +474,7 @@
 
             var context = new DefaultHttpContext();
             context.Connection.RemoteIpAddress = IpV4Sample;
+            context.Connection.LocalIpAddress = IpV4Sample2;
             context.Request.Host = new HostString("some-host");
             context.Request.Scheme = "http";
 
@@ -495,6 +501,7 @@
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, "3.2.1.0");
             context.Connection.RemoteIpAddress = IpV4Sample;
+            context.Connection.LocalIpAddress = IpV4Sample2;
 
             // Act
             var message = await SetHeadersAsync(context, options);
@@ -514,6 +521,7 @@
 
             var context = new DefaultHttpContext();
             context.Connection.RemoteIpAddress = IpV6Sample;
+            context.Connection.LocalIpAddress = IpV4Sample2;
 
             // Act
             var message = await SetHeadersAsync(context, options);
@@ -533,12 +541,13 @@
 
             var context = new DefaultHttpContext();
             context.Connection.RemoteIpAddress = IpV6Sample;
+            context.Connection.LocalIpAddress = IpV6Sample;
 
             // Act
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(ForwardedHeader).Should().BeEquivalentTo(new[] { "for=\"[1020:3040:5060:7080:9010:1112:1314:1516]\"" });
+            message.Headers.GetValues(ForwardedHeader).Should().BeEquivalentTo(new[] { "by=\"[1020:3040:5060:7080:9010:1112:1314:1516]\";for=\"[1020:3040:5060:7080:9010:1112:1314:1516]\"" });
         }
 
         ////[TestMethod]
