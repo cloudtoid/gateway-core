@@ -1,5 +1,7 @@
 ﻿namespace Cloudtoid.GatewayCore.Upstream
 {
+    using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Net;
     using System.Net.Http;
@@ -9,6 +11,13 @@
 
     public partial class RequestHeaderSetter
     {
+        private const string ForwardedBy = "by=";
+        private const string ForwardedFor = "for=";
+        private const string ForwardedProto = "proto=";
+        private const string ForwardedHost = "host=";
+        private const char Semicolon = ';';
+        private const char Comma = ',';
+
         protected virtual void AddForwardedHeaders(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
             if (context.ProxyUpstreamRequestHeadersSettings.IgnoreForwarded)
@@ -137,6 +146,85 @@
             return ip.AddressFamily == AddressFamily.InterNetworkV6
                 ? $"\"[{ip}]\""
                 : ip.ToString();
+        }
+
+        // internal for testing
+        internal static bool TryParseForwardedHeaderValues(
+            string value,
+            [NotNullWhen(true)] out IReadOnlyList<ForwardedHeaderValue>? parsedValues)
+        {
+            List<ForwardedHeaderValue>? list = null;
+            var spans = value.AsSpan().Split(Comma);
+            while (spans.MoveNext())
+            {
+                if (TryParseForwardedHeaderValue(spans.Current.Trim(), out var headerValue))
+                {
+                    if (list is null)
+                        list = new List<ForwardedHeaderValue>(4);
+
+                    list.Add(headerValue);
+                }
+            }
+
+            parsedValues = list;
+            return parsedValues != null;
+        }
+
+        private static bool TryParseForwardedHeaderValue(
+            ReadOnlySpan<char> value,
+            out ForwardedHeaderValue parsedValue)
+        {
+            var spans = value.Split(Semicolon);
+            string? by = null;
+            string? @for = null;
+            string? host = null;
+            string? proto = null;
+
+            while (spans.MoveNext())
+            {
+                var current = spans.Current.Trim();
+                if (current.StartsWith(ForwardedBy.AsSpan(), StringComparison.OrdinalIgnoreCase))
+                    by = current.Slice(ForwardedBy.Length).Trim().ToString();
+                else if (current.StartsWith(ForwardedFor.AsSpan(), StringComparison.OrdinalIgnoreCase))
+                    @for = current.Slice(ForwardedFor.Length).Trim().ToString();
+                else if (current.StartsWith(ForwardedHost.AsSpan(), StringComparison.OrdinalIgnoreCase))
+                    host = current.Slice(ForwardedHost.Length).Trim().ToString();
+                else if (current.StartsWith(ForwardedProto.AsSpan(), StringComparison.OrdinalIgnoreCase))
+                    proto = current.Slice(ForwardedProto.Length).Trim().ToString();
+            }
+
+            if (string.IsNullOrEmpty(by) && string.IsNullOrEmpty(@for) && string.IsNullOrEmpty(host) && string.IsNullOrEmpty(proto))
+            {
+                parsedValue = default;
+                return false;
+            }
+
+            parsedValue = new ForwardedHeaderValue(by, @for, host, proto);
+            return true;
+        }
+
+        // internal for testing
+        internal struct ForwardedHeaderValue
+        {
+            internal ForwardedHeaderValue(
+                string? by = null,
+                string? @for = null,
+                string? host = null,
+                string? proto = null)
+            {
+                By = by;
+                For = @for;
+                Host = host;
+                Proto = proto;
+            }
+
+            internal string? By { get; }
+
+            internal string? For { get; }
+
+            internal string? Host { get; }
+
+            internal string? Proto { get; }
         }
     }
 }

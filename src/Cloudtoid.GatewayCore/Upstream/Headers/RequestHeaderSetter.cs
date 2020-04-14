@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Net.Http;
-    using System.Net.Sockets;
     using System.Threading;
     using System.Threading.Tasks;
     using Cloudtoid.GatewayCore.Headers;
@@ -29,12 +28,6 @@
     /// </example>
     public partial class RequestHeaderSetter : IRequestHeaderSetter
     {
-        private const string ForwardedBy = "by=";
-        private const string ForwardedFor = "for=";
-        private const string ForwardedProto = "proto=";
-        private const string ForwardedHost = "host=";
-        private const char Semicolon = ';';
-
         private static readonly ISet<string> HeaderTransferBlacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             HeaderNames.Host,
