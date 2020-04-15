@@ -35,9 +35,9 @@
             Names.ProxyName,
             Names.CallId,
             Names.Forwarded,
-            Names.ForwardedFor,
-            Names.ForwardedHost,
-            Names.ForwardedProtocol
+            Names.XForwardedFor,
+            Names.XForwardedHost,
+            Names.XForwardedProto
         };
 
         private readonly HeaderSanetizer sanetizer;

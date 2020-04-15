@@ -3,11 +3,13 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Net.Sockets;
     using System.Text;
     using Cloudtoid.GatewayCore.Headers;
+    using Microsoft.AspNetCore.Http;
 
     public partial class RequestHeaderSetter
     {
@@ -46,7 +48,7 @@
             var @for = CreateValidForwardedIpAddress(context.HttpContext.Connection.RemoteIpAddress);
             var host = context.Request.Host;
             var proto = context.Request.Scheme;
-            var value = CreateForwardHeaderValue(by, @for, host.Value, proto);
+            var value = CreateForwardHeaderValue(new[] { new ForwardedHeaderValue(by, @for, host.Value, proto) });
 
             if (value is null)
                 return;
@@ -68,7 +70,7 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                Names.ForwardedFor,
+                Names.XForwardedFor,
                 forAddress);
         }
 
@@ -81,7 +83,7 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                Names.ForwardedProtocol,
+                Names.XForwardedProto,
                 context.Request.Scheme);
         }
 
@@ -95,46 +97,75 @@
             AddHeaderValues(
                 context,
                 upstreamRequest,
-                Names.ForwardedHost,
+                Names.XForwardedHost,
                 host.Value);
         }
 
-        private static string? CreateForwardHeaderValue(
-            string? by,
-            string? @for,
-            string? host,
-            string? proto)
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded
+        private static string? CreateForwardHeaderValue(IEnumerable<ForwardedHeaderValue> values)
         {
             var builder = new StringBuilder();
-
-            if (!string.IsNullOrEmpty(by))
-            {
-                builder.Append(ForwardedBy);
-                builder.Append(by);
-            }
-
-            if (!string.IsNullOrEmpty(@for))
-            {
-                builder.AppendIfNotEmpty(Semicolon);
-                builder.Append(ForwardedFor);
-                builder.Append(@for);
-            }
-
-            if (!string.IsNullOrEmpty(host))
-            {
-                builder.AppendIfNotEmpty(Semicolon);
-                builder.Append(ForwardedHost);
-                builder.Append(host);
-            }
-
-            if (!string.IsNullOrEmpty(proto))
-            {
-                builder.AppendIfNotEmpty(Semicolon);
-                builder.Append(ForwardedProto);
-                builder.Append(proto);
-            }
+            foreach (var value in values)
+                AppendForwardHeaderValue(builder, value);
 
             return builder.Length == 0 ? null : builder.ToString();
+        }
+
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded
+        private static void AppendForwardHeaderValue(StringBuilder builder, ForwardedHeaderValue value)
+        {
+            bool appendComma = builder.Length > 0;
+
+            void AppendComma()
+            {
+                if (!appendComma)
+                    return;
+
+                builder.Append(Comma);
+                appendComma = false;
+            }
+
+            void AppendSemicolon()
+            {
+                if (appendComma)
+                    return;
+
+                builder.AppendIfNotEmpty(Semicolon);
+            }
+
+            void AppendSeperator()
+            {
+                AppendSemicolon();
+                AppendComma();
+            }
+
+            if (!string.IsNullOrEmpty(value.By))
+            {
+                AppendSeperator();
+                builder.Append(ForwardedBy);
+                builder.Append(value.By);
+            }
+
+            if (!string.IsNullOrEmpty(value.For))
+            {
+                AppendSeperator();
+                builder.Append(ForwardedFor);
+                builder.Append(value.For);
+            }
+
+            if (!string.IsNullOrEmpty(value.Host))
+            {
+                AppendSeperator();
+                builder.Append(ForwardedHost);
+                builder.Append(value.Host);
+            }
+
+            if (!string.IsNullOrEmpty(value.Proto))
+            {
+                AppendSeperator();
+                builder.Append(ForwardedProto);
+                builder.Append(value.Proto);
+            }
         }
 
         [return: NotNullIfNotNull("ip")]
@@ -146,6 +177,33 @@
             return ip.AddressFamily == AddressFamily.InterNetworkV6
                 ? $"\"[{ip}]\""
                 : ip.ToString();
+        }
+
+        // internal for testing
+        internal static IEnumerable<ForwardedHeaderValue> GetCurrentForwardedHeaderValues(IHeaderDictionary headers)
+        {
+            if (headers.TryGetValue(Names.XForwardedFor, out var forValues) && forValues.Count > 0)
+            {
+                headers.TryGetValue(Names.XForwardedHost, out var hostValues);
+                headers.TryGetValue(Names.XForwardedProto, out var protoValues);
+
+                string? host = hostValues.FirstOrDefault();
+                string? proto = protoValues.FirstOrDefault();
+                foreach (var @for in forValues)
+                {
+                    if (!string.IsNullOrEmpty(@for))
+                        yield return new ForwardedHeaderValue(@for: @for, host: host, proto: proto);
+                }
+            }
+
+            if (headers.TryGetValue(Names.Forwarded, out var forwardedValues) && forwardedValues.Count > 0)
+            {
+                if (TryParseForwardedHeaderValues(forwardedValues[0], out var values))
+                {
+                    foreach (var value in values)
+                        yield return value;
+                }
+            }
         }
 
         // internal for testing
@@ -201,6 +259,24 @@
 
             parsedValue = new ForwardedHeaderValue(by, @for, host, proto);
             return true;
+        }
+
+        // internal for testing
+        internal static bool TryParseIpV6Address(
+            string value,
+            [NotNullWhen(true)] out IPAddress? ip)
+        {
+            if (value.Length > 6 && value.StartsWithOrdinal("\"[") && value[^1] == '"')
+            {
+                var end = value.IndexOfOrdinal(']');
+                value = value[2..end];
+            }
+
+            if (IPAddress.TryParse(value, out ip) && ip.AddressFamily == AddressFamily.InterNetworkV6)
+                return true;
+
+            ip = null;
+            return false;
         }
 
         // internal for testing

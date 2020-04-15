@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Primitives;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using static Cloudtoid.GatewayCore.Upstream.RequestHeaderSetter;
 
@@ -19,7 +20,117 @@
         private static readonly IPAddress IpV6Sample = new IPAddress(new byte[] { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80, 0x90, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 });
 
         [TestMethod]
-        public void TryParseForwardedHeaderValues_SingleValue_Mix()
+        public void GetCurrentForwardedHeaderValuesTests()
+        {
+            var headers = new HeaderDictionary
+            {
+                { XForwardedForHeader, IpV4Sample.ToString() },
+                { XForwardedProtoHeader, "http" },
+                { XForwardedHostHeader, "some-host" }
+            };
+
+            GetCurrentForwardedHeaderValues(headers).Should().BeEquivalentTo(new[]
+            {
+                new ForwardedHeaderValue(@for: IpV4Sample.ToString(), proto: "http", host: "some-host")
+            });
+
+            headers = new HeaderDictionary
+            {
+                { XForwardedForHeader, new StringValues(new[] { IpV4Sample.ToString(), IpV4Sample2.ToString() }) },
+                { XForwardedProtoHeader, "http" },
+                { XForwardedHostHeader, "some-host" }
+            };
+
+            GetCurrentForwardedHeaderValues(headers).Should().BeEquivalentTo(new[]
+            {
+                new ForwardedHeaderValue(@for: IpV4Sample.ToString(), proto: "http", host: "some-host"),
+                new ForwardedHeaderValue(@for: IpV4Sample2.ToString(), proto: "http", host: "some-host"),
+            });
+
+            headers = new HeaderDictionary
+            {
+                { XForwardedForHeader, IpV4Sample.ToString() },
+            };
+
+            GetCurrentForwardedHeaderValues(headers).Should().BeEquivalentTo(new[]
+            {
+                new ForwardedHeaderValue(@for: IpV4Sample.ToString()),
+            });
+
+            headers = new HeaderDictionary
+            {
+                { XForwardedForHeader, new StringValues(new[] { IpV4Sample.ToString(), IpV4Sample2.ToString() }) },
+                { XForwardedProtoHeader, "http" },
+                { XForwardedHostHeader, "some-host" },
+                { ForwardedHeader, "for=9.8.7.6;host=new-host;proto=https;by=6.5.4.3" }
+            };
+
+            GetCurrentForwardedHeaderValues(headers).Should().BeEquivalentTo(new[]
+            {
+                new ForwardedHeaderValue(@for: IpV4Sample.ToString(), proto: "http", host: "some-host"),
+                new ForwardedHeaderValue(@for: IpV4Sample2.ToString(), proto: "http", host: "some-host"),
+                new ForwardedHeaderValue(by: "6.5.4.3", @for: "9.8.7.6", proto: "https", host: "new-host"),
+            });
+
+            headers = new HeaderDictionary
+            {
+                { XForwardedForHeader, new StringValues(new[] { IpV4Sample.ToString(), IpV4Sample2.ToString() }) },
+                { XForwardedProtoHeader, "http" },
+                { XForwardedHostHeader, "some-host" },
+                { ForwardedHeader, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc,for=192.0.2.60;proto=https;by=203.0.113.43;host=efg" }
+            };
+
+            GetCurrentForwardedHeaderValues(headers).Should().BeEquivalentTo(new[]
+            {
+                new ForwardedHeaderValue(@for: IpV4Sample.ToString(), proto: "http", host: "some-host"),
+                new ForwardedHeaderValue(@for: IpV4Sample2.ToString(), proto: "http", host: "some-host"),
+                new ForwardedHeaderValue("203.0.113.43", "192.0.2.60", "abc", "http"),
+                new ForwardedHeaderValue("203.0.113.43", "192.0.2.60", "efg", "https")
+            });
+
+            headers = new HeaderDictionary
+            {
+                { XForwardedForHeader, IpV4Sample.ToString() },
+                { XForwardedProtoHeader, new StringValues(new[] { "http", "https" }) },
+                { XForwardedHostHeader, new StringValues(new[] { "some-host", "some-host-2" }) }
+            };
+
+            GetCurrentForwardedHeaderValues(headers).Should().BeEquivalentTo(new[]
+            {
+                new ForwardedHeaderValue(@for: IpV4Sample.ToString(), proto: "http", host: "some-host")
+            });
+        }
+
+        [TestMethod]
+        public void TryParseIpV6AddressTests()
+        {
+            TryParseIpV6Address("\"[2001:db8:cafe::17]:4711\"", out var ip).Should().BeTrue();
+            ip!.ToString().Should().Be("2001:db8:cafe::17");
+
+            TryParseIpV6Address("\"[2001:db8:cafe::17]\"", out ip).Should().BeTrue();
+            ip!.ToString().Should().Be("2001:db8:cafe::17");
+
+            TryParseIpV6Address("\"[2001:]\"", out ip).Should().BeFalse();
+            ip.Should().BeNull();
+
+            TryParseIpV6Address("\"[sdf]\"", out ip).Should().BeFalse();
+            ip.Should().BeNull();
+
+            TryParseIpV6Address("\"[]\"", out ip).Should().BeFalse();
+            ip.Should().BeNull();
+
+            TryParseIpV6Address("\"[]:987\"", out ip).Should().BeFalse();
+            ip.Should().BeNull();
+
+            TryParseIpV6Address("\"[]:987", out ip).Should().BeFalse();
+            ip.Should().BeNull();
+
+            TryParseIpV6Address(string.Empty, out ip).Should().BeFalse();
+            ip.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void TryParseForwardedHeaderValuesTests()
         {
             TryParseForwardedHeaderValues(string.Empty, out var values).Should().BeFalse();
             values.Should().BeNull();
@@ -128,9 +239,9 @@
             headersOptions.UseXForwarded = true;
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(Headers.Names.ForwardedFor, "some-value");
-            context.Request.Headers.Add(Headers.Names.ForwardedHost, "some-value");
-            context.Request.Headers.Add(Headers.Names.ForwardedProtocol, "some-value");
+            context.Request.Headers.Add(Headers.Names.XForwardedFor, "some-value");
+            context.Request.Headers.Add(Headers.Names.XForwardedHost, "some-value");
+            context.Request.Headers.Add(Headers.Names.XForwardedProto, "some-value");
             context.Request.Host = new HostString("some-host");
             context.Request.Scheme = "HTTPS";
             context.Connection.RemoteIpAddress = IpV4Sample;
@@ -140,9 +251,9 @@
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(Headers.Names.ForwardedFor).Should().BeEquivalentTo(new[] { IpV4Sample.ToString() });
-            message.Headers.GetValues(Headers.Names.ForwardedHost).Should().BeEquivalentTo(new[] { "some-host" });
-            message.Headers.GetValues(Headers.Names.ForwardedProtocol).Should().BeEquivalentTo(new[] { "HTTPS" });
+            message.Headers.GetValues(Headers.Names.XForwardedFor).Should().BeEquivalentTo(new[] { IpV4Sample.ToString() });
+            message.Headers.GetValues(Headers.Names.XForwardedHost).Should().BeEquivalentTo(new[] { "some-host" });
+            message.Headers.GetValues(Headers.Names.XForwardedProto).Should().BeEquivalentTo(new[] { "HTTPS" });
         }
 
         [TestMethod]
