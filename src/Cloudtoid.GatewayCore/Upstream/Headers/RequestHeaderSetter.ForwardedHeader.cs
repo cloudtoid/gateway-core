@@ -17,6 +17,7 @@
         private const string ForwardedFor = "for=";
         private const string ForwardedProto = "proto=";
         private const string ForwardedHost = "host=";
+        private const string CommaAndSpace = ", ";
         private const char Semicolon = ';';
         private const char Comma = ',';
 
@@ -34,21 +35,14 @@
             AddForwardedHeader(context, upstreamRequest);
         }
 
-        private void AddXForwardedHeaders(ProxyContext context, HttpRequestMessage upstreamRequest)
-        {
-            AddXForwardedForHeader(context, upstreamRequest);
-            AddXForwardedProtocolHeader(context, upstreamRequest);
-            AddXForwardedHostHeader(context, upstreamRequest);
-        }
-
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded
         protected virtual void AddForwardedHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            var by = CreateValidForwardedIpAddress(context.HttpContext.Connection.LocalIpAddress);
-            var @for = CreateValidForwardedIpAddress(context.HttpContext.Connection.RemoteIpAddress);
-            var host = context.Request.Host;
-            var proto = context.Request.Scheme;
-            var value = CreateForwardHeaderValue(new[] { new ForwardedHeaderValue(by, @for, host.Value, proto) });
+            var latestValue = CreateLatestForwardHeaderValue(context);
+
+            var value = context.ProxyUpstreamRequestHeadersSettings.IgnoreAllDownstreamHeaders
+                ? CreateForwardHeaderValue(latestValue)
+                : CreateForwardHeaderValue(GetCurrentForwardedHeaderValues(context.Request.Headers).Concat(latestValue));
 
             if (value is null)
                 return;
@@ -60,12 +54,39 @@
                 value);
         }
 
+        private void AddXForwardedHeaders(ProxyContext context, HttpRequestMessage upstreamRequest)
+        {
+            AddXForwardedForHeader(context, upstreamRequest);
+            AddXForwardedProtocolHeader(context, upstreamRequest);
+            AddXForwardedHostHeader(context, upstreamRequest);
+        }
+
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For
         protected virtual void AddXForwardedForHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
             var forAddress = GetRemoteIpAddressOrDefault(context);
             if (string.IsNullOrEmpty(forAddress))
                 return;
+
+            if (!context.ProxyUpstreamRequestHeadersSettings.IgnoreAllDownstreamHeaders)
+            {
+                StringBuilder? builder = null;
+
+                foreach (var value in GetCurrentForwardedHeaderValues(context.Request.Headers))
+                {
+                    var @for = value.For;
+                    if (!string.IsNullOrEmpty(@for))
+                    {
+                        if (builder is null)
+                            builder = new StringBuilder(@for);
+                        else
+                            builder.Append(CommaAndSpace).Append(@for);
+                    }
+                }
+
+                if (builder != null)
+                    forAddress = builder.Append(CommaAndSpace).Append(forAddress).ToString();
+            }
 
             AddHeaderValues(
                 context,
@@ -101,70 +122,104 @@
                 host.Value);
         }
 
-        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded
-        private static string? CreateForwardHeaderValue(IEnumerable<ForwardedHeaderValue> values)
+        private static ForwardedHeaderValue CreateLatestForwardHeaderValue(ProxyContext context)
         {
-            var builder = new StringBuilder();
-            foreach (var value in values)
-                AppendForwardHeaderValue(builder, value);
-
-            return builder.Length == 0 ? null : builder.ToString();
+            return new ForwardedHeaderValue(
+                by: CreateValidForwardedIpAddress(context.HttpContext.Connection.LocalIpAddress),
+                @for: CreateValidForwardedIpAddress(context.HttpContext.Connection.RemoteIpAddress),
+                host: context.Request.Host.Value,
+                proto: context.Request.Scheme);
         }
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded
-        private static void AppendForwardHeaderValue(StringBuilder builder, ForwardedHeaderValue value)
+        private static string? CreateForwardHeaderValue(IEnumerable<ForwardedHeaderValue> values)
         {
-            bool appendComma = builder.Length > 0;
+            StringBuilder? builder = null;
+            foreach (var value in values)
+                AppendForwardHeaderValue(ref builder, value);
 
-            void AppendComma()
+            return builder?.ToString();
+        }
+
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded
+        private static string? CreateForwardHeaderValue(ForwardedHeaderValue value)
+        {
+            StringBuilder? builder = null;
+            AppendForwardHeaderValue(ref builder, value);
+            return builder?.ToString();
+        }
+
+        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded
+        private static void AppendForwardHeaderValue(ref StringBuilder? builder, ForwardedHeaderValue value)
+        {
+            var hasBy = !string.IsNullOrEmpty(value.By);
+            var hasFor = !string.IsNullOrEmpty(value.For);
+            var hasHost = !string.IsNullOrEmpty(value.Host);
+            var hasProto = !string.IsNullOrEmpty(value.Proto);
+
+            if (!hasBy && !hasFor && !hasHost && !hasProto)
+                return;
+
+            bool appendComma;
+            if (builder == null)
             {
-                if (!appendComma)
-                    return;
-
-                builder.Append(Comma);
+                builder = new StringBuilder();
                 appendComma = false;
             }
-
-            void AppendSemicolon()
+            else
             {
-                if (appendComma)
-                    return;
-
-                builder.AppendIfNotEmpty(Semicolon);
+                appendComma = true;
             }
 
-            void AppendSeperator()
+            if (hasBy)
             {
-                AppendSemicolon();
-                AppendComma();
-            }
-
-            if (!string.IsNullOrEmpty(value.By))
-            {
-                AppendSeperator();
+                AppendSeperator(builder);
                 builder.Append(ForwardedBy);
                 builder.Append(value.By);
             }
 
-            if (!string.IsNullOrEmpty(value.For))
+            if (hasFor)
             {
-                AppendSeperator();
+                AppendSeperator(builder);
                 builder.Append(ForwardedFor);
                 builder.Append(value.For);
             }
 
-            if (!string.IsNullOrEmpty(value.Host))
+            if (hasHost)
             {
-                AppendSeperator();
+                AppendSeperator(builder);
                 builder.Append(ForwardedHost);
                 builder.Append(value.Host);
             }
 
-            if (!string.IsNullOrEmpty(value.Proto))
+            if (hasProto)
             {
-                AppendSeperator();
+                AppendSeperator(builder);
                 builder.Append(ForwardedProto);
                 builder.Append(value.Proto);
+            }
+
+            void AppendComma(StringBuilder sb)
+            {
+                if (!appendComma)
+                    return;
+
+                sb.Append(CommaAndSpace);
+                appendComma = false;
+            }
+
+            void AppendSemicolon(StringBuilder sb)
+            {
+                if (appendComma)
+                    return;
+
+                sb.AppendIfNotEmpty(Semicolon);
+            }
+
+            void AppendSeperator(StringBuilder sb)
+            {
+                AppendSemicolon(sb);
+                AppendComma(sb);
             }
         }
 

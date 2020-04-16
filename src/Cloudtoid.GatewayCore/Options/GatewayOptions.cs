@@ -106,9 +106,10 @@
                         public bool IgnoreCallId { get; set; }
 
                         /// <summary>
-                        /// If false, it will set "x-forwarded-*" headers or "Forwarded" header. Also see <see cref="UseXForwarded"/>.
-                        /// The information included in this headers consist of:
+                        /// If false, it will set "Forwarded" header or "x-forwarded-*" headers. Also see <see cref="UseXForwarded"/>.
+                        /// The information included in this header(s) consist of:
                         /// <list type="bullet">
+                        /// <item>By: The interface where the request came in to the proxy server.</item>
                         /// <item>For: The client that initiated the request and subsequent proxies in a chain of proxies.</item>
                         /// <item>Host: The Host request header field as received by the proxy.</item>
                         /// <item>Proto: Indicates which protocol was used to make the request (typically "HTTP" or "HTTPS").</item>
