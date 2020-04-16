@@ -64,35 +64,46 @@
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For
         protected virtual void AddXForwardedForHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            var forAddress = GetRemoteIpAddressOrDefault(context);
-            if (string.IsNullOrEmpty(forAddress))
+            var @for = CreateXForwardedForHeader(context);
+            if (@for is null)
                 return;
-
-            if (!context.ProxyUpstreamRequestHeadersSettings.IgnoreAllDownstreamHeaders)
-            {
-                StringBuilder? builder = null;
-
-                foreach (var value in GetCurrentForwardedHeaderValues(context.Request.Headers))
-                {
-                    var @for = value.For;
-                    if (!string.IsNullOrEmpty(@for))
-                    {
-                        if (builder is null)
-                            builder = new StringBuilder(@for);
-                        else
-                            builder.Append(CommaAndSpace).Append(@for);
-                    }
-                }
-
-                if (builder != null)
-                    forAddress = builder.Append(CommaAndSpace).Append(forAddress).ToString();
-            }
 
             AddHeaderValues(
                 context,
                 upstreamRequest,
                 Names.XForwardedFor,
-                forAddress);
+                @for);
+        }
+
+        private static string? CreateXForwardedForHeader(ProxyContext context)
+        {
+            var result = GetRemoteIpAddressOrDefault(context);
+            if (string.IsNullOrEmpty(result))
+                return null;
+
+            if (context.ProxyUpstreamRequestHeadersSettings.IgnoreAllDownstreamHeaders)
+                return result;
+
+            StringBuilder? builder = null;
+
+            foreach (var value in GetCurrentForwardedHeaderValues(context.Request.Headers))
+            {
+                var @for = value.For;
+                if (!string.IsNullOrEmpty(@for))
+                {
+                    if (builder is null)
+                        builder = new StringBuilder();
+                    else
+                        builder.Append(CommaAndSpace);
+
+                    builder.Append(@for);
+                }
+            }
+
+            if (builder != null)
+                result = builder.Append(CommaAndSpace).Append(result).ToString();
+
+            return result;
         }
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Proto
