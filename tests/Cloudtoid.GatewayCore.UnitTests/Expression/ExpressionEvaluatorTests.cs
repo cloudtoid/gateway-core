@@ -80,6 +80,14 @@
         }
 
         [TestMethod]
+        public void Evaluate_ContentLengthVariableWhenNull_Evaluated()
+        {
+            var context = new DefaultHttpContext();
+            context.Request.ContentLength = null;
+            Evaluate(GetVarName(SystemVariableNames.ContentLength), context).Should().BeEmpty();
+        }
+
+        [TestMethod]
         public void Evaluate_ContentTypeVariable_Evaluated()
         {
             const string value = "text/html";
@@ -170,6 +178,14 @@
         }
 
         [TestMethod]
+        public void Evaluate_RemoteAddressVariableButValueIsNull_Evaluated()
+        {
+            var context = new DefaultHttpContext();
+            context.Connection.RemoteIpAddress = null;
+            Evaluate(GetVarName(SystemVariableNames.RemoteAddress), context).Should().BeEmpty();
+        }
+
+        [TestMethod]
         public void Evaluate_RemotePortVariable_Evaluated()
         {
             var context = new DefaultHttpContext();
@@ -199,6 +215,14 @@
             var context = new DefaultHttpContext();
             context.Connection.LocalIpAddress = IPAddress.Parse(value);
             Evaluate(GetVarName(SystemVariableNames.ServerAddress), context).Should().Be(value);
+        }
+
+        [TestMethod]
+        public void Evaluate_ServerAddressVariableButNullValue_Evaluated()
+        {
+            var context = new DefaultHttpContext();
+            context.Connection.LocalIpAddress = null;
+            Evaluate(GetVarName(SystemVariableNames.ServerAddress), context).Should().BeEmpty();
         }
 
         [TestMethod]
@@ -233,6 +257,14 @@
             var options = TestExtensions.CreateDefaultOptions("/product/");
             var variables = new Dictionary<string, string> { ["id"] = "some-prod-id" };
             Evaluate("$id", options: options, variables: variables).Should().Be("$id");
+        }
+
+        [TestMethod]
+        public void Evaluate_RouteVariableThatDoesntExist_EvaluatedToNull()
+        {
+            var options = TestExtensions.CreateDefaultOptions("/product/:id");
+            var variables = new Dictionary<string, string>();
+            Evaluate("$id", options: options, variables: variables).Should().BeEmpty();
         }
 
         [TestMethod]

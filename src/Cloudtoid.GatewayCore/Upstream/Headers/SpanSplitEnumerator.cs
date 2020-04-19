@@ -21,8 +21,6 @@ namespace Cloudtoid
 
         public ReadOnlySpan<T> Current => sequence.Slice(offset, index - 1);
 
-        public SpanSplitEnumerator<T> GetEnumerator() => this;
-
         public bool MoveNext()
         {
             if (sequence.Length - offset < index)

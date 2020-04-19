@@ -132,25 +132,25 @@
         /// The IP address of the client
         /// </summary>
         private static string? GetRemoteAddress(ProxyContext context)
-            => context.HttpContext.Connection?.RemoteIpAddress?.ToString();
+            => context.HttpContext.Connection.RemoteIpAddress?.ToString();
 
         /// <summary>
         /// The IP port number of the remote client.
         /// </summary>
         private static string? GetRemotePort(ProxyContext context)
-            => context.HttpContext.Connection?.RemotePort.ToStringInvariant();
+            => context.HttpContext.Connection.RemotePort.ToStringInvariant();
 
         /// <summary>
         /// The IP address of the server which accepted the request
         /// </summary>
         private static string? GetServerAddress(ProxyContext context)
-            => context.HttpContext.Connection?.LocalIpAddress?.ToString();
+            => context.HttpContext.Connection.LocalIpAddress?.ToString();
 
         /// <summary>
         /// The IP port number of the server which accepted the request
         /// </summary>
         private static string? GetServerPort(ProxyContext context)
-            => context.HttpContext.Connection?.LocalPort.ToStringInvariant();
+            => context.HttpContext.Connection.LocalPort.ToStringInvariant();
 
         /// <summary>
         /// The name of the server which accepted the request
@@ -292,7 +292,8 @@
                     else
                     {
                         // The value of a system variable
-                        sb.Append(instruction(context));
+                        var sysVarFunc = (SystemVariableEvaluator)instruction;
+                        sb.Append(sysVarFunc(context));
                     }
                 }
 

@@ -51,25 +51,30 @@
         {
             CheckValue(httpContext, nameof(httpContext));
 
-            logger.LogDebug("Reverse proxy received a new inbound downstream {0} request.", httpContext.Request.Method);
+            httpContext.RequestAborted.ThrowIfCancellationRequested();
 
-            var cancellationToken = httpContext.RequestAborted;
-            cancellationToken.ThrowIfCancellationRequested();
+            logger.LogDebug("Reverse proxy received a new inbound downstream HTTP '{0}' request.", httpContext.Request.Method);
 
             if (routeResolver.TryResolve(httpContext, out var route))
-            {
-                var context = new ProxyContext(
-                    hostProvider,
-                    traceIdProvider,
-                    httpContext,
-                    route);
-
-                var upstreamRequest = await CreateUpstreamRequestAsync(context, cancellationToken);
-                var upstreamResponse = await SendUpstreamRequestAsync(context, upstreamRequest, cancellationToken);
-                await SendDownstreamResponseAsync(context, upstreamResponse, cancellationToken);
-            }
+                await ProxyAsync(httpContext, route);
 
             await next.Invoke(httpContext);
+        }
+
+        private async Task ProxyAsync(HttpContext httpContext, Route route)
+        {
+            logger.LogDebug("Reverse proxy found a matching route for the inbound downstream HTTP '{0}' request.", httpContext.Request.Method);
+
+            var context = new ProxyContext(
+                hostProvider,
+                traceIdProvider,
+                httpContext,
+                route);
+
+            var cancellationToken = httpContext.RequestAborted;
+            var upstreamRequest = await CreateUpstreamRequestAsync(context, cancellationToken);
+            var upstreamResponse = await SendUpstreamRequestAsync(context, upstreamRequest, cancellationToken);
+            await SendDownstreamResponseAsync(context, upstreamResponse, cancellationToken);
         }
 
         private async Task<HttpRequestMessage> CreateUpstreamRequestAsync(
@@ -94,6 +99,8 @@
             }
             catch (HttpRequestException hre)
             {
+                // Bad gateway (HTTP status 502) indicates that this proxy server received a bad
+                // response from another proxy or the origin server.
                 throw new ProxyException(HttpStatusCode.BadGateway, hre);
             }
         }
@@ -105,7 +112,7 @@
         {
             await responseSender
                 .SendResponseAsync(context, upstreamResponse, cancellationToken)
-                .TraceOnFaulted(logger, "Failed to convert and send the downstream response message.", cancellationToken);
+                .TraceOnFaulted(logger, "Failed to create and send the downstream response message.", cancellationToken);
         }
     }
 }
