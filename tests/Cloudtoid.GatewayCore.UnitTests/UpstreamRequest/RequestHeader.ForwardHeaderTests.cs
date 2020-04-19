@@ -20,7 +20,7 @@
         private static readonly IPAddress IpV6Sample = new IPAddress(new byte[] { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80, 0x90, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 });
 
         [TestMethod]
-        public void GetCurrentForwardedHeaderValuesTests()
+        public void GetCurrentForwardedHeaderValues_MixedTests()
         {
             var headers = new HeaderDictionary
             {
@@ -102,7 +102,7 @@
         }
 
         [TestMethod]
-        public void TryParseIpV6AddressTests()
+        public void TryParseIpV6Address_MixedTests()
         {
             TryParseIpV6Address("\"[2001:db8:cafe::17]:4711\"", out var ip).Should().BeTrue();
             ip!.ToString().Should().Be("2001:db8:cafe::17");
@@ -230,6 +230,244 @@
         }
 
         [TestMethod]
+        public async Task SetHeadersAsync_IgnoreForwarded_ForwardedAndXForwardedHeadersNotIncludedAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
+            headersOptions.IgnoreForwarded = true;
+            headersOptions.UseXForwarded = false;
+
+            var context = new DefaultHttpContext();
+            context.Connection.RemoteIpAddress = IpV4Sample;
+            context.Connection.LocalIpAddress = IpV4Sample2;
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.Contains(XForwardedForHeader).Should().BeFalse();
+            message.Headers.Contains(ForwardedHeader).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_IgnoreForwardedAndUseXForwarded_ForwardedAndXForwardedHeadersNotIncludedAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
+            headersOptions.IgnoreForwarded = true;
+            headersOptions.UseXForwarded = true;
+
+            var context = new DefaultHttpContext();
+            context.Connection.RemoteIpAddress = IpV4Sample;
+            context.Connection.LocalIpAddress = IpV4Sample2;
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.Contains(XForwardedForHeader).Should().BeFalse();
+            message.Headers.Contains(ForwardedHeader).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_HasForwardAndXForwardedHeadersButIgnoreDownstreamHeaders_ForwardedAndXForwardedHeadersNotKeptAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
+            headersOptions.IgnoreAllDownstreamHeaders = true;
+            headersOptions.IgnoreForwarded = false;
+            headersOptions.UseXForwarded = false;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(Headers.Names.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
+            context.Request.Headers.Add(Headers.Names.XForwardedFor, "some-for");
+            context.Request.Headers.Add(Headers.Names.XForwardedHost, "some-host");
+            context.Request.Headers.Add(Headers.Names.XForwardedProto, "some-proto");
+            context.Request.Host = new HostString("some-new-host");
+            context.Request.Scheme = "https";
+            context.Connection.RemoteIpAddress = IpV4Sample;
+            context.Connection.LocalIpAddress = IpV4Sample2;
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(Headers.Names.Forwarded).Should().BeEquivalentTo(
+                new[]
+                {
+                    "by=4.5.6.7;for=0.1.2.3;host=some-new-host;proto=https"
+                });
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_HasForwardAndXForwardedHeadersButIgnoreDownstreamHeadersAndUseXForwarded_ForwardedAndXForwardedHeadersNotKeptAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
+            headersOptions.IgnoreAllDownstreamHeaders = true;
+            headersOptions.IgnoreForwarded = false;
+            headersOptions.UseXForwarded = true;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(Headers.Names.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
+            context.Request.Headers.Add(Headers.Names.XForwardedFor, "some-for");
+            context.Request.Headers.Add(Headers.Names.XForwardedHost, "some-host");
+            context.Request.Headers.Add(Headers.Names.XForwardedProto, "some-proto");
+            context.Request.Host = new HostString("some-new-host");
+            context.Request.Scheme = "https";
+            context.Connection.RemoteIpAddress = IpV4Sample;
+            context.Connection.LocalIpAddress = IpV4Sample2;
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(Headers.Names.XForwardedFor).Should().BeEquivalentTo(
+                new[]
+                {
+                    IpV4Sample.ToString()
+                });
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_HasXForwardHeadersButIgnoreDownstreamHeaders_ExistingXForwardedHeaderIsNotKeptAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
+            headersOptions.IgnoreAllDownstreamHeaders = true;
+            headersOptions.IgnoreForwarded = false;
+            headersOptions.UseXForwarded = false;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(Headers.Names.XForwardedFor, "some-for");
+            context.Request.Headers.Add(Headers.Names.XForwardedHost, "some-host");
+            context.Request.Headers.Add(Headers.Names.XForwardedProto, "some-proto");
+            context.Request.Host = new HostString("some-new-host");
+            context.Request.Scheme = "https";
+            context.Connection.RemoteIpAddress = IpV4Sample;
+            context.Connection.LocalIpAddress = IpV4Sample2;
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(Headers.Names.Forwarded).Should().BeEquivalentTo(
+                new[]
+                {
+                    "by=4.5.6.7;for=0.1.2.3;host=some-new-host;proto=https"
+                });
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_UseXForwardedAndDoesntHaveForwardedAndXForwardedHeaders_XForwardedHeadersCreatedAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
+            headersOptions.IgnoreForwarded = false;
+            headersOptions.UseXForwarded = true;
+
+            var context = new DefaultHttpContext();
+            context.Connection.RemoteIpAddress = IpV4Sample;
+            context.Connection.LocalIpAddress = IpV4Sample2;
+            context.Request.Host = new HostString("some-host");
+            context.Request.Scheme = "http";
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(XForwardedForHeader).SingleOrDefault().Should().Be(IpV4Sample.ToString());
+            message.Headers.GetValues(XForwardedHostHeader).SingleOrDefault().Should().Be("some-host");
+            message.Headers.GetValues(XForwardedProtoHeader).SingleOrDefault().Should().Be("http");
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_UseXForwardedAndHasForwarded_XForwardedHeaderCreatedAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
+            headersOptions.IgnoreForwarded = false;
+            headersOptions.UseXForwarded = true;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(Headers.Names.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
+            context.Connection.RemoteIpAddress = IpV4Sample;
+            context.Connection.LocalIpAddress = IpV4Sample2;
+            context.Request.Host = new HostString("some-host");
+            context.Request.Scheme = "http";
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(XForwardedForHeader).SingleOrDefault().Should().Be($"192.0.2.60, 192.0.2.12, {IpV4Sample}");
+            message.Headers.GetValues(XForwardedHostHeader).SingleOrDefault().Should().Be("some-host");
+            message.Headers.GetValues(XForwardedProtoHeader).SingleOrDefault().Should().Be("http");
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_UseXForwardedHasXForwarded_XForwardedHeaderCreatedAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
+            headersOptions.IgnoreForwarded = false;
+            headersOptions.UseXForwarded = true;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(Headers.Names.XForwardedFor, "some-for");
+            context.Request.Headers.Add(Headers.Names.XForwardedHost, "some-host");
+            context.Request.Headers.Add(Headers.Names.XForwardedProto, "some-proto");
+            context.Connection.RemoteIpAddress = IpV4Sample;
+            context.Connection.LocalIpAddress = IpV4Sample2;
+            context.Request.Host = new HostString("some-host");
+            context.Request.Scheme = "http";
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(XForwardedForHeader).SingleOrDefault().Should().Be($"some-for, {IpV4Sample}");
+            message.Headers.GetValues(XForwardedHostHeader).SingleOrDefault().Should().Be("some-host");
+            message.Headers.GetValues(XForwardedProtoHeader).SingleOrDefault().Should().Be("http");
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_UseXForwardedHasXForwardedAndForwarded_XForwardedHeaderCreatedAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
+            headersOptions.IgnoreForwarded = false;
+            headersOptions.UseXForwarded = true;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(Headers.Names.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
+            context.Request.Headers.Add(Headers.Names.XForwardedFor, "some-for");
+            context.Request.Headers.Add(Headers.Names.XForwardedHost, "some-host");
+            context.Request.Headers.Add(Headers.Names.XForwardedProto, "some-proto");
+            context.Connection.RemoteIpAddress = IpV4Sample;
+            context.Connection.LocalIpAddress = IpV4Sample2;
+            context.Request.Host = new HostString("some-host");
+            context.Request.Scheme = "http";
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(XForwardedForHeader).SingleOrDefault().Should().Be($"some-for, 192.0.2.60, 192.0.2.12, {IpV4Sample}");
+            message.Headers.GetValues(XForwardedHostHeader).SingleOrDefault().Should().Be("some-host");
+            message.Headers.GetValues(XForwardedProtoHeader).SingleOrDefault().Should().Be("http");
+        }
+
+        [TestMethod]
         public async Task SetHeadersAsync_HasForwardHeaders_ExistingForwardedHeaderIsKeptAsync()
         {
             // Arrange
@@ -258,63 +496,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_HasForwardHeadersButIgnoreDownstreamHeaders_ExistingForwardedHeaderIsNotKeptAsync()
-        {
-            // Arrange
-            var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreAllDownstreamHeaders = true;
-            headersOptions.IgnoreForwarded = false;
-            headersOptions.UseXForwarded = false;
-
-            var context = new DefaultHttpContext();
-            context.Request.Headers.Add(Headers.Names.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
-            context.Request.Host = new HostString("some-new-host");
-            context.Request.Scheme = "https";
-            context.Connection.RemoteIpAddress = IpV4Sample;
-            context.Connection.LocalIpAddress = IpV4Sample2;
-
-            // Act
-            var message = await SetHeadersAsync(context, options);
-
-            // Assert
-            message.Headers.GetValues(Headers.Names.Forwarded).Should().BeEquivalentTo(
-                new[]
-                {
-                    "by=4.5.6.7;for=0.1.2.3;host=some-new-host;proto=https"
-                });
-        }
-
-        [TestMethod]
-        public async Task SetHeadersAsync_HasForwardHeadersButIgnoreDownstreamHeadersAndUseXForwarded_ExistingForwardedHeaderIsNotKeptAsync()
-        {
-            // Arrange
-            var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreAllDownstreamHeaders = true;
-            headersOptions.IgnoreForwarded = false;
-            headersOptions.UseXForwarded = true;
-
-            var context = new DefaultHttpContext();
-            context.Request.Headers.Add(Headers.Names.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
-            context.Request.Host = new HostString("some-new-host");
-            context.Request.Scheme = "https";
-            context.Connection.RemoteIpAddress = IpV4Sample;
-            context.Connection.LocalIpAddress = IpV4Sample2;
-
-            // Act
-            var message = await SetHeadersAsync(context, options);
-
-            // Assert
-            message.Headers.GetValues(Headers.Names.XForwardedFor).Should().BeEquivalentTo(
-                new[]
-                {
-                    IpV4Sample.ToString()
-                });
-        }
-
-        [TestMethod]
-        public async Task SetHeadersAsync_HasXForwardHeaders_ExistingForwardedHeaderIsKeptAsync()
+        public async Task SetHeadersAsync_HasXForwardHeaders_XForwardHeaderIsConvertedToForwardHeaderAsync()
         {
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
@@ -344,16 +526,17 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_HasXForwardHeadersButIgnoreDownstreamHeaders_ExistingForwardedHeaderIsNotKeptAsync()
+        public async Task SetHeadersAsync_HasForwardAndXForwardHeaders_XForwardHeaderIsConvertedToForwardHeaderAndExistingForwardHeaderIsKeptAsync()
         {
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreAllDownstreamHeaders = true;
+            headersOptions.IgnoreAllDownstreamHeaders = false;
             headersOptions.IgnoreForwarded = false;
             headersOptions.UseXForwarded = false;
 
             var context = new DefaultHttpContext();
+            context.Request.Headers.Add(Headers.Names.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
             context.Request.Headers.Add(Headers.Names.XForwardedFor, "some-for");
             context.Request.Headers.Add(Headers.Names.XForwardedHost, "some-host");
             context.Request.Headers.Add(Headers.Names.XForwardedProto, "some-proto");
@@ -369,122 +552,8 @@
             message.Headers.GetValues(Headers.Names.Forwarded).Should().BeEquivalentTo(
                 new[]
                 {
-                    "by=4.5.6.7;for=0.1.2.3;host=some-new-host;proto=https"
+                    "for=some-for;host=some-host;proto=some-proto, by=203.0.113.43;for=192.0.2.60;host=abc;proto=http, by=203.0.113.43;for=192.0.2.12;host=efg;proto=https, by=4.5.6.7;for=0.1.2.3;host=some-new-host;proto=https"
                 });
-        }
-
-        [TestMethod]
-        public async Task SetHeadersAsync_IgnoreForwarded_HeaderNotIncludedAsync()
-        {
-            // Arrange
-            var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreForwarded = true;
-            headersOptions.UseXForwarded = false;
-
-            var context = new DefaultHttpContext();
-            context.Connection.RemoteIpAddress = IpV4Sample;
-            context.Connection.LocalIpAddress = IpV4Sample2;
-
-            // Act
-            var message = await SetHeadersAsync(context, options);
-
-            // Assert
-            message.Headers.Contains(XForwardedForHeader).Should().BeFalse();
-            message.Headers.Contains(ForwardedHeader).Should().BeFalse();
-        }
-
-        [TestMethod]
-        public async Task SetHeadersAsync_IgnoreForwardedWithXForwarded_HeaderNotIncludedAsync()
-        {
-            // Arrange
-            var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreForwarded = true;
-            headersOptions.UseXForwarded = true;
-
-            var context = new DefaultHttpContext();
-            context.Connection.RemoteIpAddress = IpV4Sample;
-            context.Connection.LocalIpAddress = IpV4Sample2;
-
-            // Act
-            var message = await SetHeadersAsync(context, options);
-
-            // Assert
-            message.Headers.Contains(XForwardedForHeader).Should().BeFalse();
-            message.Headers.Contains(ForwardedHeader).Should().BeFalse();
-        }
-
-        [TestMethod]
-        public async Task SetHeadersAsync_NotIgnoreForwarded_HeaderIncludedAsync()
-        {
-            // Arrange
-            var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreForwarded = false;
-            headersOptions.UseXForwarded = false;
-
-            var context = new DefaultHttpContext();
-            context.Connection.RemoteIpAddress = IpV4Sample;
-            context.Connection.LocalIpAddress = IpV4Sample2;
-            context.Request.Host = new HostString("some-host");
-            context.Request.Scheme = "http";
-
-            // Act
-            var message = await SetHeadersAsync(context, options);
-
-            // Assert
-            message.Headers.GetValues(ForwardedHeader).SingleOrDefault().Should().Be("by=4.5.6.7;for=0.1.2.3;host=some-host;proto=http");
-            message.Headers.Contains(XForwardedForHeader).Should().BeFalse();
-        }
-
-        [TestMethod]
-        public async Task SetHeadersAsync_UseXForwarded_HeaderIncludedAsync()
-        {
-            // Arrange
-            var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreForwarded = false;
-            headersOptions.UseXForwarded = true;
-
-            var context = new DefaultHttpContext();
-            context.Connection.RemoteIpAddress = IpV4Sample;
-            context.Connection.LocalIpAddress = IpV4Sample2;
-            context.Request.Host = new HostString("some-host");
-            context.Request.Scheme = "http";
-
-            // Act
-            var message = await SetHeadersAsync(context, options);
-
-            // Assert
-            message.Headers.GetValues(XForwardedForHeader).SingleOrDefault().Should().Be(IpV4Sample.ToString());
-            message.Headers.GetValues(XForwardedHostHeader).SingleOrDefault().Should().Be("some-host");
-            message.Headers.GetValues(XForwardedProtoHeader).SingleOrDefault().Should().Be("http");
-        }
-
-        [TestMethod]
-        public async Task SetHeadersAsync_HasForwardedAndUseXForwarded_HeaderIncludedAsync()
-        {
-            // Arrange
-            var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreForwarded = false;
-            headersOptions.UseXForwarded = true;
-
-            var context = new DefaultHttpContext();
-            context.Request.Headers.Add(Headers.Names.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
-            context.Connection.RemoteIpAddress = IpV4Sample;
-            context.Connection.LocalIpAddress = IpV4Sample2;
-            context.Request.Host = new HostString("some-host");
-            context.Request.Scheme = "http";
-
-            // Act
-            var message = await SetHeadersAsync(context, options);
-
-            // Assert
-            message.Headers.GetValues(XForwardedForHeader).SingleOrDefault().Should().Be($"192.0.2.60, 192.0.2.12, {IpV4Sample}");
-            message.Headers.GetValues(XForwardedHostHeader).SingleOrDefault().Should().Be("some-host");
-            message.Headers.GetValues(XForwardedProtoHeader).SingleOrDefault().Should().Be("http");
         }
 
         [TestMethod]
@@ -504,7 +573,11 @@
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(XForwardedForHeader).Should().BeEquivalentTo(new[] { "1020:3040:5060:7080:9010:1112:1314:1516" });
+            message.Headers.GetValues(XForwardedForHeader).Should().BeEquivalentTo(
+                new[]
+                {
+                    "1020:3040:5060:7080:9010:1112:1314:1516"
+                });
         }
 
         [TestMethod]
@@ -524,7 +597,11 @@
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(ForwardedHeader).Should().BeEquivalentTo(new[] { "by=\"[1020:3040:5060:7080:9010:1112:1314:1516]\";for=\"[1020:3040:5060:7080:9010:1112:1314:1516]\"" });
+            message.Headers.GetValues(ForwardedHeader).Should().BeEquivalentTo(
+                new[]
+                {
+                    "by=\"[1020:3040:5060:7080:9010:1112:1314:1516]\";for=\"[1020:3040:5060:7080:9010:1112:1314:1516]\""
+                });
         }
     }
 }
