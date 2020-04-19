@@ -20,6 +20,12 @@
         private const string CommaAndSpace = ", ";
         private const char Semicolon = ';';
         private const char Comma = ',';
+        private static readonly HashSet<string> ValidWellKnownForwardedIdentifers = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "_hidden",
+            "_secret",
+            "unknown"
+        };
 
         protected virtual void AddForwardedHeaders(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
@@ -95,6 +101,9 @@
                         builder = new StringBuilder();
                     else
                         builder.Append(CommaAndSpace);
+
+                    if (TryParseIpV6Address(@for, out var ip))
+                        @for = ip.ToString();
 
                     builder.Append(@for);
                 }
@@ -186,14 +195,14 @@
             {
                 AppendSeperator(builder);
                 builder.Append(ForwardedBy);
-                builder.Append(value.By);
+                builder.Append(GetValidForwardedIdentifier(value.By!));
             }
 
             if (hasFor)
             {
                 AppendSeperator(builder);
                 builder.Append(ForwardedFor);
-                builder.Append(value.For);
+                builder.Append(GetValidForwardedIdentifier(value.For!));
             }
 
             if (hasHost)
@@ -234,6 +243,21 @@
             }
         }
 
+        /// <summary>
+        /// This can be either:
+        /// <list type="bullet">
+        /// <item>an IP address(v4 or v6, optionally with a port, and ipv6 quoted and enclosed in square brackets),</item>
+        /// <item>an obfuscated identifier (such as <c>"_hidden"</c> or <c>"_secret"</c>),</item>
+        /// <item>or <c>"unknown"</c> when the preceding entity is not known (and we still want to indicate that forwarding of the request was made).</item>
+        /// </list>
+        /// </summary>
+        private static string GetValidForwardedIdentifier(string identifier)
+        {
+            return IPAddress.TryParse(identifier, out var ip) && ip.AddressFamily == AddressFamily.InterNetworkV6
+                ? CreateValidForwardedIpAddressV6(ip)
+                : identifier;
+        }
+
         [return: NotNullIfNotNull("ip")]
         private static string? CreateValidForwardedIpAddress(IPAddress? ip)
         {
@@ -241,9 +265,12 @@
                 return null;
 
             return ip.AddressFamily == AddressFamily.InterNetworkV6
-                ? $"\"[{ip}]\""
+                ? CreateValidForwardedIpAddressV6(ip)
                 : ip.ToString();
         }
+
+        private static string CreateValidForwardedIpAddressV6(IPAddress ip)
+            => $"\"[{ip}]\"";
 
         // internal for testing
         internal static IEnumerable<ForwardedHeaderValue> GetCurrentForwardedHeaderValues(IHeaderDictionary headers)

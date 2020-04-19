@@ -18,6 +18,7 @@
         private static readonly IPAddress IpV4Sample = new IPAddress(new byte[] { 0, 1, 2, 3 });
         private static readonly IPAddress IpV4Sample2 = new IPAddress(new byte[] { 4, 5, 6, 7 });
         private static readonly IPAddress IpV6Sample = new IPAddress(new byte[] { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80, 0x90, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 });
+        private static readonly IPAddress IpV6Sample2 = new IPAddress(new byte[] { 0xa0, 0xb0, 0xc0, 0xd0, 0xe0, 0xf0, 0x1a, 0x2a, 0x3a, 0x4a, 0x5a, 0x6a, 0x7a, 0x8a, 0x9a, 0x0a });
 
         [TestMethod]
         public void GetCurrentForwardedHeaderValues_MixedTests()
@@ -554,6 +555,63 @@
                 {
                     "for=some-for;host=some-host;proto=some-proto, by=203.0.113.43;for=192.0.2.60;host=abc;proto=http, by=203.0.113.43;for=192.0.2.12;host=efg;proto=https, by=4.5.6.7;for=0.1.2.3;host=some-new-host;proto=https"
                 });
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_HasForwardAndXForwardHeadersWithIpV6_IpV6IsCorrectlyFormattedAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
+            headersOptions.IgnoreAllDownstreamHeaders = false;
+            headersOptions.IgnoreForwarded = false;
+            headersOptions.UseXForwarded = false;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(Headers.Names.Forwarded, $"for=192.0.2.60;proto=http;by=\"[{IpV6Sample}]:50\";host=abc, for=\"[{IpV6Sample}]\";proto=https;by=203.0.113.43;host=efg, for={IpV6Sample}");
+            context.Request.Headers.Add(Headers.Names.XForwardedFor, IpV6Sample.ToString());
+            context.Request.Headers.Add(Headers.Names.XForwardedHost, "some-host");
+            context.Request.Headers.Add(Headers.Names.XForwardedProto, "some-proto");
+            context.Request.Host = new HostString("some-new-host");
+            context.Request.Scheme = "https";
+            context.Connection.RemoteIpAddress = IpV4Sample;
+            context.Connection.LocalIpAddress = IpV4Sample2;
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(Headers.Names.Forwarded).Should().BeEquivalentTo(
+                new[]
+                {
+                    "for=\"[1020:3040:5060:7080:9010:1112:1314:1516]\";host=some-host;proto=some-proto, by=\"[1020:3040:5060:7080:9010:1112:1314:1516]:50\";for=192.0.2.60;host=abc;proto=http, by=203.0.113.43;for=\"[1020:3040:5060:7080:9010:1112:1314:1516]\";host=efg;proto=https, for=\"[1020:3040:5060:7080:9010:1112:1314:1516]\", by=4.5.6.7;for=0.1.2.3;host=some-new-host;proto=https"
+                });
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_HasForwardAndXForwardHeadersWithIpV6AndUseXForwarded_IpV6IsCorrectlyFormattedAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
+            headersOptions.IgnoreAllDownstreamHeaders = false;
+            headersOptions.IgnoreForwarded = false;
+            headersOptions.UseXForwarded = true;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(Headers.Names.Forwarded, $"for=\"[{IpV6Sample2}]\";proto=https;by=203.0.113.43");
+            context.Request.Headers.Add(Headers.Names.XForwardedFor, IpV6Sample.ToString());
+            context.Request.Host = new HostString("some-new-host");
+            context.Request.Scheme = "https";
+            context.Connection.RemoteIpAddress = IpV4Sample;
+            context.Connection.LocalIpAddress = IpV4Sample2;
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(XForwardedForHeader).SingleOrDefault().Should().Be($"{IpV6Sample}, {IpV6Sample2}, {IpV4Sample}");
+            message.Headers.Contains(Headers.Names.Forwarded).Should().BeFalse();
         }
 
         [TestMethod]
