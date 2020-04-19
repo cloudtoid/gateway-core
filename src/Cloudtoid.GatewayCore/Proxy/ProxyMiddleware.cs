@@ -55,15 +55,18 @@
 
             logger.LogDebug("Reverse proxy received a new inbound downstream HTTP '{0}' request.", httpContext.Request.Method);
 
-            if (routeResolver.TryResolve(httpContext, out var route))
-                await ProxyAsync(httpContext, route);
-
+            await ProxyAsync(httpContext);
             await next.Invoke(httpContext);
         }
 
-        private async Task ProxyAsync(HttpContext httpContext, Route route)
+        private async Task ProxyAsync(HttpContext httpContext)
         {
-            logger.LogDebug("Reverse proxy found a matching route for the inbound downstream HTTP '{0}' request.", httpContext.Request.Method);
+            if (!routeResolver.TryResolve(httpContext, out var route))
+                return;
+
+            logger.LogDebug(
+                "Reverse proxy found a matching route for the inbound downstream HTTP '{0}' request.",
+                httpContext.Request.Method);
 
             var context = new ProxyContext(
                 hostProvider,
