@@ -86,9 +86,6 @@
                 return;
 
             var headers = context.Request.Headers;
-            if (headers is null)
-                return;
-
             var allowHeadersWithEmptyValue = options.AllowHeadersWithEmptyValue;
             var allowHeadersWithUnderscoreInName = options.AllowHeadersWithUnderscoreInName;
             var correlationIdHeader = context.CorrelationIdHeader;

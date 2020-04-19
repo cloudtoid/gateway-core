@@ -615,6 +615,26 @@
         }
 
         [TestMethod]
+        public async Task SetHeadersAsync_UseXForwardedButNullRemoteIpAddress_XForwardedForIsNotAddedAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
+            headersOptions.IgnoreAllDownstreamHeaders = false;
+            headersOptions.IgnoreForwarded = false;
+            headersOptions.UseXForwarded = true;
+
+            var context = new DefaultHttpContext();
+            context.Connection.RemoteIpAddress = null;
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.Contains(XForwardedForHeader).Should().BeFalse();
+        }
+
+        [TestMethod]
         public async Task SetHeadersAsync_IpAddressV6InXForwarded_IsNotWrappedInBracketsAsync()
         {
             // Arrange

@@ -258,6 +258,27 @@
         }
 
         [TestMethod]
+        public async Task SetHeadersAsync_IncludeExternalAddressButNullRemoteAddress_HeaderNotIncludedAsync()
+        {
+            // Arrange
+            const string HeaderName = "x-gwcore-external-address";
+
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
+            headersOptions.IncludeExternalAddress = true;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(HeaderName, "3.2.1.0");
+            context.Connection.RemoteIpAddress = null;
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.Contains(HeaderName).Should().BeFalse();
+        }
+
+        [TestMethod]
         public async Task SetHeadersAsync_NotIncludeExternalAddress_HeaderNotIncludedAsync()
         {
             // Arrange
