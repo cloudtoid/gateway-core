@@ -64,15 +64,15 @@
                 return;
             }
 
-            if (context.Response.ContentLength <= 0)
+            var contentLength = upstreamResponse.Content.Headers?.ContentLength;
+            if (contentLength != null && contentLength <= 0)
             {
-                Logger.LogDebug("The inbound upstream response has a content length of zero.");
+                Logger.LogDebug("The inbound upstream response has a content length that is less than or equal to zero.");
                 return;
             }
 
             await SetContentHeadersAsync(context, upstreamResponse, cancellationToken);
             await SetContentBodyAsync(context, upstreamResponse, cancellationToken);
-            await SetContentHeadersAsync(context, upstreamResponse, cancellationToken);
         }
 
         protected virtual async Task SetContentBodyAsync(
@@ -83,7 +83,8 @@
             var downstreamResponseStream = context.Response.Body;
 
             // TODO: the current version of HttpContent.CopyToAsync doesn't expose the cancellation-token
-            // However, they are working on fixing that. We should modify this code and pass in cancellationToken
+            // However, the .net team are working on fixing that. We should modify this code and pass in
+            // the cancellationToken
             await upstreamResponse.Content.CopyToAsync(downstreamResponseStream);
             await downstreamResponseStream.FlushAsync(cancellationToken);
         }
@@ -99,14 +100,10 @@
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var headers = upstreamResponse.Content?.Headers;
-            if (headers is null)
-                return Task.CompletedTask;
-
             var allowHeadersWithEmptyValue = options.AllowHeadersWithEmptyValue;
             var allowHeadersWithUnderscoreInName = options.AllowHeadersWithUnderscoreInName;
 
-            foreach (var header in headers)
+            foreach (var header in upstreamResponse.Content.Headers)
             {
                 var name = header.Key;
 

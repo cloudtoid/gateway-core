@@ -182,7 +182,7 @@
         {
             // Arrange
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(HeaderNames.ContentMD5, "some-value");
+            context.Request.Headers.Add(HeaderNames.ContentMD5, "Q2hlY2sgSW50ZWdyaXR5IQ==");
             var provider = new DropContentHeaderValuesProvider();
 
             // Act
@@ -202,7 +202,7 @@
             var services = new ServiceCollection();
 
             if (provider != null)
-                services.TryAddSingleton<IRequestContentHeaderValuesProvider>(provider);
+                services.TryAddSingleton(provider);
 
             services.AddTest().AddTestOptions(options);
             serviceProvider = services.BuildServiceProvider();

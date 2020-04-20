@@ -1,25 +1,34 @@
 ﻿namespace Cloudtoid.GatewayCore.UnitTests
 {
+    using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
+    using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Cloudtoid.GatewayCore;
     using Cloudtoid.GatewayCore.Downstream;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public sealed class ResponseContentTests
     {
+        private IServiceProvider? serviceProvider;
+
         [TestMethod]
         public async Task SetContentAsync_HasContentBody_BodyIsCopiedAsync()
         {
             // Arrange
             const string value = "some-value";
-            var message = new HttpResponseMessage();
-            message.Content = new StringContent(value);
+            var message = new HttpResponseMessage
+            {
+                Content = new StringContent(value),
+            };
             var context = new DefaultHttpContext();
             context.Response.Body = new MemoryStream();
 
@@ -29,9 +38,65 @@
             // Assert
             response.Body.Position = 0;
             using (var reader = new StreamReader(response.Body))
-            {
                 (await reader.ReadToEndAsync()).Should().Be(value);
-            }
+        }
+
+        [TestMethod]
+        public async Task SetContentAsync_NullContent_BodyIsCopiedAsync()
+        {
+            // Arrange
+            var message = new HttpResponseMessage
+            {
+                Content = null
+            };
+            var context = new DefaultHttpContext();
+            context.Response.Body = new MemoryStream();
+
+            // Act
+            var response = await SetContentAsync(message, context);
+
+            // Assert
+            response.Body.Position = 0;
+            using (var reader = new StreamReader(response.Body))
+                (await reader.ReadToEndAsync()).Should().BeEmpty();
+        }
+
+        [TestMethod]
+        public async Task SetContentAsync_ZeroContentLength_BodyIsCopiedAsync()
+        {
+            // Arrange
+            var message = new HttpResponseMessage
+            {
+                Content = new StringContent(string.Empty),
+            };
+            var context = new DefaultHttpContext();
+            context.Response.Body = new MemoryStream();
+
+            // Act
+            var response = await SetContentAsync(message, context);
+
+            // Assert
+            response.Body.Position = 0;
+            using (var reader = new StreamReader(response.Body))
+                (await reader.ReadToEndAsync()).Should().BeEmpty();
+        }
+
+        [TestMethod]
+        public async Task SetContentAsync_HeaderRejectedByIResponseContentHeaderValuesProvider_LogsInfoAsync()
+        {
+            // Arrange
+            var header = HeaderNames.ContentMD5;
+            const string value = "Q2hlY2sgSW50ZWdyaXR5IQ==";
+            var message = CreateHttpResponseMessage((header, value));
+            var provider = new DropContentHeaderValuesProvider();
+
+            // Act
+            var response = await SetContentAsync(message, provider: provider);
+
+            // Assert
+            response.Headers.ContainsKey(header).Should().BeFalse();
+            var logger = (Logger<ResponseContentSetter>)serviceProvider.GetRequiredService<ILogger<ResponseContentSetter>>();
+            logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase("Header 'Content-MD5' is not added. This was instructed by IResponseContentHeaderValuesProvider.TryGetHeaderValues.")).Should().BeTrue();
         }
 
         [TestMethod]
@@ -72,9 +137,7 @@
         {
             // Arrange
             var header = HeaderNames.TransferEncoding;
-            var message = CreateHttpResponseMessage();
-            const string value = "some-value";
-            message.Content.Headers.TryAddWithoutValidation(header, value);
+            var message = CreateHttpResponseMessage((header, "chunked"));
 
             // Act
             var response = await SetContentAsync(message);
@@ -91,6 +154,20 @@
             var message = CreateHttpResponseMessage();
             const string value = "some-value";
             message.Headers.Add(header, value);
+
+            // Act
+            var response = await SetContentAsync(message);
+
+            // Assert
+            response.Headers.ContainsKey(header).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task SetContentAsync_HasEmptyContentHeader_NoContentHeaderAddedAsync()
+        {
+            // Arrange
+            var header = HeaderNames.ContentLanguage;
+            var message = CreateHttpResponseMessage((header, string.Empty));
 
             // Act
             var response = await SetContentAsync(message);
@@ -124,25 +201,50 @@
             {
                 Content = new StringContent("test")
             };
+
             var headers = message.Content.Headers;
             foreach (var (name, value) in contentHeaders)
-                headers.Add(name, value);
+                headers.TryAddWithoutValidation(name, value);
 
             return message;
         }
 
-        private static async Task<HttpResponse> SetContentAsync(
+        private async Task<HttpResponse> SetContentAsync(
             HttpResponseMessage message,
             HttpContext? httpContext = null,
-            GatewayOptions? options = null)
+            GatewayOptions? options = null,
+            IResponseContentHeaderValuesProvider? provider = null)
         {
-            var services = new ServiceCollection().AddTest().AddTestOptions(options);
-            var serviceProvider = services.BuildServiceProvider();
+            var services = new ServiceCollection();
+
+            if (provider != null)
+                services.TryAddSingleton(provider);
+
+            services.AddTest().AddTestOptions(options);
+            serviceProvider = services.BuildServiceProvider();
             var setter = serviceProvider.GetRequiredService<IResponseContentSetter>();
             var context = serviceProvider.GetProxyContext(httpContext);
 
             await setter.SetContentAsync(context, message, default);
             return context.Response;
+        }
+
+        private sealed class DropContentHeaderValuesProvider : ResponseContentHeaderValuesProvider
+        {
+            public override bool TryGetHeaderValues(
+                ProxyContext context,
+                string name,
+                string[] downstreamValues,
+                [NotNullWhen(true)] out string[]? upstreamValues)
+            {
+                if (name.EqualsOrdinalIgnoreCase(HeaderNames.ContentMD5))
+                {
+                    upstreamValues = null;
+                    return false;
+                }
+
+                return base.TryGetHeaderValues(context, name, downstreamValues, out upstreamValues);
+            }
         }
     }
 }

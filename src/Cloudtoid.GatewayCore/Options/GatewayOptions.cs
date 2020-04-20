@@ -109,10 +109,10 @@
                         /// If false, it will set "Forwarded" header or "x-forwarded-*" headers. Also see <see cref="UseXForwarded"/>.
                         /// The information included in this header(s) consist of:
                         /// <list type="bullet">
-                        /// <item>By: The interface where the request came in to the proxy server.</item>
-                        /// <item>For: The client that initiated the request and subsequent proxies in a chain of proxies.</item>
-                        /// <item>Host: The Host request header field as received by the proxy.</item>
-                        /// <item>Proto: Indicates which protocol was used to make the request (typically "HTTP" or "HTTPS").</item>
+                        /// <item><term>By</term><description>The interface where the request came in to the proxy server.</description></item>
+                        /// <item><term>For</term><description>The client that initiated the request and subsequent proxies in a chain of proxies.</description></item>
+                        /// <item><term>Host</term><description>The Host request header field as received by the proxy.</description></item>
+                        /// <item><term>Proto</term><description>Indicates which protocol was used to make the request (typically "HTTP" or "HTTPS").</description></item>
                         /// </list>
                         /// The default value is <c>false</c>.
                         /// </summary>
