@@ -190,7 +190,7 @@
 
             // Assert
             var logger = (Logger<RequestContentSetter>)serviceProvider.GetRequiredService<ILogger<RequestContentSetter>>();
-            logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase("Header 'Content-MD5' is not added. This was instructed by the IRequestContentHeaderValuesProvider.TryGetHeaderValues.")).Should().BeTrue();
+            logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase("Header 'Content-MD5' is not added. This was instructed by IRequestContentHeaderValuesProvider.TryGetHeaderValues.")).Should().BeTrue();
         }
 
         private async Task<HttpRequestMessage> SetContentAsync(

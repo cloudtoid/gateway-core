@@ -132,7 +132,7 @@
             }
 
             Logger.LogInformation(
-                "Header '{0}' is not added. This was instructed by the {1}.{2}.",
+                "Header '{0}' is not added. This was instructed by {1}.{2}.",
                 name,
                 nameof(IRequestContentHeaderValuesProvider),
                 nameof(IRequestContentHeaderValuesProvider.TryGetHeaderValues));
