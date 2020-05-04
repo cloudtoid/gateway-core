@@ -182,12 +182,27 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_HasContentHeaders_ContentHeadersNotIncludedAsync()
+        public async Task SetHeadersAsync_HasContentHeader_ContentHeaderNotIncludedAsync()
         {
             // Arrange
             var context = new DefaultHttpContext();
             var header = HeaderNames.ContentType;
             context.Request.Headers.Add(header, "some-value");
+
+            // Act
+            var message = await SetHeadersAsync(context);
+
+            // Assert
+            message.Headers.TryGetValues(header, out _).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_HasStandardHopByHopeHeader_HopByHopeHeaderNotIncludedAsync()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            var header = HeaderNames.KeepAlive;
+            context.Request.Headers.Add(header, "timeout=5");
 
             // Act
             var message = await SetHeadersAsync(context);

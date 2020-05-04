@@ -62,7 +62,8 @@
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (upstreamResponse.TrailingHeaders is null)
+            var headers = upstreamResponse.TrailingHeaders;
+            if (headers is null)
                 return Task.CompletedTask;
 
             if (!ResponseTrailerExtensions.SupportsTrailers(context.Response))
@@ -70,7 +71,6 @@
 
             var allowHeadersWithEmptyValue = options.AllowHeadersWithEmptyValue;
             var allowHeadersWithUnderscoreInName = options.AllowHeadersWithUnderscoreInName;
-            var headers = upstreamResponse.TrailingHeaders;
 
             foreach (var header in headers)
             {

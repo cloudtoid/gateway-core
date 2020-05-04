@@ -23,7 +23,7 @@
             HeaderNames.Warning,
         };
 
-        private static readonly ISet<string> ContentHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        internal static readonly ISet<string> ContentHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             HeaderNames.Allow,
             HeaderNames.ContentDisposition,
@@ -38,7 +38,7 @@
             HeaderNames.LastModified,
         };
 
-        private static readonly ISet<string> RequestHeaders = new HashSet<string>(GeneralHeaders.Concat(ContentHeaders), StringComparer.OrdinalIgnoreCase)
+        internal static readonly ISet<string> RequestHeaders = new HashSet<string>(GeneralHeaders.Concat(ContentHeaders), StringComparer.OrdinalIgnoreCase)
         {
             HeaderNames.Accept,
             HeaderNames.AcceptCharset,
@@ -64,7 +64,7 @@
             HeaderNames.UserAgent,
         };
 
-        private static readonly ISet<string> ResponseHeaders = new HashSet<string>(GeneralHeaders.Concat(ContentHeaders), StringComparer.OrdinalIgnoreCase)
+        internal static readonly ISet<string> ResponseHeaders = new HashSet<string>(GeneralHeaders.Concat(ContentHeaders), StringComparer.OrdinalIgnoreCase)
         {
             HeaderNames.Status,
             HeaderNames.AcceptRanges,
@@ -80,7 +80,7 @@
             HeaderNames.WWWAuthenticate,
         };
 
-        private static readonly ISet<string> NonTrailingHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        internal static readonly ISet<string> NonTrailingHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             HeaderNames.Age,
             HeaderNames.Authorization,
@@ -117,6 +117,18 @@
             HeaderNames.WWWAuthenticate,
         };
 
+        internal static readonly ISet<string> StandardHopByHopeHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            HeaderNames.KeepAlive,
+            HeaderNames.TransferEncoding,
+            HeaderNames.TE,
+            HeaderNames.Connection,
+            HeaderNames.Trailer,
+            HeaderNames.Upgrade,
+            HeaderNames.ProxyAuthenticate,
+            HeaderNames.ProxyAuthorization,
+        };
+
         internal static bool IsContentHeader(string headerName)
             => ContentHeaders.Contains(headerName);
 
@@ -129,7 +141,15 @@
         internal static bool IsNonTrailingHeader(string headerName)
             => NonTrailingHeaders.Contains(headerName);
 
-        internal static bool IsCustomHeader(string headerName)
-            => headerName.StartsWithOrdinalIgnoreCase("x");
+        /// <summary>
+        /// These are the standard hop-by-hop headers that must be consumed by the proxy and not passed on.
+        /// These headers are: Keep-Alive, Transfer-Encoding, TE, Connection, Trailer, Upgrade, Proxy-Authorization and Proxy-Authenticate
+        /// Except for the standard hop-by-hop headers, any hop-by-hop headers used by the message must be listed in the Connection header,
+        /// so that the first proxy knows it has to consume them and not forward them further. Standard hop-by-hop headers can be listed
+        /// too (it is often the case of Keep-Alive, but this is not mandatory).
+        /// See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Connection">here</a> for more information.
+        /// </summary>
+        internal static bool IsStandardHopByHopHeader(string headerName)
+            => StandardHopByHopeHeaders.Contains(headerName);
     }
 }
