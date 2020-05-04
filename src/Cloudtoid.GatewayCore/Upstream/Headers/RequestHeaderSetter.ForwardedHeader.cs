@@ -19,7 +19,6 @@
         private const string ForwardedHost = "host=";
         private const string CommaAndSpace = ", ";
         private const char Semicolon = ';';
-        private const char Comma = ',';
         private static readonly HashSet<string> ValidWellKnownForwardedIdentifers = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "_hidden",

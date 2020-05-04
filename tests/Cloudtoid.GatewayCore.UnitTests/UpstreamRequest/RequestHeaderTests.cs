@@ -596,5 +596,26 @@
             await setter.SetHeadersAsync(context, message, default);
             return message;
         }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_HasNonStandardHopByHopHeaders_HeadersNotIncludedAsync()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            var header = HeaderNames.Connection;
+            context.Request.Headers.Add(header, new string[] { HeaderNames.KeepAlive, "x-test1", "x-test2, x-test3" });
+            context.Request.Headers.Add("x-test1", "some-value");
+            context.Request.Headers.Add("x-test2", "some-value");
+            context.Request.Headers.Add("x-test3", "some-value");
+
+            // Act
+            var message = await SetHeadersAsync(context);
+
+            // Assert
+            message.Headers.TryGetValues(HeaderNames.KeepAlive, out _).Should().BeFalse();
+            message.Headers.TryGetValues("x-test1", out _).Should().BeFalse();
+            message.Headers.TryGetValues("x-test2", out _).Should().BeFalse();
+            message.Headers.TryGetValues("x-test3", out _).Should().BeFalse();
+        }
     }
 }

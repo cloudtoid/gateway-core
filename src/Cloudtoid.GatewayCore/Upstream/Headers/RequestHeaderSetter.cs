@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using System.Net.Http;
     using System.Threading;
@@ -29,6 +30,8 @@
     /// </example>
     public partial class RequestHeaderSetter : IRequestHeaderSetter
     {
+        private const char Comma = ',';
+
         /// <summary>
         /// This is a list of headers that should not be passed on to the upstream system. It consists of
         /// <list type="bullet">
@@ -103,6 +106,7 @@
             var allowHeadersWithUnderscoreInName = options.AllowHeadersWithUnderscoreInName;
             var correlationIdHeader = context.CorrelationIdHeader;
             var headersWithOverride = options.OverrideNames;
+            var nonStandardHopByHopHeaders = GetNonStandardHopByHopHeaders(context);
 
             foreach (var header in headers)
             {
@@ -118,11 +122,14 @@
                 if (HeaderTransferBlacklist.Contains(name))
                     continue;
 
-                if (name.EqualsOrdinalIgnoreCase(correlationIdHeader))
+                if (nonStandardHopByHopHeaders.Contains(name))
                     continue;
 
                 // If it has an override, we will not transfer its value
                 if (headersWithOverride.Contains(name))
+                    continue;
+
+                if (name.EqualsOrdinalIgnoreCase(correlationIdHeader))
                     continue;
 
                 AddHeaderValues(context, upstreamRequest, name, header.Value);
@@ -217,6 +224,24 @@
                 name,
                 nameof(IRequestHeaderValuesProvider),
                 nameof(IRequestHeaderValuesProvider.TryGetHeaderValues));
+        }
+
+        /// <summary>
+        /// Except for the standard hop-by-hop headers (Keep-Alive, Transfer-Encoding, TE, Connection, Trailer, Upgrade,
+        /// Proxy-Authorization and Proxy-Authenticate), any hop-by-hop headers used by the message must be listed in the
+        /// Connection header, so that the first proxy knows it has to consume them and not forward them further.
+        /// Standard hop-by-hop headers can be listed too (it is often the case of Keep-Alive, but this is not mandatory).
+        /// See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Connection">here</a> for more information.
+        /// </summary>
+        private static ISet<string> GetNonStandardHopByHopHeaders(ProxyContext context)
+        {
+            if (context.HttpContext.Request.Headers.TryGetValue(HeaderNames.Connection, out var values) && values.Count > 0)
+            {
+                var headers = values.SelectMany(v => v.Split(Comma, StringSplitOptions.RemoveEmptyEntries).Select(v => v.Trim()));
+                return new HashSet<string>(headers, StringComparer.OrdinalIgnoreCase);
+            }
+
+            return ImmutableHashSet<string>.Empty;
         }
 
         private static string? GetRemoteIpAddressOrDefault(ProxyContext context)
