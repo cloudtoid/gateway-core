@@ -513,11 +513,11 @@
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(HeaderNames.Via).SingleOrDefault().Should().Be("HTTP/1.1 gwcore");
+            message.Headers.GetValues(HeaderNames.Via).SingleOrDefault().Should().Be("1.1 gwcore");
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_ProxyNameNotsNull_ViaHeaderHasProxyNameAsync()
+        public async Task SetHeadersAsync_ProxyNameNotNull_ViaHeaderHasProxyNameAsync()
         {
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
@@ -530,7 +530,61 @@
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(HeaderNames.Via).SingleOrDefault().Should().Be("HTTP/2 some-proxy");
+            message.Headers.GetValues(HeaderNames.Via).SingleOrDefault().Should().Be("2.0 some-proxy");
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_ProxyNameNotNullWithExistingViaHeader_ViaHeaderHasProxyNameAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            options.Routes["/api/"].Proxy!.ProxyName = "some-proxy";
+
+            var context = new DefaultHttpContext();
+            context.Request.Protocol = "HTTP/2";
+            context.Request.Headers.Add(HeaderNames.Via, "1.0 test");
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new string[] { "1.0 test", "2.0 some-proxy" });
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_ProxyNameNotNullWithExistingViaHeaders_ViaHeaderHasProxyNameAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            options.Routes["/api/"].Proxy!.ProxyName = "some-proxy";
+
+            var context = new DefaultHttpContext();
+            context.Request.Protocol = "HTTP/2";
+            context.Request.Headers.Add(HeaderNames.Via, "1.0 test, 1.1 test2");
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new string[] { "1.0 test", "1.1 test2", "2.0 some-proxy" });
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_ProxyNameNotNullWithExistingViaSeparateHeaders_ViaHeaderHasProxyNameAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            options.Routes["/api/"].Proxy!.ProxyName = "some-proxy";
+
+            var context = new DefaultHttpContext();
+            context.Request.Protocol = "HTTP/2";
+            context.Request.Headers.Add(HeaderNames.Via, new string[] { "1.0 test", "1.1 test2" });
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new string[] { "1.0 test", "1.1 test2", "2.0 some-proxy" });
         }
 
         [TestMethod]

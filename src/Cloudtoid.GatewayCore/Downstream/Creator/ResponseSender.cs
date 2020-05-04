@@ -60,9 +60,8 @@
 
         private void SetReasonPhrase(ProxyContext context, HttpResponseMessage upstreamResponse)
         {
-            var httpVersion = HttpVersion.ParseOrDefault(context.Request.Protocol);
-            if (httpVersion is null || httpVersion >= HttpVersion.Version20)
-                return; // Reason phrase is not supported by HTTP/2.0 and higher
+            if (context.RequestHttpVersion >= HttpVersion.Version20)
+                return; // Reason phrase is not supported by HTTP/2 and higher
 
             var responseFeature = context.HttpContext.Features.Get<IHttpResponseFeature>();
             if (responseFeature is null || responseFeature.ReasonPhrase is null)

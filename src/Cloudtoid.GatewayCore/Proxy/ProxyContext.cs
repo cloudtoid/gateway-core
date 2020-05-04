@@ -1,5 +1,6 @@
 ﻿namespace Cloudtoid.GatewayCore
 {
+    using System;
     using System.Diagnostics;
     using Cloudtoid.GatewayCore.Host;
     using Cloudtoid.GatewayCore.Settings;
@@ -17,6 +18,7 @@
         private string? correlationIdHeader;
         private string? correlationId;
         private string? callId;
+        private Version? requestHttpVersion;
 
         internal ProxyContext(
             IHostProvider hostProvider,
@@ -57,6 +59,17 @@
 
         public string CallId
             => callId is null ? callId = traceIdProvider.CreateCallId(this) : callId;
+
+        public Version RequestHttpVersion
+        {
+            get
+            {
+                if (requestHttpVersion is null)
+                    requestHttpVersion = HttpVersion.ParseOrDefault(Request.Protocol) ?? HttpVersion.Version11;
+
+                return requestHttpVersion;
+            }
+        }
 
         internal RouteSettings Settings => Route.Settings;
 
