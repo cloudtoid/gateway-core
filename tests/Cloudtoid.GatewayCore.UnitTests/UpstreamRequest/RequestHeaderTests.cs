@@ -500,6 +500,40 @@
         }
 
         [TestMethod]
+        public async Task SetHeadersAsync_ProxyNameIsNull_DefaultViaHeaderAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            options.Routes["/api/"].Proxy!.ProxyName = null;
+
+            var context = new DefaultHttpContext();
+            context.Request.Protocol = "HTTP/1.1";
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(HeaderNames.Via).SingleOrDefault().Should().Be("HTTP/1.1 gwcore");
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_ProxyNameNotsNull_ViaHeaderHasProxyNameAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            options.Routes["/api/"].Proxy!.ProxyName = "some-proxy";
+
+            var context = new DefaultHttpContext();
+            context.Request.Protocol = "HTTP/2";
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(HeaderNames.Via).SingleOrDefault().Should().Be("HTTP/2 some-proxy");
+        }
+
+        [TestMethod]
         public async Task SetHeadersAsync_ProxyNameIsNull_HeaderNotIncludedAsync()
         {
             // Arrange
