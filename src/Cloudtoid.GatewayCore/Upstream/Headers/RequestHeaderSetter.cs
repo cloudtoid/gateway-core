@@ -237,7 +237,7 @@
         /// </summary>
         private static ISet<string> GetNonStandardHopByHopHeaders(ProxyContext context)
         {
-            if (context.HttpContext.Request.Headers.TryGetValue(HeaderNames.Connection, out var values) && values.Count > 0)
+            if (context.Request.Headers.TryGetValue(HeaderNames.Connection, out var values) && values.Count > 0)
             {
                 var headers = values.SelectMany(v => v.Split(Comma, StringSplitOptions.RemoveEmptyEntries).Select(v => v.Trim()));
                 return new HashSet<string>(headers, StringComparer.OrdinalIgnoreCase);
