@@ -38,14 +38,13 @@
             var routeSettings = context.Route.Settings;
             routeSettings.Route.Should().Be("/api/");
 
+            context.ProxyName.Should().Be("some-proxy-name");
             routeSettings.Proxy!.GetCorrelationIdHeader(context).Should().Be("x-request-id");
 
             var request = routeSettings.Proxy.UpstreamRequest;
             request.GetHttpVersion(context).Should().Be(HttpVersion.Version30);
 
             var requestHeaders = request.Headers;
-            requestHeaders.TryGetProxyName(context, out var proxyName).Should().BeTrue();
-            proxyName.Should().Be("some-proxy-name");
             requestHeaders.GetDefaultHost(context).Should().Be("this-machine-name");
             requestHeaders.AllowHeadersWithEmptyValue.Should().BeTrue();
             requestHeaders.AllowHeadersWithUnderscoreInName.Should().BeTrue();
@@ -100,14 +99,13 @@
             var settings = context.Route.Settings;
 
             var expressionValue = Environment.MachineName;
+            context.ProxyName.Should().Be("ProxyName:" + expressionValue);
             settings.Proxy!.GetCorrelationIdHeader(context).Should().Be("CorrelationIdHeader:" + expressionValue);
 
             var request = settings.Proxy.UpstreamRequest;
             request.GetHttpVersion(context).Should().Be(HttpVersion.Version11);
 
             var requestHeaders = request.Headers;
-            requestHeaders.TryGetProxyName(context, out var proxyName).Should().BeTrue();
-            proxyName.Should().Be("ProxyName:" + expressionValue);
             requestHeaders.GetDefaultHost(context).Should().Be("DefaultHost:" + expressionValue);
             requestHeaders.Overrides.Select(h => (h.Name, Values: h.GetValues(context)))
                 .Should()
@@ -140,14 +138,13 @@
             settings.System.RouteCacheMaxCount.Should().Be(100000);
 
             var context = GetProxyContext(settings);
+            context.ProxyName.Should().Be("gwcore");
             var routeSettings = context.Route.Settings;
 
             var request = routeSettings.Proxy!.UpstreamRequest;
             request.GetHttpVersion(context).Should().Be(HttpVersion.Version20);
 
             var requestHeaders = request.Headers;
-            requestHeaders.TryGetProxyName(context, out var proxyName).Should().BeTrue();
-            proxyName.Should().Be("gwcore");
             requestHeaders.GetDefaultHost(context).Should().Be(Environment.MachineName);
             requestHeaders.AllowHeadersWithEmptyValue.Should().BeFalse();
             requestHeaders.AllowHeadersWithUnderscoreInName.Should().BeFalse();

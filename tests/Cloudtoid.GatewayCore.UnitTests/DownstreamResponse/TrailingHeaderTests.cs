@@ -1,15 +1,6 @@
 ﻿namespace Cloudtoid.GatewayCore.UnitTests
 {
-    using System.Collections.Generic;
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using Cloudtoid.GatewayCore.Downstream;
-    using FluentAssertions;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using NSubstitute;
 
     [TestClass]
     public sealed class TrailingHeaderTests

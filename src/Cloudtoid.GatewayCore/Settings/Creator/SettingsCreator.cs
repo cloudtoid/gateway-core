@@ -120,38 +120,43 @@
                 return null;
             }
 
-            var correlationIdHeader = string.IsNullOrWhiteSpace(options.CorrelationIdHeader) ? null : options.CorrelationIdHeader;
+            var correlationIdHeader = string.IsNullOrWhiteSpace(options.CorrelationIdHeader)
+                ? null
+                : options.CorrelationIdHeader;
 
             return new ProxySettings(
                 context,
                 options.To,
+                options.ProxyName,
                 correlationIdHeader,
-                Create(context, options.UpstreamRequest),
+                Create(context, options.UpstreamRequest, options.ProxyName != null),
                 Create(context, options.DownstreamResponse));
         }
 
         private UpstreamRequestSettings Create(
             RouteSettingsContext context,
-            UpstreamRequestOptions options)
+            UpstreamRequestOptions options,
+            bool includeProxyName)
         {
             return new UpstreamRequestSettings(
                 context,
                 options.HttpVersion,
-                Create(context, options.Headers),
+                Create(context, options.Headers, includeProxyName),
                 Create(context, options.Sender));
         }
 
         private UpstreamRequestHeadersSettings Create(
             RouteSettingsContext context,
-            UpstreamRequestOptions.HeadersOptions options)
+            UpstreamRequestOptions.HeadersOptions options,
+            bool includeProxyName)
         {
             return new UpstreamRequestHeadersSettings(
                 context,
                 options.DefaultHost,
-                options.ProxyName,
                 options.AllowHeadersWithEmptyValue,
                 options.AllowHeadersWithUnderscoreInName,
                 options.IncludeExternalAddress,
+                includeProxyName,
                 options.IgnoreAllDownstreamHeaders,
                 options.IgnoreHost,
                 options.IgnoreCorrelationId,

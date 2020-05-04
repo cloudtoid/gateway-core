@@ -2,22 +2,20 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
 
     public sealed class UpstreamRequestHeadersSettings
     {
         private readonly RouteSettingsContext context;
         private readonly string? defaultHostExpression;
-        private readonly string? proxyNameExpression;
 
         internal UpstreamRequestHeadersSettings(
             RouteSettingsContext context,
             string? defaultHostExpression,
-            string? proxyNameExpression,
             bool allowHeadersWithEmptyValue,
             bool allowHeadersWithUnderscoreInName,
             bool includeExternalAddress,
+            bool includeProxyName,
             bool ignoreAllDownstreamHeaders,
             bool ignoreHost,
             bool ignoreCorrelationId,
@@ -28,10 +26,10 @@
         {
             this.context = context;
             this.defaultHostExpression = defaultHostExpression;
-            this.proxyNameExpression = proxyNameExpression;
             AllowHeadersWithEmptyValue = allowHeadersWithEmptyValue;
             AllowHeadersWithUnderscoreInName = allowHeadersWithUnderscoreInName;
             IncludeExternalAddress = includeExternalAddress;
+            IncludeProxyName = includeProxyName;
             IgnoreAllDownstreamHeaders = ignoreAllDownstreamHeaders;
             IgnoreHost = ignoreHost;
             IgnoreCorrelationId = ignoreCorrelationId;
@@ -62,6 +60,8 @@
 
         public bool UseXForwarded { get; }
 
+        public bool IncludeProxyName { get; }
+
         public IReadOnlyList<HeaderOverride> Overrides { get; }
 
         public ISet<string> OverrideNames { get; }
@@ -72,27 +72,6 @@
             return string.IsNullOrWhiteSpace(eval)
                 ? Defaults.Route.Proxy.Upstream.Request.Headers.Host
                 : eval;
-        }
-
-        public bool TryGetProxyName(
-            ProxyContext proxyContext,
-            [NotNullWhen(true)] out string? proxyName)
-        {
-            if (proxyNameExpression is null)
-            {
-                proxyName = Defaults.Route.Proxy.Upstream.Request.Headers.ProxyName;
-                return true;
-            }
-
-            var eval = context.Evaluate(proxyContext, proxyNameExpression);
-            if (string.IsNullOrWhiteSpace(eval))
-            {
-                proxyName = null;
-                return false;
-            }
-
-            proxyName = eval;
-            return true;
         }
     }
 }

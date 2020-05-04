@@ -500,13 +500,12 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_ProxyNameIsEmpty_HeaderNotIncludedAsync()
+        public async Task SetHeadersAsync_ProxyNameIsNull_HeaderNotIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-gwcore-proxy-name";
             var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.ProxyName = string.Empty;
+            options.Routes["/api/"].Proxy!.ProxyName = null;
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, "some-value");
@@ -519,13 +518,12 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_ProxyNameSpecified_HeaderNotIncludedAsync()
+        public async Task SetHeadersAsync_RequestHasProxyNameHeader_HeaderNotIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-gwcore-proxy-name";
             var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.ProxyName = "edge";
+            options.Routes["/api/"].Proxy!.ProxyName = "edge";
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, "some-value");
@@ -538,7 +536,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_ProxyNameDefault_HeaderNotIncludedAsync()
+        public async Task SetHeadersAsync_RequestHasProxyNameHeaderAndNoProxyNameInSettings_HeaderNotIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-gwcore-proxy-name";
@@ -549,7 +547,25 @@
             var message = await SetHeadersAsync(context);
 
             // Assert
-            message.Headers.GetValues(HeaderName).SingleOrDefault().Should().Be("gwcore");
+            message.Headers.Contains(HeaderName).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_RequestHasProxyNameHeaderWithProxyNameInSetings_HeaderNotIncludedAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            options.Routes["/api/"].Proxy!.ProxyName = "new-value";
+
+            const string HeaderName = "x-gwcore-proxy-name";
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add(HeaderName, "some-value");
+
+            // Act
+            var message = await SetHeadersAsync(context, options: options);
+
+            // Assert
+            message.Headers.GetValues(HeaderName).SingleOrDefault().Should().Be("new-value");
         }
 
         [TestMethod]

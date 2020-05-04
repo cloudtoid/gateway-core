@@ -42,6 +42,15 @@
                 public string? To { get; set; }
 
                 /// <summary>
+                /// This is the name of this proxy which is used in the following scenarios:
+                /// <list type="bullet">
+                /// <item>This value is used in the Via HTTP header send on the outbound upstream request, and also the outbound downstream response. The default value is <c>"gwcore"</c></item>
+                /// <item>If this is not null, an "x-gwcore-proxy-name" header with this value is added to the outbound upstream request.</item>
+                /// </list>
+                /// </summary>
+                public string? ProxyName { get; set; }
+
+                /// <summary>
                 /// Gets or sets the header name for passing the correlation identifier.
                 /// The default value is "x-correlation-id".
                 /// </summary>
@@ -128,11 +137,6 @@
                         /// If the inbound downstream request does not have a HOST header, the value provided here will be used.
                         /// </summary>
                         public string? DefaultHost { get; set; }
-
-                        /// <summary>
-                        /// If this is not empty, an "x-gwcore-proxy-name" header with this value is added to the outbound upstream call.
-                        /// </summary>
-                        public string? ProxyName { get; set; }
 
                         /// <summary>
                         /// Extra headers to be appended to the outbound downstream response.

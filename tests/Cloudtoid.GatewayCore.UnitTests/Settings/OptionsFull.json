@@ -6,11 +6,11 @@
     "/api/": {
       "proxy": {
         "to": "http://localhost:85/upstream/",
+        "proxyName": "some-proxy-name",
         "correlationIdHeader": "x-request-id",
         "upstreamRequest": {
           "httpVersion": "3.0",
           "headers": {
-            "proxyName": "some-proxy-name",
             "defaultHost": "this-machine-name",
             "allowHeadersWithEmptyValue": true,
             "allowHeadersWithUnderscoreInName": true,

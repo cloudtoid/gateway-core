@@ -13,6 +13,7 @@
         private readonly IHostProvider hostProvider;
         private readonly ITraceIdProvider traceIdProvider;
         private string? host;
+        private string? proxyName;
         private string? correlationIdHeader;
         private string? correlationId;
         private string? callId;
@@ -44,6 +45,9 @@
 
         public string Host
             => host is null ? host = hostProvider.GetHost(this) : host;
+
+        public string ProxyName
+            => proxyName is null ? proxyName = ProxySettings.GetProxyName(this) : proxyName;
 
         public string CorrelationIdHeader
             => correlationIdHeader is null ? correlationIdHeader = traceIdProvider.GetCorrelationIdHeader(this) : correlationIdHeader;

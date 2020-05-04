@@ -82,6 +82,7 @@
             cancellationToken.ThrowIfCancellationRequested();
 
             AddDownstreamRequestHeadersToUpstream(context, upstreamRequest);
+            AddViaHeader(context, upstreamRequest);
             AddHostHeader(context, upstreamRequest);
             AddExternalAddressHeader(context, upstreamRequest);
             AddForwardedHeaders(context, upstreamRequest);
@@ -136,6 +137,19 @@
             }
         }
 
+        /// <summary>
+        /// The Via general header is added by proxies, both forward and reverse proxies, and can appear in
+        /// the request headers and the response headers. It is used for tracking message forwards, avoiding
+        /// request loops, and identifying the protocol capabilities of senders along the request/response chain.
+        /// See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via">here</a> for more information.
+        /// </summary>
+        protected virtual void AddViaHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
+        {
+            upstreamRequest.Headers.TryAddWithoutValidation(
+                HeaderNames.Via,
+                $"{context.Request.Protocol} {context.ProxyName}");
+        }
+
         protected virtual void AddHostHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
             if (context.ProxyUpstreamRequestHeadersSettings.IgnoreHost)
@@ -188,14 +202,14 @@
 
         protected virtual void AddProxyNameHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            if (!context.ProxyUpstreamRequestHeadersSettings.TryGetProxyName(context, out var name))
+            if (!context.ProxyUpstreamRequestHeadersSettings.IncludeProxyName)
                 return;
 
             AddHeaderValues(
                 context,
                 upstreamRequest,
                 Names.ProxyName,
-                name);
+                context.ProxyName);
         }
 
         protected virtual void AddExtraHeaders(ProxyContext context, HttpRequestMessage upstreamRequest)

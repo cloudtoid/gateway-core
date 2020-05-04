@@ -14,6 +14,8 @@
         {
             internal static class Proxy
             {
+                internal const string ProxyName = "gwcore";
+
                 internal static class Upstream
                 {
                     internal static class Request
@@ -23,8 +25,6 @@
                         internal static class Headers
                         {
                             internal const string CorrelationIdHeader = GatewayCore.Headers.Names.CorrelationId;
-
-                            internal const string ProxyName = "gwcore";
 
                             internal static string Host { get; } = Environment.MachineName;
                         }
