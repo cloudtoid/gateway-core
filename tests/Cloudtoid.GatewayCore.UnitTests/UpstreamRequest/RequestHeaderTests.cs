@@ -548,7 +548,7 @@
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new string[] { "1.0 test", "2.0 some-proxy" });
+            message.Headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new[] { "1.0 test", "2.0 some-proxy" });
         }
 
         [TestMethod]
@@ -566,7 +566,7 @@
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new string[] { "1.0 test", "1.1 test2", "2.0 some-proxy" });
+            message.Headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new[] { "1.0 test", "1.1 test2", "2.0 some-proxy" });
         }
 
         [TestMethod]
@@ -578,13 +578,13 @@
 
             var context = new DefaultHttpContext();
             context.Request.Protocol = "HTTP/2";
-            context.Request.Headers.Add(HeaderNames.Via, new string[] { "1.0 test", "1.1 test2" });
+            context.Request.Headers.Add(HeaderNames.Via, new[] { "1.0 test", "1.1 test2" });
 
             // Act
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new string[] { "1.0 test", "1.1 test2", "2.0 some-proxy" });
+            message.Headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new[] { "1.0 test", "1.1 test2", "2.0 some-proxy" });
         }
 
         [TestMethod]
@@ -707,7 +707,7 @@
             // Arrange
             var context = new DefaultHttpContext();
             var header = HeaderNames.Connection;
-            context.Request.Headers.Add(header, new string[] { HeaderNames.KeepAlive, "x-test1", "x-test2, x-test3" });
+            context.Request.Headers.Add(header, new[] { HeaderNames.KeepAlive, "x-test1", "x-test2, x-test3" });
             context.Request.Headers.Add("x-test1", "some-value");
             context.Request.Headers.Add("x-test2", "some-value");
             context.Request.Headers.Add("x-test3", "some-value");
