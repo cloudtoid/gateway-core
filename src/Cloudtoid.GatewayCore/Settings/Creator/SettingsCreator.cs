@@ -159,6 +159,7 @@
                 includeProxyName,
                 options.IgnoreAllDownstreamHeaders,
                 options.IgnoreHost,
+                options.IgnoreVia,
                 options.IgnoreCorrelationId,
                 options.IgnoreCallId,
                 options.IgnoreForwarded,

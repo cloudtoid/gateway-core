@@ -49,6 +49,8 @@
             requestHeaders.AllowHeadersWithEmptyValue.Should().BeTrue();
             requestHeaders.AllowHeadersWithUnderscoreInName.Should().BeTrue();
             requestHeaders.IgnoreAllDownstreamHeaders.Should().BeTrue();
+            requestHeaders.IgnoreHost.Should().BeTrue();
+            requestHeaders.IgnoreVia.Should().BeTrue();
             requestHeaders.IgnoreCorrelationId.Should().BeTrue();
             requestHeaders.IgnoreCallId.Should().BeTrue();
             requestHeaders.IgnoreForwarded.Should().BeTrue();
@@ -149,6 +151,8 @@
             requestHeaders.AllowHeadersWithEmptyValue.Should().BeFalse();
             requestHeaders.AllowHeadersWithUnderscoreInName.Should().BeFalse();
             requestHeaders.IgnoreAllDownstreamHeaders.Should().BeFalse();
+            requestHeaders.IgnoreHost.Should().BeFalse();
+            requestHeaders.IgnoreVia.Should().BeFalse();
             requestHeaders.IgnoreCorrelationId.Should().BeFalse();
             requestHeaders.IgnoreCallId.Should().BeFalse();
             requestHeaders.IgnoreForwarded.Should().BeFalse();

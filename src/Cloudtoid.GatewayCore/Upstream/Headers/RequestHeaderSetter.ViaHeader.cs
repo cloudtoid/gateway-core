@@ -16,6 +16,9 @@
         /// </summary>
         protected virtual void AddViaHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
+            if (context.ProxyUpstreamRequestHeadersSettings.IgnoreVia)
+                return;
+
             var builder = new StringBuilder();
             if (context.Request.Headers.TryGetValue(HeaderNames.Via, out var values) && values.Count > 0)
                 builder.AppendJoin(Comma, values).AppendComma().AppendSpace();

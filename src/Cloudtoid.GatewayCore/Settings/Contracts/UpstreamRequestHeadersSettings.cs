@@ -18,6 +18,7 @@
             bool includeProxyName,
             bool ignoreAllDownstreamHeaders,
             bool ignoreHost,
+            bool ignoreVia,
             bool ignoreCorrelationId,
             bool ignoreCallId,
             bool ignoreForwarded,
@@ -32,6 +33,7 @@
             IncludeProxyName = includeProxyName;
             IgnoreAllDownstreamHeaders = ignoreAllDownstreamHeaders;
             IgnoreHost = ignoreHost;
+            IgnoreVia = ignoreVia;
             IgnoreCorrelationId = ignoreCorrelationId;
             IgnoreCallId = ignoreCallId;
             IgnoreForwarded = ignoreForwarded;
@@ -51,6 +53,8 @@
         public bool IgnoreAllDownstreamHeaders { get; }
 
         public bool IgnoreHost { get; }
+
+        public bool IgnoreVia { get; }
 
         public bool IgnoreCorrelationId { get; }
 

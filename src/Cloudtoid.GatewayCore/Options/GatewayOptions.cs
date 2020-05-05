@@ -103,6 +103,12 @@
                         public bool IgnoreHost { get; set; }
 
                         /// <summary>
+                        /// If false, it will append a "Via" header. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via">here</a> for more information.
+                        /// The default value is <c>false</c>.
+                        /// </summary>
+                        public bool IgnoreVia { get; set; }
+
+                        /// <summary>
                         /// If false, it will append a correlation identifier header if not present. The actual header name is defined by <see cref="CorrelationIdHeader"/>
                         /// The default value is <c>false</c>.
                         /// </summary>
