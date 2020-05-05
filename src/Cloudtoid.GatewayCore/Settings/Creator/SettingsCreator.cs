@@ -239,6 +239,7 @@
                 options.AllowHeadersWithEmptyValue,
                 options.AllowHeadersWithUnderscoreInName,
                 options.IgnoreAllUpstreamHeaders,
+                options.IgnoreVia,
                 options.IncludeCorrelationId,
                 options.IncludeCallId,
                 Create(context, options.Overrides));

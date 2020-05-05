@@ -20,8 +20,12 @@
                 return;
 
             var builder = new StringBuilder();
-            if (context.Request.Headers.TryGetValue(HeaderNames.Via, out var values) && values.Count > 0)
-                builder.AppendJoin(Comma, values).AppendComma().AppendSpace();
+
+            if (!context.ProxyUpstreamRequestHeadersSettings.IgnoreAllDownstreamHeaders)
+            {
+                if (context.Request.Headers.TryGetValue(HeaderNames.Via, out var values) && values.Count > 0)
+                    builder.AppendJoin(Comma, values).AppendComma().AppendSpace();
+            }
 
             if (context.Request.Protocol.StartsWithOrdinalIgnoreCase(HttpProtocolPrefix))
             {

@@ -590,6 +590,27 @@
         }
 
         [TestMethod]
+        public async Task SetHeadersAsync_ProxyNameNotNullWithExistingViaHeadersAndIgnoreAllDownstreamHeaders_DownstreamViaHeaderNotIncludedAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var proxy = options.Routes["/api/"].Proxy!;
+            proxy.ProxyName = "some-proxy";
+            proxy.UpstreamRequest.Headers.IgnoreAllDownstreamHeaders = true;
+            proxy.UpstreamRequest.Headers.IgnoreVia = false;
+
+            var context = new DefaultHttpContext();
+            context.Request.Protocol = "HTTP/2";
+            context.Request.Headers.Add(HeaderNames.Via, "1.0 test, 1.1 test2");
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.GetValues(HeaderNames.Via).SingleOrDefault().Should().Be("2.0 some-proxy");
+        }
+
+        [TestMethod]
         public async Task SetHeadersAsync_ProxyNameNotNullWithExistingViaSeparateHeaders_ViaHeaderHasProxyNameAsync()
         {
             // Arrange

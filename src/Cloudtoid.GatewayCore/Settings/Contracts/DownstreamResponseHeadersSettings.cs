@@ -10,6 +10,7 @@
             bool allowHeadersWithEmptyValue,
             bool allowHeadersWithUnderscoreInName,
             bool ignoreAllUpstreamHeaders,
+            bool ignoreVia,
             bool includeCorrelationId,
             bool includeCallId,
             IReadOnlyList<HeaderOverride> overrides)
@@ -17,6 +18,7 @@
             AllowHeadersWithEmptyValue = allowHeadersWithEmptyValue;
             AllowHeadersWithUnderscoreInName = allowHeadersWithUnderscoreInName;
             IgnoreAllUpstreamHeaders = ignoreAllUpstreamHeaders;
+            IgnoreVia = ignoreVia;
             IncludeCorrelationId = includeCorrelationId;
             IncludeCallId = includeCallId;
             Overrides = overrides;
@@ -30,6 +32,8 @@
         public bool AllowHeadersWithUnderscoreInName { get; }
 
         public bool IgnoreAllUpstreamHeaders { get; }
+
+        public bool IgnoreVia { get; }
 
         public bool IncludeCorrelationId { get; }
 

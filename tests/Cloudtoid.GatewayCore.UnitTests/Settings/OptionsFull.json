@@ -48,6 +48,7 @@
             "allowHeadersWithEmptyValue": true,
             "allowHeadersWithUnderscoreInName": true,
             "ignoreAllUpstreamHeaders": true,
+            "ignoreVia": true,
             "includeCorrelationId": true,
             "includeCallId": true,
             "overrides": {

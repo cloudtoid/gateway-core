@@ -82,8 +82,10 @@
 
             var response = routeSettings.Proxy.DownstreamResponse;
             var responseHeaders = response.Headers;
-            responseHeaders.AllowHeadersWithEmptyValue.Should().BeTrue();
-            responseHeaders.AllowHeadersWithUnderscoreInName.Should().BeTrue();
+            responseHeaders.IgnoreAllUpstreamHeaders.Should().BeTrue();
+            responseHeaders.IgnoreVia.Should().BeTrue();
+            responseHeaders.IncludeCorrelationId.Should().BeTrue();
+            responseHeaders.IncludeCallId.Should().BeTrue();
             responseHeaders.Overrides.Select(h => (h.Name, Values: h.GetValues(context)))
                 .Should()
                 .BeEquivalentTo(
@@ -179,6 +181,10 @@
             var responseHeaders = response.Headers;
             responseHeaders.AllowHeadersWithEmptyValue.Should().BeFalse();
             responseHeaders.AllowHeadersWithUnderscoreInName.Should().BeFalse();
+            responseHeaders.IgnoreAllUpstreamHeaders.Should().BeFalse();
+            responseHeaders.IgnoreVia.Should().BeFalse();
+            responseHeaders.IncludeCorrelationId.Should().BeFalse();
+            responseHeaders.IncludeCallId.Should().BeFalse();
             responseHeaders.Overrides.Should().BeEmpty();
         }
 
