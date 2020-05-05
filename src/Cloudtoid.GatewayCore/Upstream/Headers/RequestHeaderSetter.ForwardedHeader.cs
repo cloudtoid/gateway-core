@@ -29,12 +29,9 @@
         protected virtual void AddForwardedHeaders(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
             if (context.ProxyUpstreamRequestHeadersSettings.UseXForwarded)
-            {
                 AddXForwardedHeaders(context, upstreamRequest);
-                return;
-            }
-
-            AddForwardedHeader(context, upstreamRequest);
+            else
+                AddForwardedHeader(context, upstreamRequest);
         }
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded

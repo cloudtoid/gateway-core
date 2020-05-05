@@ -276,6 +276,150 @@
         }
 
         [TestMethod]
+        public async Task SetHeadersAsync_ProxyNameIsNull_DefaultViaHeaderAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var proxy = options.Routes["/api/"].Proxy!;
+            proxy.ProxyName = null;
+            proxy.DownstreamResponse.Headers.IgnoreAllUpstreamHeaders = false;
+            proxy.DownstreamResponse.Headers.IgnoreVia = false;
+
+            var message = new HttpResponseMessage();
+            message.Version = new System.Version(2, 0);
+
+            // Act
+            var response = await SetHeadersAsync(message, options);
+
+            // Assert
+            response.Headers[HeaderNames.Via].Should().BeEquivalentTo(new[] { "2.0 gwcore" });
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_ProxyNameNotNull_ViaHeaderHasProxyNameAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var proxy = options.Routes["/api/"].Proxy!;
+            proxy.ProxyName = "some-proxy";
+            proxy.DownstreamResponse.Headers.IgnoreAllUpstreamHeaders = false;
+            proxy.DownstreamResponse.Headers.IgnoreVia = false;
+
+            var message = new HttpResponseMessage();
+
+            // Act
+            var response = await SetHeadersAsync(message, options);
+
+            // Assert
+            response.Headers[HeaderNames.Via].Should().BeEquivalentTo(new[] { "1.1 some-proxy" });
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_ProxyNameNotNullWithExistingViaHeader_ViaHeaderHasProxyNameAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var proxy = options.Routes["/api/"].Proxy!;
+            proxy.ProxyName = "some-proxy";
+            proxy.DownstreamResponse.Headers.IgnoreAllUpstreamHeaders = false;
+            proxy.DownstreamResponse.Headers.IgnoreVia = false;
+
+            var message = new HttpResponseMessage();
+            message.Version = new System.Version(2, 0);
+            message.Headers.Add(HeaderNames.Via, "1.0 test");
+
+            // Act
+            var response = await SetHeadersAsync(message, options);
+
+            // Assert
+            response.Headers[HeaderNames.Via].Should().BeEquivalentTo(new[] { "1.0 test", "2.0 some-proxy" });
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_ProxyNameNotNullWithExistingViaHeaders_ViaHeaderHasProxyNameAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var proxy = options.Routes["/api/"].Proxy!;
+            proxy.ProxyName = "some-proxy";
+            proxy.DownstreamResponse.Headers.IgnoreAllUpstreamHeaders = false;
+            proxy.DownstreamResponse.Headers.IgnoreVia = false;
+
+            var message = new HttpResponseMessage();
+            message.Version = new System.Version(2, 0);
+            message.Headers.Add(HeaderNames.Via, "1.0 test, 1.1 test2");
+
+            // Act
+            var response = await SetHeadersAsync(message, options);
+
+            // Assert
+            response.Headers[HeaderNames.Via].Should().BeEquivalentTo(new[] { "1.0 test", "1.1 test2", "2.0 some-proxy" });
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_ProxyNameNotNullWithExistingViaHeadersAndIgnoreVia_ViaHeaderNotIncludedAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var proxy = options.Routes["/api/"].Proxy!;
+            proxy.ProxyName = "some-proxy";
+            proxy.DownstreamResponse.Headers.IgnoreAllUpstreamHeaders = false;
+            proxy.DownstreamResponse.Headers.IgnoreVia = true;
+
+            var message = new HttpResponseMessage();
+            message.Version = new System.Version(2, 0);
+            message.Headers.Add(HeaderNames.Via, "1.0 test");
+
+            // Act
+            var response = await SetHeadersAsync(message, options);
+
+            // Assert
+            response.Headers.ContainsKey(HeaderNames.Via).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_ProxyNameNotNullWithExistingViaHeadersAndIgnoreAllUpstreamHeaders_UpstreamViaHeaderNotIncludedAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var proxy = options.Routes["/api/"].Proxy!;
+            proxy.ProxyName = "some-proxy";
+            proxy.DownstreamResponse.Headers.IgnoreAllUpstreamHeaders = true;
+            proxy.DownstreamResponse.Headers.IgnoreVia = false;
+
+            var message = new HttpResponseMessage();
+            message.Version = new System.Version(2, 0);
+            message.Headers.Add(HeaderNames.Via, "1.0 test, 1.1 test2");
+
+            // Act
+            var response = await SetHeadersAsync(message, options);
+
+            // Assert
+            response.Headers[HeaderNames.Via].Should().BeEquivalentTo(new[] { "2.0 some-proxy" });
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_ProxyNameNotNullWithExistingViaSeparateHeaders_ViaHeaderHasProxyNameAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var proxy = options.Routes["/api/"].Proxy!;
+            proxy.ProxyName = "some-proxy";
+            proxy.DownstreamResponse.Headers.IgnoreAllUpstreamHeaders = false;
+            proxy.DownstreamResponse.Headers.IgnoreVia = false;
+
+            var message = new HttpResponseMessage();
+            message.Version = new System.Version(2, 0);
+            message.Headers.Add(HeaderNames.Via, new[] { "1.0 test", "1.1 test2" });
+
+            // Act
+            var response = await SetHeadersAsync(message, options);
+
+            // Assert
+            response.Headers[HeaderNames.Via].Should().BeEquivalentTo(new[] { "1.0 test", "1.1 test2", "2.0 some-proxy" });
+        }
+
+        [TestMethod]
         public async Task SetHeadersAsync_ExtraHeaders_HeadersIncludedAsync()
         {
             // Arrange

@@ -6,7 +6,9 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Cloudtoid.GatewayCore.Headers;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Net.Http.Headers;
     using static Contract;
 
     /// <summary>
@@ -27,9 +29,11 @@
     /// </example>
     public class ResponseHeaderSetter : IResponseHeaderSetter
     {
+        private const char Comma = ',';
         private static readonly ISet<string> HeaderTransferBlacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             Names.CallId,
+            HeaderNames.Via
         };
 
         private readonly HeaderSanetizer sanetizer;
@@ -57,9 +61,20 @@
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            AddUpstreamResponseHeadersToDownstream(context, upstreamResponse);
-            AddCorrelationIdHeader(context, upstreamResponse);
-            AddCallIdHeader(context, upstreamResponse);
+            var settings = context.ProxyDownstreamResponseHeaderSettings;
+
+            if (!settings.IgnoreAllUpstreamHeaders)
+                AddUpstreamResponseHeadersToDownstream(context, upstreamResponse);
+
+            if (!settings.IgnoreVia)
+                AddViaHeader(context, upstreamResponse);
+
+            if (settings.IncludeCorrelationId)
+                AddCorrelationIdHeader(context, upstreamResponse);
+
+            if (settings.IncludeCallId)
+                AddCallIdHeader(context, upstreamResponse);
+
             AddExtraHeaders(context);
 
             return Task.CompletedTask;
@@ -69,13 +84,10 @@
             ProxyContext context,
             HttpResponseMessage upstreamResponse)
         {
-            var options = context.ProxyDownstreamResponseHeaderSettings;
-            if (options.IgnoreAllUpstreamHeaders)
-                return;
-
             if (upstreamResponse.Headers is null)
                 return;
 
+            var options = context.ProxyDownstreamResponseHeaderSettings;
             var allowHeadersWithEmptyValue = options.AllowHeadersWithEmptyValue;
             var allowHeadersWithUnderscoreInName = options.AllowHeadersWithUnderscoreInName;
             var correlationIdHeader = context.CorrelationIdHeader;
@@ -107,11 +119,29 @@
             }
         }
 
+        /// <summary>
+        /// The Via general header is added by proxies, both forward and reverse proxies, and can appear in
+        /// the request headers and the response headers. It is used for tracking message forwards, avoiding
+        /// request loops, and identifying the protocol capabilities of senders along the request/response chain.
+        /// See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via">here</a> for more information.
+        /// </summary>
+        protected virtual void AddViaHeader(ProxyContext context, HttpResponseMessage upstreamResponse)
+        {
+            IEnumerable<string>? values = null;
+            if (!context.ProxyDownstreamResponseHeaderSettings.IgnoreAllUpstreamHeaders)
+                upstreamResponse.Headers.TryGetValues(HeaderNames.Via, out values);
+
+            var version = upstreamResponse.Version;
+            var value = $"{version.Major}.{version.Minor} {context.ProxyName}";
+
+            AddHeaderValues(
+                context,
+                HeaderNames.Via,
+                values.Concat(value).AsArray());
+        }
+
         protected virtual void AddCorrelationIdHeader(ProxyContext context, HttpResponseMessage upstreamResponse)
         {
-            if (!context.ProxyDownstreamResponseHeaderSettings.IncludeCorrelationId)
-                return;
-
             AddHeaderValues(
                 context,
                 context.CorrelationIdHeader,
@@ -120,9 +150,6 @@
 
         protected virtual void AddCallIdHeader(ProxyContext context, HttpResponseMessage upstreamResponse)
         {
-            if (!context.ProxyDownstreamResponseHeaderSettings.IncludeCallId)
-                return;
-
             AddHeaderValues(
                 context,
                 Names.CallId,
@@ -136,7 +163,7 @@
             foreach (var header in context.ProxyDownstreamResponseHeaderSettings.Overrides)
             {
                 if (header.HasValues)
-                    headers.AddOrAppendHeaderValues(header.Name, header.GetValues(context));
+                    headers.Append(header.Name, header.GetValues(context).AsArray());
             }
         }
 
@@ -147,7 +174,7 @@
         {
             if (Provider.TryGetHeaderValues(context, name, upstreamValues, out var downstreamValues) && downstreamValues != null)
             {
-                context.Response.Headers.AddOrAppendHeaderValues(name, downstreamValues);
+                context.Response.Headers.Append(name, downstreamValues);
                 return;
             }
 

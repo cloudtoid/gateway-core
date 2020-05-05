@@ -5,7 +5,6 @@
     using System.Reflection;
     using Cloudtoid.GatewayCore.Headers;
     using FluentAssertions;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -51,16 +50,6 @@
                 var headerName = (string)typeof(HeaderNames).GetField(fieldName, Flags)!.GetValue(null)!;
                 HeaderTypes.IsResponseHeader(headerName).Should().BeTrue();
             }
-        }
-
-        [TestMethod]
-        public void AddOrAppendHeaderValues_HeaderAlreadyExists_AppendsHeaderValue()
-        {
-            var headers = new HeaderDictionary();
-            headers.AddOrAppendHeaderValues("test", new[] { "value" });
-            headers.AddOrAppendHeaderValues("test", new[] { "new-value" });
-
-            headers["test"].Should().BeEquivalentTo(new[] { "value", "new-value" });
         }
     }
 }
