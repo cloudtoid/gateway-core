@@ -82,14 +82,32 @@
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            AddDownstreamRequestHeadersToUpstream(context, upstreamRequest);
-            AddViaHeader(context, upstreamRequest);
-            AddHostHeader(context, upstreamRequest);
-            AddExternalAddressHeader(context, upstreamRequest);
-            AddForwardedHeaders(context, upstreamRequest);
-            AddCorrelationIdHeader(context, upstreamRequest);
-            AddCallIdHeader(context, upstreamRequest);
-            AddProxyNameHeader(context, upstreamRequest);
+            var settings = context.ProxyUpstreamRequestHeadersSettings;
+
+            if (!settings.IgnoreAllDownstreamHeaders)
+                AddDownstreamRequestHeadersToUpstream(context, upstreamRequest);
+
+            if (!settings.IgnoreVia)
+                AddViaHeader(context, upstreamRequest);
+
+            if (!settings.IgnoreHost)
+                AddHostHeader(context, upstreamRequest);
+
+            if (settings.IncludeExternalAddress)
+                AddExternalAddressHeader(context, upstreamRequest);
+
+            if (settings.IncludeProxyName)
+                AddProxyNameHeader(context, upstreamRequest);
+
+            if (!settings.IgnoreForwarded)
+                AddForwardedHeaders(context, upstreamRequest);
+
+            if (!settings.IgnoreCorrelationId)
+                AddCorrelationIdHeader(context, upstreamRequest);
+
+            if (!settings.IgnoreCallId)
+                AddCallIdHeader(context, upstreamRequest);
+
             AddExtraHeaders(context, upstreamRequest);
 
             return Task.CompletedTask;
@@ -100,9 +118,6 @@
             HttpRequestMessage upstreamRequest)
         {
             var options = context.ProxyUpstreamRequestHeadersSettings;
-            if (options.IgnoreAllDownstreamHeaders)
-                return;
-
             var headers = context.Request.Headers;
             var allowHeadersWithEmptyValue = options.AllowHeadersWithEmptyValue;
             var allowHeadersWithUnderscoreInName = options.AllowHeadersWithUnderscoreInName;
@@ -140,9 +155,6 @@
 
         protected virtual void AddHostHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            if (context.ProxyUpstreamRequestHeadersSettings.IgnoreHost)
-                return;
-
             upstreamRequest.Headers.TryAddWithoutValidation(
                 HeaderNames.Host,
                 context.Host);
@@ -150,9 +162,6 @@
 
         protected virtual void AddExternalAddressHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            if (!context.ProxyUpstreamRequestHeadersSettings.IncludeExternalAddress)
-                return;
-
             var clientAddress = GetRemoteIpAddressOrDefault(context);
             if (clientAddress is null)
                 return;
@@ -166,9 +175,6 @@
 
         protected virtual void AddCorrelationIdHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            if (context.ProxyUpstreamRequestHeadersSettings.IgnoreCorrelationId)
-                return;
-
             AddHeaderValues(
                 context,
                 upstreamRequest,
@@ -178,9 +184,6 @@
 
         protected virtual void AddCallIdHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            if (context.ProxyUpstreamRequestHeadersSettings.IgnoreCallId)
-                return;
-
             AddHeaderValues(
                 context,
                 upstreamRequest,
@@ -190,9 +193,6 @@
 
         protected virtual void AddProxyNameHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            if (!context.ProxyUpstreamRequestHeadersSettings.IncludeProxyName)
-                return;
-
             AddHeaderValues(
                 context,
                 upstreamRequest,

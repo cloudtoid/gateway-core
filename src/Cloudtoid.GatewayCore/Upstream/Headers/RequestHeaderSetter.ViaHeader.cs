@@ -16,9 +16,6 @@
         /// </summary>
         protected virtual void AddViaHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            if (context.ProxyUpstreamRequestHeadersSettings.IgnoreVia)
-                return;
-
             var builder = new StringBuilder();
 
             if (!context.ProxyUpstreamRequestHeadersSettings.IgnoreAllDownstreamHeaders)

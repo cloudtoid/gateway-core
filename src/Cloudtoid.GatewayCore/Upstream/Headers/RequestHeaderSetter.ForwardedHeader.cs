@@ -28,9 +28,6 @@
 
         protected virtual void AddForwardedHeaders(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            if (context.ProxyUpstreamRequestHeadersSettings.IgnoreForwarded)
-                return;
-
             if (context.ProxyUpstreamRequestHeadersSettings.UseXForwarded)
             {
                 AddXForwardedHeaders(context, upstreamRequest);

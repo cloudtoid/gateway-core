@@ -50,6 +50,8 @@
 
         public bool IncludeExternalAddress { get; }
 
+        public bool IncludeProxyName { get; }
+
         public bool IgnoreAllDownstreamHeaders { get; }
 
         public bool IgnoreHost { get; }
@@ -63,8 +65,6 @@
         public bool IgnoreForwarded { get; }
 
         public bool UseXForwarded { get; }
-
-        public bool IncludeProxyName { get; }
 
         public IReadOnlyList<HeaderOverride> Overrides { get; }
 
