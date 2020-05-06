@@ -3,9 +3,11 @@
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
+    using Cloudtoid.GatewayCore.Headers;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Primitives;
+    using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using static Cloudtoid.GatewayCore.Upstream.RequestHeaderSetter;
 
@@ -131,103 +133,37 @@
         }
 
         [TestMethod]
-        public void TryParseForwardedHeaderValuesTests()
+        public void GetCurrentForwardedHeader_CommaSepatratedValues_Mix()
         {
-            TryParseForwardedHeaderValues(string.Empty, out var values).Should().BeFalse();
-            values.Should().BeNull();
-
-            TryParseForwardedHeaderValues(" ", out values).Should().BeFalse();
-            values.Should().BeNull();
-
-            TryParseForwardedHeaderValues(",", out values).Should().BeFalse();
-            values.Should().BeNull();
-
-            TryParseForwardedHeaderValues(", , ,    ,", out values).Should().BeFalse();
-            values.Should().BeNull();
-
-            TryParseForwardedHeaderValues(";, , ;,  ;  ,", out values).Should().BeFalse();
-            values.Should().BeNull();
-
-            TryParseForwardedHeaderValues("abc", out values).Should().BeFalse();
-            values.Should().BeNull();
-
-            TryParseForwardedHeaderValues("host=abc", out values).Should().BeTrue();
-            values.Should().HaveCount(1);
-            values![0].Should().Be(new ForwardedHeaderValue(host: "abc"));
-
-            TryParseForwardedHeaderValues("for=192.0.2.60", out values).Should().BeTrue();
-            values.Should().HaveCount(1);
-            values![0].Should().Be(new ForwardedHeaderValue(@for: "192.0.2.60"));
-
-            TryParseForwardedHeaderValues("proto=http", out values).Should().BeTrue();
-            values.Should().HaveCount(1);
-            values![0].Should().Be(new ForwardedHeaderValue(proto: "http"));
-
-            TryParseForwardedHeaderValues("by=203.0.113.43", out values).Should().BeTrue();
-            values.Should().HaveCount(1);
-            values![0].Should().Be(new ForwardedHeaderValue(by: "203.0.113.43"));
-
-            TryParseForwardedHeaderValues("for=192.0.2.60;proto=http;by=203.0.113.43;host=abc", out values).Should().BeTrue();
-            values.Should().HaveCount(1);
-            values![0].Should().Be(new ForwardedHeaderValue("203.0.113.43", "192.0.2.60", "abc", "http"));
-
-            TryParseForwardedHeaderValues("FOR=192.0.2.60;PROTO=http;BY=203.0.113.43;HOST=abc", out values).Should().BeTrue();
-            values.Should().HaveCount(1);
-            values![0].Should().Be(new ForwardedHeaderValue("203.0.113.43", "192.0.2.60", "abc", "http"));
-
-            TryParseForwardedHeaderValues(";;;for=192.0.2.60;proto=http;by=203.0.113.43;host=abc;;;;", out values).Should().BeTrue();
-            values.Should().HaveCount(1);
-            values![0].Should().Be(new ForwardedHeaderValue("203.0.113.43", "192.0.2.60", "abc", "http"));
-
-            TryParseForwardedHeaderValues(",,,for=192.0.2.60;;proto=http;by=203.0.113.43;;host=abc,,,,", out values).Should().BeTrue();
-            values.Should().HaveCount(1);
-            values![0].Should().Be(new ForwardedHeaderValue("203.0.113.43", "192.0.2.60", "abc", "http"));
-
-            TryParseForwardedHeaderValues(" for= 192.0.2.60   ; proto= http ; by= 203.0.113.43 ; host= abc ", out values).Should().BeTrue();
-            values.Should().HaveCount(1);
-            values![0].Should().Be(new ForwardedHeaderValue("203.0.113.43", "192.0.2.60", "abc", "http"));
-
-            TryParseForwardedHeaderValues("host=", out values).Should().BeFalse();
-            values.Should().BeNull();
-
-            TryParseForwardedHeaderValues("for=", out values).Should().BeFalse();
-            values.Should().BeNull();
-
-            TryParseForwardedHeaderValues("proto=", out values).Should().BeFalse();
-            values.Should().BeNull();
-
-            TryParseForwardedHeaderValues("by=", out values).Should().BeFalse();
-            values.Should().BeNull();
-
-            TryParseForwardedHeaderValues("host= ", out values).Should().BeFalse();
-            values.Should().BeNull();
-
-            TryParseForwardedHeaderValues("for=  ", out values).Should().BeFalse();
-            values.Should().BeNull();
-
-            TryParseForwardedHeaderValues("proto= ", out values).Should().BeFalse();
-            values.Should().BeNull();
-
-            TryParseForwardedHeaderValues("by= ", out values).Should().BeFalse();
-            values.Should().BeNull();
-
-            TryParseForwardedHeaderValues("for=192.0.2.60,proto=http,by=203.0.113.43,host=abc", out values).Should().BeTrue();
-            values.Should().HaveCount(4);
-            values.Should().BeEquivalentTo(new[]
-            {
+            GetCurrentForwardedHeaderValuesTest(string.Empty);
+            GetCurrentForwardedHeaderValuesTest(",");
+            GetCurrentForwardedHeaderValuesTest(", , ,    ,");
+            GetCurrentForwardedHeaderValuesTest(";, , ;,  ;  ,");
+            GetCurrentForwardedHeaderValuesTest("abc");
+            GetCurrentForwardedHeaderValuesTest("host=abc", new ForwardedHeaderValue(host: "abc"));
+            GetCurrentForwardedHeaderValuesTest("for=192.0.2.60", new ForwardedHeaderValue(@for: "192.0.2.60"));
+            GetCurrentForwardedHeaderValuesTest("proto=http", new ForwardedHeaderValue(proto: "http"));
+            GetCurrentForwardedHeaderValuesTest("by=203.0.113.43", new ForwardedHeaderValue(by: "203.0.113.43"));
+            GetCurrentForwardedHeaderValuesTest("for=192.0.2.60;proto=http;by=203.0.113.43;host=abc", new ForwardedHeaderValue("203.0.113.43", "192.0.2.60", "abc", "http"));
+            GetCurrentForwardedHeaderValuesTest("FOR=192.0.2.60;PROTO=http;BY=203.0.113.43;HOST=abc", new ForwardedHeaderValue("203.0.113.43", "192.0.2.60", "abc", "http"));
+            GetCurrentForwardedHeaderValuesTest(";;;for=192.0.2.60;proto=http;by=203.0.113.43;host=abc;;;;", new ForwardedHeaderValue("203.0.113.43", "192.0.2.60", "abc", "http"));
+            GetCurrentForwardedHeaderValuesTest(",,,for=192.0.2.60;;proto=http;by=203.0.113.43;;host=abc,,,,", new ForwardedHeaderValue("203.0.113.43", "192.0.2.60", "abc", "http"));
+            GetCurrentForwardedHeaderValuesTest(" for= 192.0.2.60   ; proto= http ; by= 203.0.113.43 ; host= abc", new ForwardedHeaderValue("203.0.113.43", "192.0.2.60", "abc", "http"));
+            GetCurrentForwardedHeaderValuesTest("host=");
+            GetCurrentForwardedHeaderValuesTest("for=");
+            GetCurrentForwardedHeaderValuesTest("proto=");
+            GetCurrentForwardedHeaderValuesTest("by=");
+            GetCurrentForwardedHeaderValuesTest(
+                "for=192.0.2.60,proto=http,by=203.0.113.43,host=abc",
                 new ForwardedHeaderValue(@for: "192.0.2.60"),
                 new ForwardedHeaderValue(proto: "http"),
                 new ForwardedHeaderValue(by: "203.0.113.43"),
-                new ForwardedHeaderValue(host: "abc")
-            });
+                new ForwardedHeaderValue(host: "abc"));
 
-            TryParseForwardedHeaderValues("for=192.0.2.60;proto=http;by=203.0.113.43;host=abc,for=192.0.2.60;proto=https;by=203.0.113.43;host=efg", out values).Should().BeTrue();
-            values.Should().HaveCount(2);
-            values.Should().BeEquivalentTo(new[]
-            {
+            GetCurrentForwardedHeaderValuesTest(
+                "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc,for=192.0.2.60;proto=https;by=203.0.113.43;host=efg",
                 new ForwardedHeaderValue("203.0.113.43", "192.0.2.60", "abc", "http"),
-                new ForwardedHeaderValue("203.0.113.43", "192.0.2.60", "efg", "https")
-            });
+                new ForwardedHeaderValue("203.0.113.43", "192.0.2.60", "efg", "https"));
         }
 
         [TestMethod]
@@ -680,6 +616,15 @@
                 {
                     "by=\"[1020:3040:5060:7080:9010:1112:1314:1516]\";for=\"[1020:3040:5060:7080:9010:1112:1314:1516]\""
                 });
+        }
+
+        private void GetCurrentForwardedHeaderValuesTest(string forwardedHeader, params ForwardedHeaderValue[] expectedValues)
+        {
+            var headers = new HeaderDictionary
+            {
+                [Names.Forwarded] = forwardedHeader
+            };
+            GetCurrentForwardedHeaderValues(headers).Should().BeEquivalentTo(expectedValues);
         }
     }
 }

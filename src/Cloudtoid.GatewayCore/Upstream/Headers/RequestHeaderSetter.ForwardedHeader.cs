@@ -282,36 +282,16 @@
                 }
             }
 
-            if (headers.TryGetValue(Names.Forwarded, out var forwardedValues) && forwardedValues.Count > 0)
+            var forwardedValues = headers.GetCommaSeparatedValues(Names.Forwarded);
+
+            if (forwardedValues.Length > 0)
             {
-                if (TryParseForwardedHeaderValues(forwardedValues[0], out var values))
+                foreach (var value in forwardedValues)
                 {
-                    foreach (var value in values)
-                        yield return value;
+                    if (TryParseForwardedHeaderValue(value, out var forwardedValue))
+                        yield return forwardedValue;
                 }
             }
-        }
-
-        // internal for testing
-        internal static bool TryParseForwardedHeaderValues(
-            string value,
-            [NotNullWhen(true)] out IReadOnlyList<ForwardedHeaderValue>? parsedValues)
-        {
-            List<ForwardedHeaderValue>? list = null;
-            var spans = value.AsSpan().Split(Comma);
-            while (spans.MoveNext())
-            {
-                if (TryParseForwardedHeaderValue(spans.Current.Trim(), out var headerValue))
-                {
-                    if (list is null)
-                        list = new List<ForwardedHeaderValue>(4);
-
-                    list.Add(headerValue);
-                }
-            }
-
-            parsedValues = list;
-            return parsedValues != null;
         }
 
         private static bool TryParseForwardedHeaderValue(

@@ -8,6 +8,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Cloudtoid.GatewayCore.Headers;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using Microsoft.Net.Http.Headers;
     using static Contract;
@@ -30,8 +31,6 @@
     /// </example>
     public partial class RequestHeaderSetter : IRequestHeaderSetter
     {
-        private const char Comma = ',';
-
         /// <summary>
         /// This is a list of headers that should not be passed on to the upstream system. It consists of
         /// <list type="bullet">
@@ -237,13 +236,11 @@
         /// </summary>
         private static ISet<string> GetNonStandardHopByHopHeaders(ProxyContext context)
         {
-            if (context.Request.Headers.TryGetValue(HeaderNames.Connection, out var values) && values.Count > 0)
-            {
-                var headers = values.SelectMany(v => v.Split(Comma, StringSplitOptions.RemoveEmptyEntries).Select(v => v.Trim()));
-                return new HashSet<string>(headers, StringComparer.OrdinalIgnoreCase);
-            }
+            var values = context.Request.Headers.GetCommaSeparatedValues(HeaderNames.Connection);
+            if (values.Length == 0)
+                return ImmutableHashSet<string>.Empty;
 
-            return ImmutableHashSet<string>.Empty;
+            return new HashSet<string>(values, StringComparer.OrdinalIgnoreCase);
         }
 
         private static string? GetRemoteIpAddressOrDefault(ProxyContext context)

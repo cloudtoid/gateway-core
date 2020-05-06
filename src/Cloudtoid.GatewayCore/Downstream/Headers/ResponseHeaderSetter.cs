@@ -29,7 +29,6 @@
     /// </example>
     public class ResponseHeaderSetter : IResponseHeaderSetter
     {
-        private const char Comma = ',';
         private static readonly ISet<string> HeaderTransferBlacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             Names.CallId,
