@@ -25,8 +25,6 @@
                         internal static class Headers
                         {
                             internal const string CorrelationIdHeader = GatewayCore.Headers.Names.CorrelationId;
-
-                            internal static string Host { get; } = Environment.MachineName;
                         }
 
                         internal static class Sender

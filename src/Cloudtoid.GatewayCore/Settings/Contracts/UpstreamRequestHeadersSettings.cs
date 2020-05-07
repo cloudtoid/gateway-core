@@ -6,18 +6,12 @@
 
     public sealed class UpstreamRequestHeadersSettings
     {
-        private readonly RouteSettingsContext context;
-        private readonly string? defaultHostExpression;
-
         internal UpstreamRequestHeadersSettings(
-            RouteSettingsContext context,
-            string? defaultHostExpression,
             bool allowHeadersWithEmptyValue,
             bool allowHeadersWithUnderscoreInName,
             bool includeExternalAddress,
             bool includeProxyName,
             bool ignoreAllDownstreamHeaders,
-            bool ignoreHost,
             bool ignoreVia,
             bool ignoreCorrelationId,
             bool ignoreCallId,
@@ -25,14 +19,11 @@
             bool useXForwarded,
             IReadOnlyList<HeaderOverride> overrides)
         {
-            this.context = context;
-            this.defaultHostExpression = defaultHostExpression;
             AllowHeadersWithEmptyValue = allowHeadersWithEmptyValue;
             AllowHeadersWithUnderscoreInName = allowHeadersWithUnderscoreInName;
             IncludeExternalAddress = includeExternalAddress;
             IncludeProxyName = includeProxyName;
             IgnoreAllDownstreamHeaders = ignoreAllDownstreamHeaders;
-            IgnoreHost = ignoreHost;
             IgnoreVia = ignoreVia;
             IgnoreCorrelationId = ignoreCorrelationId;
             IgnoreCallId = ignoreCallId;
@@ -54,8 +45,6 @@
 
         public bool IgnoreAllDownstreamHeaders { get; }
 
-        public bool IgnoreHost { get; }
-
         public bool IgnoreVia { get; }
 
         public bool IgnoreCorrelationId { get; }
@@ -69,13 +58,5 @@
         public IReadOnlyList<HeaderOverride> Overrides { get; }
 
         public ISet<string> OverrideNames { get; }
-
-        public string GetDefaultHost(ProxyContext proxyContext)
-        {
-            var eval = context.Evaluate(proxyContext, defaultHostExpression);
-            return string.IsNullOrWhiteSpace(eval)
-                ? Defaults.Route.Proxy.Upstream.Request.Headers.Host
-                : eval;
-        }
     }
 }

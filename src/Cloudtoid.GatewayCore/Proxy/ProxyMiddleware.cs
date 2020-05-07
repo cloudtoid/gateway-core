@@ -7,7 +7,6 @@
     using System.Threading.Tasks;
     using Cloudtoid;
     using Cloudtoid.GatewayCore.Downstream;
-    using Cloudtoid.GatewayCore.Host;
     using Cloudtoid.GatewayCore.Routes;
     using Cloudtoid.GatewayCore.Trace;
     using Cloudtoid.GatewayCore.Upstream;
@@ -22,7 +21,6 @@
         private readonly IRequestSender sender;
         private readonly IResponseSender responseSender;
         private readonly IRouteResolver routeResolver;
-        private readonly IHostProvider hostProvider;
         private readonly ITraceIdProvider traceIdProvider;
         private readonly ILogger<ProxyMiddleware> logger;
 
@@ -32,7 +30,6 @@
             IRequestSender sender,
             IResponseSender responseSender,
             IRouteResolver routeResolver,
-            IHostProvider hostProvider,
             ITraceIdProvider traceIdProvider,
             ILogger<ProxyMiddleware> logger)
         {
@@ -41,7 +38,6 @@
             this.sender = CheckValue(sender, nameof(sender));
             this.responseSender = CheckValue(responseSender, nameof(responseSender));
             this.routeResolver = CheckValue(routeResolver, nameof(routeResolver));
-            this.hostProvider = CheckValue(hostProvider, nameof(hostProvider));
             this.traceIdProvider = CheckValue(traceIdProvider, nameof(traceIdProvider));
             this.logger = CheckValue(logger, nameof(logger));
         }
@@ -69,7 +65,6 @@
                 httpContext.Request.Method);
 
             var context = new ProxyContext(
-                hostProvider,
                 traceIdProvider,
                 httpContext,
                 route);

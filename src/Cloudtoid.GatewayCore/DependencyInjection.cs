@@ -53,7 +53,6 @@
                 .TryAddSingleton<Settings.ISettingsCreator, Settings.SettingsCreator>()
                 .TryAddSingleton<Settings.ISettingsProvider, Settings.SettingsProvider>()
                 .TryAddSingleton<Trace.ITraceIdProvider, Trace.TraceIdProvider>()
-                .TryAddSingleton<Host.IHostProvider, Host.HostProvider>()
                 .TryAddSingleton<Expression.IExpressionEvaluator, Expression.ExpressionEvaluator>()
                 .TryAddSingleton<Routes.IRouteResolver, Routes.RouteResolver>()
                 .TryAddSingleton<IUpstreamUrlCreator, UpstreamUrlCreator>()

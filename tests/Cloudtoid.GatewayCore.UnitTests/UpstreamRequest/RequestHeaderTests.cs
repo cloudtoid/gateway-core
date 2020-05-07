@@ -1,6 +1,5 @@
 ﻿namespace Cloudtoid.GatewayCore.UnitTests
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
@@ -17,88 +16,6 @@
     public sealed partial class RequestHeaderTests
     {
         [TestMethod]
-        public async Task GetHostHeaderValue_IgnoreHost_HostHeaderNotIncludedAsync()
-        {
-            // Arrange
-            var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreAllDownstreamHeaders = false;
-            headersOptions.IgnoreHost = true;
-
-            var context = new DefaultHttpContext();
-            context.Request.Headers.Add(HeaderNames.Host, new[] { "test-host" });
-
-            // Act
-            var message = await SetHeadersAsync(context, options);
-
-            // Assert
-            message.Headers.Contains(HeaderNames.Host).Should().BeFalse();
-        }
-
-        [TestMethod]
-        public async Task GetHostHeaderValue_NotIgnoreHostButIgnoreAll_DefaultHostHeaderIncludedAsync()
-        {
-            // Arrange
-            var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreAllDownstreamHeaders = true;
-            headersOptions.IgnoreHost = false;
-
-            var context = new DefaultHttpContext();
-            context.Request.Headers.Add(HeaderNames.Host, new[] { "test-host" });
-
-            // Act
-            var message = await SetHeadersAsync(context, options);
-
-            // Assert
-            message.Headers.GetValues(HeaderNames.Host).SingleOrDefault().Should().Be(Environment.MachineName);
-        }
-
-        [TestMethod]
-        public async Task GetHostHeaderValue_HostNameIncludesPortNumber_PortNumberIsRemovedAsync()
-        {
-            // Arrange
-            var context = new DefaultHttpContext();
-            context.Request.Headers.Add(HeaderNames.Host, new[] { "host:123", "random-value" });
-
-            // Act
-            var message = await SetHeadersAsync(context);
-
-            // Assert
-            message.Headers.Contains(HeaderNames.Host).Should().BeTrue();
-            message.Headers.GetValues(HeaderNames.Host).SingleOrDefault().Should().Be("host");
-        }
-
-        [TestMethod]
-        public async Task GetHostHeaderValue_HostHeaderNotSpecified_HostHeaderIsMachineNameAsync()
-        {
-            // Arrange
-            var context = new DefaultHttpContext();
-            context.Request.Headers.Add(HeaderNames.Host, Array.Empty<string>());
-
-            // Act
-            var message = await SetHeadersAsync(context);
-
-            // Assert
-            message.Headers.Contains(HeaderNames.Host).Should().BeTrue();
-            message.Headers.GetValues(HeaderNames.Host).SingleOrDefault().Should().Be(Environment.MachineName);
-        }
-
-        [TestMethod]
-        public async Task SetHeadersAsync_NoHostHeader_HostHeaderIsAddedAsync()
-        {
-            // Arrange
-            var context = new DefaultHttpContext();
-
-            // Act
-            var message = await SetHeadersAsync(context);
-
-            // Assert
-            message.Headers.Contains(HeaderNames.Host).Should().BeTrue();
-            message.Headers.GetValues(HeaderNames.Host).SingleOrDefault().Should().Be(Environment.MachineName);
-        }
-
-        [TestMethod]
         public async Task SetHeadersAsync_HostHeaderIncluded_HostHeaderIsNotAddedAsync()
         {
             // Arrange
@@ -109,8 +26,7 @@
             var message = await SetHeadersAsync(context);
 
             // Assert
-            message.Headers.Contains(HeaderNames.Host).Should().BeTrue();
-            message.Headers.GetValues(HeaderNames.Host).SingleOrDefault().Should().Be("my-host");
+            message.Headers.Contains(HeaderNames.Host).Should().BeFalse();
         }
 
         [TestMethod]

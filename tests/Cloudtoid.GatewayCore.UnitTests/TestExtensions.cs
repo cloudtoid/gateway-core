@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using Cloudtoid.GatewayCore.Host;
     using Cloudtoid.GatewayCore.Settings;
     using Cloudtoid.GatewayCore.Trace;
     using Microsoft.AspNetCore.Http;
@@ -59,7 +58,6 @@
                 variables ?? ImmutableDictionary<string, string>.Empty);
 
             return new ProxyContext(
-                provider.GetRequiredService<IHostProvider>(),
                 provider.GetRequiredService<ITraceIdProvider>(),
                 httpContext,
                 route);

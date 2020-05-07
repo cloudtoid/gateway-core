@@ -89,9 +89,6 @@
             if (!settings.IgnoreVia)
                 AddViaHeader(context, upstreamRequest);
 
-            if (!settings.IgnoreHost)
-                AddHostHeader(context, upstreamRequest);
-
             if (settings.IncludeExternalAddress)
                 AddExternalAddressHeader(context, upstreamRequest);
 
@@ -150,13 +147,6 @@
 
                 AddHeaderValues(context, upstreamRequest, name, header.Value);
             }
-        }
-
-        protected virtual void AddHostHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
-        {
-            upstreamRequest.Headers.TryAddWithoutValidation(
-                HeaderNames.Host,
-                context.Host);
         }
 
         protected virtual void AddExternalAddressHeader(ProxyContext context, HttpRequestMessage upstreamRequest)

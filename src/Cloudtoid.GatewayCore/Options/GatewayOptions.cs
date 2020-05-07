@@ -97,12 +97,6 @@
                         public bool IgnoreAllDownstreamHeaders { get; set; }
 
                         /// <summary>
-                        /// If false, it will append a host header to the outbound upstream request.
-                        /// The default value is <c>false</c>.
-                        /// </summary>
-                        public bool IgnoreHost { get; set; }
-
-                        /// <summary>
                         /// If false, it will append a "Via" header. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via">here</a> for more information.
                         /// The default value is <c>false</c>.
                         /// </summary>
@@ -138,11 +132,6 @@
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool UseXForwarded { get; set; }
-
-                        /// <summary>
-                        /// If the inbound downstream request does not have a HOST header, the value provided here will be used.
-                        /// </summary>
-                        public string? DefaultHost { get; set; }
 
                         /// <summary>
                         /// Extra headers to be appended to the outbound downstream response.

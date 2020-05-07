@@ -151,14 +151,11 @@
             bool includeProxyName)
         {
             return new UpstreamRequestHeadersSettings(
-                context,
-                options.DefaultHost,
                 options.AllowHeadersWithEmptyValue,
                 options.AllowHeadersWithUnderscoreInName,
                 options.IncludeExternalAddress,
                 includeProxyName,
                 options.IgnoreAllDownstreamHeaders,
-                options.IgnoreHost,
                 options.IgnoreVia,
                 options.IgnoreCorrelationId,
                 options.IgnoreCallId,

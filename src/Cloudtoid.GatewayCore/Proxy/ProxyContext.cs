@@ -2,7 +2,6 @@
 {
     using System;
     using System.Diagnostics;
-    using Cloudtoid.GatewayCore.Host;
     using Cloudtoid.GatewayCore.Settings;
     using Cloudtoid.GatewayCore.Trace;
     using Microsoft.AspNetCore.Http;
@@ -11,9 +10,7 @@
     [DebuggerStepThrough]
     public sealed class ProxyContext
     {
-        private readonly IHostProvider hostProvider;
         private readonly ITraceIdProvider traceIdProvider;
-        private string? host;
         private string? proxyName;
         private string? correlationIdHeader;
         private string? correlationId;
@@ -21,7 +18,6 @@
         private Version? requestHttpVersion;
 
         internal ProxyContext(
-            IHostProvider hostProvider,
             ITraceIdProvider traceIdProvider,
             HttpContext httpContext,
             Route route)
@@ -31,7 +27,6 @@
                 nameof(route.Settings.Proxy),
                 "This is the actual proxy context. We should never get here if the proxy is null!");
 
-            this.hostProvider = hostProvider;
             this.traceIdProvider = traceIdProvider;
             HttpContext = httpContext;
             Route = route;
@@ -44,9 +39,6 @@
         public HttpRequest Request => HttpContext.Request;
 
         public HttpResponse Response => HttpContext.Response;
-
-        public string Host
-            => host is null ? host = hostProvider.GetHost(this) : host;
 
         public string ProxyName
             => proxyName is null ? proxyName = ProxySettings.GetProxyName(this) : proxyName;

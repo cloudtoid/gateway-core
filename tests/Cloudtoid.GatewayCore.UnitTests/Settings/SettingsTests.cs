@@ -10,7 +10,6 @@
     using System.Threading.Tasks;
     using Cloudtoid.GatewayCore;
     using Cloudtoid.GatewayCore.Expression;
-    using Cloudtoid.GatewayCore.Host;
     using Cloudtoid.GatewayCore.Settings;
     using Cloudtoid.GatewayCore.Trace;
     using FluentAssertions;
@@ -45,11 +44,9 @@
             request.GetHttpVersion(context).Should().Be(HttpVersion.Version30);
 
             var requestHeaders = request.Headers;
-            requestHeaders.GetDefaultHost(context).Should().Be("this-machine-name");
             requestHeaders.AllowHeadersWithEmptyValue.Should().BeTrue();
             requestHeaders.AllowHeadersWithUnderscoreInName.Should().BeTrue();
             requestHeaders.IgnoreAllDownstreamHeaders.Should().BeTrue();
-            requestHeaders.IgnoreHost.Should().BeTrue();
             requestHeaders.IgnoreVia.Should().BeTrue();
             requestHeaders.IgnoreCorrelationId.Should().BeTrue();
             requestHeaders.IgnoreCallId.Should().BeTrue();
@@ -110,7 +107,6 @@
             request.GetHttpVersion(context).Should().Be(HttpVersion.Version11);
 
             var requestHeaders = request.Headers;
-            requestHeaders.GetDefaultHost(context).Should().Be("DefaultHost:" + expressionValue);
             requestHeaders.Overrides.Select(h => (h.Name, Values: h.GetValues(context)))
                 .Should()
                 .BeEquivalentTo(
@@ -149,11 +145,9 @@
             request.GetHttpVersion(context).Should().Be(HttpVersion.Version20);
 
             var requestHeaders = request.Headers;
-            requestHeaders.GetDefaultHost(context).Should().Be(Environment.MachineName);
             requestHeaders.AllowHeadersWithEmptyValue.Should().BeFalse();
             requestHeaders.AllowHeadersWithUnderscoreInName.Should().BeFalse();
             requestHeaders.IgnoreAllDownstreamHeaders.Should().BeFalse();
-            requestHeaders.IgnoreHost.Should().BeFalse();
             requestHeaders.IgnoreVia.Should().BeFalse();
             requestHeaders.IgnoreCorrelationId.Should().BeFalse();
             requestHeaders.IgnoreCallId.Should().BeFalse();
@@ -211,7 +205,6 @@
                 var settings = settingsProvider.CurrentValue.Routes.First();
 
                 var context = new ProxyContext(
-                    Substitute.For<IHostProvider>(),
                     Substitute.For<ITraceIdProvider>(),
                     httpContext,
                     new Route(settings, string.Empty, ImmutableDictionary<string, string>.Empty));
@@ -241,7 +234,6 @@
 
                     settings = settingsProvider.CurrentValue.Routes.First();
                     context = new ProxyContext(
-                        Substitute.For<IHostProvider>(),
                         Substitute.For<ITraceIdProvider>(),
                         httpContext,
                         new Route(settings, string.Empty, ImmutableDictionary<string, string>.Empty));
@@ -260,7 +252,6 @@
                     changeEvent.WaitOne();
                     settings = settingsProvider.CurrentValue.Routes.First();
                     context = new ProxyContext(
-                        Substitute.For<IHostProvider>(),
                         Substitute.For<ITraceIdProvider>(),
                         httpContext,
                         new Route(settings, string.Empty, ImmutableDictionary<string, string>.Empty));
@@ -441,7 +432,6 @@
             var routeSettings = settings.Routes.First();
 
             return new ProxyContext(
-                Substitute.For<IHostProvider>(),
                 Substitute.For<ITraceIdProvider>(),
                 httpContext,
                 new Route(routeSettings, string.Empty, ImmutableDictionary<string, string>.Empty));

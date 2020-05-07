@@ -11,12 +11,10 @@
         "upstreamRequest": {
           "httpVersion": "3.0",
           "headers": {
-            "defaultHost": "this-machine-name",
             "allowHeadersWithEmptyValue": true,
             "allowHeadersWithUnderscoreInName": true,
             "includeExternalAddress": true,
             "ignoreAllDownstreamHeaders": true,
-            "ignoreHost": true,
             "ignoreVia": true,
             "ignoreCorrelationId": true,
             "ignoreCallId": true,

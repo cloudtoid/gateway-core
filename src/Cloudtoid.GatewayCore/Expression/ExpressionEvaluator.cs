@@ -82,10 +82,10 @@
             => context.CallId;
 
         /// <summary>
-        /// The value that must be used as the HOST header on the outbound upstream request.
+        /// The value of the inbound request Host header.
         /// </summary>
         private static string? GetHost(ProxyContext context)
-            => context.Host;
+            => context.Request.Host.HasValue ? context.Request.Host.Value : null;
 
         /// <summary>
         /// The HTTP method of the inbound downstream request

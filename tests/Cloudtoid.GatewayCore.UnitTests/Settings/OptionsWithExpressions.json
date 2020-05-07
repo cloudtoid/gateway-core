@@ -8,7 +8,6 @@
         "upstreamRequest": {
           "httpVersion": "$server_name/1.1",
           "headers": {
-            "defaultHost": "DefaultHost:$server_name",
             "overrides": {
               "x-extra-1": [ "x-extra-1:v1:$server_name", "x-extra-1:v2:$server_name" ],
               "x-extra-2": [ "x-extra-2:v1:$server_name", "x-extra-2:v2:$server_name" ]
