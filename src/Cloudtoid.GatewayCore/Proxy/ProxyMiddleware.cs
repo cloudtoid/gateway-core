@@ -52,7 +52,7 @@
             logger.LogDebug("Reverse proxy received a new inbound downstream HTTP '{0}' request.", httpContext.Request.Method);
 
             await ProxyAsync(httpContext);
-            await next.Invoke(httpContext);
+            ////await next.Invoke(httpContext);
         }
 
         private async Task ProxyAsync(HttpContext httpContext)

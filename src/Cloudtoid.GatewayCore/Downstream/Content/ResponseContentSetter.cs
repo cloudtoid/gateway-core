@@ -82,11 +82,11 @@
         {
             var downstreamResponseStream = context.Response.Body;
 
-            // TODO: the current version of HttpContent.CopyToAsync doesn't expose the cancellation-token
-            // However, the .net team is working on fixing that. We should modify this code and pass in
-            // the cancellationToken
-            await upstreamResponse.Content.CopyToAsync(downstreamResponseStream);
-            await downstreamResponseStream.FlushAsync(cancellationToken);
+            using (var stream = await upstreamResponse.Content.ReadAsStreamAsync())
+            {
+                await stream.CopyToAsync(downstreamResponseStream, cancellationToken);
+                await downstreamResponseStream.FlushAsync(cancellationToken);
+            }
         }
 
         protected virtual Task SetContentHeadersAsync(
