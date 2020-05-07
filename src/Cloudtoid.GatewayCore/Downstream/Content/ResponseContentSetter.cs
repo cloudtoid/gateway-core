@@ -80,7 +80,6 @@
             HttpResponseMessage upstreamResponse,
             CancellationToken cancellationToken)
         {
-            upstreamResponse.Content = new StringContent("test");
             var downstreamResponseStream = context.Response.Body;
 
             // TODO: the current version of HttpContent.CopyToAsync doesn't expose the cancellation-token
