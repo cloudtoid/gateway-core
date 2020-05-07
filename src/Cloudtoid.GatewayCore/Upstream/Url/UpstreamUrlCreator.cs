@@ -55,7 +55,7 @@
             if (!Uri.CheckSchemeName(scheme))
                 throw new UriFormatException($"The HTTP scheme '{scheme}' specified by '{toExpression}' expression is invalid.");
 
-            if (!host.HasValue || Uri.CheckHostName(host.Value) == UriHostNameType.Unknown)
+            if (!host.HasValue || Uri.CheckHostName(GetHostValue(host.Value)) == UriHostNameType.Unknown)
                 throw new UriFormatException($"The URL host '{host}' specified by '{toExpression}' expression is invalid.");
 
             var path = ConcatPathWithSuffix(toPath, context.Route.PathSuffix);
@@ -88,6 +88,20 @@
             return suffix.Length > 0 && suffix[0] == '/'
                 ? new PathString(suffix)
                 : new PathString("/" + suffix);
+        }
+
+        private static string GetHostValue(string host)
+        {
+            // remove the port number
+
+            var index = host.Length - 1;
+            while (index > -1 && char.IsNumber(host[index]))
+                index--;
+
+            if (index > -1 && host[index] == ':')
+                return host.Substring(0, index);
+
+            return host;
         }
     }
 }

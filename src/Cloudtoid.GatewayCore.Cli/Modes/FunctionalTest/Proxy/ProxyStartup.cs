@@ -1,8 +1,11 @@
 namespace Cloudtoid.GatewayCore.Cli.Modes.FunctionalTest.Proxy
 {
+    using System;
+    using System.IO;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using static Contract;
@@ -27,12 +30,27 @@ namespace Cloudtoid.GatewayCore.Cli.Modes.FunctionalTest.Proxy
             app.UseGatewayCore();
         }
 
-        internal static IWebHost BuildWebHost()
+        internal static IWebHost BuildWebHost(int port, string configFile)
         {
+            var config = LoadConfig(configFile);
             return WebHost.CreateDefaultBuilder()
-                .ConfigureKestrel(o => o.ListenLocalhost(Config.ProxyPortNumber))
+                .ConfigureServices(s => s.Configure<GatewayOptions>(config))
+                .ConfigureKestrel(o => o.ListenLocalhost(port))
                 .UseStartup<ProxyStartup>()
                 .Build();
+        }
+
+        private static IConfiguration LoadConfig(string configFile)
+        {
+            var file = new FileInfo(configFile);
+            if (!file.Exists)
+                throw new InvalidOperationException($"File '{configFile}' doesn't exist!");
+
+            var configBuilder = new ConfigurationBuilder()
+               .SetBasePath(file.Directory.FullName)
+               .AddJsonFile(file.Name, optional: false, reloadOnChange: false);
+
+            return configBuilder.Build();
         }
     }
 }

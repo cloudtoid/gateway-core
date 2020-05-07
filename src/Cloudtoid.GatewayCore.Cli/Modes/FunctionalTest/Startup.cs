@@ -4,10 +4,10 @@ namespace Cloudtoid.GatewayCore.Cli.Modes.FunctionalTest
 
     internal static class Startup
     {
-        internal static async Task StartAsync()
+        internal static async Task StartAsync(int proxyPort, int upstreamPort, string proxyConfigFile)
         {
-            var upstreamService = Upstream.UpstreamStartup.BuildWebHost();
-            var proxy = Proxy.ProxyStartup.BuildWebHost();
+            var upstreamService = Upstream.UpstreamStartup.BuildWebHost(upstreamPort);
+            var proxy = Proxy.ProxyStartup.BuildWebHost(proxyPort, proxyConfigFile);
 
             await upstreamService.StartAsync();
             await proxy.StartAsync();

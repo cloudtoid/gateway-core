@@ -28,10 +28,10 @@ namespace Cloudtoid.GatewayCore.Cli.Modes.FunctionalTest.Upstream
             app.UseEndpoints(endpoints => endpoints.MapControllers());
         }
 
-        internal static IWebHost BuildWebHost()
+        internal static IWebHost BuildWebHost(int port)
         {
             return WebHost.CreateDefaultBuilder()
-                .ConfigureKestrel(o => o.ListenLocalhost(Config.UpstreamPortNumber))
+                .ConfigureKestrel(o => o.ListenLocalhost(port))
                 .UseStartup<UpstreamStartup>()
                 .Build();
         }

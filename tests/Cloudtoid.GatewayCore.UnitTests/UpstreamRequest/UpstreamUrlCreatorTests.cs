@@ -93,6 +93,34 @@
                 expectedUrl: "https://upstream/");
 
             act.Should().ThrowExactly<UriFormatException>("The URL host '' specified by 'https:///category/' expression is invalid.");
+
+            act = () => CreateAndValidateAsync(
+                routePattern: "/category",
+                toExpression: "https://192.168.0.1/category/",
+                url: "https://gateway/category/",
+                expectedUrl: "https://192.168.0.1/category/");
+
+            act = () => CreateAndValidateAsync(
+                routePattern: "/category",
+                toExpression: "https://[fe80::20c:29ff:fee2:1de]/category/",
+                url: "https://gateway/category/",
+                expectedUrl: "https://[fe80::20c:29ff:fee2:1de]/category/");
+
+            act.Should().NotThrow();
+
+            act = () => CreateAndValidateAsync(
+                routePattern: "/category",
+                toExpression: "https://[fe80::20c:29ff:fee2:1de]:10/category/",
+                url: "https://gateway/category/",
+                expectedUrl: "https://[fe80::20c:29ff:fee2:1de]:10/category/");
+
+            act = () => CreateAndValidateAsync(
+                routePattern: "/category",
+                toExpression: "https://192.168.0.1:10/category/",
+                url: "https://gateway/category/",
+                expectedUrl: "https://192.168.0.1:10/category/");
+
+            act.Should().NotThrow();
         }
 
         [TestMethod]
