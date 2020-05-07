@@ -218,10 +218,10 @@
             headersOptions.UseXForwarded = false;
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(Headers.Names.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
-            context.Request.Headers.Add(Headers.Names.XForwardedFor, "some-for");
-            context.Request.Headers.Add(Headers.Names.XForwardedHost, "some-host");
-            context.Request.Headers.Add(Headers.Names.XForwardedProto, "some-proto");
+            context.Request.Headers.Add(Names.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
+            context.Request.Headers.Add(Names.XForwardedFor, "some-for");
+            context.Request.Headers.Add(Names.XForwardedHost, "some-host");
+            context.Request.Headers.Add(Names.XForwardedProto, "some-proto");
             context.Request.Host = new HostString("some-new-host");
             context.Request.Scheme = "https";
             context.Connection.RemoteIpAddress = IpV4Sample;
@@ -231,7 +231,7 @@
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(Headers.Names.Forwarded).Should().BeEquivalentTo(
+            message.Headers.GetValues(Names.Forwarded).Should().BeEquivalentTo(
                 new[]
                 {
                     "by=4.5.6.7;for=0.1.2.3;host=some-new-host;proto=https"
@@ -249,10 +249,10 @@
             headersOptions.UseXForwarded = true;
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(Headers.Names.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
-            context.Request.Headers.Add(Headers.Names.XForwardedFor, "some-for");
-            context.Request.Headers.Add(Headers.Names.XForwardedHost, "some-host");
-            context.Request.Headers.Add(Headers.Names.XForwardedProto, "some-proto");
+            context.Request.Headers.Add(Names.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
+            context.Request.Headers.Add(Names.XForwardedFor, "some-for");
+            context.Request.Headers.Add(Names.XForwardedHost, "some-host");
+            context.Request.Headers.Add(Names.XForwardedProto, "some-proto");
             context.Request.Host = new HostString("some-new-host");
             context.Request.Scheme = "https";
             context.Connection.RemoteIpAddress = IpV4Sample;
@@ -262,7 +262,7 @@
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(Headers.Names.XForwardedFor).Should().BeEquivalentTo(
+            message.Headers.GetValues(Names.XForwardedFor).Should().BeEquivalentTo(
                 new[]
                 {
                     IpV4Sample.ToString()
@@ -280,9 +280,9 @@
             headersOptions.UseXForwarded = false;
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(Headers.Names.XForwardedFor, "some-for");
-            context.Request.Headers.Add(Headers.Names.XForwardedHost, "some-host");
-            context.Request.Headers.Add(Headers.Names.XForwardedProto, "some-proto");
+            context.Request.Headers.Add(Names.XForwardedFor, "some-for");
+            context.Request.Headers.Add(Names.XForwardedHost, "some-host");
+            context.Request.Headers.Add(Names.XForwardedProto, "some-proto");
             context.Request.Host = new HostString("some-new-host");
             context.Request.Scheme = "https";
             context.Connection.RemoteIpAddress = IpV4Sample;
@@ -292,7 +292,7 @@
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(Headers.Names.Forwarded).Should().BeEquivalentTo(
+            message.Headers.GetValues(Names.Forwarded).Should().BeEquivalentTo(
                 new[]
                 {
                     "by=4.5.6.7;for=0.1.2.3;host=some-new-host;proto=https"
@@ -333,7 +333,7 @@
             headersOptions.UseXForwarded = true;
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(Headers.Names.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
+            context.Request.Headers.Add(Names.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
             context.Connection.RemoteIpAddress = IpV4Sample;
             context.Connection.LocalIpAddress = IpV4Sample2;
             context.Request.Host = new HostString("some-host");
@@ -358,9 +358,9 @@
             headersOptions.UseXForwarded = true;
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(Headers.Names.XForwardedFor, "some-for");
-            context.Request.Headers.Add(Headers.Names.XForwardedHost, "some-host");
-            context.Request.Headers.Add(Headers.Names.XForwardedProto, "some-proto");
+            context.Request.Headers.Add(Names.XForwardedFor, "some-for");
+            context.Request.Headers.Add(Names.XForwardedHost, "some-host");
+            context.Request.Headers.Add(Names.XForwardedProto, "some-proto");
             context.Connection.RemoteIpAddress = IpV4Sample;
             context.Connection.LocalIpAddress = IpV4Sample2;
             context.Request.Host = new HostString("some-host");
@@ -385,10 +385,10 @@
             headersOptions.UseXForwarded = true;
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(Headers.Names.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
-            context.Request.Headers.Add(Headers.Names.XForwardedFor, "some-for");
-            context.Request.Headers.Add(Headers.Names.XForwardedHost, "some-host");
-            context.Request.Headers.Add(Headers.Names.XForwardedProto, "some-proto");
+            context.Request.Headers.Add(Names.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
+            context.Request.Headers.Add(Names.XForwardedFor, "some-for");
+            context.Request.Headers.Add(Names.XForwardedHost, "some-host");
+            context.Request.Headers.Add(Names.XForwardedProto, "some-proto");
             context.Connection.RemoteIpAddress = IpV4Sample;
             context.Connection.LocalIpAddress = IpV4Sample2;
             context.Request.Host = new HostString("some-host");
@@ -414,7 +414,7 @@
             headersOptions.UseXForwarded = false;
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(Headers.Names.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
+            context.Request.Headers.Add(Names.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
             context.Request.Host = new HostString("some-new-host");
             context.Request.Scheme = "https";
             context.Connection.RemoteIpAddress = IpV4Sample;
@@ -424,7 +424,7 @@
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(Headers.Names.Forwarded).Should().BeEquivalentTo(
+            message.Headers.GetValues(Names.Forwarded).Should().BeEquivalentTo(
                 new[]
                 {
                     "by=203.0.113.43;for=192.0.2.60;host=abc;proto=http, by=203.0.113.43;for=192.0.2.12;host=efg;proto=https, by=4.5.6.7;for=0.1.2.3;host=some-new-host;proto=https"
@@ -442,9 +442,9 @@
             headersOptions.UseXForwarded = false;
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(Headers.Names.XForwardedFor, "some-for");
-            context.Request.Headers.Add(Headers.Names.XForwardedHost, "some-host");
-            context.Request.Headers.Add(Headers.Names.XForwardedProto, "some-proto");
+            context.Request.Headers.Add(Names.XForwardedFor, "some-for");
+            context.Request.Headers.Add(Names.XForwardedHost, "some-host");
+            context.Request.Headers.Add(Names.XForwardedProto, "some-proto");
             context.Request.Host = new HostString("some-new-host");
             context.Request.Scheme = "https";
             context.Connection.RemoteIpAddress = IpV4Sample;
@@ -454,7 +454,7 @@
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(Headers.Names.Forwarded).Should().BeEquivalentTo(
+            message.Headers.GetValues(Names.Forwarded).Should().BeEquivalentTo(
                 new[]
                 {
                     "for=some-for;host=some-host;proto=some-proto, by=4.5.6.7;for=0.1.2.3;host=some-new-host;proto=https"
@@ -472,10 +472,10 @@
             headersOptions.UseXForwarded = false;
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(Headers.Names.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
-            context.Request.Headers.Add(Headers.Names.XForwardedFor, "some-for");
-            context.Request.Headers.Add(Headers.Names.XForwardedHost, "some-host");
-            context.Request.Headers.Add(Headers.Names.XForwardedProto, "some-proto");
+            context.Request.Headers.Add(Names.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
+            context.Request.Headers.Add(Names.XForwardedFor, "some-for");
+            context.Request.Headers.Add(Names.XForwardedHost, "some-host");
+            context.Request.Headers.Add(Names.XForwardedProto, "some-proto");
             context.Request.Host = new HostString("some-new-host");
             context.Request.Scheme = "https";
             context.Connection.RemoteIpAddress = IpV4Sample;
@@ -485,7 +485,7 @@
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(Headers.Names.Forwarded).Should().BeEquivalentTo(
+            message.Headers.GetValues(Names.Forwarded).Should().BeEquivalentTo(
                 new[]
                 {
                     "for=some-for;host=some-host;proto=some-proto, by=203.0.113.43;for=192.0.2.60;host=abc;proto=http, by=203.0.113.43;for=192.0.2.12;host=efg;proto=https, by=4.5.6.7;for=0.1.2.3;host=some-new-host;proto=https"
@@ -503,10 +503,10 @@
             headersOptions.UseXForwarded = false;
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(Headers.Names.Forwarded, $"for=192.0.2.60;proto=http;by=\"[{IpV6Sample}]:50\";host=abc, for=\"[{IpV6Sample}]\";proto=https;by=203.0.113.43;host=efg, for={IpV6Sample}");
-            context.Request.Headers.Add(Headers.Names.XForwardedFor, IpV6Sample.ToString());
-            context.Request.Headers.Add(Headers.Names.XForwardedHost, "some-host");
-            context.Request.Headers.Add(Headers.Names.XForwardedProto, "some-proto");
+            context.Request.Headers.Add(Names.Forwarded, $"for=192.0.2.60;proto=http;by=\"[{IpV6Sample}]:50\";host=abc, for=\"[{IpV6Sample}]\";proto=https;by=203.0.113.43;host=efg, for={IpV6Sample}");
+            context.Request.Headers.Add(Names.XForwardedFor, IpV6Sample.ToString());
+            context.Request.Headers.Add(Names.XForwardedHost, "some-host");
+            context.Request.Headers.Add(Names.XForwardedProto, "some-proto");
             context.Request.Host = new HostString("some-new-host");
             context.Request.Scheme = "https";
             context.Connection.RemoteIpAddress = IpV4Sample;
@@ -516,7 +516,7 @@
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(Headers.Names.Forwarded).Should().BeEquivalentTo(
+            message.Headers.GetValues(Names.Forwarded).Should().BeEquivalentTo(
                 new[]
                 {
                     "for=\"[1020:3040:5060:7080:9010:1112:1314:1516]\";host=some-host;proto=some-proto, by=\"[1020:3040:5060:7080:9010:1112:1314:1516]:50\";for=192.0.2.60;host=abc;proto=http, by=203.0.113.43;for=\"[1020:3040:5060:7080:9010:1112:1314:1516]\";host=efg;proto=https, for=\"[1020:3040:5060:7080:9010:1112:1314:1516]\", by=4.5.6.7;for=0.1.2.3;host=some-new-host;proto=https"
@@ -534,8 +534,8 @@
             headersOptions.UseXForwarded = true;
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(Headers.Names.Forwarded, $"for=\"[{IpV6Sample2}]\";proto=https;by=203.0.113.43");
-            context.Request.Headers.Add(Headers.Names.XForwardedFor, IpV6Sample.ToString());
+            context.Request.Headers.Add(Names.Forwarded, $"for=\"[{IpV6Sample2}]\";proto=https;by=203.0.113.43");
+            context.Request.Headers.Add(Names.XForwardedFor, IpV6Sample.ToString());
             context.Request.Host = new HostString("some-new-host");
             context.Request.Scheme = "https";
             context.Connection.RemoteIpAddress = IpV4Sample;
@@ -546,7 +546,7 @@
 
             // Assert
             message.Headers.GetValues(XForwardedForHeader).SingleOrDefault().Should().Be($"{IpV6Sample}, {IpV6Sample2}, {IpV4Sample}");
-            message.Headers.Contains(Headers.Names.Forwarded).Should().BeFalse();
+            message.Headers.Contains(Names.Forwarded).Should().BeFalse();
         }
 
         [TestMethod]
