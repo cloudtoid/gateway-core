@@ -1,6 +1,7 @@
 ﻿namespace Cloudtoid.GatewayCore.FunctionalTests
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Diagnostics;
     using System.Net.Http;
     using System.Text;
@@ -9,23 +10,103 @@
 
     internal sealed class TestExecutor
     {
-        private const string ProxyFile = "cloudtoid.gatewaycore.cli.exe";
+        private const string ProxyProcessName = "cloudtoid.gatewaycore.cli";
+        private static readonly string ProxyFile = ProxyProcessName + ".exe";
+        private static readonly Range ProxyPortRange = new Range(85, 185);
+        private static readonly int UpstreamPortStartIndex = ProxyPortRange.End.Value + 1;
+        private static readonly ConcurrentStack<HttpClient> HttpClients = new ConcurrentStack<HttpClient>();
 
-        internal async Task ExecuteAsync(HttpRequestMessage request, string? proxyConfigFile = null)
+        static TestExecutor()
         {
-            using (var proxyProcess = StartProxyServer(proxyConfigFile))
-            using (var httpClient = new HttpClient())
+            for (int i = ProxyPortRange.Start.Value; i < ProxyPortRange.End.Value; i++)
+                HttpClients.Push(CreateHttpClient(i));
+
+            var processes = Process.GetProcessesByName(ProxyProcessName);
+            foreach (var process in processes)
             {
-                var response = await httpClient.SendAsync(request);
+                try
+                {
+                    process.Kill(true);
+                }
+                catch
+                {
+                }
             }
         }
 
-        private static Process StartProxyServer(string? proxyConfigFile)
+        internal async Task ExecuteAsync(
+            HttpRequestMessage request,
+            Func<HttpResponseMessage, Task> responseValidator,
+            string? proxyConfigFile = null)
         {
-            var args = new StringBuilder("functional-test");
+            var httpClient = await GetHttpClientAsync();
+            try
+            {
+                var proxyPort = httpClient.BaseAddress.Port;
+                var upstreamPort = UpstreamPortStartIndex + proxyPort - ProxyPortRange.Start.Value;
+                using (var proxyProcess = StartProxyServer(proxyPort, upstreamPort, proxyConfigFile))
+                {
+                    try
+                    {
+                        HttpResponseMessage response;
+                        try
+                        {
+                            response = await httpClient.SendAsync(request);
+                        }
+                        catch
+                        {
+                            using (var temp = httpClient)
+                                httpClient = CreateHttpClient(httpClient.BaseAddress.Port);
+
+                            throw;
+                        }
+
+                        using (response)
+                            await responseValidator(response);
+                    }
+                    finally
+                    {
+                        try
+                        {
+                            proxyProcess.Kill(true);
+                        }
+                        catch
+                        {
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                HttpClients.Push(httpClient);
+            }
+        }
+
+        private static async Task<HttpClient> GetHttpClientAsync()
+        {
+            if (!HttpClients.TryPop(out var client) || client is null)
+                await Task.Delay(10);
+
+            return client!;
+        }
+
+        private static HttpClient CreateHttpClient(int port)
+        {
+            return new HttpClient
+            {
+                BaseAddress = new Uri($"http://localhost:{port}/api/"),
+                DefaultRequestVersion = new Version(2, 0),
+            };
+        }
+
+        private static Process StartProxyServer(int proxyPort, int upstreamPort, string? proxyConfigFile)
+        {
+            var args = new StringBuilder("functional-test")
+                .Append(" -pp ").Append(proxyPort)
+                .Append(" -up ").Append(upstreamPort);
 
             if (!string.IsNullOrEmpty(proxyConfigFile))
-                args.AppendSpace().Append("-c ").Append(proxyConfigFile);
+                args.Append(" -c ").Append(proxyConfigFile);
 
             var startInfo = new ProcessStartInfo(ProxyFile, args.ToString())
             {

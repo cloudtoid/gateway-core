@@ -4,13 +4,14 @@
     using System.IO;
     using System.Reflection;
     using Microsoft.Extensions.CommandLineUtils;
+    using Microsoft.Extensions.Configuration;
 
     public static class Program
     {
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
             var app = SetupCommandLineApplication();
-            Execute(app, args);
+            return Execute(app, args);
         }
 
         private static CommandLineApplication SetupCommandLineApplication()
@@ -69,14 +70,11 @@
                     if (!upstreamPortOption.HasValue() || !int.TryParse(upstreamPortOption.Value(), out int upstreamPort))
                         upstreamPort = Modes.FunctionalTest.OptionDefaults.UpstreamPort;
 
-                    string proxyConfigFile = proxyConfigFileOption.HasValue()
-                        ? proxyConfigFileOption.Value()
-                        : Modes.FunctionalTest.OptionDefaults.ProxyConfigFile;
+                    var proxyConfig = proxyConfigFileOption.HasValue()
+                        ? LoadConfig(command, proxyConfigFileOption.Value())
+                        : Modes.FunctionalTest.OptionDefaults.GetDefaultOptions(upstreamPort);
 
-                    if (!File.Exists(proxyConfigFile))
-                        throw new CommandParsingException(command, $"File '{proxyConfigFile}' cannot be found");
-
-                    await Modes.FunctionalTest.Startup.StartAsync(proxyPort, upstreamPort, proxyConfigFile);
+                    await Modes.FunctionalTest.Startup.StartAsync(proxyPort, upstreamPort, proxyConfig);
                     Console.WriteLine("CLI is running.");
                     Console.ReadKey(false);
                     return 0;
@@ -87,16 +85,31 @@
             return app;
         }
 
-        private static void Execute(CommandLineApplication app, string[] args)
+        private static int Execute(CommandLineApplication app, string[] args)
         {
             try
             {
                 app.Execute(args);
+                return 0;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+                return -1;
             }
+        }
+
+        private static IConfiguration LoadConfig(CommandLineApplication command, string configFile)
+        {
+            var file = new FileInfo(configFile);
+            if (!file.Exists)
+                throw new CommandParsingException(command, $"File '{configFile}' cannot be found.");
+
+            var configBuilder = new ConfigurationBuilder()
+                .SetBasePath(file.Directory.FullName)
+                .AddJsonFile(file.Name, optional: false, reloadOnChange: false);
+
+            return configBuilder.Build();
         }
     }
 }

@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(AppDotNetVersion)</TargetFrameworks>
+    <AssemblyName>Cloudtoid.GatewayCore.FunctionalTests</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

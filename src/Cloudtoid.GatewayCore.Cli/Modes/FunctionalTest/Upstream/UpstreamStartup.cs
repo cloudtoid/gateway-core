@@ -3,6 +3,7 @@ namespace Cloudtoid.GatewayCore.Cli.Modes.FunctionalTest.Upstream
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Server.Kestrel.Core;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using static Contract;
@@ -31,7 +32,7 @@ namespace Cloudtoid.GatewayCore.Cli.Modes.FunctionalTest.Upstream
         internal static IWebHost BuildWebHost(int port)
         {
             return WebHost.CreateDefaultBuilder()
-                .ConfigureKestrel(o => o.ListenLocalhost(port))
+                .ConfigureKestrel(o => o.ListenLocalhost(port, lo => lo.Protocols = HttpProtocols.Http1AndHttp2))
                 .UseStartup<UpstreamStartup>()
                 .Build();
         }
