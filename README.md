@@ -6,30 +6,34 @@
 
 A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 
-## TODO
+## V1 - TODOs
+
+- Add functional tests
+- Add support for certificates
+- Test HTTP/2
+- Write documentation
+- Add tests for trailing TrailingHeaderSetter
+- Enable github build actions
+- Publish NuGet
+- Add multiple Sample Projects
+- Test SSL end to end
+- Side by side tests with nginx
+- Kestrel should only listen on relevant routes defined in Options
+- Benchmark
+- Increase code coverage
+- 
+
+## Future version
+
 - Protocols
-  - REST
-  - WebSockets
-  - gRPC
-  - HTTP2
-  - SignalR
-- Platforms
-  - Kubernetes
-  - Service Fabric
-- Protection
-  - Authentication
-  - Authorization
-  - Rate Limiting
+  - Add support for web-sockets
+  - Test gRPC
+  - Test SignalR
 - Features
-  - Routing
   - Request Aggregation
   - Caching
   - Retry policies / QoS
   - Load Balancing
-  - Logging / Tracing / Correlation
-  - Headers / Method / Query String / Claims Transformation
-  - Fully extensible
-
-## Code TODOs:
-1- Add tests for the tariling TrailingHeaderSetter.
-1- 
+- Platforms
+  - Kubernetes
+  - Service Fabric

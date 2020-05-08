@@ -11,8 +11,8 @@
     {
         private readonly TestExecutor executor = new TestExecutor();
 
-        [TestMethod("Should reach upstream.")]
-        public async Task EchoTestAsync()
+        [TestMethod("Basic plumbing")]
+        public async Task BasicPlumbingTestAsync()
         {
             var request = new HttpRequestMessage(HttpMethod.Get, "echo?message=test");
             await executor.ExecuteAsync(
@@ -32,5 +32,20 @@
                     contentHeaders.ContentLength.Should().Be(4);
                 });
         }
+
+        // Tests
+        // - All HTTP methods (POST, DELETE, etc)
+        // - "Forwarded" headers
+        // - Routing
+        // - Failed HTTP requests with and without content/body
+        // - Expression evaluations
+        // - Timeout
+        // - ProxyException and exception handling
+        // - When no route is found, do not return 200
+        // - End to end tracing
+        // - Extra (unknown) request and response headers are just forwarded
+        // - Cookies (domain/host specific ones too)
+        // - Authentication
+        // - Test all known headers and their behavior
     }
 }
