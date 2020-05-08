@@ -2,48 +2,22 @@
 {
     using System;
     using System.Diagnostics;
+    using System.Net.Http;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
 
-    internal sealed class TestExecutor : IDisposable
+    internal sealed class TestExecutor
     {
         private const string ProxyFile = "cloudtoid.gatewaycore.cli.exe";
-        private Process? proxyProcess;
 
-        ~TestExecutor()
+        internal async Task ExecuteAsync(HttpRequestMessage request, string? proxyConfigFile = null)
         {
-            Dispose();
-        }
-
-        internal Task ExecuteAsync(string? proxyConfigFile = null)
-        {
-            proxyProcess = StartProxyServer(proxyConfigFile);
-            return Task.CompletedTask;
-        }
-
-        public void Dispose()
-        {
-            if (proxyProcess == null)
-                return;
-
-            try
+            using (var proxyProcess = StartProxyServer(proxyConfigFile))
+            using (var httpClient = new HttpClient())
             {
-                proxyProcess.Kill();
+                var response = await httpClient.SendAsync(request);
             }
-            catch
-            {
-            }
-
-            try
-            {
-                proxyProcess.Dispose();
-            }
-            catch
-            {
-            }
-
-            proxyProcess = null;
         }
 
         private static Process StartProxyServer(string? proxyConfigFile)
@@ -69,7 +43,7 @@
             {
                 process.OutputDataReceived += (_, e) =>
                 {
-                    if (e.Data.ContainsOrdinalIgnoreCase("CLI is running."))
+                    if (e.Data != null && e.Data.ContainsOrdinalIgnoreCase("CLI is running."))
                         signal.Set();
                 };
 
