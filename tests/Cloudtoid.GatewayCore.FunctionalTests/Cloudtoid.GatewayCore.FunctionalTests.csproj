@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Cloudtoid.GatewayCore\Cloudtoid.GatewayCore.csproj" />
+    <ProjectReference Include="..\..\src\Cloudtoid.GatewayCore.Cli\Cloudtoid.GatewayCore.Cli.csproj" />
   </ItemGroup>
 
 </Project>

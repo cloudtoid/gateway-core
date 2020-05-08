@@ -77,6 +77,7 @@
                         throw new CommandParsingException(command, $"File '{proxyConfigFile}' cannot be found");
 
                     await Modes.FunctionalTest.Startup.StartAsync(proxyPort, upstreamPort, proxyConfigFile);
+                    Console.WriteLine("CLI is running.");
                     Console.ReadKey(false);
                     return 0;
                 });
