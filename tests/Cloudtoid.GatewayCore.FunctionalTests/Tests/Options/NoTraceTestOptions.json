@@ -1,0 +1,22 @@
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "http://localhost:$upstream-port/upstream/",
+        "upstreamRequest": {
+          "httpVersion": "3.0",
+          "headers": {
+            "ignoreCorrelationId": true,
+            "ignoreCallId": true
+          }
+        },
+        "downstreamResponse": {
+          "headers": {
+            "includeCorrelationId": true,
+            "includeCallId": true
+          }
+        }
+      }
+    }
+  }
+}

@@ -21,5 +21,21 @@
 
             return message;
         }
+
+        [HttpGet("noTrace")]
+        public string NoTraceTest(string message)
+        {
+            HttpContext.Request.Headers.ContainsKey(Constants.CorrelationId).Should().BeFalse();
+            HttpContext.Request.Headers.ContainsKey(Constants.CallId).Should().BeFalse();
+            return message;
+        }
+
+        [HttpGet("customCorrelationId")]
+        public string CustomCorrelationIdTest(string message)
+        {
+            HttpContext.Request.Headers.TryGetValue("x-cor-custom", out var values).Should().BeTrue();
+            values.Should().HaveCount(1);
+            return message;
+        }
     }
 }

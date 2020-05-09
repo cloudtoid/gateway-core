@@ -40,6 +40,7 @@
         {
             var request = new HttpRequestMessage(HttpMethod.Get, "trace?message=test");
             await executor.ExecuteAsync(
+                "TraceTestOptions.json",
                 request,
                 async response =>
                 {
@@ -53,13 +54,51 @@
                 });
         }
 
+        [TestMethod("Should have correlation id and call id headers on response but not request")]
+        public async Task NoTraceTestAsync()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "noTrace?message=test");
+            await executor.ExecuteAsync(
+                "NoTraceTestOptions.json",
+                request,
+                async response =>
+                {
+                    response.IsSuccessStatusCode.Should().BeTrue();
+                    var result = await response.Content.ReadAsStringAsync();
+                    result.Should().Be("test");
+
+                    var headers = response.Headers;
+                    headers.Contains(Constants.CorrelationId).Should().BeTrue();
+                    headers.Contains(Constants.CallId).Should().BeTrue();
+                });
+        }
+
+        [TestMethod("Should have a custom correlation id header on both request and response")]
+        public async Task CorrelationIdTestAsync()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "customCorrelationId?message=test");
+            await executor.ExecuteAsync(
+                "CustomCorrelationIdTestOptions.json",
+                request,
+                async response =>
+                {
+                    response.IsSuccessStatusCode.Should().BeTrue();
+                    var result = await response.Content.ReadAsStringAsync();
+                    result.Should().Be("test");
+
+                    var headers = response.Headers;
+                    headers.Contains("x-cor-custom").Should().BeTrue();
+                });
+        }
+
         // Tests
         // - All HTTP methods (POST, DELETE, etc)
         // - "Forwarded" headers
         // - Routing
         // - Failed HTTP requests with and without content/body
         // - Expression evaluations
-        // - Timeout
+        // - Timeout (both at httpClient to upstream and inside of proxy)
+        // - Auto redirects
         // - ProxyException and exception handling
         // - When no route is found, do not return 200
         // - End to end tracing

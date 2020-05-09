@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.IO;
     using System.Net.Http;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Configuration;
@@ -19,19 +20,33 @@
                 HttpClients.Push(CreateHttpClient(i));
         }
 
+        internal Task ExecuteAsync(
+            string gatewayConfigFile,
+            HttpRequestMessage request,
+            Func<HttpResponseMessage, Task> responseValidator)
+        {
+            return ExecuteAsync(
+                request,
+                responseValidator,
+                LoadGatewayConfig(gatewayConfigFile));
+        }
+
         internal async Task ExecuteAsync(
             HttpRequestMessage request,
             Func<HttpResponseMessage, Task> responseValidator,
-            IConfiguration? proxyConfig = null)
+            IConfiguration? gatewayConfig = null)
         {
             var httpClient = await GetHttpClientAsync();
             try
             {
                 var proxyPort = httpClient.BaseAddress.Port;
                 var upstreamPort = UpstreamPortStartIndex + proxyPort - ProxyPortRange.Start.Value;
-                proxyConfig ??= GetDefaultOptions(upstreamPort);
 
-                await using (var pipeline = await StartPipelineAsync(proxyPort, upstreamPort, proxyConfig))
+                gatewayConfig = gatewayConfig is null
+                    ? GetDefaultOptions(upstreamPort)
+                    : UpdateUpstreamPort(gatewayConfig, upstreamPort);
+
+                await using (var pipeline = await StartPipelineAsync(proxyPort, upstreamPort, gatewayConfig))
                 {
                     HttpResponseMessage response;
                     try
@@ -88,6 +103,32 @@
             };
 
             return new ConfigurationBuilder().AddInMemoryCollection(options).Build();
+        }
+
+        private static IConfiguration UpdateUpstreamPort(IConfiguration config, int upstreamPort)
+        {
+            var upstreamPortStr = upstreamPort.ToStringInvariant();
+            foreach (var section in config.GetSection("routes").GetChildren())
+            {
+                var to = section.GetSection("proxy:to");
+                if (to.Exists())
+                    to.Value = to.Value.ReplaceOrdinal("$upstream-port", upstreamPortStr);
+            }
+
+            return config;
+        }
+
+        private static IConfiguration LoadGatewayConfig(string gatewayConfigFile)
+        {
+            var file = new FileInfo("Tests/Options/" + gatewayConfigFile);
+            if (!file.Exists)
+                throw new FileNotFoundException($"File '{gatewayConfigFile}' cannot be found.");
+
+            var configBuilder = new ConfigurationBuilder()
+                .SetBasePath(file.Directory.FullName)
+                .AddJsonFile(file.Name, optional: false, reloadOnChange: false);
+
+            return configBuilder.Build();
         }
     }
 }

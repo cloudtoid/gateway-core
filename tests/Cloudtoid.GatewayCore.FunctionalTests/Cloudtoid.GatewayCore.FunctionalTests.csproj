@@ -9,4 +9,16 @@
     <ProjectReference Include="..\..\src\Cloudtoid.GatewayCore\Cloudtoid.GatewayCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Tests\Options\CustomCorrelationIdTestOptions.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Tests\Options\TraceTestOptions.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Tests\Options\NoTraceTestOptions.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
