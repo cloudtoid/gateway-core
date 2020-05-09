@@ -16,12 +16,16 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 - Enable github build actions
 - Publish NuGet
 - Add multiple Sample Projects
+  - Basic/simple
+  - Multiple kestrel servers
+  - Advanced extensibility
+  - Use of options
+  - Named HttpClient Management from the outside
 - Test SSL end to end
 - Side by side tests with nginx
 - Kestrel should only listen on relevant routes defined in Options
 - Benchmark
 - Increase code coverage
-- 
 
 ## Future version
 

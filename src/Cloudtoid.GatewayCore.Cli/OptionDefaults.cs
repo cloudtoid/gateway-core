@@ -1,4 +1,4 @@
-﻿namespace Cloudtoid.GatewayCore.Cli.Modes.FunctionalTest
+﻿namespace Cloudtoid.GatewayCore.Cli
 {
     using System;
     using System.Collections.Generic;
@@ -6,7 +6,6 @@
 
     internal static class OptionDefaults
     {
-        internal const int UpstreamPort = 85;
         internal const int ProxyPort = 86;
 
         internal static IConfiguration GetDefaultOptions(int upstreamPort)

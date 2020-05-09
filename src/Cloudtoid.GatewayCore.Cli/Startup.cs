@@ -1,10 +1,12 @@
-namespace Cloudtoid.GatewayCore.Cli.Modes.Default
+namespace Cloudtoid.GatewayCore.Cli
 {
     using System.Threading.Tasks;
     using Cloudtoid.GatewayCore;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Server.Kestrel.Core;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using static Contract;
@@ -29,9 +31,11 @@ namespace Cloudtoid.GatewayCore.Cli.Modes.Default
             app.UseGatewayCore();
         }
 
-        internal static async Task StartAsync()
+        internal static Task StartAsync(int port, IConfiguration config)
         {
-            await WebHost.CreateDefaultBuilder()
+            return WebHost.CreateDefaultBuilder()
+                .ConfigureServices(s => s.Configure<GatewayOptions>(config))
+                .ConfigureKestrel(o => o.ListenLocalhost(port, lo => lo.Protocols = HttpProtocols.Http1AndHttp2))
                 .UseStartup<Startup>()
                 .Build()
                 .StartAsync();

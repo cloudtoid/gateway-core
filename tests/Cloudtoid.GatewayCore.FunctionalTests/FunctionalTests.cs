@@ -25,11 +25,31 @@
 
                     var headers = response.Headers;
                     headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new[] { "1.1 gwcore" });
+                    headers.Contains(Constants.CorrelationId).Should().BeFalse();
+                    headers.Contains(Constants.CallId).Should().BeFalse();
 
                     var contentHeaders = response.Content.Headers;
                     contentHeaders.ContentType.MediaType.Should().Be("text/plain");
                     contentHeaders.ContentType.CharSet.Should().Be("utf-8");
                     contentHeaders.ContentLength.Should().Be(4);
+                });
+        }
+
+        [TestMethod("Should have correlation id and call id headers on both request and response")]
+        public async Task TraceTestAsync()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "trace?message=test");
+            await executor.ExecuteAsync(
+                request,
+                async response =>
+                {
+                    response.IsSuccessStatusCode.Should().BeTrue();
+                    var result = await response.Content.ReadAsStringAsync();
+                    result.Should().Be("test");
+
+                    var headers = response.Headers;
+                    headers.Contains(Constants.CorrelationId).Should().BeTrue();
+                    headers.Contains(Constants.CallId).Should().BeTrue();
                 });
         }
 

@@ -10,11 +10,10 @@
   "profiles": {
     "Cloudtoid.GatewayCore.Cli": {
       "commandName": "Project",
-      "commandLineArgs": "functional-test",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      },
+      }
     }
   }
 }
