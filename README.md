@@ -58,7 +58,6 @@ A request originated from a client can include a correlation-id header that is p
         "to": "http://domain.com/upstream/",
         "correlationIdHeader": "x-request-id",
       }
-    ...
 ```
 
 In the case of a missing correlation-id header, GatewayCore generates a unique identifier instead.
@@ -75,7 +74,6 @@ The correlation-id header can also be added to the response message by explicitl
           "headers": {
             "includeCorrelationId": true
           }
-        ...
 ```
 
 It is also possible to omit this header from the request to the proxied server using `'ignoreCorrelationId'` as shown below:
@@ -91,7 +89,6 @@ It is also possible to omit this header from the request to the proxied server u
             "ignoreCorrelationId": true,
           }
         }
-      ...
 ```
 
 ### Call-id header
@@ -114,7 +111,6 @@ A unique call-id is generated and forwarded for every request received by Gatewa
             "includeCallId": true
           }
         }
-      ...
 ```
 
 > An inbound call-id header received from the client or the proxied server is silently ignored.
