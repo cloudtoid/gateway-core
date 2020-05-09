@@ -65,24 +65,6 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_AllowHeaderWithEmptyValue_HeaderIsKeptAsync()
-        {
-            // Arrange
-            var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes["/api/"].Proxy!.DownstreamResponse.Headers;
-            headersOptions.AllowHeadersWithEmptyValue = true;
-
-            var message = new HttpResponseMessage();
-            message.Headers.Add("X-Empty-Header", string.Empty);
-
-            // Act
-            var response = await SetHeadersAsync(message, options);
-
-            // Assert
-            response.Headers.ContainsKey("X-Empty-Header").Should().BeTrue();
-        }
-
-        [TestMethod]
         public async Task SetHeadersAsync_ContentHeaderValue_HeaderIsNotIncludedAsync()
         {
             // Arrange
