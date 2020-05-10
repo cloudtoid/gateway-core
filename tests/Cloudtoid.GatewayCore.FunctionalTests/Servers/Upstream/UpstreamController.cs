@@ -36,7 +36,7 @@
         [HttpGet("customCorrelationId")]
         public string CustomCorrelationIdTest(string message)
         {
-            HttpContext.Request.Headers.TryGetValue("x-cor-custom", out var values).Should().BeTrue();
+            HttpContext.Request.Headers.TryGetValue("x-c-custom", out var values).Should().BeTrue();
             values.Should().HaveCount(1);
             return message;
         }
@@ -126,8 +126,8 @@
             var values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.Forwarded);
             values.Should().HaveCount(4);
             values[0].Should().Be("for=some-for;host=some-host;proto=some-proto");
-            values[1].Should().Be("by=203.0.113.43;for=192.0.2.60;host=abc;proto=http");
-            values[2].Should().Be("by=203.0.113.43;for=192.0.2.12;host=efg;proto=https");
+            values[1].Should().Be("by=203.0.113.43;for=192.0.2.60;host=test;proto=http");
+            values[2].Should().Be("by=203.0.113.43;for=192.0.2.12;host=test2;proto=https");
             RemovePortFromHostInForwarded(values[3]).Should().Be("by=\"[::1]\";for=\"[::1]\";host=localhost;proto=http");
 
             HttpContext.Request.Headers.ContainsKey(Constants.XForwardedFor).Should().BeFalse();

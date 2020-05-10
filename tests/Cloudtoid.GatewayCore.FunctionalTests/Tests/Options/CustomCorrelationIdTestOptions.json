@@ -3,7 +3,7 @@
     "/api/": {
       "proxy": {
         "to": "http://localhost:$upstream-port/upstream/",
-        "correlationIdHeader": "x-cor-custom",
+        "correlationIdHeader": "x-c-custom",
         "downstreamResponse": {
           "headers": {
             "includeCorrelationId": true
