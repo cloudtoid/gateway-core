@@ -1,0 +1,10 @@
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "http://localhost:$upstream-port/upstream/",
+        "proxyName": "custom-proxy"
+      }
+    }
+  }
+}

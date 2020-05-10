@@ -93,7 +93,7 @@ It is also possible to omit this header from the request to the proxied server u
 
 ### Call-id header
 
-A unique call-id is generated and forwarded for every request received by GatewayCore. The header that is appended is `x-call-id` and can be removed from outbound upstream requests using `ignoreCallId`. It can also be included in responses to the client by enabling `includeCallId` as shown in the sample below:
+A unique call-id is generated and forwarded for every request received by GatewayCore. The header that is appended is `x-call-id` and can be removed from outbound upstream requests using `ignoreCallId`. It can also be included in responses sent to the client by enabling `includeCallId` as shown in the sample below:
 
 ```json
 {
@@ -115,3 +115,50 @@ A unique call-id is generated and forwarded for every request received by Gatewa
 
 > An inbound call-id header received from the client or the proxied server is silently ignored.
 
+## Tracking
+
+A proxy typically uses the [HTTP Via header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via) for tracking message forwards, avoiding request loops, and identifying the protocol capabilities of senders along the request/response chain.
+
+This header is a comma-separated list of proxies along the message chain with the closest proxy to the sender being the left-most value.
+
+The value added by GatewayCore includes the pseudonym of the proxy. This name is `gwcore` but can be customized, as shown below:
+
+```json
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "http://domain.com/upstream/",
+        "proxyName": "my-proxy-name",
+```
+
+GatewayCore appends one of the following values:
+
+| Sender's protocol | Value | Example |
+|:--- |:--- |:-- |
+| HTTP/1.0 | 1.0 \<proxy-name\> | 1.0 gwcore |
+| HTTP/1.1 | 1.1 \<proxy-name\> | 1.1 gwcore |
+| HTTP/2.0 | 2.0 \<proxy-name\> | 2.0 gwcore |
+| HTTP/X.Y | X.Y \<proxy-name\> | X.Y gwcore |
+| \<protocol>/\<version> | \<protocol>/\<version> \<proxy-name\> |  
+
+> As per the above, GatewayCore omits the protocol if it is the HTTP protocol.
+
+The Via header is included by default on both the request to the proxied server and the response to the client. You can change this behavior using `ignoreVia` as shown below:
+
+```json
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "http://domain.com/upstream/",
+        "upstreamRequest": {
+          "headers": {
+            "ignoreVia": true,
+            }
+          }
+        },
+        "downstreamResponse": {
+          "headers": {
+            "ignoreVia": true,
+```

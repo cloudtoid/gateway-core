@@ -1,0 +1,19 @@
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "http://localhost:$upstream-port/upstream/",
+        "upstreamRequest": {
+          "headers": {
+            "ignoreVia": true,
+          }
+        },
+        "downstreamResponse": {
+          "headers": {
+            "ignoreVia": true,
+          }
+        }
+      }
+    }
+  }
+}
