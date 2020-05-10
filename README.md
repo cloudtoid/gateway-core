@@ -198,4 +198,3 @@ It is also possible to not include any of these headers on proxy's outbound requ
           "headers": {
             "ignoreForwarded": true,
 ```
-

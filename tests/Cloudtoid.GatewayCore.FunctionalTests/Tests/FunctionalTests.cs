@@ -277,11 +277,10 @@
         // - Auto redirects
         // - ProxyException and exception handling
         // - When no route is found, do not return 200
-        // - End to end tracing
         // - Extra (unknown) request and response headers are just forwarded
         // - Cookies (domain/host specific ones too)
         // - Authentication
         // - Test all known headers and their behavior
-        // - Test a via header and HTTPS
+        // - Test Via header and HTTPS
     }
 }
