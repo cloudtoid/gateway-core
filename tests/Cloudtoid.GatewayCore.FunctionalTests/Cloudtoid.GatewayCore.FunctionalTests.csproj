@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(AppDotNetVersion)</TargetFrameworks>
-    <AssemblyName>Cloudtoid.GatewayCore.FunctionalTests</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,27 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Tests\Options\CustomCorrelationIdTestOptions.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Tests\Options\CallIdTestOptions.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Tests\Options\OriginalCorrelationIdTestOptions.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Tests\Options\ViaCustomProxyNameTestOptions.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Tests\Options\NoViaTestOptions.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Tests\Options\TraceTestOptions.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Tests\Options\NoTraceTestOptions.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Update="Tests\Options\*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

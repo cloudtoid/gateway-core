@@ -1,0 +1,15 @@
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "http://localhost:$upstream-port/upstream/",
+        "upstreamRequest": {
+          "headers": {
+            "useXForwarded": true,
+            "ignoreForwarded": true
+          }
+        }
+      }
+    }
+  }
+}

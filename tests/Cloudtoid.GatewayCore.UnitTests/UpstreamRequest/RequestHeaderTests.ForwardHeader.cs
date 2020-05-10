@@ -333,7 +333,7 @@
             headersOptions.UseXForwarded = true;
 
             var context = new DefaultHttpContext();
-            context.Request.Headers.Add(Names.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
+            context.Request.Headers.Add(Names.Forwarded, "for=192.0.2.60;proto=some-proto;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
             context.Connection.RemoteIpAddress = IpV4Sample;
             context.Connection.LocalIpAddress = IpV4Sample2;
             context.Request.Host = new HostString("some-host");
@@ -344,8 +344,8 @@
 
             // Assert
             message.Headers.GetValues(XForwardedForHeader).SingleOrDefault().Should().Be($"192.0.2.60, 192.0.2.12, {IpV4Sample}");
-            message.Headers.GetValues(XForwardedHostHeader).SingleOrDefault().Should().Be("some-host");
-            message.Headers.GetValues(XForwardedProtoHeader).SingleOrDefault().Should().Be("http");
+            message.Headers.GetValues(XForwardedHostHeader).SingleOrDefault().Should().Be("abc");
+            message.Headers.GetValues(XForwardedProtoHeader).SingleOrDefault().Should().Be("some-proto");
         }
 
         [TestMethod]
@@ -363,7 +363,7 @@
             context.Request.Headers.Add(Names.XForwardedProto, "some-proto");
             context.Connection.RemoteIpAddress = IpV4Sample;
             context.Connection.LocalIpAddress = IpV4Sample2;
-            context.Request.Host = new HostString("some-host");
+            context.Request.Host = new HostString("host");
             context.Request.Scheme = "http";
 
             // Act
@@ -372,7 +372,7 @@
             // Assert
             message.Headers.GetValues(XForwardedForHeader).SingleOrDefault().Should().Be($"some-for, {IpV4Sample}");
             message.Headers.GetValues(XForwardedHostHeader).SingleOrDefault().Should().Be("some-host");
-            message.Headers.GetValues(XForwardedProtoHeader).SingleOrDefault().Should().Be("http");
+            message.Headers.GetValues(XForwardedProtoHeader).SingleOrDefault().Should().Be("some-proto");
         }
 
         [TestMethod]
@@ -400,7 +400,7 @@
             // Assert
             message.Headers.GetValues(XForwardedForHeader).SingleOrDefault().Should().Be($"some-for, 192.0.2.60, 192.0.2.12, {IpV4Sample}");
             message.Headers.GetValues(XForwardedHostHeader).SingleOrDefault().Should().Be("some-host");
-            message.Headers.GetValues(XForwardedProtoHeader).SingleOrDefault().Should().Be("http");
+            message.Headers.GetValues(XForwardedProtoHeader).SingleOrDefault().Should().Be("some-proto");
         }
 
         [TestMethod]
