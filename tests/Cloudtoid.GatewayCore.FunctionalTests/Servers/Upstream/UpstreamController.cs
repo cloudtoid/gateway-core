@@ -94,5 +94,26 @@
             HttpContext.Response.Headers.Add(HeaderNames.Via, "2.0 first-leg");
             return message;
         }
+
+        [HttpGet("forwarded")]
+        public string ForwardedTest(string message)
+        {
+            var values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.Forwarded);
+            var forwarded = RemovePortFromHostInForwarded(values.Single());
+            forwarded.Should().Be("by=\"[::1]\";for=\"[::1]\";host=localhost;proto=http");
+
+            HttpContext.Request.Headers.ContainsKey(Constants.XForwardedFor).Should().BeFalse();
+            HttpContext.Request.Headers.ContainsKey(Constants.XForwardedHost).Should().BeFalse();
+            HttpContext.Request.Headers.ContainsKey(Constants.XForwardedProto).Should().BeFalse();
+
+            return message;
+        }
+
+        private static string RemovePortFromHostInForwarded(string forwarded)
+        {
+            var endIndex = forwarded.LastIndexOf(';');
+            var startIndex = forwarded.LastIndexOf(':', endIndex);
+            return forwarded.Substring(0, startIndex) + forwarded.Substring(endIndex, forwarded.Length - endIndex);
+        }
     }
 }

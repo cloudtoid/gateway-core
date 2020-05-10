@@ -12,6 +12,7 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 - Add support for certificates
 - Test HTTP/2
 - Write documentation
+  - Add a table of all config values with a description and links/anchors from the rest of the doc
 - Add tests for trailing TrailingHeaderSetter
 - Enable github build actions
 - Publish NuGet
@@ -172,7 +173,7 @@ The information included in these headers typically consists of the IP address o
 
 > IP V6 addresses are quoted and enclosed in square brackets.
 
-GatewayCore uses the `Forwarded` header by default and replaces all inbound `X-Forwarded-*` headers. You can use `useXForwarded` to reverse this behavior and prefer `X-Forwarded-*` headers instead:
+GatewayCore uses the `Forwarded` header by default and replaces all inbound `X-Forwarded-*` headers. You can use `useXForwarded` to reverse this behavior and to prefer `X-Forwarded-*` headers instead:
 
 ```json
 {

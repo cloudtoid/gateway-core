@@ -187,6 +187,20 @@
                 });
         }
 
+        [TestMethod("Should have a Forwarded header")]
+        public async Task ForwardedTestAsync()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "forwarded?message=test");
+            await executor.ExecuteAsync(
+                request,
+                response => EnsureResponseSucceededAsync(response));
+        }
+
+        // Forwarded Tests
+        // - Forwarded with inbound X-Forwarded-*
+        // - X-Forwarded-* with inbound X-Forwarded-*
+        // - X-Forwarded-* with inbound Forwarded
+
         private static async Task EnsureResponseSucceededAsync(HttpResponseMessage response)
         {
             response.IsSuccessStatusCode.Should().BeTrue();
