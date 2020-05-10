@@ -287,20 +287,30 @@
         {
             if (headers.TryGetValue(Names.XForwardedFor, out var forValues) && forValues.Count > 0)
             {
-                headers.TryGetValue(Names.XForwardedHost, out var hostValues);
-                headers.TryGetValue(Names.XForwardedProto, out var protoValues);
-
-                string? host = hostValues.FirstOrDefault();
-                string? proto = protoValues.FirstOrDefault();
+                bool isFirst = true;
                 foreach (var @for in forValues)
                 {
-                    if (!string.IsNullOrEmpty(@for))
-                        yield return new ForwardedHeaderValue(@for: @for, host: host, proto: proto);
+                    if (string.IsNullOrEmpty(@for))
+                        continue;
+
+                    if (!isFirst)
+                    {
+                        yield return new ForwardedHeaderValue(@for: @for);
+                        continue;
+                    }
+
+                    isFirst = false;
+                    headers.TryGetValue(Names.XForwardedHost, out var hostValues);
+                    headers.TryGetValue(Names.XForwardedProto, out var protoValues);
+
+                    yield return new ForwardedHeaderValue(
+                        @for: @for,
+                        host: hostValues.FirstOrDefault(),
+                        proto: protoValues.FirstOrDefault());
                 }
             }
 
             var forwardedValues = headers.GetCommaSeparatedValues(Names.Forwarded);
-
             if (forwardedValues.Length > 0)
             {
                 foreach (var value in forwardedValues)

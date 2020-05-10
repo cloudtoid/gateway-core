@@ -46,7 +46,7 @@
             GetCurrentForwardedHeaderValues(headers).Should().BeEquivalentTo(new[]
             {
                 new ForwardedHeaderValue(@for: IpV4Sample.ToString(), proto: "http", host: "some-host"),
-                new ForwardedHeaderValue(@for: IpV4Sample2.ToString(), proto: "http", host: "some-host"),
+                new ForwardedHeaderValue(@for: IpV4Sample2.ToString()),
             });
 
             headers = new HeaderDictionary
@@ -70,7 +70,7 @@
             GetCurrentForwardedHeaderValues(headers).Should().BeEquivalentTo(new[]
             {
                 new ForwardedHeaderValue(@for: IpV4Sample.ToString(), proto: "http", host: "some-host"),
-                new ForwardedHeaderValue(@for: IpV4Sample2.ToString(), proto: "http", host: "some-host"),
+                new ForwardedHeaderValue(@for: IpV4Sample2.ToString()),
                 new ForwardedHeaderValue(by: "6.5.4.3", @for: "9.8.7.6", proto: "https", host: "new-host"),
             });
 
@@ -85,7 +85,7 @@
             GetCurrentForwardedHeaderValues(headers).Should().BeEquivalentTo(new[]
             {
                 new ForwardedHeaderValue(@for: IpV4Sample.ToString(), proto: "http", host: "some-host"),
-                new ForwardedHeaderValue(@for: IpV4Sample2.ToString(), proto: "http", host: "some-host"),
+                new ForwardedHeaderValue(@for: IpV4Sample2.ToString()),
                 new ForwardedHeaderValue("203.0.113.43", "192.0.2.60", "abc", "http"),
                 new ForwardedHeaderValue("203.0.113.43", "192.0.2.60", "efg", "https")
             });
