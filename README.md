@@ -55,9 +55,8 @@ A request originated from a client can include a correlation-id header that is p
   "routes": {
     "/api/": {
       "proxy": {
-        "to": "http://domain.com/upstream/",
+        "to": "http://upstream/v1/",
         "correlationIdHeader": "x-request-id",
-      }
 ```
 
 In the case of a missing correlation-id header, GatewayCore generates a unique identifier instead.
@@ -69,11 +68,10 @@ The correlation-id header can also be added to the response message by explicitl
   "routes": {
     "/api/": {
       "proxy": {
-        "to": "http://domain.com/upstream/",
+        "to": "http://upstream/v1/",
         "downstreamResponse": {
           "headers": {
             "includeCorrelationId": true
-          }
 ```
 
 It is also possible to omit this header from the request to the proxied server using `'ignoreCorrelationId'` as shown below:
@@ -83,12 +81,10 @@ It is also possible to omit this header from the request to the proxied server u
   "routes": {
     "/api/": {
       "proxy": {
-        "to": "http://domain.com/upstream/",
+        "to": "http://upstream/v1/",
         "upstreamRequest": {
           "headers": {
             "ignoreCorrelationId": true,
-          }
-        }
 ```
 
 ### Call-id header
@@ -100,7 +96,7 @@ A unique call-id is generated and forwarded for every request received by Gatewa
   "routes": {
     "/api/": {
       "proxy": {
-        "to": "http://domain.com/upstream/",
+        "to": "http://upstream/v1/",
         "upstreamRequest": {
           "headers": {
             "ignoreCallId": true
@@ -109,15 +105,17 @@ A unique call-id is generated and forwarded for every request received by Gatewa
         "downstreamResponse": {
           "headers": {
             "includeCallId": true
-          }
-        }
 ```
 
 > An inbound call-id header received from the client or the proxied server is silently ignored.
 
-## Tracking
+## Route tracking
 
-A proxy typically uses the [HTTP Via header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via) for tracking message forwards, avoiding request loops, and identifying the protocol capabilities of senders along the request/response chain.
+There are two types of route tracking, one that includes information about the proxies and one that provides for client details.
+
+### Via header
+
+A proxy typically uses the [`Via`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via) header for tracking message forwards, avoiding request loops, and identifying the protocol capabilities of senders along the request/response chain.
 
 This header is a comma-separated list of proxies along the message chain with the closest proxy to the sender being the left-most value.
 
@@ -128,7 +126,7 @@ The value added by GatewayCore includes the pseudonym of the proxy. This name is
   "routes": {
     "/api/": {
       "proxy": {
-        "to": "http://domain.com/upstream/",
+        "to": "http://upstream/v1/",
         "proxyName": "my-proxy-name",
 ```
 
@@ -151,7 +149,7 @@ The Via header is included by default on both the request to the proxied server 
   "routes": {
     "/api/": {
       "proxy": {
-        "to": "http://domain.com/upstream/",
+        "to": "http://upstream/v1/",
         "upstreamRequest": {
           "headers": {
             "ignoreVia": true,
@@ -162,3 +160,41 @@ The Via header is included by default on both the request to the proxied server 
           "headers": {
             "ignoreVia": true,
 ```
+
+### Forwarded category of headers
+
+The forwared class of headers contains information from the client-facing side of proxy servers that is altered or lost when a proxy is involved in the path of the request. This information is passed on using one of these techniques:
+
+1. The [`Forwarded`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded) header is what GatewayCore uses by default. This is the standardized version of the header.
+1. The [`X-Forwarded-For`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For), [`X-Forwarded-Host`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Host), and [`X-Forwarded-Proto`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Proto) headers which are considered the [de-facto standard](https://en.wikipedia.org/wiki/De_facto_standard) versions of the [`Forwared`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded) header.
+
+The information included in these headers typically consists of the IP address of the client, the IP address where the request came into the proxy server, the [`Host`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Host) request header field as received by the proxy, and the protocol used by the request (typically "http" or "https").
+
+> IP V6 addresses are quoted and enclosed in square brackets.
+
+GatewayCore uses the `Forwarded` header by default and replaces all inbound `X-Forwarded-*` headers. You can use `useXForwarded` to reverse this behavior and prefer `X-Forwarded-*` headers instead:
+
+```json
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "http://upstream/v1/",
+        "upstreamRequest": {
+          "headers": {
+            "useXForwarded": true,
+```
+
+It is also possible to not include any of these headers on proxy's outbound request by using `ignoreForwarded` as per below:
+
+```json
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "http://upstream/v1/",
+        "upstreamRequest": {
+          "headers": {
+            "ignoreForwarded": true,
+```
+
