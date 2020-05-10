@@ -136,13 +136,13 @@ GatewayCore appends one of the following values:
 
 | Sender's protocol | Value | Example |
 |:--- |:--- |:-- |
-| HTTP/1.0 | 1.0 \<proxy-name\> | 1.0 gwcore |
-| HTTP/1.1 | 1.1 \<proxy-name\> | 1.1 gwcore |
-| HTTP/2.0 | 2.0 \<proxy-name\> | 2.0 gwcore |
-| HTTP/X.Y | X.Y \<proxy-name\> | X.Y gwcore |
-| \<protocol>/\<version> | \<protocol>/\<version> \<proxy-name\> |  
+| HTTP/1.0 | `1.0 \<proxy-name\>` | `1.0 gwcore` |
+| HTTP/1.1 | `1.1 \<proxy-name\>` | `1.1 gwcore` |
+| HTTP/2.0 | `2.0 \<proxy-name\>` | `2.0 gwcore` |
+| HTTP/X.Y | `X.Y \<proxy-name\>` | `X.Y gwcore` |
+| \<protocol>/\<version> | `<protocol>\<version> <proxy-name>` |  
 
-> As per the above, GatewayCore omits the protocol if it is the HTTP protocol.
+> As per the above, GatewayCore omits the protocol for HTTP requests and responses.
 
 The Via header is included by default on both the request to the proxied server and the response to the client. You can change this behavior using `ignoreVia` as shown below:
 
