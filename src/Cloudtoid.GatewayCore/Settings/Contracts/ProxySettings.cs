@@ -33,6 +33,7 @@
         public string GetProxyName(ProxyContext proxyContext)
         {
             var eval = context.Evaluate(proxyContext, proxyNameExpression);
+
             return string.IsNullOrWhiteSpace(eval)
                 ? Defaults.Route.Proxy.ProxyName
                 : eval;

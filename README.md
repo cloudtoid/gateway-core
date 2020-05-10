@@ -13,6 +13,7 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 - Test HTTP/2
 - Write documentation
   - Add a table of all config values with a description and links/anchors from the rest of the doc
+  - URL Pattern Matching
 - Add tests for trailing TrailingHeaderSetter
 - Enable github build actions
 - Publish NuGet
@@ -198,3 +199,17 @@ It is also possible to not include any of these headers on proxy's outbound requ
           "headers": {
             "ignoreForwarded": true,
 ```
+
+## Gateway settings and options
+
+- how to pass using DI
+- A table of what they are
+
+| Key | Can be an expression | Default value | Description |
+|:--- |:---:|:-- |:-- |
+| `system` | | | This is the section that contains all system wide configurations. |
+| `system:routeCacheMaxCount` | | `100,000` cache entries| This is the maximum number of mappings between "inbound downstream request path" and "outbound upstream request URL" that can be cached in memory. |
+| `routes` | | | This is the section in which proxy routes are defined. |
+| `routes:<path>` | | | This is the url path pattern that if matched, the request is proxied to the address defined by it's `to` property. |
+| `routes:<path>:to` | `x` | | This is an expression that defines the URL of the upstream server to which the downstream request is forwarded to. This is a required property. |
+| `routes:<path>:proxyName` | `x` | `gwcore` | This is an expression that defines the name of this proxy. This value is used in the Via HTTP header send on the outbound upstream request, and also the outbound downstream response. If a value is specified, an `x-gwcore-proxy-name` header with this value is added to the outbound upstream request. |

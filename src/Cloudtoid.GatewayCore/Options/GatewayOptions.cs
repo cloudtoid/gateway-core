@@ -20,7 +20,8 @@
         public sealed class SystemOptions
         {
             /// <summary>
-            /// Gets or sets the number of "inbound downstream request path" to "outbound upstream request URL" that are cached in memory.
+            /// Gets or sets the maximum number of mappings between "inbound downstream request path" and
+            /// "outbound upstream request URL" that can be cached in memory.
             /// The default value is 100,000 entries.
             /// </summary>
             public int? RouteCacheMaxCount { get; set; }
@@ -36,13 +37,13 @@
             public sealed class ProxyOptions
             {
                 /// <summary>
-                /// Gets or sets the upstream server where the inbound downstream request is forwarded to.
+                /// Gets or sets an expression that defines the URL of the upstream server to which the downstream request is forwarded to.
                 /// This is a required property.
                 /// </summary>
                 public string? To { get; set; }
 
                 /// <summary>
-                /// This is the name of this proxy which is used in the following scenarios:
+                /// Gets or sets an expression that defines the name of this proxy. This name is used in the following scenarios:
                 /// <list type="bullet">
                 /// <item>This value is used in the Via HTTP header send on the outbound upstream request, and also the outbound downstream response. The default value is <c>"gwcore"</c></item>
                 /// <item>If this is not null, an "x-gwcore-proxy-name" header with this value is added to the outbound upstream request.</item>

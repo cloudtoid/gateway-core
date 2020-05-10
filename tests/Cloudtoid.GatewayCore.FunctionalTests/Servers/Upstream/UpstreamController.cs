@@ -82,6 +82,10 @@
         {
             HttpContext.Request.Headers.TryGetValue(HeaderNames.Via, out var values).Should().BeTrue();
             values.Should().BeEquivalentTo(new[] { "1.1 custom-proxy" });
+
+            HttpContext.Request.Headers.TryGetValue(Constants.ProxyName, out values).Should().BeTrue();
+            values.Should().BeEquivalentTo(new[] { "custom-proxy" });
+
             return message;
         }
 
