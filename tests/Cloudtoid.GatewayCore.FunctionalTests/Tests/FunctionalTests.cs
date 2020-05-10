@@ -226,7 +226,7 @@
         public async Task ForwardedMultiProxiesTestAsync()
         {
             var request = new HttpRequestMessage(HttpMethod.Get, "forwardedMultiProxies?message=test");
-            request.Headers.Add(Constants.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
+            request.Headers.Add(Constants.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host-test, for=192.0.2.12;proto=https;by=203.0.113.43;host=efg");
             request.Headers.Add(Constants.XForwardedFor, "some-for");
             request.Headers.Add(Constants.XForwardedHost, "some-host");
             request.Headers.Add(Constants.XForwardedProto, "some-proto");
@@ -250,7 +250,7 @@
         public async Task XForwardedMultiProxiesTestAsync()
         {
             var request = new HttpRequestMessage(HttpMethod.Get, "xForwardedMultiProxies?message=test");
-            request.Headers.Add(Constants.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=abc, for=[1020:3040:5060:7080:9010:1112:1314:1516]:10;proto=https;by=203.0.113.43;host=efg");
+            request.Headers.Add(Constants.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host-test, for=[1020:3040:5060:7080:9010:1112:1314:1516]:10;proto=https;by=203.0.113.43;host=efg");
             request.Headers.Add(Constants.XForwardedFor, "some-for");
             request.Headers.Add(Constants.XForwardedHost, "some-host");
             request.Headers.Add(Constants.XForwardedProto, "some-proto");
