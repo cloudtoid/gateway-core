@@ -93,9 +93,9 @@
         public string ViaTwoProxiesTest(string message)
         {
             var values = HttpContext.Request.Headers.GetCommaSeparatedValues(HeaderNames.Via);
-            values.Should().BeEquivalentTo(new[] { "2.0 first-leg", "1.1 gwcore" });
+            values.Should().BeEquivalentTo(new[] { "1.1 first-leg", "1.1 gwcore" });
 
-            HttpContext.Response.Headers.Add(HeaderNames.Via, "2.0 first-leg");
+            HttpContext.Response.Headers.Add(HeaderNames.Via, "1.1 first-leg");
             return message;
         }
 

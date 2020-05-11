@@ -2,7 +2,7 @@
   "routes": {
     "/api/": {
       "proxy": {
-        "to": "http://localhost:$upstream-port/upstream/",
+        "to": "https://localhost:$upstream-port/upstream/",
         "upstreamRequest": {
           "headers": {
             "ignoreCorrelationId": true,

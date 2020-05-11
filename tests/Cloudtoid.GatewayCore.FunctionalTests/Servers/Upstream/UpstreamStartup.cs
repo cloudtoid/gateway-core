@@ -32,7 +32,16 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         internal static IWebHost BuildWebHost(int port)
         {
             return WebHost.CreateDefaultBuilder()
-                .ConfigureKestrel(o => o.ListenLocalhost(port, lo => lo.Protocols = HttpProtocols.Http1AndHttp2))
+                .ConfigureKestrel(o =>
+                {
+                    o.ListenLocalhost(
+                        port,
+                        lo =>
+                        {
+                            lo.Protocols = HttpProtocols.Http1AndHttp2;
+                            lo.UseHttps();
+                        });
+                })
                 .UseStartup<UpstreamStartup>()
                 .Build();
         }

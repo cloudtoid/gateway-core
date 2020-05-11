@@ -13,4 +13,8 @@
     <ProjectReference Include="..\..\src\Cloudtoid.GatewayCore\Cloudtoid.GatewayCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="default-config.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

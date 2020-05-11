@@ -24,7 +24,7 @@
                     await EnsureResponseSucceededAsync(response);
 
                     var headers = response.Headers;
-                    headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new[] { "1.1 gwcore" });
+                    headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new[] { "2.0 gwcore" });
                     headers.Contains(Constants.CorrelationId).Should().BeFalse();
                     headers.Contains(Constants.CallId).Should().BeFalse();
 
@@ -135,7 +135,7 @@
                     await EnsureResponseSucceededAsync(response);
 
                     var headers = response.Headers;
-                    headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new[] { "1.1 gwcore" });
+                    headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new[] { "2.0 gwcore" });
                 });
         }
 
@@ -167,7 +167,7 @@
                     await EnsureResponseSucceededAsync(response);
 
                     var headers = response.Headers;
-                    headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new[] { "1.1 custom-proxy" });
+                    headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new[] { "2.0 custom-proxy" });
                 });
         }
 
@@ -175,7 +175,7 @@
         public async Task ViaTwoProxiesTestAsync()
         {
             var request = new HttpRequestMessage(HttpMethod.Get, "viaTwoProxies?message=test");
-            request.Headers.Via.Add(new ViaHeaderValue("2.0", "first-leg"));
+            request.Headers.Via.Add(new ViaHeaderValue("1.1", "first-leg"));
             await executor.ExecuteAsync(
                 request,
                 async response =>
@@ -183,7 +183,7 @@
                     await EnsureResponseSucceededAsync(response);
 
                     var headers = response.Headers;
-                    headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new[] { "2.0 first-leg", "1.1 gwcore" });
+                    headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new[] { "1.1 first-leg", "2.0 gwcore" });
                 });
         }
 

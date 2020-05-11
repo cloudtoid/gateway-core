@@ -99,7 +99,7 @@
         {
             var options = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                ["routes:/api/:proxy:to"] = $"http://localhost:{upstreamPort}/upstream/"
+                ["routes:/api/:proxy:to"] = $"https://localhost:{upstreamPort}/upstream/"
             };
 
             return new ConfigurationBuilder().AddInMemoryCollection(options).Build();
