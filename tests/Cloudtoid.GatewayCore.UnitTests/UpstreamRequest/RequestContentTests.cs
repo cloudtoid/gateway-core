@@ -150,20 +150,6 @@
         }
 
         [TestMethod]
-        public async Task SetContentAsync_BodyNotAtPositionZeroNonSeekable_ThrowsAsync()
-        {
-            // Arrange
-            var context = new DefaultHttpContext();
-            var body = context.Request.Body = new NonSeekableStream();
-
-            // Act
-            Func<Task> act = () => SetContentAsync(context);
-
-            // Assert
-            await act.Should().ThrowExactlyAsync<InvalidOperationException>("*The inbound downstream request is not at position zero but the stream is not seek-able.*");
-        }
-
-        [TestMethod]
         public async Task SetContentAsync_NoContentLength_LogsDebugAsync()
         {
             // Arrange

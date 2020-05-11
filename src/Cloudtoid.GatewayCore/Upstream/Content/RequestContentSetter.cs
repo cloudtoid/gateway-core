@@ -78,14 +78,8 @@
                 throw new InvalidOperationException("The inbound downstream request does not have a readable request body.");
             }
 
-            if (body.Position != 0)
+            if (body.CanSeek && body.Position != 0)
             {
-                if (!body.CanSeek)
-                {
-                    Logger.LogError("The inbound downstream request is not at position zero but the stream is not seek-able.");
-                    throw new InvalidOperationException("The inbound downstream request is not at position zero but the stream is not seek-able.");
-                }
-
                 Logger.LogDebug("The inbound downstream request has a seek-able body stream. Resetting the stream to the beginning.");
                 body.Position = 0;
             }

@@ -33,7 +33,11 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         {
             return WebHost.CreateDefaultBuilder()
                 .ConfigureServices(s => s.Configure<GatewayOptions>(config))
-                .ConfigureKestrel(o => o.ListenLocalhost(port, lo => lo.Protocols = HttpProtocols.Http1AndHttp2))
+                .ConfigureKestrel(o =>
+                {
+                    o.ListenLocalhost(port, lo => lo.Protocols = HttpProtocols.Http1AndHttp2);
+                    o.AddServerHeader = false;
+                })
                 .UseStartup<ProxyStartup>()
                 .Build();
         }

@@ -8,6 +8,8 @@
 
     public static class Program
     {
+        private const string DefaultConfigFile = "default-config.json";
+
         public static int Main(string[] args)
         {
             var app = SetupCommandLineApplication();
@@ -25,36 +27,26 @@
             };
             app.HelpOption("-?|-h|--help");
 
+            var configFileOption = app.Option(
+                "-c|--configuration-file <path>",
+                $"The path to a configuration file in JSON format. The default is '{DefaultConfigFile}' that is included.",
+                CommandOptionType.SingleValue);
+
             var version = StringUtil.FormatInvariant("Version {0}", assembly.GetName().Version);
             app.VersionOption("-v|--version", version);
 
             var defaultCommand = app.Command("default", (command) =>
             {
-                command.HelpOption("-?|-h|--help");
-
-                var proxyPortOption = command.Option(
-                    "-p|--proxy-port <port>",
-                    $"The port that the proxy is listening on. The default port is {OptionDefaults.ProxyPort}",
-                    CommandOptionType.SingleValue);
-
-                var proxyConfigFileOption = command.Option(
-                    "-c|--configuration-file <path>",
-                    "The path to a gateway configuration file in JSON format.",
-                    CommandOptionType.SingleValue);
-
                 command.OnExecute(async () =>
                 {
-                    if (!proxyConfigFileOption.HasValue())
-                        throw new CommandParsingException(command, "A gateway configuration file must be specified.");
+                    var configFile = configFileOption.HasValue()
+                        ? configFileOption.Value()
+                        : DefaultConfigFile;
 
-                    if (!proxyPortOption.HasValue() || !int.TryParse(proxyPortOption.Value(), out int proxyPort))
-                        proxyPort = OptionDefaults.ProxyPort;
+                    Console.WriteLine($"Configuration is loaded from '{configFile}'");
 
-                    Console.WriteLine($"Proxy: http://localhost:{proxyPort}/");
-                    Console.WriteLine($"Gateway config: {proxyConfigFileOption.Value()}/");
-
-                    var proxyConfig = LoadConfig(command, proxyConfigFileOption.Value());
-                    await Startup.StartAsync(proxyPort, proxyConfig);
+                    var config = LoadConfig(command, configFile);
+                    await Startup.StartAsync(config);
 
                     Console.WriteLine($"CLI is running.");
                     Console.ReadKey(true);

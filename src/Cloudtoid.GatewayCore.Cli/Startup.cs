@@ -31,11 +31,14 @@ namespace Cloudtoid.GatewayCore.Cli
             app.UseGatewayCore();
         }
 
-        internal static Task StartAsync(int port, IConfiguration config)
+        internal static Task StartAsync(IConfiguration config)
         {
+            var gatewayConfig = config.GetSection("gateway");
+            var kestrelConfig = config.GetSection("kestrel");
+
             return WebHost.CreateDefaultBuilder()
-                .ConfigureServices(s => s.Configure<GatewayOptions>(config))
-                .ConfigureKestrel(o => o.ListenLocalhost(port, lo => lo.Protocols = HttpProtocols.Http1AndHttp2))
+                .ConfigureServices(s => s.Configure<GatewayOptions>(gatewayConfig))
+                .ConfigureServices(s => s.Configure<KestrelServerOptions>(kestrelConfig))
                 .UseStartup<Startup>()
                 .Build()
                 .StartAsync();

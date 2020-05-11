@@ -1,0 +1,20 @@
+// this the default gateway configuration file
+{
+  // See https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel for kestrel options
+  "kestrel": {
+    "endpoints": {
+      "http": {
+        "url": "http://localhost:5000"
+      }
+    }
+  },
+  "gateway": {
+    "routes": {
+      "/": {
+        "proxy": {
+          "to": "https://www.google.com"
+        }
+      }
+    }
+  }
+}
