@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cloudtoid.GatewayCore", "sr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B34B66C7-7A6A-4AAD-935C-7B44462FBF23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC") = "Cloudtoid.GatewayCore.UnitTests", "tests\Cloudtoid.GatewayCore.UnitTests\Cloudtoid.GatewayCore.UnitTests.csproj", "{7F344450-BA16-4879-B5C5-A45FCAF6CC44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556") = "Cloudtoid.GatewayCore.UnitTests", "tests\Cloudtoid.GatewayCore.UnitTests\Cloudtoid.GatewayCore.UnitTests.csproj", "{7F344450-BA16-4879-B5C5-A45FCAF6CC44}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC") = "Cloudtoid.GatewayCore.FunctionalTests", "tests\Cloudtoid.GatewayCore.FunctionalTests\Cloudtoid.GatewayCore.FunctionalTests.csproj", "{E437A712-9670-44F4-BA29-C26098FC05A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556") = "Cloudtoid.GatewayCore.FunctionalTests", "tests\Cloudtoid.GatewayCore.FunctionalTests\Cloudtoid.GatewayCore.FunctionalTests.csproj", "{E437A712-9670-44F4-BA29-C26098FC05A5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cloudtoid.GatewayCore.Cli", "src\Cloudtoid.GatewayCore.Cli\Cloudtoid.GatewayCore.Cli.csproj", "{13A48A98-E113-4461-914B-6001AED60874}"
 EndProject
