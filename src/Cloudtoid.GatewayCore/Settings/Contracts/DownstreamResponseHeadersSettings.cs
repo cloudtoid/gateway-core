@@ -1,8 +1,6 @@
 ﻿namespace Cloudtoid.GatewayCore.Settings
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
 
     public sealed class DownstreamResponseHeadersSettings
     {
@@ -13,8 +11,8 @@
             bool ignoreVia,
             bool includeCorrelationId,
             bool includeCallId,
-            IReadOnlyList<CookieSettings> cookies,
-            IReadOnlyList<HeaderOverride> overrides)
+            IReadOnlyDictionary<string, CookieSettings> cookies,
+            IReadOnlyDictionary<string, HeaderOverride> overrides)
         {
             AllowHeadersWithEmptyValue = allowHeadersWithEmptyValue;
             AllowHeadersWithUnderscoreInName = allowHeadersWithUnderscoreInName;
@@ -24,9 +22,6 @@
             IncludeCallId = includeCallId;
             Cookies = cookies;
             Overrides = overrides;
-            OverrideNames = new HashSet<string>(
-                overrides.Select(h => h.Name),
-                StringComparer.OrdinalIgnoreCase);
         }
 
         public bool AllowHeadersWithEmptyValue { get; }
@@ -41,10 +36,8 @@
 
         public bool IncludeCallId { get; }
 
-        public IReadOnlyList<CookieSettings> Cookies { get; }
+        public IReadOnlyDictionary<string, CookieSettings> Cookies { get; }
 
-        public IReadOnlyList<HeaderOverride> Overrides { get; }
-
-        public ISet<string> OverrideNames { get; }
+        public IReadOnlyDictionary<string, HeaderOverride> Overrides { get; }
     }
 }

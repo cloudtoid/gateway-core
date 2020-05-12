@@ -118,7 +118,7 @@
             var allowHeadersWithEmptyValue = options.AllowHeadersWithEmptyValue;
             var allowHeadersWithUnderscoreInName = options.AllowHeadersWithUnderscoreInName;
             var correlationIdHeader = context.CorrelationIdHeader;
-            var headersWithOverride = options.OverrideNames;
+            var headersWithOverride = options.Overrides;
             var nonStandardHopByHopHeaders = GetNonStandardHopByHopHeaders(context);
 
             foreach (var header in headers)
@@ -139,7 +139,7 @@
                     continue;
 
                 // If it has an override, we will not transfer its value
-                if (headersWithOverride.Contains(name))
+                if (headersWithOverride.ContainsKey(name))
                     continue;
 
                 if (name.EqualsOrdinalIgnoreCase(correlationIdHeader))
@@ -191,7 +191,7 @@
 
         protected virtual void AddExtraHeaders(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
-            foreach (var header in context.ProxyUpstreamRequestHeadersSettings.Overrides)
+            foreach (var header in context.ProxyUpstreamRequestHeadersSettings.Overrides.Values)
             {
                 if (header.HasValues)
                     upstreamRequest.Headers.TryAddWithoutValidation(header.Name, header.GetValues(context));

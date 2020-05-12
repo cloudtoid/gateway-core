@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using Cloudtoid.GatewayCore.Expression;
     using Cloudtoid.UrlPattern;
@@ -224,17 +225,17 @@
                 options.UseCookies);
         }
 
-        private IReadOnlyList<CookieSettings> Create(
+        private IReadOnlyDictionary<string, CookieSettings> Create(
             RouteSettingsContext context,
             Dictionary<string, CookieOptions> options)
         {
             if (options.Count == 0)
-                return Array.Empty<CookieSettings>();
+                return ImmutableDictionary<string, CookieSettings>.Empty;
 
             return options
-                .Select(h => Create(context, h.Key, h.Value))
+                .Select(c => Create(context, c.Key, c.Value))
                 .WhereNotNull()
-                .ToArray();
+                .ToDictionary(c => c.Name, StringComparer.OrdinalIgnoreCase);
         }
 
         private CookieSettings? Create(
@@ -277,17 +278,17 @@
             return new CookieSettings(name, secure, httpOnly, sameSite, option.Domain);
         }
 
-        private IReadOnlyList<HeaderOverride> Create(
+        private IReadOnlyDictionary<string, HeaderOverride> Create(
             RouteSettingsContext context,
             Dictionary<string, string[]> headers)
         {
             if (headers.Count == 0)
-                return Array.Empty<HeaderOverride>();
+                return ImmutableDictionary<string, HeaderOverride>.Empty;
 
             return headers
                 .Select(h => Create(context, h.Key, h.Value))
                 .WhereNotNull()
-                .ToArray();
+                .ToDictionary(h => h.Name, StringComparer.OrdinalIgnoreCase);
         }
 
         private DownstreamResponseSettings Create(

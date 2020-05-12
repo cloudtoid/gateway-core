@@ -53,7 +53,7 @@
             requestHeaders.IgnoreForwarded.Should().BeTrue();
             requestHeaders.UseXForwarded.Should().BeTrue();
             requestHeaders.IncludeExternalAddress.Should().BeTrue();
-            requestHeaders.Overrides.Select(h => (h.Name, Values: h.GetValues(context)))
+            requestHeaders.Overrides.Values.Select(h => (h.Name, Values: h.GetValues(context)))
                 .Should()
                 .BeEquivalentTo(
                     new[]
@@ -83,7 +83,7 @@
             responseHeaders.IgnoreVia.Should().BeTrue();
             responseHeaders.IncludeCorrelationId.Should().BeTrue();
             responseHeaders.IncludeCallId.Should().BeTrue();
-            responseHeaders.Cookies
+            responseHeaders.Cookies.Values
                 .Should()
                 .BeEquivalentTo(
                     new[]
@@ -107,7 +107,7 @@
                             CookieSameSiteAttributeBehavior.None,
                             "test.com")
                     });
-            responseHeaders.Overrides.Select(h => (h.Name, Values: h.GetValues(context)))
+            responseHeaders.Overrides.Values.Select(h => (h.Name, Values: h.GetValues(context)))
                 .Should()
                 .BeEquivalentTo(
                     new[]
@@ -131,7 +131,7 @@
             request.GetHttpVersion(context).Should().Be(HttpVersion.Version11);
 
             var requestHeaders = request.Headers;
-            requestHeaders.Overrides.Select(h => (h.Name, Values: h.GetValues(context)))
+            requestHeaders.Overrides.Values.Select(h => (h.Name, Values: h.GetValues(context)))
                 .Should()
                 .BeEquivalentTo(
                     new[]
@@ -145,7 +145,7 @@
 
             var response = settings.Proxy.DownstreamResponse;
             var responseHeaders = response.Headers;
-            responseHeaders.Overrides.Select(h => (h.Name, Values: h.GetValues(context)))
+            responseHeaders.Overrides.Values.Select(h => (h.Name, Values: h.GetValues(context)))
                 .Should()
                 .BeEquivalentTo(
                     new[]

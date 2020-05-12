@@ -102,7 +102,7 @@
             var allowHeadersWithEmptyValue = options.AllowHeadersWithEmptyValue;
             var allowHeadersWithUnderscoreInName = options.AllowHeadersWithUnderscoreInName;
             var correlationIdHeader = context.CorrelationIdHeader;
-            var headersWithOverride = options.OverrideNames;
+            var headersWithOverride = options.Overrides;
 
             foreach (var header in upstreamResponse.Headers)
             {
@@ -123,7 +123,7 @@
                     continue;
 
                 // If it has an override, we will not transfer its value
-                if (headersWithOverride.Contains(name))
+                if (headersWithOverride.ContainsKey(name))
                     continue;
 
                 AddHeaderValues(context, name, header.Value.AsArray());
@@ -171,7 +171,7 @@
         {
             var headers = context.Response.Headers;
 
-            foreach (var header in context.ProxyDownstreamResponseHeaderSettings.Overrides)
+            foreach (var header in context.ProxyDownstreamResponseHeaderSettings.Overrides.Values)
             {
                 if (header.HasValues)
                     headers.Append(header.Name, header.GetValues(context).AsArray());

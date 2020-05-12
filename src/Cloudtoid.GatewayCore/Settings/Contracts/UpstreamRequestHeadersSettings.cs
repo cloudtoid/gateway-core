@@ -1,8 +1,6 @@
 ﻿namespace Cloudtoid.GatewayCore.Settings
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
 
     public sealed class UpstreamRequestHeadersSettings
     {
@@ -17,7 +15,7 @@
             bool ignoreCallId,
             bool ignoreForwarded,
             bool useXForwarded,
-            IReadOnlyList<HeaderOverride> overrides)
+            IReadOnlyDictionary<string, HeaderOverride> overrides)
         {
             AllowHeadersWithEmptyValue = allowHeadersWithEmptyValue;
             AllowHeadersWithUnderscoreInName = allowHeadersWithUnderscoreInName;
@@ -30,9 +28,6 @@
             IgnoreForwarded = ignoreForwarded;
             UseXForwarded = useXForwarded;
             Overrides = overrides;
-            OverrideNames = new HashSet<string>(
-                overrides.Select(h => h.Name),
-                StringComparer.OrdinalIgnoreCase);
         }
 
         public bool AllowHeadersWithEmptyValue { get; }
@@ -55,8 +50,6 @@
 
         public bool UseXForwarded { get; }
 
-        public IReadOnlyList<HeaderOverride> Overrides { get; }
-
-        public ISet<string> OverrideNames { get; }
+        public IReadOnlyDictionary<string, HeaderOverride> Overrides { get; }
     }
 }
