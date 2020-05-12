@@ -83,6 +83,30 @@
             responseHeaders.IgnoreVia.Should().BeTrue();
             responseHeaders.IncludeCorrelationId.Should().BeTrue();
             responseHeaders.IncludeCallId.Should().BeTrue();
+            responseHeaders.Cookies
+                .Should()
+                .BeEquivalentTo(
+                    new[]
+                    {
+                        new CookieSettings(
+                            "*",
+                            CookieAttributeBehavior.Add,
+                            CookieAttributeBehavior.Remove,
+                            CookieSameSiteAttributeBehavior.Lax,
+                            "example.com"),
+                        new CookieSettings(
+                            "sessionId",
+                            CookieAttributeBehavior.Remove,
+                            CookieAttributeBehavior.Add,
+                            CookieSameSiteAttributeBehavior.Strict,
+                            "sample.com"),
+                        new CookieSettings(
+                            "userCookie",
+                            CookieAttributeBehavior.Add,
+                            CookieAttributeBehavior.Add,
+                            CookieSameSiteAttributeBehavior.None,
+                            "test.com")
+                    });
             responseHeaders.Overrides.Select(h => (h.Name, Values: h.GetValues(context)))
                 .Should()
                 .BeEquivalentTo(

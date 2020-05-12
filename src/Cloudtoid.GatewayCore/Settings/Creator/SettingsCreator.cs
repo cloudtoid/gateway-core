@@ -9,11 +9,25 @@
     using static Cloudtoid.GatewayCore.GatewayOptions;
     using static Cloudtoid.GatewayCore.GatewayOptions.RouteOptions;
     using static Cloudtoid.GatewayCore.GatewayOptions.RouteOptions.ProxyOptions;
+    using static Cloudtoid.GatewayCore.GatewayOptions.RouteOptions.ProxyOptions.DownstreamResponseOptions.HeadersOptions;
     using static Contract;
     using SenderDefaults = Defaults.Route.Proxy.Upstream.Request.Sender;
 
     internal sealed class SettingsCreator : ISettingsCreator
     {
+        private static readonly IDictionary<string, CookieAttributeBehavior> CookieAttributeBehaviors = new Dictionary<string, CookieAttributeBehavior>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["add"] = CookieAttributeBehavior.Add,
+            ["remove"] = CookieAttributeBehavior.Remove
+        };
+
+        private static readonly IDictionary<string, CookieSameSiteAttributeBehavior> CookieSameSiteAttributeBehaviors = new Dictionary<string, CookieSameSiteAttributeBehavior>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["none"] = CookieSameSiteAttributeBehavior.None,
+            ["lax"] = CookieSameSiteAttributeBehavior.Lax,
+            ["strict"] = CookieSameSiteAttributeBehavior.Strict,
+        };
+
         private readonly IExpressionEvaluator evaluator;
         private readonly IPatternEngine patternEngine;
         private readonly IGuidProvider guidProvider;
@@ -210,10 +224,66 @@
                 options.UseCookies);
         }
 
+        private IReadOnlyList<CookieSettings> Create(
+            RouteSettingsContext context,
+            Dictionary<string, CookieOptions> options)
+        {
+            if (options.Count == 0)
+                return Array.Empty<CookieSettings>();
+
+            return options
+                .Select(h => Create(context, h.Key, h.Value))
+                .WhereNotNull()
+                .ToArray();
+        }
+
+        private CookieSettings? Create(
+            RouteSettingsContext context,
+            string name,
+            CookieOptions option)
+        {
+            var secure = CookieAttributeBehavior.None;
+            if (option.Secure != null)
+            {
+                if (!CookieAttributeBehaviors.TryGetValue(option.Secure, out secure))
+                {
+                    LogError(context, $"The '{option.Secure}' is not a valid value for '{name}' cookie's Secure attribute. Valid values are 'add' and 'remove'.");
+                    return null;
+                }
+            }
+
+            var httpOnly = CookieAttributeBehavior.None;
+            if (option.HttpOnly != null)
+            {
+                if (!CookieAttributeBehaviors.TryGetValue(option.HttpOnly, out httpOnly))
+                {
+                    LogError(context, $"The '{option.HttpOnly}' is not a valid value for '{name}' cookie's HttpOnly attribute. Valid values are 'add' and 'remove'.");
+                    return null;
+                }
+            }
+
+            CookieSameSiteAttributeBehavior? sameSite = null;
+            if (option.SameSite != null)
+            {
+                if (!CookieSameSiteAttributeBehaviors.TryGetValue(option.SameSite, out var site))
+                {
+                    LogError(context, $"The '{option.SameSite}' is not a valid value for '{name}' cookie's SameSite attribute. Valid values are 'none', 'lax' and 'strict'.");
+                    return null;
+                }
+
+                sameSite = site;
+            }
+
+            return new CookieSettings(name, secure, httpOnly, sameSite, option.Domain);
+        }
+
         private IReadOnlyList<HeaderOverride> Create(
             RouteSettingsContext context,
             Dictionary<string, string[]> headers)
         {
+            if (headers.Count == 0)
+                return Array.Empty<HeaderOverride>();
+
             return headers
                 .Select(h => Create(context, h.Key, h.Value))
                 .WhereNotNull()
@@ -239,6 +309,7 @@
                 options.IgnoreVia,
                 options.IncludeCorrelationId,
                 options.IncludeCallId,
+                Create(context, options.Cookies),
                 Create(context, options.Overrides));
         }
 

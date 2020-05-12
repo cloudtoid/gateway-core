@@ -179,7 +179,7 @@
         {
             var endIndex = forwarded.LastIndexOf(';');
             var startIndex = forwarded.LastIndexOf(':', endIndex);
-            return forwarded.Substring(0, startIndex) + forwarded.Substring(endIndex, forwarded.Length - endIndex);
+            return forwarded.Substring(0, startIndex) + forwarded[endIndex..];
         }
     }
 }

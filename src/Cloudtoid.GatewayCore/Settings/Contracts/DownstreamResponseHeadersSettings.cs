@@ -13,6 +13,7 @@
             bool ignoreVia,
             bool includeCorrelationId,
             bool includeCallId,
+            IReadOnlyList<CookieSettings> cookies,
             IReadOnlyList<HeaderOverride> overrides)
         {
             AllowHeadersWithEmptyValue = allowHeadersWithEmptyValue;
@@ -21,6 +22,7 @@
             IgnoreVia = ignoreVia;
             IncludeCorrelationId = includeCorrelationId;
             IncludeCallId = includeCallId;
+            Cookies = cookies;
             Overrides = overrides;
             OverrideNames = new HashSet<string>(
                 overrides.Select(h => h.Name),
@@ -38,6 +40,8 @@
         public bool IncludeCorrelationId { get; }
 
         public bool IncludeCallId { get; }
+
+        public IReadOnlyList<CookieSettings> Cookies { get; }
 
         public IReadOnlyList<HeaderOverride> Overrides { get; }
 

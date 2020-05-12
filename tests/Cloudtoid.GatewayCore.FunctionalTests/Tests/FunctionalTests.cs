@@ -270,6 +270,7 @@
 
         // Tests
         // - All HTTP methods (POST, DELETE, etc)
+        // - HttpClientName
         // - Routing
         // - Failed HTTP requests with and without content/body
         // - Expression evaluations

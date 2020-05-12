@@ -49,6 +49,26 @@
             "ignoreVia": true,
             "includeCorrelationId": true,
             "includeCallId": true,
+            "cookies": {
+              "*": {
+                "secure": "add",
+                "httpOnly": "remove",
+                "sameSite": "lax",
+                "domain": "example.com"
+              },
+              "sessionId": {
+                "secure": "remove",
+                "httpOnly": "add",
+                "sameSite": "strict",
+                "domain": "sample.com"
+              },
+              "userCookie": {
+                "secure": "add",
+                "httpOnly": "add",
+                "sameSite": "none",
+                "domain": "test.com"
+              }
+            },
             "overrides": {
               "x-extra-1": [ "value1_1", "value1_2" ],
               "x-extra-2": [ "value2_1", "value2_2" ]

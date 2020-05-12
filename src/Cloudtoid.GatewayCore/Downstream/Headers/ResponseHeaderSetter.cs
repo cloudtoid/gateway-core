@@ -41,7 +41,8 @@
             new[]
             {
                     Names.CallId,
-                    HeaderNames.Via
+                    HeaderNames.Via,
+                    HeaderNames.SetCookie,
             }
             .Concat(HeaderTypes.StandardHopByHopeHeaders)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);

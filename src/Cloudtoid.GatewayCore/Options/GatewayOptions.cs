@@ -266,11 +266,51 @@
                         public bool IncludeCallId { get; set; }
 
                         /// <summary>
+                        /// Gets or sets the list of cookie configurations that is applied to the
+                        /// 'set-cookie' headers in the inbound upstream response. If the cookie name is
+                        /// symbol '*', then the settings are applied to all 'set-cookie' headers.
+                        /// </summary>
+                        public Dictionary<string, CookieOptions> Cookies { get; set; } = new Dictionary<string, CookieOptions>(StringComparer.OrdinalIgnoreCase);
+
+                        /// <summary>
                         /// Extra headers to be appended to the outbound downstream response.
                         /// If a header already exists, it is replaced with the new value.
                         /// To remove a header, add it here with no values.
                         /// </summary>
                         public Dictionary<string, string[]> Overrides { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
+
+                        public sealed class CookieOptions
+                        {
+                            /// <summary>
+                            /// The Secure attribute limits the scope of the cookie to "secure"
+                            /// channels. A secure cookie is only sent to the server when a request is made using https.
+                            /// The valid values are <c>"add"</c> and <c>"remove"</c>.
+                            /// </summary>
+                            public string? Secure { get; set; }
+
+                            /// <summary>
+                            /// The HttpOnly attribute limits the scope of the cookie to HTTP
+                            /// requests, forbidding JavaScript from accessing the cookie.
+                            /// The valid values are <c>"add"</c> and <c>"remove"</c>.
+                            /// </summary>
+                            public string? HttpOnly { get; set; }
+
+                            /// <summary>
+                            /// The SameSite attribute asserts that a cookie must not be sent with cross-origin requests,
+                            /// providing some protection against cross-site request forgery attacks
+                            /// The valid values are <c>"strict"</c>, <c>"lax"</c>, and <c>"none"</c>.
+                            /// </summary>
+                            public string? SameSite { get; set; }
+
+                            /// <summary>
+                            /// The Domain attribute specifies those hosts to which the cookie will be sent.
+                            /// For example, if the value of the Domain attribute is "example.com", the user
+                            /// agent will include the cookie in the Cookie header when making HTTP requests
+                            /// to example.com, www.example.com, and www.corp.example.com.
+                            /// Use this property to specify or override the domain attribute.
+                            /// </summary>
+                            public string? Domain { get; set; }
+                        }
                     }
                 }
             }
