@@ -203,6 +203,7 @@
             responseHeaders.IgnoreVia.Should().BeFalse();
             responseHeaders.IncludeCorrelationId.Should().BeFalse();
             responseHeaders.IncludeCallId.Should().BeFalse();
+            responseHeaders.Cookies.Should().BeEmpty();
             responseHeaders.Overrides.Should().BeEmpty();
         }
 
@@ -430,6 +431,72 @@
             });
 
             CreateSettingsAndCheckLogs(options, "The ' bad-header\\' is not a valid HTTP header name. It will be ignored.");
+        }
+
+        [TestMethod]
+        public void New_InvalidCookieSecureValue_LogsErrorAndIgnoresBadCookie()
+        {
+            var options = new GatewayOptions();
+            var route = new GatewayOptions.RouteOptions
+            {
+                Proxy = new GatewayOptions.RouteOptions.ProxyOptions
+                {
+                    To = "/e/f/g/",
+                    DownstreamResponse = new GatewayOptions.RouteOptions.ProxyOptions.DownstreamResponseOptions()
+                }
+            };
+
+            route.Proxy.DownstreamResponse.Headers.Cookies.Add("test", new GatewayOptions.RouteOptions.ProxyOptions.DownstreamResponseOptions.HeadersOptions.CookieOptions
+            {
+                Secure = "bad value",
+            });
+
+            options.Routes.Add("/a/b/c/", route);
+            CreateSettingsAndCheckLogs(options, "The 'bad value' is not a valid value for 'test' cookie's Secure attribute. Valid values are 'add' and 'remove'.");
+        }
+
+        [TestMethod]
+        public void New_InvalidCookieHttpOnlyValue_LogsErrorAndIgnoresBadCookie()
+        {
+            var options = new GatewayOptions();
+            var route = new GatewayOptions.RouteOptions
+            {
+                Proxy = new GatewayOptions.RouteOptions.ProxyOptions
+                {
+                    To = "/e/f/g/",
+                    DownstreamResponse = new GatewayOptions.RouteOptions.ProxyOptions.DownstreamResponseOptions()
+                }
+            };
+
+            route.Proxy.DownstreamResponse.Headers.Cookies.Add("test", new GatewayOptions.RouteOptions.ProxyOptions.DownstreamResponseOptions.HeadersOptions.CookieOptions
+            {
+                HttpOnly = "bad value",
+            });
+
+            options.Routes.Add("/a/b/c/", route);
+            CreateSettingsAndCheckLogs(options, "The 'bad value' is not a valid value for 'test' cookie's HttpOnly attribute. Valid values are 'add' and 'remove'.");
+        }
+
+        [TestMethod]
+        public void New_InvalidCookieSameSiteValue_LogsErrorAndIgnoresBadCookie()
+        {
+            var options = new GatewayOptions();
+            var route = new GatewayOptions.RouteOptions
+            {
+                Proxy = new GatewayOptions.RouteOptions.ProxyOptions
+                {
+                    To = "/e/f/g/",
+                    DownstreamResponse = new GatewayOptions.RouteOptions.ProxyOptions.DownstreamResponseOptions()
+                }
+            };
+
+            route.Proxy.DownstreamResponse.Headers.Cookies.Add("test", new GatewayOptions.RouteOptions.ProxyOptions.DownstreamResponseOptions.HeadersOptions.CookieOptions
+            {
+                SameSite = "bad value",
+            });
+
+            options.Routes.Add("/a/b/c/", route);
+            CreateSettingsAndCheckLogs(options, "The 'bad value' is not a valid value for 'test' cookie's SameSite attribute. Valid values are 'none', 'lax' and 'strict'.");
         }
 
         private GatewaySettings GetSettings(string jsonFile)
