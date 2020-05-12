@@ -49,7 +49,7 @@
                     await Startup.StartAsync(config);
 
                     Console.WriteLine($"CLI is running.");
-                    Console.ReadKey(true);
+                    Console.Read();
                     return 0;
                 });
             });
