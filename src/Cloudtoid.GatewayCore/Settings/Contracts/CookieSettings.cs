@@ -1,26 +1,14 @@
 ﻿namespace Cloudtoid.GatewayCore.Settings
 {
-    public enum CookieAttributeBehavior
-    {
-        None,
-        Add,
-        Remove
-    }
-
-    public enum CookieSameSiteAttributeBehavior
-    {
-        None,
-        Lax,
-        Strict
-    }
+    using Microsoft.Net.Http.Headers;
 
     public sealed class CookieSettings
     {
         internal CookieSettings(
             string name,
-            CookieAttributeBehavior secure,
-            CookieAttributeBehavior httpOnly,
-            CookieSameSiteAttributeBehavior? sameSite,
+            bool? secure,
+            bool? httpOnly,
+            SameSiteMode sameSite,
             string? domain)
         {
             Name = name;
@@ -32,11 +20,11 @@
 
         public string Name { get; }
 
-        public CookieAttributeBehavior Secure { get; }
+        public bool? Secure { get; }
 
-        public CookieAttributeBehavior HttpOnly { get; }
+        public bool? HttpOnly { get; }
 
-        public CookieSameSiteAttributeBehavior? SameSite { get; }
+        public SameSiteMode SameSite { get; }
 
         public string? Domain { get; }
     }

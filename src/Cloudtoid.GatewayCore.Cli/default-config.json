@@ -12,7 +12,16 @@
     "routes": {
       "/": {
         "proxy": {
-          "to": "https://www.google.com"
+          "to": "https://www.google.com",
+          "downstreamResponse": {
+            "headers": {
+              "cookies": {
+                "*": {
+                  "domain": ""
+                }
+              }
+            }
+          }
         }
       }
     }

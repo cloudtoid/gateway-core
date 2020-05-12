@@ -282,18 +282,16 @@
                         public sealed class CookieOptions
                         {
                             /// <summary>
-                            /// The Secure attribute limits the scope of the cookie to "secure"
-                            /// channels. A secure cookie is only sent to the server when a request is made using https.
-                            /// The valid values are <c>"add"</c> and <c>"remove"</c>.
+                            /// The Secure attribute limits the scope of the cookie to "secure" channels.
+                            /// A secure cookie is only sent to the server when a request is made using https.
                             /// </summary>
-                            public string? Secure { get; set; }
+                            public bool? Secure { get; set; }
 
                             /// <summary>
                             /// The HttpOnly attribute limits the scope of the cookie to HTTP
                             /// requests, forbidding JavaScript from accessing the cookie.
-                            /// The valid values are <c>"add"</c> and <c>"remove"</c>.
                             /// </summary>
-                            public string? HttpOnly { get; set; }
+                            public bool? HttpOnly { get; set; }
 
                             /// <summary>
                             /// The SameSite attribute asserts that a cookie must not be sent with cross-origin requests,
@@ -308,6 +306,7 @@
                             /// agent will include the cookie in the Cookie header when making HTTP requests
                             /// to example.com, www.example.com, and www.corp.example.com.
                             /// Use this property to specify or override the domain attribute.
+                            /// Set this value to an empty string ("") to remove the domain attribute from the cookie.
                             /// </summary>
                             public string? Domain { get; set; }
                         }

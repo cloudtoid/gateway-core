@@ -90,21 +90,27 @@
                     {
                         new CookieSettings(
                             "*",
-                            CookieAttributeBehavior.Add,
-                            CookieAttributeBehavior.Remove,
-                            CookieSameSiteAttributeBehavior.Lax,
+                            true,
+                            false,
+                            Microsoft.Net.Http.Headers.SameSiteMode.Lax,
                             "example.com"),
                         new CookieSettings(
                             "sessionId",
-                            CookieAttributeBehavior.Remove,
-                            CookieAttributeBehavior.Add,
-                            CookieSameSiteAttributeBehavior.Strict,
+                            false,
+                            true,
+                            Microsoft.Net.Http.Headers.SameSiteMode.Strict,
                             "sample.com"),
                         new CookieSettings(
                             "userCookie",
-                            CookieAttributeBehavior.Add,
-                            CookieAttributeBehavior.Add,
-                            CookieSameSiteAttributeBehavior.None,
+                            null,
+                            null,
+                            Microsoft.Net.Http.Headers.SameSiteMode.None,
+                            "user.com"),
+                        new CookieSettings(
+                            "testCookie",
+                            null,
+                            null,
+                            Microsoft.Net.Http.Headers.SameSiteMode.Unspecified,
                             "test.com")
                     });
             responseHeaders.Overrides.Values.Select(h => (h.Name, Values: h.GetValues(context)))
@@ -431,50 +437,6 @@
             });
 
             CreateSettingsAndCheckLogs(options, "The ' bad-header\\' is not a valid HTTP header name. It will be ignored.");
-        }
-
-        [TestMethod]
-        public void New_InvalidCookieSecureValue_LogsErrorAndIgnoresBadCookie()
-        {
-            var options = new GatewayOptions();
-            var route = new GatewayOptions.RouteOptions
-            {
-                Proxy = new GatewayOptions.RouteOptions.ProxyOptions
-                {
-                    To = "/e/f/g/",
-                    DownstreamResponse = new GatewayOptions.RouteOptions.ProxyOptions.DownstreamResponseOptions()
-                }
-            };
-
-            route.Proxy.DownstreamResponse.Headers.Cookies.Add("test", new GatewayOptions.RouteOptions.ProxyOptions.DownstreamResponseOptions.HeadersOptions.CookieOptions
-            {
-                Secure = "bad value",
-            });
-
-            options.Routes.Add("/a/b/c/", route);
-            CreateSettingsAndCheckLogs(options, "The 'bad value' is not a valid value for 'test' cookie's Secure attribute. Valid values are 'add' and 'remove'.");
-        }
-
-        [TestMethod]
-        public void New_InvalidCookieHttpOnlyValue_LogsErrorAndIgnoresBadCookie()
-        {
-            var options = new GatewayOptions();
-            var route = new GatewayOptions.RouteOptions
-            {
-                Proxy = new GatewayOptions.RouteOptions.ProxyOptions
-                {
-                    To = "/e/f/g/",
-                    DownstreamResponse = new GatewayOptions.RouteOptions.ProxyOptions.DownstreamResponseOptions()
-                }
-            };
-
-            route.Proxy.DownstreamResponse.Headers.Cookies.Add("test", new GatewayOptions.RouteOptions.ProxyOptions.DownstreamResponseOptions.HeadersOptions.CookieOptions
-            {
-                HttpOnly = "bad value",
-            });
-
-            options.Routes.Add("/a/b/c/", route);
-            CreateSettingsAndCheckLogs(options, "The 'bad value' is not a valid value for 'test' cookie's HttpOnly attribute. Valid values are 'add' and 'remove'.");
         }
 
         [TestMethod]

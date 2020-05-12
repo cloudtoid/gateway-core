@@ -7,6 +7,7 @@
     using Cloudtoid.GatewayCore.Expression;
     using Cloudtoid.UrlPattern;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Net.Http.Headers;
     using static Cloudtoid.GatewayCore.GatewayOptions;
     using static Cloudtoid.GatewayCore.GatewayOptions.RouteOptions;
     using static Cloudtoid.GatewayCore.GatewayOptions.RouteOptions.ProxyOptions;
@@ -16,17 +17,11 @@
 
     internal sealed class SettingsCreator : ISettingsCreator
     {
-        private static readonly IDictionary<string, CookieAttributeBehavior> CookieAttributeBehaviors = new Dictionary<string, CookieAttributeBehavior>(StringComparer.OrdinalIgnoreCase)
+        private static readonly IDictionary<string, SameSiteMode> SameSiteModes = new Dictionary<string, SameSiteMode>(StringComparer.OrdinalIgnoreCase)
         {
-            ["add"] = CookieAttributeBehavior.Add,
-            ["remove"] = CookieAttributeBehavior.Remove
-        };
-
-        private static readonly IDictionary<string, CookieSameSiteAttributeBehavior> CookieSameSiteAttributeBehaviors = new Dictionary<string, CookieSameSiteAttributeBehavior>(StringComparer.OrdinalIgnoreCase)
-        {
-            ["none"] = CookieSameSiteAttributeBehavior.None,
-            ["lax"] = CookieSameSiteAttributeBehavior.Lax,
-            ["strict"] = CookieSameSiteAttributeBehavior.Strict,
+            ["none"] = SameSiteMode.None,
+            ["lax"] = SameSiteMode.Lax,
+            ["strict"] = SameSiteMode.Strict,
         };
 
         private readonly IExpressionEvaluator evaluator;
@@ -243,30 +238,10 @@
             string name,
             CookieOptions option)
         {
-            var secure = CookieAttributeBehavior.None;
-            if (option.Secure != null)
-            {
-                if (!CookieAttributeBehaviors.TryGetValue(option.Secure, out secure))
-                {
-                    LogError(context, $"The '{option.Secure}' is not a valid value for '{name}' cookie's Secure attribute. Valid values are 'add' and 'remove'.");
-                    return null;
-                }
-            }
-
-            var httpOnly = CookieAttributeBehavior.None;
-            if (option.HttpOnly != null)
-            {
-                if (!CookieAttributeBehaviors.TryGetValue(option.HttpOnly, out httpOnly))
-                {
-                    LogError(context, $"The '{option.HttpOnly}' is not a valid value for '{name}' cookie's HttpOnly attribute. Valid values are 'add' and 'remove'.");
-                    return null;
-                }
-            }
-
-            CookieSameSiteAttributeBehavior? sameSite = null;
+            var sameSite = SameSiteMode.Unspecified;
             if (option.SameSite != null)
             {
-                if (!CookieSameSiteAttributeBehaviors.TryGetValue(option.SameSite, out var site))
+                if (!SameSiteModes.TryGetValue(option.SameSite, out var site))
                 {
                     LogError(context, $"The '{option.SameSite}' is not a valid value for '{name}' cookie's SameSite attribute. Valid values are 'none', 'lax' and 'strict'.");
                     return null;
@@ -275,7 +250,7 @@
                 sameSite = site;
             }
 
-            return new CookieSettings(name, secure, httpOnly, sameSite, option.Domain);
+            return new CookieSettings(name, option.Secure, option.HttpOnly, sameSite, option.Domain);
         }
 
         private IReadOnlyDictionary<string, HeaderOverride> Create(

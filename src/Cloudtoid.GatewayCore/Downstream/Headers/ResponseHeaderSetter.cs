@@ -30,6 +30,8 @@
     /// </example>
     public class ResponseHeaderSetter : IResponseHeaderSetter
     {
+        private const string WildCardCookieName = "*";
+
         /// <summary>
         /// This is a list of headers that should not be passed on to the downstream system. It consists of
         /// <list type="bullet">
@@ -42,7 +44,6 @@
             {
                     Names.CallId,
                     HeaderNames.Via,
-                    HeaderNames.SetCookie,
             }
             .Concat(HeaderTypes.StandardHopByHopeHeaders)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -126,8 +127,39 @@
                 if (headersWithOverride.ContainsKey(name))
                     continue;
 
-                AddHeaderValues(context, name, header.Value.AsArray());
+                var values = header.Value;
+
+                if (name.EqualsOrdinalIgnoreCase(HeaderNames.SetCookie))
+                    values = values.Select(v => GetSetCookiesValue(context, v));
+
+                AddHeaderValues(context, name, values.ToArray());
             }
+        }
+
+        protected string GetSetCookiesValue(ProxyContext context, string value)
+        {
+            var cookies = context.ProxyDownstreamResponseHeaderSettings.Cookies;
+            if (cookies.Count == 0)
+                return value;
+
+            if (!SetCookieHeaderValue.TryParse(value, out var cookie) || !cookie.Name.HasValue)
+                return value;
+
+            if (!cookies.TryGetValue(cookie.Name.Value, out var cookieSetting) && !cookies.TryGetValue(WildCardCookieName, out cookieSetting))
+                return value;
+
+            cookie.SameSite = cookieSetting.SameSite;
+
+            if (cookieSetting.Secure.HasValue)
+                cookie.Secure = cookieSetting.Secure.Value;
+
+            if (cookieSetting.HttpOnly.HasValue)
+                cookie.HttpOnly = cookieSetting.HttpOnly.Value;
+
+            if (cookieSetting.Domain != null)
+                cookie.Domain = cookieSetting.Domain.Length == 0 ? null : cookieSetting.Domain;
+
+            return cookie.ToString();
         }
 
         /// <summary>
