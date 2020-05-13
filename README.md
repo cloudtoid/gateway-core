@@ -249,7 +249,7 @@ It is also possible to use the wildcard symbol `"*"` to provide a rule that appl
 
 > The wildcard rule is ignored if a rule is an exact name match.
 
-GatewayCore pools [`HttpMessageHandler`](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpmessagehandle) instances and can reuse them for outbound upstream requests. Thus, local cookie handling is disabled by default as unanticipated [`CookieContainer`](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.socketshttphandler.cookiecontainer) object sharing often results in incorrect behavior. Although strongly discouraged, it is possible to change this behavior using `UseCookie`, as shown below.
+GatewayCore pools [`HttpMessageHandler`](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpmessagehandler) instances and can reuse them for outbound upstream requests. Thus, local cookie handling is disabled by default as unanticipated [`CookieContainer`](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.socketshttphandler.cookiecontainer) object sharing often results in incorrect behavior. Although strongly discouraged, it is possible to change this behavior using `UseCookie`, as shown below.
 
 ```json
 {
