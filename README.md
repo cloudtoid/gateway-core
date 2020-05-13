@@ -246,7 +246,7 @@ In the example above, GatewayCore will ensure that the `Set-Cookie` response hea
 
 > Set `domain` to an empty string (`"domain": ""`) if the `Domain` attribute should be fully removed from the `Set-Cookie` header.
 
-It is also possible to use the wildcard symbol, `*`, to provide a rule that applies to all cookies.
+It is also possible to use the wildcard symbol `"*"` to provide a rule that applies to all cookies.
 
 > The wildcard rule is ignored if a rule is an exact name match.
 

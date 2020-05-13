@@ -42,8 +42,8 @@
         protected static readonly ISet<string> HeaderTransferBlacklist =
             new[]
             {
-                    Names.CallId,
-                    HeaderNames.Via,
+                Names.CallId,
+                HeaderNames.Via,
             }
             .Concat(HeaderTypes.StandardHopByHopeHeaders)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
