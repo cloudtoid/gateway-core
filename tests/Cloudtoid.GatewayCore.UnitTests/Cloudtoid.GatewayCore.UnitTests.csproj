@@ -9,6 +9,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MSTest.TestAdapter" Version="2.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Settings\OptionsSenderHttpClient.json" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Settings\OptionsFull.json" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Settings\OptionsWithExpressions.json" CopyToOutputDirectory="PreserveNewest" />

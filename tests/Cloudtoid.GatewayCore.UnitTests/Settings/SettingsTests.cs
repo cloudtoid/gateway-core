@@ -30,7 +30,7 @@
         [TestMethod]
         public void New_FullyPopulatedOptions_AllValuesAreReadCorrectly()
         {
-            var settings = GetSettings(@"Settings\OptionsFull.json");
+            var settings = GetSettings(@"Settings/OptionsFull.json");
             settings.System.RouteCacheMaxCount.Should().Be(1024);
 
             var context = GetProxyContext(settings);
@@ -126,7 +126,7 @@
         [TestMethod]
         public void New_AllOptionsThatAllowExpressions_AllValuesAreEvaluatedCorrectly()
         {
-            var context = GetProxyContext(@"Settings\OptionsWithExpressions.json");
+            var context = GetProxyContext(@"Settings/OptionsWithExpressions.json");
             var settings = context.Route.Settings;
 
             var expressionValue = Environment.MachineName;
@@ -164,7 +164,7 @@
         [TestMethod]
         public void New_EmptyOptions_AllValuesSetToDefault()
         {
-            var settings = GetSettings(@"Settings\OptionsEmpty.json");
+            var settings = GetSettings(@"Settings/OptionsEmpty.json");
             settings.System.RouteCacheMaxCount.Should().Be(100000);
 
             var context = GetProxyContext(settings);
@@ -218,10 +218,10 @@
         {
             try
             {
-                File.Copy(@"Settings\OptionsOld.json", @"Settings\OptionsReload.json", true);
+                File.Copy(@"Settings/OptionsOld.json", @"Settings/OptionsReload.json", true);
 
                 var config = new ConfigurationBuilder()
-                    .AddJsonFile(@"Settings\OptionsReload.json", optional: false, reloadOnChange: true)
+                    .AddJsonFile(@"Settings/OptionsReload.json", optional: false, reloadOnChange: true)
                     .Build();
 
                 var services = new ServiceCollection()
@@ -256,7 +256,7 @@
                     sender.UseCookies.Should().BeTrue();
                     ValidateSocketsHttpHandler("api-route-http-client-name", sender);
 
-                    File.Copy(@"Settings\OptionsNew.json", @"Settings\OptionsReload.json", true);
+                    File.Copy(@"Settings/OptionsNew.json", @"Settings/OptionsReload.json", true);
 
                     // this delay is needed because the lifetime of the http handler is set to 1 seconds. We have to wait for it to expire.
                     await Task.Delay(2000);
@@ -275,7 +275,7 @@
                     sender.UseCookies.Should().BeFalse();
                     ValidateSocketsHttpHandler("api-route-http-client-name", sender);
 
-                    File.Copy(@"Settings\OptionsOld.json", @"Settings\OptionsReload.json", true);
+                    File.Copy(@"Settings/OptionsOld.json", @"Settings/OptionsReload.json", true);
 
                     // this delay is needed because the lifetime of the http handler is set to 1 seconds. We have to wait for it to expire.
                     await Task.Delay(2000);
@@ -296,14 +296,14 @@
             }
             finally
             {
-                File.Delete(@"Settings\OptionsReload.json");
+                File.Delete(@"Settings/OptionsReload.json");
             }
         }
 
         [TestMethod]
         public void New_UpstreamSenderWithExplicitHttpClientName_HttpClientIsCorrectlyCreated()
         {
-            var context = GetProxyContext(@"Settings\OptionsSenderHttpClient.json");
+            var context = GetProxyContext(@"Settings/OptionsSenderHttpClient.json");
             var requestSender = context.Route.Settings.Proxy!.UpstreamRequest.Sender;
             requestSender.HttpClientName.Should().Be("api-route-http-client-name");
             requestSender.GetTimeout(context).TotalMilliseconds.Should().Be(5200);

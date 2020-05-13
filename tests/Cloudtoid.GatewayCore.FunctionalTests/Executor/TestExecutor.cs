@@ -10,7 +10,7 @@
 
     internal sealed class TestExecutor
     {
-        private static readonly Range ProxyPortRange = new Range(85, 185);
+        private static readonly Range ProxyPortRange = new Range(5000, 5100);
         private static readonly int UpstreamPortStartIndex = ProxyPortRange.End.Value + 1;
         private static readonly ConcurrentStack<HttpClient> HttpClients = new ConcurrentStack<HttpClient>();
 

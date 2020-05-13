@@ -9,6 +9,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Tests\Options\*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
