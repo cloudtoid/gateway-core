@@ -264,6 +264,14 @@ GatewayCore pools [`HttpMessageHandler`](https://docs.microsoft.com/en-us/dotnet
 
 > Avoid enabling `UseCookies` unless you are confident that this is the behavior that your application needs.
 
+# Advanced extensibility and configuration
+
+When using the GatewayCore as a library within your .net core application, you have full control over most portions of the proxy pipeline and other gateway components.
+
+## Upstream request http client
+
+
+
 ## Gateway settings and options
 
 - how to pass using DI

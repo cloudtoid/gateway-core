@@ -293,7 +293,7 @@
         }
 
         // Tests
-        // - Fix HTTPS so it also works on Mac and Linus!
+        // - Fix HTTPS so it also works on Mac and Linux!
         // - All HTTP methods (POST, DELETE, etc)
         // - HttpClientName
         // - Routing
@@ -306,5 +306,6 @@
         // - Extra (unknown) request and response headers are just forwarded
         // - Authentication
         // - Test all known headers and their behavior
+        // - Run nginx side by side and ensure all headers and other properties match.
     }
 }
