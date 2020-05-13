@@ -200,6 +200,56 @@ It is also possible to not include any of these headers on proxy's outbound requ
             "ignoreForwarded": true,
 ```
 
+## Cookie handling
+
+The [`Set-Cookie`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie) HTTP response header is used to send cookies from the server to the client so that the client can send them back to the server later.
+
+This header can include attributes such as:
+
+- `Expires`: The maximum lifetime of the cookie as an HTTP-date timestamp.
+- `Max-Age`: Number of seconds until the cookie expires. A zero or negative number will expire the cookie immediately. `Max-Age` has precedence over `Expires`.
+- `Domain`: Host to which the cookie will be sent on subsequent calls.
+- `Path`: A path that must exist in the requested URL, or the client won't send the `Cookie` header on subsequent requests.
+- `Secure`: A secure cookie is only sent to the server when a request is made with the `https:` scheme.
+- `HttpOnly`: Limits the scope of the cookie to HTTP
+requests. In particular, the attribute instructs the client to omit the cookie when providing access to cookies via "non-HTTP" APIs such as JavaScript's `Document.cookie` API.
+- `SameSite`: Helps with potential cross-site security issues.
+  - If set to `none`, cookies are sent with both cross-site requests and same-site requests.
+  - If set to `strict`, cookies are sent only for same-site requests.
+  - If set to `lax`, same-site cookies are withheld on cross-site subrequests, such as calls to load images or frames, but will be sent when a user navigates to the URL from an external site; for example, by following a link.
+
+A reverse proxy such as GatewayCore often changes the domain, path, and scheme (http/https) of proxied requests and the responses. Therefore, it might be necessary also to update the `Domain`, `Path`, `SameSite`, `Secure`, and `HttpOnly` attributes.
+
+```json
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "http://upstream/v1/",
+        "downstreamResponse": {
+          "headers": {
+            "cookies": {
+              "sessionId": {
+                "secure": true,
+                "httpOnly": false,
+                "sameSite": "lax",
+                "domain": "example.com"
+              },
+```
+
+In the example above, GatewayCore will ensure that the `Set-Cookie` response header for a cookie named `sessionId` is modified such that:
+
+- the `Secure` attribute is set,
+- the `HttpOnly` attribute is removed if it was specified,
+- the value of `SameSite` is changed to `lax`, and
+- the `Domain` attribute is updated to `example.com`
+
+> Set `domain` to an empty string (`"domain": ""`) if the `Domain` attribute should be fully removed from the `Set-Cookie` header.
+
+It is also possible to use the wildcard symbol, `*`, to provide a rule that applies to all cookies.
+
+> The wildcard rule is ignored if a rule is an exact name match.
+
 ## Gateway settings and options
 
 - how to pass using DI

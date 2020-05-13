@@ -30,7 +30,7 @@
     /// </example>
     public class ResponseHeaderSetter : IResponseHeaderSetter
     {
-        private const string WildCardCookieName = "*";
+        private const string WildcardCookieName = "*";
 
         /// <summary>
         /// This is a list of headers that should not be passed on to the downstream system. It consists of
@@ -152,7 +152,7 @@
                 return value;
 
             var cookies = context.ProxyDownstreamResponseHeaderSettings.Cookies;
-            if (!cookies.TryGetValue(cookie.Name.Value, out var cookieSetting) && !cookies.TryGetValue(WildCardCookieName, out cookieSetting))
+            if (!cookies.TryGetValue(cookie.Name.Value, out var cookieSetting) && !cookies.TryGetValue(WildcardCookieName, out cookieSetting))
                 return value;
 
             cookie.SameSite = cookieSetting.SameSite;
