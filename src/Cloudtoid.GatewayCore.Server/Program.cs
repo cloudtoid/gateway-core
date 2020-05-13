@@ -1,4 +1,4 @@
-﻿namespace Cloudtoid.GatewayCore.Cli
+﻿namespace Cloudtoid.GatewayCore.Server
 {
     using System;
     using System.IO;
@@ -23,7 +23,7 @@
             var app = new CommandLineApplication
             {
                 Name = assembly.GetName().Name,
-                Description = "Cloudtoid Gateway Core CLI"
+                Description = "Cloudtoid Gateway Core Server"
             };
             app.HelpOption("-?|-h|--help");
 
@@ -48,7 +48,7 @@
                     var config = LoadConfig(command, configFile);
                     await Startup.StartAsync(config);
 
-                    Console.WriteLine($"CLI is running.");
+                    Console.WriteLine($"Gateway Core is running.");
                     Console.Read();
                     return 0;
                 });

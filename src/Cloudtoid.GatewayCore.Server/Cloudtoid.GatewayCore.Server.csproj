@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>$(AppDotNetVersion)</TargetFramework>
     <OutputType>Exe</OutputType>
+    <AssemblyName>gwcore</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

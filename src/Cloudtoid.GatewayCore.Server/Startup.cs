@@ -1,4 +1,4 @@
-namespace Cloudtoid.GatewayCore.Cli
+namespace Cloudtoid.GatewayCore.Server
 {
     using System.Threading.Tasks;
     using Cloudtoid.GatewayCore;
@@ -34,7 +34,7 @@ namespace Cloudtoid.GatewayCore.Cli
         internal static Task StartAsync(IConfiguration config)
         {
             var gatewayConfig = config.GetSection("gateway");
-            var kestrelConfig = config.GetSection("kestrel");
+            var kestrelConfig = config.GetSection("server");
 
             return WebHost.CreateDefaultBuilder()
                 .ConfigureServices(s => s.Configure<GatewayOptions>(gatewayConfig))
