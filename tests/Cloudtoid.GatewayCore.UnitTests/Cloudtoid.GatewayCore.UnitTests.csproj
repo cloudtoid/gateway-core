@@ -9,7 +9,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MSTest.TestAdapter" Version="2.1.1" />
+    <!-- TODO: This is a temporary fix to make the tests discoverable in VS for Mac. Remove once the bug is fixed. -->
+    <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestVersion)" />
   </ItemGroup>
 
   <ItemGroup>

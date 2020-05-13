@@ -258,6 +258,126 @@
         }
 
         [TestMethod]
+        public async Task SetHeadersAsync_UpdateSetCookiesHeader_SetCookiesIsUpdatedAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var proxy = options.Routes["/api/"].Proxy!;
+            proxy.DownstreamResponse.Headers.Cookies.Add(
+                "sessionid",
+                new GatewayOptions.RouteOptions.ProxyOptions.DownstreamResponseOptions.HeadersOptions.CookieOptions
+                {
+                    Domain = "new.com",
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = "lax"
+                });
+
+            var message = new HttpResponseMessage();
+            message.Headers.Add(HeaderNames.SetCookie, "sessionId=a3fWa; Max-Age=2592000");
+
+            // Act
+            var response = await SetHeadersAsync(message, options);
+
+            // Assert
+            response.Headers[HeaderNames.SetCookie].Should().BeEquivalentTo(
+                new[]
+                {
+                    "sessionId=a3fWa; max-age=2592000; domain=new.com; secure; samesite=lax; httponly"
+                });
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_UpdateSetCookiesHeaderWithWildCardName_SetCookiesIsUpdatedAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var proxy = options.Routes["/api/"].Proxy!;
+            proxy.DownstreamResponse.Headers.Cookies.Add(
+                "*",
+                new GatewayOptions.RouteOptions.ProxyOptions.DownstreamResponseOptions.HeadersOptions.CookieOptions
+                {
+                    Domain = "new.com",
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = "lax"
+                });
+
+            var message = new HttpResponseMessage();
+            message.Headers.Add(HeaderNames.SetCookie, "sessionId=a3fWa; Max-Age=2592000");
+
+            // Act
+            var response = await SetHeadersAsync(message, options);
+
+            // Assert
+            response.Headers[HeaderNames.SetCookie].Should().BeEquivalentTo(
+                new[]
+                {
+                    "sessionId=a3fWa; max-age=2592000; domain=new.com; secure; samesite=lax; httponly"
+                });
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_UpdateSetCookiesHeaderWithNotMatchingName_SetCookiesIsNotUpdatedAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var proxy = options.Routes["/api/"].Proxy!;
+            proxy.DownstreamResponse.Headers.Cookies.Add(
+                "randomCookieName",
+                new GatewayOptions.RouteOptions.ProxyOptions.DownstreamResponseOptions.HeadersOptions.CookieOptions
+                {
+                    Domain = "new.com",
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = "lax"
+                });
+
+            var message = new HttpResponseMessage();
+            message.Headers.Add(HeaderNames.SetCookie, "sessionId=a3fWa; Max-Age=2592000");
+
+            // Act
+            var response = await SetHeadersAsync(message, options);
+
+            // Assert
+            response.Headers[HeaderNames.SetCookie].Should().BeEquivalentTo(
+                new[]
+                {
+                    "sessionId=a3fWa; Max-Age=2592000"
+                });
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_UpdateSetCookiesHeaderWithExistingValues_SetCookiesIsUpdatedAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var proxy = options.Routes["/api/"].Proxy!;
+            proxy.DownstreamResponse.Headers.Cookies.Add(
+                "sessionid",
+                new GatewayOptions.RouteOptions.ProxyOptions.DownstreamResponseOptions.HeadersOptions.CookieOptions
+                {
+                    Domain = "new.com",
+                    HttpOnly = false,
+                    Secure = false,
+                    SameSite = "lax"
+                });
+
+            var message = new HttpResponseMessage();
+            message.Headers.Add(HeaderNames.SetCookie, "sessionId=a3fWa; Max-Age=2592000; httponly; samesite=none; secure; domain=old.com");
+
+            // Act
+            var response = await SetHeadersAsync(message, options);
+
+            // Assert
+            response.Headers[HeaderNames.SetCookie].Should().BeEquivalentTo(
+                new[]
+                {
+                    "sessionId=a3fWa; max-age=2592000; domain=new.com; samesite=lax"
+                });
+        }
+
+        [TestMethod]
         public async Task SetHeadersAsync_ProxyNameIsNull_DefaultViaHeaderAsync()
         {
             // Arrange

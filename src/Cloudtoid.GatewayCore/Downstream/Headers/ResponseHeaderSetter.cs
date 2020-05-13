@@ -127,24 +127,31 @@
                 if (headersWithOverride.ContainsKey(name))
                     continue;
 
-                var values = header.Value;
+                var values = header.Value.AsArray();
 
                 if (name.EqualsOrdinalIgnoreCase(HeaderNames.SetCookie))
-                    values = values.Select(v => GetSetCookiesValue(context, v));
+                    UpdateSetCookiesValues(context, values);
 
-                AddHeaderValues(context, name, values.ToArray());
+                AddHeaderValues(context, name, values);
             }
+        }
+
+        protected virtual void UpdateSetCookiesValues(ProxyContext context, string[] values)
+        {
+            if (context.ProxyDownstreamResponseHeaderSettings.Cookies.Count == 0)
+                return;
+
+            var len = values.Length;
+            for (int i = 0; i < len; i++)
+                values[i] = GetSetCookiesValue(context, values[i]);
         }
 
         protected string GetSetCookiesValue(ProxyContext context, string value)
         {
-            var cookies = context.ProxyDownstreamResponseHeaderSettings.Cookies;
-            if (cookies.Count == 0)
-                return value;
-
             if (!SetCookieHeaderValue.TryParse(value, out var cookie) || !cookie.Name.HasValue)
                 return value;
 
+            var cookies = context.ProxyDownstreamResponseHeaderSettings.Cookies;
             if (!cookies.TryGetValue(cookie.Name.Value, out var cookieSetting) && !cookies.TryGetValue(WildCardCookieName, out cookieSetting))
                 return value;
 
