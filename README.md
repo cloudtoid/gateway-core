@@ -9,8 +9,6 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 ## V1 - TODOs
 
 - Add functional tests
-- Add support for certificates
-- Test HTTP/2
 - Write documentation
   - Add a table of all config values with a description and links/anchors from the rest of the doc
   - URL Pattern Matching
@@ -23,11 +21,12 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
   - Advanced extensibility
   - Use of options
   - Named HttpClient Management from the outside
-- Test SSL end to end
 - Side by side tests with nginx
 - Kestrel should only listen on relevant routes defined in Options
 - Benchmark
 - Increase code coverage
+- Add support for modification of the Path attribute in the Set-Cookie header
+- Ensure that all 3 projects compile on macos and VS for Mac
 
 ## Future version
 

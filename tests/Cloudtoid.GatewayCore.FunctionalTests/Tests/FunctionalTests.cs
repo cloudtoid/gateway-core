@@ -261,6 +261,30 @@
                 response => EnsureResponseSucceededAsync(response));
         }
 
+        [TestMethod("Should have a set-cookie header with modified values")]
+        public async Task SetCookieTestAsync()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "setCookie?message=test");
+            await executor.ExecuteAsync(
+                "SetCookieTestOptions.json",
+                request,
+                async response =>
+                {
+                    await EnsureResponseSucceededAsync(response);
+
+                    var headers = response.Headers;
+                    headers.GetValues(HeaderNames.SetCookie)
+                        .Should()
+                        .BeEquivalentTo(
+                            new[]
+                            {
+                                "sessionId=1234; expires=Tue, 01 Jan 2030 01:01:01 GMT; domain=new.com; path=/; secure; samesite=lax; httponly",
+                                "pxeId=exp12; domain=default.com; path=/; samesite=none",
+                                "emptyOut=empty; path=/",
+                            });
+                });
+        }
+
         private static async Task EnsureResponseSucceededAsync(HttpResponseMessage response)
         {
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -279,9 +303,7 @@
         // - ProxyException and exception handling
         // - When no route is found, do not return 200
         // - Extra (unknown) request and response headers are just forwarded
-        // - Cookies (domain/host specific ones too)
         // - Authentication
         // - Test all known headers and their behavior
-        // - Test Via header and HTTPS
     }
 }

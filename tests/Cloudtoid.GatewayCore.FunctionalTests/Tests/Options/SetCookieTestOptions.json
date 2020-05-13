@@ -1,0 +1,32 @@
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "https://localhost:$upstream-port/upstream/",
+        "downstreamResponse": {
+          "headers": {
+            "cookies": {
+              "sessionId": {
+                "secure": true,
+                "httpOnly": true,
+                "sameSite": "lax",
+                "domain": "new.com"
+              },
+              "*": {
+                "secure": false,
+                "httpOnly": false,
+                "sameSite": "none",
+                "domain": "default.com"
+              },
+              "emptyOut": {
+                "secure": false,
+                "httpOnly": false,
+                "domain": ""
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

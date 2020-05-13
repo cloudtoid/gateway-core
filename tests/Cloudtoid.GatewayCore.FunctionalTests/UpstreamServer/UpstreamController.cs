@@ -1,5 +1,6 @@
 ﻿namespace Cloudtoid.GatewayCore.FunctionalTests
 {
+    using System;
     using System.Linq;
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
@@ -171,6 +172,44 @@
             values.Should().BeEquivalentTo(new[] { "some-proto" });
 
             HttpContext.Request.Headers.ContainsKey(Constants.Forwarded).Should().BeFalse();
+
+            return message;
+        }
+
+        [HttpGet("setCookie")]
+        public string SetCookieTest(string message)
+        {
+            HttpContext.Response.Cookies.Append(
+                "sessionId",
+                "1234",
+                new CookieOptions
+                {
+                    Domain = "old.com",
+                    Expires = new DateTimeOffset(2030, 1, 1, 1, 1, 1, TimeSpan.Zero),
+                    HttpOnly = false,
+                    Secure = false,
+                    SameSite = Microsoft.AspNetCore.Http.SameSiteMode.None
+                });
+
+            HttpContext.Response.Cookies.Append(
+                "pxeId",
+                "exp12",
+                new CookieOptions
+                {
+                    Domain = "old.com",
+                    HttpOnly = true,
+                    Secure = true,
+                });
+
+            HttpContext.Response.Cookies.Append(
+                "emptyOut",
+                "empty",
+                new CookieOptions
+                {
+                    Domain = "old.com",
+                    HttpOnly = true,
+                    Secure = true,
+                });
 
             return message;
         }
