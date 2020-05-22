@@ -82,7 +82,7 @@
                     allowHeadersWithUnderscoreInName))
                     continue;
 
-                AddHeaderValues(context, header.Key, header.Value.AsArray());
+                AddHeaderValues(context, header.Key, header.Value.AsStringValues());
             }
 
             return Task.CompletedTask;

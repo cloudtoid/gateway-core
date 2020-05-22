@@ -17,7 +17,7 @@
         /// Initializes a new instance of the <see cref="ProxyException"/> class.
         /// </summary>
         /// <param name="statusCode">This should be an HTTP status code that is not in the 200-299 range.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception, or a <see langword="null"/> reference if no inner exception is specified.</param>
         public ProxyException(HttpStatusCode statusCode, Exception? innerException = null)
             : base(null, innerException)
         {

@@ -132,7 +132,7 @@
                 if (headersWithOverride.ContainsKey(name))
                     continue;
 
-                var values = header.Value.AsArray();
+                var values = header.Value.AsStringValues();
 
                 if (name.EqualsOrdinalIgnoreCase(HeaderNames.SetCookie))
                     UpdateSetCookiesValues(context, values);
@@ -192,7 +192,7 @@
             AddHeaderValues(
                 context,
                 HeaderNames.Via,
-                values.Concat(value).AsArray());
+                values.Concat(value).AsStringValues());
         }
 
         protected virtual void AddServerHeader(ProxyContext context, HttpResponseMessage upstreamResponse)
@@ -226,7 +226,7 @@
             foreach (var header in context.ProxyDownstreamResponseHeaderSettings.Overrides.Values)
             {
                 if (header.HasValues)
-                    headers.Append(header.Name, header.GetValues(context).AsArray());
+                    headers.Append(header.Name, header.GetValues(context).AsStringValues());
             }
         }
 

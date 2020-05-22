@@ -46,7 +46,7 @@
                 /// Gets or sets an expression that defines the name of this proxy. This name is used in the following scenarios:
                 /// <list type="bullet">
                 /// <item>This value is used in the Via HTTP header send on the outbound upstream request, and also the outbound downstream response. The default value is <c>"gwcore"</c></item>
-                /// <item>If this is not null, an "x-gwcore-proxy-name" header with this value is added to the outbound upstream request.</item>
+                /// <item>If this is not <see langword="null"/>, an "x-gwcore-proxy-name" header with this value is added to the outbound upstream request.</item>
                 /// </list>
                 /// </summary>
                 public string? ProxyName { get; set; }

@@ -121,7 +121,7 @@
                 AddHeaderValues(
                     context,
                     name,
-                    header.Value.AsArray());
+                    header.Value.AsStringValues());
             }
 
             return Task.CompletedTask;
