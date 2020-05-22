@@ -43,6 +43,10 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
   - Kubernetes
   - Service Fabric
 
+## Getting Started
+
+> TODO
+
 ## Tracing
 
 GatewayCore uses two headers to pass on trace identifiers to both the server and the client:

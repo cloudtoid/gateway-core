@@ -49,6 +49,7 @@
             "ignoreVia": true,
             "includeCorrelationId": true,
             "includeCallId": true,
+            "includeServer": true,
             "cookies": {
               "*": {
                 "secure": true,

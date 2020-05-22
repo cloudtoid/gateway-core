@@ -8,6 +8,7 @@
     using Cloudtoid.GatewayCore.Headers;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Primitives;
     using static Contract;
 
     /// <summary>
@@ -90,9 +91,9 @@
         protected virtual void AddHeaderValues(
             ProxyContext context,
             string name,
-            params string[] upstreamValues)
+            StringValues upstreamValues)
         {
-            if (Provider.TryGetHeaderValues(context, name, upstreamValues, out var downstreamValues) && downstreamValues != null)
+            if (Provider.TryGetHeaderValues(context, name, upstreamValues, out var downstreamValues) && downstreamValues.Count > 0)
             {
                 context.Response.AppendTrailer(name, downstreamValues);
                 return;

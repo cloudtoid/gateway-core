@@ -14,7 +14,7 @@
         {
             internal static class Proxy
             {
-                internal const string ProxyName = "gwcore";
+                internal const string ProxyName = Constants.ServerName;
 
                 internal static class Upstream
                 {

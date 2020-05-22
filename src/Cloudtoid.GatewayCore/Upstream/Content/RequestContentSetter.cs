@@ -1,11 +1,13 @@
 ﻿namespace Cloudtoid.GatewayCore.Upstream
 {
     using System;
+    using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
     using Cloudtoid.GatewayCore.Headers;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Primitives;
     using static Contract;
 
     /// <summary>
@@ -117,11 +119,11 @@
             ProxyContext context,
             HttpRequestMessage upstreamRequest,
             string name,
-            params string[] downstreamValues)
+            StringValues downstreamValues)
         {
-            if (Provider.TryGetHeaderValues(context, name, downstreamValues, out var upstreamValues) && upstreamValues != null)
+            if (Provider.TryGetHeaderValues(context, name, downstreamValues, out var upstreamValues) && upstreamValues.Count > 0)
             {
-                upstreamRequest.Content.Headers.TryAddWithoutValidation(name, upstreamValues);
+                upstreamRequest.Content.Headers.TryAddWithoutValidation(name, (IEnumerable<string>)upstreamValues);
                 return;
             }
 

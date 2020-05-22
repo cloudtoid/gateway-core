@@ -11,6 +11,7 @@
             bool ignoreVia,
             bool includeCorrelationId,
             bool includeCallId,
+            bool includeServer,
             IReadOnlyDictionary<string, CookieSettings> cookies,
             IReadOnlyDictionary<string, HeaderOverride> overrides)
         {
@@ -20,6 +21,7 @@
             IgnoreVia = ignoreVia;
             IncludeCorrelationId = includeCorrelationId;
             IncludeCallId = includeCallId;
+            IncludeServer = includeServer;
             Cookies = cookies;
             Overrides = overrides;
         }
@@ -35,6 +37,8 @@
         public bool IncludeCorrelationId { get; }
 
         public bool IncludeCallId { get; }
+
+        public bool IncludeServer { get; }
 
         public IReadOnlyDictionary<string, CookieSettings> Cookies { get; }
 

@@ -10,6 +10,7 @@
     using Cloudtoid.GatewayCore.Headers;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Primitives;
     using Microsoft.Net.Http.Headers;
     using static Contract;
 
@@ -202,11 +203,11 @@
             ProxyContext context,
             HttpRequestMessage upstreamRequest,
             string name,
-            params string[] downstreamValues)
+            StringValues downstreamValues)
         {
-            if (Provider.TryGetHeaderValues(context, name, downstreamValues, out var upstreamValues) && upstreamValues != null)
+            if (Provider.TryGetHeaderValues(context, name, downstreamValues, out var upstreamValues) && upstreamValues.Count > 0)
             {
-                upstreamRequest.Headers.TryAddWithoutValidation(name, upstreamValues);
+                upstreamRequest.Headers.TryAddWithoutValidation(name, (IEnumerable<string>)upstreamValues);
                 return;
             }
 

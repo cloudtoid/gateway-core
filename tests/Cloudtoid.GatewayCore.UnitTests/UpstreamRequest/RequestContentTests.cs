@@ -1,8 +1,6 @@
 ﻿namespace Cloudtoid.GatewayCore.UnitTests
 {
     using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
     using System.Net.Http;
@@ -15,6 +13,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Primitives;
     using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -205,14 +204,11 @@
             public override bool TryGetHeaderValues(
                 ProxyContext context,
                 string name,
-                IList<string> downstreamValues,
-                [NotNullWhen(true)] out IList<string>? upstreamValues)
+                StringValues downstreamValues,
+                out StringValues upstreamValues)
             {
                 if (name.EqualsOrdinalIgnoreCase(HeaderNames.ContentMD5))
-                {
-                    upstreamValues = null;
                     return false;
-                }
 
                 return base.TryGetHeaderValues(context, name, downstreamValues, out upstreamValues);
             }

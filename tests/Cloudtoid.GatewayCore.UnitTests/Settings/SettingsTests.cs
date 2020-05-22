@@ -83,6 +83,7 @@
             responseHeaders.IgnoreVia.Should().BeTrue();
             responseHeaders.IncludeCorrelationId.Should().BeTrue();
             responseHeaders.IncludeCallId.Should().BeTrue();
+            responseHeaders.IncludeServer.Should().BeTrue();
             responseHeaders.Cookies.Values
                 .Should()
                 .BeEquivalentTo(
@@ -209,6 +210,7 @@
             responseHeaders.IgnoreVia.Should().BeFalse();
             responseHeaders.IncludeCorrelationId.Should().BeFalse();
             responseHeaders.IncludeCallId.Should().BeFalse();
+            responseHeaders.IncludeServer.Should().BeFalse();
             responseHeaders.Cookies.Should().BeEmpty();
             responseHeaders.Overrides.Should().BeEmpty();
         }

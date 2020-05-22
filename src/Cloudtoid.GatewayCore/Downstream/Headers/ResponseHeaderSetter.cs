@@ -9,6 +9,7 @@
     using Cloudtoid.GatewayCore.Headers;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Primitives;
     using Microsoft.Net.Http.Headers;
     using static Contract;
 
@@ -44,6 +45,7 @@
             {
                 Names.CallId,
                 HeaderNames.Via,
+                HeaderNames.Server,
             }
             .Concat(HeaderTypes.StandardHopByHopeHeaders)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -86,6 +88,9 @@
 
             if (settings.IncludeCallId)
                 AddCallIdHeader(context, upstreamResponse);
+
+            if (settings.IncludeServer)
+                AddServerHeader(context, upstreamResponse);
 
             AddExtraHeaders(context);
 
@@ -190,6 +195,14 @@
                 values.Concat(value).AsArray());
         }
 
+        protected virtual void AddServerHeader(ProxyContext context, HttpResponseMessage upstreamResponse)
+        {
+            AddHeaderValues(
+                context,
+                HeaderNames.Server,
+                Constants.ServerName);
+        }
+
         protected virtual void AddCorrelationIdHeader(ProxyContext context, HttpResponseMessage upstreamResponse)
         {
             AddHeaderValues(
@@ -220,9 +233,9 @@
         protected virtual void AddHeaderValues(
             ProxyContext context,
             string name,
-            params string[] upstreamValues)
+            StringValues upstreamValues)
         {
-            if (Provider.TryGetHeaderValues(context, name, upstreamValues, out var downstreamValues) && downstreamValues != null)
+            if (Provider.TryGetHeaderValues(context, name, upstreamValues, out var downstreamValues) && downstreamValues.Count > 0)
             {
                 context.Response.Headers.Append(name, downstreamValues);
                 return;

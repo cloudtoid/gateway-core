@@ -7,6 +7,7 @@
     using System.Threading.Tasks;
     using Cloudtoid.GatewayCore.Headers;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Primitives;
     using Microsoft.Net.Http.Headers;
     using static Contract;
 
@@ -129,9 +130,9 @@
         protected virtual void AddHeaderValues(
             ProxyContext context,
             string name,
-            params string[] upstreamValues)
+            StringValues upstreamValues)
         {
-            if (Provider.TryGetHeaderValues(context, name, upstreamValues, out var downstreamValues) && downstreamValues != null)
+            if (Provider.TryGetHeaderValues(context, name, upstreamValues, out var downstreamValues) && downstreamValues.Count > 0)
             {
                 context.Response.Headers[name] = downstreamValues;
                 return;

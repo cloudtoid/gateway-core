@@ -285,6 +285,7 @@
                 options.IgnoreVia,
                 options.IncludeCorrelationId,
                 options.IncludeCallId,
+                options.IncludeServer,
                 Create(context, options.Cookies),
                 Create(context, options.Overrides));
         }

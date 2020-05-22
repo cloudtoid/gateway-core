@@ -1,6 +1,6 @@
 ﻿namespace Cloudtoid.GatewayCore.Downstream
 {
-    using System.Diagnostics.CodeAnalysis;
+    using Microsoft.Extensions.Primitives;
 
     /// <summary>
     /// By inheriting from this class, one can partially control the outbound downstream response content headers. Please, consider the following extensibility points:
@@ -23,8 +23,8 @@
         public virtual bool TryGetHeaderValues(
             ProxyContext context,
             string name,
-            string[] downstreamValues,
-            [NotNullWhen(true)] out string[]? upstreamValues)
+            StringValues downstreamValues,
+            out StringValues upstreamValues)
         {
             upstreamValues = downstreamValues;
             return true;

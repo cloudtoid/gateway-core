@@ -7,6 +7,7 @@
     using FluentAssertions;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Primitives;
     using Microsoft.Net.Http.Headers;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using NSubstitute;
@@ -94,11 +95,11 @@
                 .TryGetHeaderValues(
                     Arg.Any<ProxyContext>(),
                     Arg.Is("X-Keep-Header"),
-                    Arg.Any<string[]>(),
-                    out Arg.Any<string[]?>())
+                    Arg.Any<StringValues>(),
+                    out Arg.Any<StringValues>())
                 .Returns(x =>
                 {
-                    x[3] = new[] { "keep-value" };
+                    x[3] = new StringValues("keep-value");
                     return true;
                 });
 
@@ -106,8 +107,8 @@
                 .TryGetHeaderValues(
                     Arg.Any<ProxyContext>(),
                     Arg.Is("X-Drop-Header"),
-                    Arg.Any<string[]>(),
-                    out Arg.Any<string[]?>())
+                    Arg.Any<StringValues>(),
+                    out Arg.Any<StringValues>())
                 .Returns(false);
 
             var message = new HttpResponseMessage();

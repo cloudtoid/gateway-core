@@ -8,7 +8,7 @@
         internal const string XForwardedHost = "x-forwarded-host";
         internal const string CorrelationId = "x-correlation-id";
         internal const string CallId = "x-call-id";
-        internal const string ExternalAddress = "x-gwcore-external-address";
-        internal const string ProxyName = "x-gwcore-proxy-name";
+        internal static readonly string ExternalAddress = $"x-{Constants.ServerName}-external-address";
+        internal static readonly string ProxyName = $"x-{Constants.ServerName}-proxy-name";
     }
 }

@@ -266,6 +266,12 @@
                         public bool IncludeCallId { get; set; }
 
                         /// <summary>
+                        /// If true, it will append a "Server" header. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server">here</a> for more information.
+                        /// The default value is <c>false</c>.
+                        /// </summary>
+                        public bool IncludeServer { get; set; }
+
+                        /// <summary>
                         /// Gets or sets the list of cookie configurations that is applied to the
                         /// 'set-cookie' headers in the inbound upstream response. If the cookie name is
                         /// symbol '*', then the settings are applied to all 'set-cookie' headers.
