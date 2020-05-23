@@ -356,36 +356,36 @@
         }
 
         [TestMethod("Should have modified override headers")]
-        public async Task ChangeOverrideTestAsync()
+        public async Task UpdateOverrideTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "changeOverride?message=test");
+            var request = new HttpRequestMessage(HttpMethod.Get, "updateOverride?message=test");
             request.Headers.Add(Constants.OneValue, "one");
             request.Headers.Add(Constants.TwoValues, new[] { "one", "two" });
             request.Headers.Add(Constants.Expression, new[] { "one", "two" });
 
             await executor.ExecuteAsync(
-                "ChangeOverridesTestOptions.json",
+                "UpdateOverridesTestOptions.json",
                 request,
                 async response =>
                 {
                     await EnsureResponseSucceededAsync(response);
 
                     var headers = response.Headers;
-                    headers.GetValues(Constants.OneValue).Should().BeEquivalentTo(new[] { "one-changed" });
-                    headers.GetValues(Constants.TwoValues).Should().BeEquivalentTo(new[] { "one-changed", "two-changed" });
+                    headers.GetValues(Constants.OneValue).Should().BeEquivalentTo(new[] { "one-updated" });
+                    headers.GetValues(Constants.TwoValues).Should().BeEquivalentTo(new[] { "one-updated", "two-updated" });
                     headers.GetValues(Constants.Expression).Should().BeEquivalentTo(new[] { Environment.MachineName + "/gwcore", "m:GET" });
                 });
         }
 
-        [TestMethod("Should not have override headers")]
+        [TestMethod("Should not have discarded headers")]
         public async Task RemoveOverrideTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "removeOverride?message=test");
+            var request = new HttpRequestMessage(HttpMethod.Get, "discard?message=test");
             request.Headers.Add(Constants.OneValue, "one");
             request.Headers.Add(Constants.TwoValues, new[] { "one", "two" });
 
             await executor.ExecuteAsync(
-                "RemoveOverridesTestOptions.json",
+                "DiscardTestOptions.json",
                 request,
                 async response =>
                 {

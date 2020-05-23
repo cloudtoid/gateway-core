@@ -6,8 +6,8 @@
         "upstreamRequest": {
           "headers": {
             "overrides": {
-              "x-one-value": [ "one-changed" ],
-              "x-two-values": [ "one-changed", "two-changed" ],
+              "x-one-value": [ "one-updated" ],
+              "x-two-values": [ "one-updated", "two-updated" ],
               "x-expression": [ "$server_name/gwcore", "m:$request_method" ]
             }
           }
@@ -15,8 +15,8 @@
         "downstreamResponse": {
           "headers": {
             "overrides": {
-              "x-one-value": [ "one-changed" ],
-              "x-two-values": [ "one-changed", "two-changed" ],
+              "x-one-value": [ "one-updated" ],
+              "x-two-values": [ "one-updated", "two-updated" ],
               "x-expression": [ "$server_name/gwcore", "m:$request_method" ]
             }
           }

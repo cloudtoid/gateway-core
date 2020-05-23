@@ -559,7 +559,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_ExtraHeaders_HeadersIncludedAsync()
+        public async Task SetHeadersAsync_HeaderOverrides_HeadersIncludedAsync()
         {
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
@@ -568,8 +568,8 @@
             {
                 ["x-extra-1"] = new[] { "value1_1", "value1_2" },
                 ["x-extra-2"] = new[] { "value2_1", "value2_2" },
-                ["x-extra-3"] = new string[0],
-                ["x-extra-4"] = null!,
+                ["x-extra-3"] = new string[0], // it should be ignored
+                ["x-extra-4"] = null!, // it should be ignored
             };
 
             var message = new HttpResponseMessage();
@@ -585,8 +585,29 @@
             response.Headers["x-extra-0"].Should().BeEquivalentTo(new[] { "value0_0" });
             response.Headers["x-extra-1"].Should().BeEquivalentTo(new[] { "value1_1", "value1_2" });
             response.Headers["x-extra-2"].Should().BeEquivalentTo(new[] { "value2_1", "value2_2" });
-            response.Headers.ContainsKey("x-extra-3").Should().BeFalse(); // should have been removed because its new value is empty
-            response.Headers.ContainsKey("x-extra-4").Should().BeFalse(); // should have been removed because its new value is null
+            response.Headers["x-extra-3"].Should().BeEquivalentTo(new[] { "value3_0" });
+            response.Headers["x-extra-4"].Should().BeEquivalentTo(new[] { "value4_0" });
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_HeaderDiscards_HeadersNotIncludedAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.DownstreamResponse.Headers;
+            headersOptions.Discards.Add("x-discard-1");
+            headersOptions.Discards.Add("x-discard-2");
+
+            var message = new HttpResponseMessage();
+            message.Headers.Add("x-discard-1", "value1_0");
+            message.Headers.Add("x-discard-2", "value2_0");
+
+            // Act
+            var response = await SetHeadersAsync(message, options);
+
+            // Assert
+            response.Headers.ContainsKey("x-discard-1").Should().BeFalse();
+            response.Headers.ContainsKey("x-discard-2").Should().BeFalse();
         }
 
         private static async Task<HttpResponse> SetHeadersAsync(

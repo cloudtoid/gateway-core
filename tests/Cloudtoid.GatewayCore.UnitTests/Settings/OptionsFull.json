@@ -23,7 +23,8 @@
             "overrides": {
               "x-extra-1": [ "value1_1", "value1_2" ],
               "x-extra-2": [ "value2_1", "value2_2" ]
-            }
+            },
+            "discards": [ "x-discard-1", "x-discard-2" ]
           },
           "sender": {
             "httpClientName": "api-route-http-client-name",
@@ -74,7 +75,8 @@
             "overrides": {
               "x-extra-1": [ "value1_1", "value1_2" ],
               "x-extra-2": [ "value2_1", "value2_2" ]
-            }
+            },
+            "discards": [ "x-discard-1", "x-discard-2" ]
           }
         }
       }

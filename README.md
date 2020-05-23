@@ -302,13 +302,13 @@ GatewayCore pools [`HttpMessageHandler`](https://docs.microsoft.com/en-us/dotnet
 
 > Avoid enabling `UseCookies` unless you are confident that this is the behavior that your application needs.
 
-## Add, change, or remove headers
+## Add, update, or remove headers
 
 In addition to the controls offered through explicit configuration options, GatewayCore makes it easy to add, change, or remove headers on both outbound requests to downstream systems, as well as responses to clients.
 
-### Adding a header
+### Adding headers
 
-Headers can be added to requests to proxied servers, as well as responses to clients. In the example below GatewayCore sets the `x-new-request-header` header with a value `new-value`, is added to the request. A similar header is also added to the response, but this time it has two values: `value-1` and `value-2`:
+GatewayCore can add additional headers to requests sent to proxied servers, as well as responses forwarded to clients. In the example below, GatewayCore adds the `x-new-request-header` header with value `new-value` to proxied requests. A similar header is also added to responses with two values: `value-1` and `value-2`:
 
 ```json
 {
@@ -329,11 +329,11 @@ Headers can be added to requests to proxied servers, as well as responses to cli
               "x-new-response-header": [ "value-1", "value-2" ]
 ```
 
-The value of these newly added headers can be text or an [expression](#Expressions).
+> A header value can be text or an [expression](#Expressions).
 
-### Removing a header
+### Update headers
 
-Headers can be removed from proxied requests, as well as responses. To remove header, simple set its value to an array:
+GatewayCore can update headers that it proxies. In the example below, it changes the value of `x-request-header` header to `updated-value`. The values of a similar response header are also replaced with `value-1` and `value-2`:
 
 ```json
 {
@@ -344,14 +344,36 @@ Headers can be removed from proxied requests, as well as responses. To remove he
         "upstreamRequest": {
           "headers": {
             "overrides": {
-              "x-header-to-remove": [ ]
+              "x-request-header": [ "updated-value" ]
             }
           }
         },
         "downstreamResponse": {
           "headers": {
             "overrides": {
-              "x-header-to-remove": [ ]
+              "x-response-header": [ "value-1", "value-2" ]
+```
+
+> A header value can be text or an [expression](#Expressions).
+
+### Removing headers
+
+Headers can be removed from proxied requests, as well as responses. Use the `discarded` option to remove headers:
+
+```json
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "http://upstream/v1/",
+        "upstreamRequest": {
+          "headers": {
+            "discards": [ "x-header-1", "x-header-2" ]
+          }
+        },
+        "downstreamResponse": {
+          "headers": {
+            "discards": [ "x-header-1", "x-header-2" ]
 ```
 
 ## Expressions

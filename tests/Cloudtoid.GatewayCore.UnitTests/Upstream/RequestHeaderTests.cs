@@ -615,7 +615,7 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_ExtraHeaders_HeadersIncludedAsync()
+        public async Task SetHeadersAsync_HeaderOverrides_HeadersIncludedAsync()
         {
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
@@ -624,8 +624,8 @@
             {
                 ["x-extra-1"] = new[] { "value1_1", "value1_2" },
                 ["x-extra-2"] = new[] { "value2_1", "value2_2" },
-                ["x-extra-3"] = new string[0],
-                ["x-extra-4"] = null!,
+                ["x-extra-3"] = new string[0], // it should be ignored
+                ["x-extra-4"] = null!, // it should be ignored
             };
 
             var context = new DefaultHttpContext();
@@ -641,8 +641,31 @@
             message.Headers.GetValues("x-extra-0").Should().BeEquivalentTo(new[] { "value0_0" });
             message.Headers.GetValues("x-extra-1").Should().BeEquivalentTo(new[] { "value1_1", "value1_2" });
             message.Headers.GetValues("x-extra-2").Should().BeEquivalentTo(new[] { "value2_1", "value2_2" });
-            message.Headers.Contains("x-extra-3").Should().BeFalse(); // should have been removed because its new value is empty
-            message.Headers.Contains("x-extra-4").Should().BeFalse(); // should have been removed because its new value is null
+            message.Headers.GetValues("x-extra-3").Should().BeEquivalentTo(new[] { "value3_0" });
+            message.Headers.GetValues("x-extra-4").Should().BeEquivalentTo(new[] { "value4_0" });
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_HeaderDiscards_HeadersNotIncludedAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
+            headersOptions.Discards.Add("x-discard-1");
+            headersOptions.Discards.Add("x-discard-2");
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add("x-keep-1", "value1_0");
+            context.Request.Headers.Add("x-discard-1", "value1_0");
+            context.Request.Headers.Add("x-discard-2", "value2_0");
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.Contains("x-keep-1").Should().BeTrue();
+            message.Headers.Contains("x-discard-1").Should().BeFalse();
+            message.Headers.Contains("x-discard-2").Should().BeFalse();
         }
 
         private static async Task<HttpRequestMessage> SetHeadersAsync(

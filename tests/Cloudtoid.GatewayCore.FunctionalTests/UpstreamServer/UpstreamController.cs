@@ -251,14 +251,14 @@
             return message;
         }
 
-        [HttpGet("changeOverride")]
-        public string ChangeOverrideTest(string message)
+        [HttpGet("updateOverride")]
+        public string UpdateOverrideTest(string message)
         {
             var values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.OneValue);
-            values.Should().BeEquivalentTo(new[] { "one-changed" });
+            values.Should().BeEquivalentTo(new[] { "one-updated" });
 
             values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.TwoValues);
-            values.Should().BeEquivalentTo(new[] { "one-changed", "two-changed" });
+            values.Should().BeEquivalentTo(new[] { "one-updated", "two-updated" });
 
             values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.Expression);
             values.Should().BeEquivalentTo(new[] { Environment.MachineName + "/gwcore", "m:GET" });
@@ -271,8 +271,8 @@
             return message;
         }
 
-        [HttpGet("removeOverride")]
-        public string RemoveOverrideTest(string message)
+        [HttpGet("discard")]
+        public string DiscardTest(string message)
         {
             HttpContext.Request.Headers.ContainsKey(Constants.OneValue).Should().BeFalse();
             HttpContext.Request.Headers.ContainsKey(Constants.TwoValues).Should().BeFalse();

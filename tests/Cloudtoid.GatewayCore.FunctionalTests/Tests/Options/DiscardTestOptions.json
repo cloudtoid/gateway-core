@@ -5,18 +5,12 @@
         "to": "https://localhost:$upstream-port/upstream/",
         "upstreamRequest": {
           "headers": {
-            "overrides": {
-              "x-one-value": [],
-              "x-two-values": []
-            }
+            "discards": [ "x-one-value", "x-two-values" ]
           }
         },
         "downstreamResponse": {
           "headers": {
-            "overrides": {
-              "x-one-value": [],
-              "x-two-values": []
-            }
+            "discards": [ "x-one-value", "x-two-values" ]
           }
         }
       }

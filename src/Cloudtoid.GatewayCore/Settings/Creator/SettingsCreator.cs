@@ -171,7 +171,8 @@
                 options.IgnoreCallId,
                 options.IgnoreForwarded,
                 options.UseXForwarded,
-                Create(context, options.Overrides));
+                Create(context, options.Overrides),
+                options.Discards);
         }
 
         private UpstreamRequestSenderSettings Create(
@@ -287,7 +288,8 @@
                 options.IncludeCallId,
                 options.IncludeServer,
                 Create(context, options.Cookies),
-                Create(context, options.Overrides));
+                Create(context, options.Overrides),
+                options.Discards);
         }
 
         private HeaderOverride? Create(
@@ -301,10 +303,16 @@
                 return null;
             }
 
+            if (headerValuesExpressions.IsNullOrEmpty())
+            {
+                LogWarning(context, $"The '{headerName}' is either null or empty. It will be ignored.");
+                return null;
+            }
+
             return new HeaderOverride(
                 context,
                 headerName,
-                headerValuesExpressions ?? Array.Empty<string>());
+                headerValuesExpressions);
         }
 
         private void LogError(string message)

@@ -20,8 +20,6 @@
 
         public string Name { get; }
 
-        public bool HasValues => values.Length > 0;
-
         public IEnumerable<string> GetValues(ProxyContext proxyContext)
             => values.Select(v => context.Evaluate(proxyContext, v));
     }

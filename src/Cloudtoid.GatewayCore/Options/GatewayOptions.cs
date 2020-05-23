@@ -135,11 +135,15 @@
                         public bool UseXForwarded { get; set; }
 
                         /// <summary>
-                        /// Extra headers to be appended to the outbound downstream response.
-                        /// If a header already exists, it is replaced with the new value.
-                        /// To remove a header, add it here with no values.
+                        /// Gets or sets headers to be appended to the outbound upstream requests, or
+                        /// if a header already exists, its value is replaced with the new value specified here.
                         /// </summary>
                         public Dictionary<string, string[]> Overrides { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
+
+                        /// <summary>
+                        /// Gets or sets the inbound downstream headers that should be discarded.
+                        /// </summary>
+                        public HashSet<string> Discards { get; set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                     }
 
                     public sealed class SenderOptions
@@ -279,11 +283,15 @@
                         public Dictionary<string, CookieOptions> Cookies { get; set; } = new Dictionary<string, CookieOptions>(StringComparer.OrdinalIgnoreCase);
 
                         /// <summary>
-                        /// Extra headers to be appended to the outbound downstream response.
-                        /// If a header already exists, it is replaced with the new value.
-                        /// To remove a header, add it here with no values.
+                        /// Gets or sets headers to be appended to the outbound downstream response, or
+                        /// if a header already exists, its value is replaced with the new value specified here.
                         /// </summary>
                         public Dictionary<string, string[]> Overrides { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
+
+                        /// <summary>
+                        /// Gets or sets the inbound upstream headers that should be discarded.
+                        /// </summary>
+                        public HashSet<string> Discards { get; set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
                         public sealed class CookieOptions
                         {

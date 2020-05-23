@@ -1,6 +1,7 @@
 ﻿namespace Cloudtoid.GatewayCore.UnitTests
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.IO;
     using System.Linq;
@@ -61,6 +62,7 @@
                         (Name: "x-extra-1", Values: new[] { "value1_1", "value1_2" }),
                         (Name: "x-extra-2", Values: new[] { "value2_1", "value2_2" })
                     });
+            requestHeaders.Discards.Should().BeEquivalentTo("x-discard-1", "x-discard-2");
 
             var requestSender = request.Sender;
             requestSender.HttpClientName.Should().Be("api-route-http-client-name");
@@ -122,6 +124,7 @@
                         (Name: "x-extra-1", Values: new[] { "value1_1", "value1_2" }),
                         (Name: "x-extra-2", Values: new[] { "value2_1", "value2_2" })
                     });
+            responseHeaders.Discards.Should().BeEquivalentTo("x-discard-1", "x-discard-2");
         }
 
         [TestMethod]
@@ -186,6 +189,7 @@
             requestHeaders.UseXForwarded.Should().BeFalse();
             requestHeaders.IncludeExternalAddress.Should().BeFalse();
             requestHeaders.Overrides.Should().BeEmpty();
+            requestHeaders.Discards.Should().BeEmpty();
 
             var requestSender = request.Sender;
             requestSender.HttpClientName.Should().Be(GuidProvider.StringValue);
@@ -213,6 +217,7 @@
             responseHeaders.IncludeServer.Should().BeFalse();
             responseHeaders.Cookies.Should().BeEmpty();
             responseHeaders.Overrides.Should().BeEmpty();
+            responseHeaders.Discards.Should().BeEmpty();
         }
 
         [TestMethod]
@@ -429,7 +434,7 @@
                     {
                         Headers = new GatewayOptions.RouteOptions.ProxyOptions.UpstreamRequestOptions.HeadersOptions
                         {
-                            Overrides = new System.Collections.Generic.Dictionary<string, string[]>()
+                            Overrides = new Dictionary<string, string[]>()
                             {
                                 [" bad-header\\"] = new[] { "value" }
                             }
@@ -461,6 +466,28 @@
 
             options.Routes.Add("/a/b/c/", route);
             CreateSettingsAndCheckLogs(options, "The 'bad value' is not a valid value for 'test' cookie's SameSite attribute. Valid values are 'none', 'lax' and 'strict'.");
+        }
+
+        [TestMethod]
+        public void New_NullAndEmptyOverride_CorrectError()
+        {
+            var options = new GatewayOptions();
+            var route = new GatewayOptions.RouteOptions
+            {
+                Proxy = new GatewayOptions.RouteOptions.ProxyOptions
+                {
+                    To = "/e/f/g/"
+                }
+            };
+
+            route.Proxy.DownstreamResponse.Headers.Overrides.Add("x-null", null!);
+            route.Proxy.DownstreamResponse.Headers.Overrides.Add("x-empty", Array.Empty<string>());
+
+            options.Routes.Add("/a/b/c/", route);
+            CreateSettingsAndCheckLogs(
+                options,
+                "The 'x-null' is either null or empty. It will be ignored.",
+                "The 'x-empty' is either null or empty. It will be ignored.");
         }
 
         private GatewaySettings GetSettings(string jsonFile)
