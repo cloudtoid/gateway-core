@@ -63,6 +63,13 @@
             return message;
         }
 
+        [HttpGet("server")]
+        public string NoServerTest(string message)
+        {
+            HttpContext.Response.Headers.Add(HeaderNames.Server, "some-server-name");
+            return message;
+        }
+
         [HttpGet("via")]
         public string ViaTest(string message)
         {

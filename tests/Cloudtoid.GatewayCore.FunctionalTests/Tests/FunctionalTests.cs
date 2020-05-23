@@ -124,6 +124,38 @@
                 });
         }
 
+        [TestMethod("Should have server header that ignores the upstream server header")]
+        public async Task ServerTestAsync()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "server?message=test");
+            await executor.ExecuteAsync(
+                "ServerTestOptions.json",
+                request,
+                async response =>
+                {
+                    await EnsureResponseSucceededAsync(response);
+
+                    var headers = response.Headers;
+                    headers.TryGetValues(HeaderNames.Server, out var values).Should().BeTrue();
+                    values.Should().BeEquivalentTo(new[] { "gwcore" });
+                });
+        }
+
+        [TestMethod("Should not have a server header")]
+        public async Task NoServerTestAsync()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "server?message=test");
+            await executor.ExecuteAsync(
+                request,
+                async response =>
+                {
+                    await EnsureResponseSucceededAsync(response);
+
+                    var headers = response.Headers;
+                    headers.TryGetValues(HeaderNames.Server, out var values).Should().BeFalse();
+                });
+        }
+
         [TestMethod("Should have a via header on both request and response")]
         public async Task ViaTestAsync()
         {
