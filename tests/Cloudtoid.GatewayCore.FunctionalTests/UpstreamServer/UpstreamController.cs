@@ -236,6 +236,49 @@
             return message;
         }
 
+        [HttpGet("addOverride")]
+        public string AddOverrideTest(string message)
+        {
+            var values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.OneValue);
+            values.Should().BeEquivalentTo(new[] { "one" });
+
+            values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.TwoValues);
+            values.Should().BeEquivalentTo(new[] { "one", "two" });
+
+            values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.Expression);
+            values.Should().BeEquivalentTo(new[] { Environment.MachineName + "/gwcore", "m:GET" });
+
+            return message;
+        }
+
+        [HttpGet("changeOverride")]
+        public string ChangeOverrideTest(string message)
+        {
+            var values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.OneValue);
+            values.Should().BeEquivalentTo(new[] { "one-changed" });
+
+            values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.TwoValues);
+            values.Should().BeEquivalentTo(new[] { "one-changed", "two-changed" });
+
+            values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.Expression);
+            values.Should().BeEquivalentTo(new[] { Environment.MachineName + "/gwcore", "m:GET" });
+
+            var headers = HttpContext.Response.Headers;
+            headers.Add(Constants.OneValue, "one");
+            headers.Add(Constants.TwoValues, new[] { "one", "two" });
+            headers.Add(Constants.Expression, new[] { "one", "two" });
+
+            return message;
+        }
+
+        [HttpGet("removeOverride")]
+        public string RemoveOverrideTest(string message)
+        {
+            HttpContext.Request.Headers.ContainsKey(Constants.OneValue).Should().BeFalse();
+            HttpContext.Request.Headers.ContainsKey(Constants.TwoValues).Should().BeFalse();
+            return message;
+        }
+
         private static string RemovePortFromHostInForwarded(string forwarded)
         {
             var endIndex = forwarded.LastIndexOf(';');

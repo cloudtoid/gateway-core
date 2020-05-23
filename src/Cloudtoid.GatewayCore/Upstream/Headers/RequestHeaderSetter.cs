@@ -139,7 +139,7 @@
                 if (nonStandardHopByHopHeaders.Contains(name))
                     continue;
 
-                // If it has an override, we will not transfer its value
+                // If it has an override, we will not transfer its value as is
                 if (headersWithOverride.ContainsKey(name))
                     continue;
 

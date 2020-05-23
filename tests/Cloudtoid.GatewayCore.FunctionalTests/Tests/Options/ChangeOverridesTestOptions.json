@@ -1,0 +1,27 @@
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "https://localhost:$upstream-port/upstream/",
+        "upstreamRequest": {
+          "headers": {
+            "overrides": {
+              "x-one-value": [ "one-changed" ],
+              "x-two-values": [ "one-changed", "two-changed" ],
+              "x-expression": [ "$server_name/gwcore", "m:$request_method" ]
+            }
+          }
+        },
+        "downstreamResponse": {
+          "headers": {
+            "overrides": {
+              "x-one-value": [ "one-changed" ],
+              "x-two-values": [ "one-changed", "two-changed" ],
+              "x-expression": [ "$server_name/gwcore", "m:$request_method" ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

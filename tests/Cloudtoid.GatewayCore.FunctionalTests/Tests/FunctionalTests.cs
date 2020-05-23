@@ -1,5 +1,6 @@
 ﻿namespace Cloudtoid.GatewayCore.FunctionalTests
 {
+    using System;
     using System.Linq;
     using System.Net.Http;
     using System.Net.Http.Headers;
@@ -333,6 +334,66 @@
                                 "pxeId=exp12; domain=default.com; path=/; samesite=none",
                                 "emptyOut=empty; path=/",
                             });
+                });
+        }
+
+        [TestMethod("Should have added override headers")]
+        public async Task AddOverrideTestAsync()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "addOverride?message=test");
+            await executor.ExecuteAsync(
+                "AddOverridesTestOptions.json",
+                request,
+                async response =>
+                {
+                    await EnsureResponseSucceededAsync(response);
+
+                    var headers = response.Headers;
+                    headers.GetValues(Constants.OneValue).Should().BeEquivalentTo(new[] { "one" });
+                    headers.GetValues(Constants.TwoValues).Should().BeEquivalentTo(new[] { "one", "two" });
+                    headers.GetValues(Constants.Expression).Should().BeEquivalentTo(new[] { Environment.MachineName + "/gwcore", "m:GET" });
+                });
+        }
+
+        [TestMethod("Should have modified override headers")]
+        public async Task ChangeOverrideTestAsync()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "changeOverride?message=test");
+            request.Headers.Add(Constants.OneValue, "one");
+            request.Headers.Add(Constants.TwoValues, new[] { "one", "two" });
+            request.Headers.Add(Constants.Expression, new[] { "one", "two" });
+
+            await executor.ExecuteAsync(
+                "ChangeOverridesTestOptions.json",
+                request,
+                async response =>
+                {
+                    await EnsureResponseSucceededAsync(response);
+
+                    var headers = response.Headers;
+                    headers.GetValues(Constants.OneValue).Should().BeEquivalentTo(new[] { "one-changed" });
+                    headers.GetValues(Constants.TwoValues).Should().BeEquivalentTo(new[] { "one-changed", "two-changed" });
+                    headers.GetValues(Constants.Expression).Should().BeEquivalentTo(new[] { Environment.MachineName + "/gwcore", "m:GET" });
+                });
+        }
+
+        [TestMethod("Should not have override headers")]
+        public async Task RemoveOverrideTestAsync()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "removeOverride?message=test");
+            request.Headers.Add(Constants.OneValue, "one");
+            request.Headers.Add(Constants.TwoValues, new[] { "one", "two" });
+
+            await executor.ExecuteAsync(
+                "RemoveOverridesTestOptions.json",
+                request,
+                async response =>
+                {
+                    await EnsureResponseSucceededAsync(response);
+
+                    var headers = response.Headers;
+                    headers.Contains(Constants.OneValue).Should().BeFalse();
+                    headers.Contains(Constants.TwoValues).Should().BeFalse();
                 });
         }
 

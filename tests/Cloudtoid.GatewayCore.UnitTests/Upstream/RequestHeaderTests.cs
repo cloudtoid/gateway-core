@@ -620,7 +620,7 @@
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.Overrides = new Dictionary<string, string[]>()
+            headersOptions.Overrides = new Dictionary<string, string[]>
             {
                 ["x-extra-1"] = new[] { "value1_1", "value1_2" },
                 ["x-extra-2"] = new[] { "value2_1", "value2_2" },

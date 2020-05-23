@@ -220,6 +220,8 @@ GatewayCore removes the inbound response `Server` header, and by default, it doe
             "includeServer": true,
 ```
 
+> [Security through obscurity](https://en.wikipedia.org/wiki/Security_through_obscurity): A `Server` header can reveal information that might make it easier for attackers to exploit known security holes. It is recommended not to include this header.
+
 ### External address header
 
 GatewayCore can pass on the IP address of the immediate downstream client to the upstream system. The IP address is forwarded using the custom `x-gwcore-external-address` header. To enable this behavior, use `includeExternalAddress` as per below:
@@ -279,7 +281,7 @@ In the example above, GatewayCore will ensure that the `Set-Cookie` response hea
 - the value of `SameSite` is changed to `lax`, and
 - the `Domain` attribute is updated to `example.com`
 
-> Set `domain` to an empty string (`"domain": ""`) if the `Domain` attribute should be fully removed from the `Set-Cookie` header.
+> Set `domain` to an empty text (`"domain": ""`) if the `Domain` attribute should be fully removed from the `Set-Cookie` header.
 
 It is also possible to use the wildcard symbol `"*"` to provide a rule that applies to all cookies.
 
@@ -299,6 +301,60 @@ GatewayCore pools [`HttpMessageHandler`](https://docs.microsoft.com/en-us/dotnet
 ```
 
 > Avoid enabling `UseCookies` unless you are confident that this is the behavior that your application needs.
+
+## Add, change, or remove headers
+
+In addition to the controls offered through explicit configuration options, GatewayCore makes it easy to add, change, or remove headers on both outbound requests to downstream systems, as well as responses to clients.
+
+### Adding a header
+
+Headers can be added to requests to proxied servers, as well as responses to clients. In the example below GatewayCore sets the `x-new-request-header` header with a value `new-value`, is added to the request. A similar header is also added to the response, but this time it has two values: `value-1` and `value-2`:
+
+```json
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "http://upstream/v1/",
+        "upstreamRequest": {
+          "headers": {
+            "overrides": {
+              "x-new-request-header": [ "new-value" ]
+            }
+          }
+        },
+        "downstreamResponse": {
+          "headers": {
+            "overrides": {
+              "x-new-response-header": [ "value-1", "value-2" ]
+```
+
+The value of these newly added headers can be text or an [expression](#Expressions).
+
+### Removing a header
+
+Headers can be removed from proxied requests, as well as responses. To remove header, simple set its value to an array:
+
+```json
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "http://upstream/v1/",
+        "upstreamRequest": {
+          "headers": {
+            "overrides": {
+              "x-header-to-remove": [ ]
+            }
+          }
+        },
+        "downstreamResponse": {
+          "headers": {
+            "overrides": {
+              "x-header-to-remove": [ ]
+```
+
+## Expressions
 
 # Advanced extensibility and configuration
 

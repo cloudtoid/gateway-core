@@ -10,5 +10,8 @@
         internal const string CallId = "x-call-id";
         internal const string ExternalAddress = "x-gwcore-external-address";
         internal const string ProxyName = "x-gwcore-proxy-name";
+        internal const string OneValue = "x-one-value";
+        internal const string TwoValues = "x-two-values";
+        internal const string Expression = "x-expression";
     }
 }
