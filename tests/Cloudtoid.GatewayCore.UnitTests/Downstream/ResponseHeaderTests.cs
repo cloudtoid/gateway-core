@@ -259,6 +259,42 @@
         }
 
         [TestMethod]
+        public async Task SetHeadersAsync_IncludeServer_HeaderIncludedAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.DownstreamResponse.Headers;
+            headersOptions.IncludeServer = true;
+
+            var message = new HttpResponseMessage();
+            message.Headers.Add(HeaderNames.Server, "old-value");
+
+            // Act
+            var response = await SetHeadersAsync(message, options);
+
+            // Assert
+            response.Headers[HeaderNames.Server].Should().BeEquivalentTo("gwcore");
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_NotIncludeServer_HeaderNotIncludedAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.DownstreamResponse.Headers;
+            headersOptions.IncludeServer = false;
+
+            var message = new HttpResponseMessage();
+            message.Headers.Add(HeaderNames.Server, "old-value");
+
+            // Act
+            var response = await SetHeadersAsync(message, options);
+
+            // Assert
+            response.Headers.ContainsKey(HeaderNames.Server).Should().BeFalse();
+        }
+
+        [TestMethod]
         public async Task SetHeadersAsync_UpdateSetCookiesHeader_SetCookiesIsUpdatedAsync()
         {
             // Arrange
