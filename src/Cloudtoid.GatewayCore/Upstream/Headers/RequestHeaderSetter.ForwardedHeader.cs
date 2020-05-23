@@ -57,21 +57,21 @@
         {
             var forwardedHeaderValues =
                 context.ProxyUpstreamRequestHeadersSettings.IgnoreAllDownstreamHeaders
-                ? Array.Empty<ForwardedHeaderValue>()
-                : GetCurrentForwardedHeaderValues(context.Request.Headers).ToArray();
+                ? ValueList<ForwardedHeaderValue>.Empty
+                : new ValueList<ForwardedHeaderValue>(GetCurrentForwardedHeaderValues(context.Request.Headers));
 
-            AddXForwardedForHeader(context, upstreamRequest, forwardedHeaderValues);
-            AddXForwardedProtocolHeader(context, upstreamRequest, forwardedHeaderValues);
-            AddXForwardedHostHeader(context, upstreamRequest, forwardedHeaderValues);
+            AddXForwardedForHeader(context, upstreamRequest, ref forwardedHeaderValues);
+            AddXForwardedProtocolHeader(context, upstreamRequest, ref forwardedHeaderValues);
+            AddXForwardedHostHeader(context, upstreamRequest, ref forwardedHeaderValues);
         }
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For
         protected virtual void AddXForwardedForHeader(
             ProxyContext context,
             HttpRequestMessage upstreamRequest,
-            ForwardedHeaderValue[] forwardedHeaderValues)
+            ref ValueList<ForwardedHeaderValue> forwardedHeaderValues)
         {
-            var @for = CreateXForwardedForHeader(context, forwardedHeaderValues);
+            var @for = CreateXForwardedForHeader(context, ref forwardedHeaderValues);
             if (@for is null)
                 return;
 
@@ -84,13 +84,13 @@
 
         private static string? CreateXForwardedForHeader(
             ProxyContext context,
-            ForwardedHeaderValue[] forwardedHeaderValues)
+            ref ValueList<ForwardedHeaderValue> forwardedHeaderValues)
         {
             var result = GetRemoteIpAddressOrDefault(context);
             if (string.IsNullOrEmpty(result))
                 return null;
 
-            if (forwardedHeaderValues.Length == 0)
+            if (forwardedHeaderValues.Count == 0)
                 return result;
 
             StringBuilder? builder = null;
@@ -122,7 +122,7 @@
         protected virtual void AddXForwardedProtocolHeader(
             ProxyContext context,
             HttpRequestMessage upstreamRequest,
-            ForwardedHeaderValue[] forwardedHeaderValues)
+            ref ValueList<ForwardedHeaderValue> forwardedHeaderValues)
         {
             var proto = forwardedHeaderValues.FirstOrDefault(v => !string.IsNullOrEmpty(v.Proto)).Proto ?? context.Request.Scheme;
             if (string.IsNullOrEmpty(proto))
@@ -139,7 +139,7 @@
         protected virtual void AddXForwardedHostHeader(
             ProxyContext context,
             HttpRequestMessage upstreamRequest,
-            ForwardedHeaderValue[] forwardedHeaderValues)
+            ref ValueList<ForwardedHeaderValue> forwardedHeaderValues)
         {
             var host = forwardedHeaderValues.FirstOrDefault(v => !string.IsNullOrEmpty(v.Host)).Host ?? context.Request.Host.Value;
             if (string.IsNullOrEmpty(host))

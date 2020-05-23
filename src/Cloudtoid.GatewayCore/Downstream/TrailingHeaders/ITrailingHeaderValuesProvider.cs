@@ -1,6 +1,5 @@
 ﻿namespace Cloudtoid.GatewayCore.Downstream
 {
-    using System.Diagnostics.CodeAnalysis;
     using Microsoft.Extensions.Primitives;
 
     /// <summary>
