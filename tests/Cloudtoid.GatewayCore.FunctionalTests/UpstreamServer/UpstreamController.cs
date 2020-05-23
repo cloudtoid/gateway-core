@@ -64,9 +64,24 @@
         }
 
         [HttpGet("server")]
-        public string NoServerTest(string message)
+        public string ServerTest(string message)
         {
             HttpContext.Response.Headers.Add(HeaderNames.Server, "some-server-name");
+            return message;
+        }
+
+        [HttpGet("externalAddress")]
+        public string ExternalAddressTest(string message)
+        {
+            HttpContext.Request.Headers.TryGetValue(Constants.ExternalAddress, out var values).Should().BeTrue();
+            values.Should().HaveCount(1);
+            return message;
+        }
+
+        [HttpGet("noExternalAddress")]
+        public string NoExternalAddressTest(string message)
+        {
+            HttpContext.Request.Headers.ContainsKey(Constants.ExternalAddress).Should().BeFalse();
             return message;
         }
 

@@ -116,7 +116,7 @@ A unique call-id is generated and forwarded for every request received by Gatewa
 
 ## Route tracking
 
-There are two types of route tracking, one that includes information about the proxies and one that provides for client details.
+There are four types of route tracking, two that include information about the proxies and two that carry client details.
 
 ### Via header
 
@@ -201,6 +201,38 @@ It is also possible to not include any of these headers on proxy's outbound requ
         "upstreamRequest": {
           "headers": {
             "ignoreForwarded": true,
+```
+
+### Server header
+
+The ['Server'](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server) HTTP response header describes the software used by the upstream server that handled the request and generated a response.
+
+GatewayCore removes the inbound response `Server` header, and by default, it does not include a `Server` header on the outbound response to the client. This default behavior can be changed to include a `Server` header with `gwcore` as its value:
+
+```json
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "http://upstream/v1/",
+        "downstreamResponse": {
+          "headers": {
+            "includeServer": true,
+```
+
+### External address header
+
+GatewayCore can pass on the IP address of the immediate downstream client to the upstream system. The IP address is forwarded using the custom `x-gwcore-external-address` header. To enable this behavior, use `includeExternalAddress` as per below:
+
+```json
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "http://upstream/v1/",
+        "upstreamRequest": {
+          "headers": {
+            "includeExternalAddress": true,
 ```
 
 ## Cookie handling

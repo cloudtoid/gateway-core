@@ -156,6 +156,25 @@
                 });
         }
 
+        [TestMethod("Should have an external address header (x-gwcore-external-address)")]
+        public async Task ExternalAddressTestAsync()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "externalAddress?message=test");
+            await executor.ExecuteAsync(
+                "ExternalAddressTestOptions.json",
+                request,
+                response => EnsureResponseSucceededAsync(response));
+        }
+
+        [TestMethod("Should not have an external address header (x-gwcore-external-address)")]
+        public async Task NoExternalAddressTestAsync()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "noExternalAddress?message=test");
+            await executor.ExecuteAsync(
+                request,
+                response => EnsureResponseSucceededAsync(response));
+        }
+
         [TestMethod("Should have a via header on both request and response")]
         public async Task ViaTestAsync()
         {

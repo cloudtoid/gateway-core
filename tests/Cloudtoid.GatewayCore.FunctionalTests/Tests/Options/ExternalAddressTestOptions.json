@@ -1,0 +1,14 @@
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "https://localhost:$upstream-port/upstream/",
+        "upstreamRequest": {
+          "headers": {
+            "includeExternalAddress": true
+          }
+        }
+      }
+    }
+  }
+}
