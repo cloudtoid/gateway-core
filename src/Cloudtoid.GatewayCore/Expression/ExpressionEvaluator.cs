@@ -262,7 +262,7 @@
                 .AddValue(SystemVariableNames.ServerProtocol, GetServerProtocol);
         }
 
-        internal struct ParsedExpression
+        internal readonly struct ParsedExpression
         {
             private readonly IList<dynamic> instructions;
 
@@ -301,7 +301,7 @@
             }
         }
 
-        private struct RouteVariable
+        private readonly struct RouteVariable
         {
             internal RouteVariable(string name)
             {

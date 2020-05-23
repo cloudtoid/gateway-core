@@ -19,7 +19,7 @@ namespace Cloudtoid
             offset = 0;
         }
 
-        public ReadOnlySpan<T> Current => sequence.Slice(offset, index - 1);
+        public readonly ReadOnlySpan<T> Current => sequence.Slice(offset, index - 1);
 
         public bool MoveNext()
         {
@@ -34,7 +34,7 @@ namespace Cloudtoid
         }
     }
 
-    internal static partial class MemoryExtensions
+    internal static class MemoryExtensions
     {
         public static SpanSplitEnumerator<char> Split(this ReadOnlySpan<char> span, char separator)
             => new SpanSplitEnumerator<char>(span, separator);
