@@ -45,13 +45,13 @@
             request.GetHttpVersion(context).Should().Be(HttpVersion.Version30);
 
             var requestHeaders = request.Headers;
-            requestHeaders.AllowHeadersWithEmptyValue.Should().BeTrue();
-            requestHeaders.AllowHeadersWithUnderscoreInName.Should().BeTrue();
+            requestHeaders.DiscardEmpty.Should().BeTrue();
+            requestHeaders.DiscardUnderscore.Should().BeTrue();
             requestHeaders.DiscardInboundHeaders.Should().BeTrue();
-            requestHeaders.IgnoreVia.Should().BeTrue();
-            requestHeaders.IgnoreCorrelationId.Should().BeTrue();
-            requestHeaders.IgnoreCallId.Should().BeTrue();
-            requestHeaders.IgnoreForwarded.Should().BeTrue();
+            requestHeaders.SkipVia.Should().BeTrue();
+            requestHeaders.SkipCorrelationId.Should().BeTrue();
+            requestHeaders.SkipCallId.Should().BeTrue();
+            requestHeaders.SkipForwarded.Should().BeTrue();
             requestHeaders.UseXForwarded.Should().BeTrue();
             requestHeaders.AddExternalAddress.Should().BeTrue();
             requestHeaders.Overrides.Values.Select(h => (h.Name, Values: h.GetValues(context)))
@@ -82,7 +82,7 @@
             var response = routeSettings.Proxy.DownstreamResponse;
             var responseHeaders = response.Headers;
             responseHeaders.DiscardInboundHeaders.Should().BeTrue();
-            responseHeaders.IgnoreVia.Should().BeTrue();
+            responseHeaders.SkipVia.Should().BeTrue();
             responseHeaders.AddCorrelationId.Should().BeTrue();
             responseHeaders.AddCallId.Should().BeTrue();
             responseHeaders.AddServer.Should().BeTrue();
@@ -179,13 +179,13 @@
             request.GetHttpVersion(context).Should().Be(HttpVersion.Version20);
 
             var requestHeaders = request.Headers;
-            requestHeaders.AllowHeadersWithEmptyValue.Should().BeFalse();
-            requestHeaders.AllowHeadersWithUnderscoreInName.Should().BeFalse();
+            requestHeaders.DiscardEmpty.Should().BeFalse();
+            requestHeaders.DiscardUnderscore.Should().BeFalse();
             requestHeaders.DiscardInboundHeaders.Should().BeFalse();
-            requestHeaders.IgnoreVia.Should().BeFalse();
-            requestHeaders.IgnoreCorrelationId.Should().BeFalse();
-            requestHeaders.IgnoreCallId.Should().BeFalse();
-            requestHeaders.IgnoreForwarded.Should().BeFalse();
+            requestHeaders.SkipVia.Should().BeFalse();
+            requestHeaders.SkipCorrelationId.Should().BeFalse();
+            requestHeaders.SkipCallId.Should().BeFalse();
+            requestHeaders.SkipForwarded.Should().BeFalse();
             requestHeaders.UseXForwarded.Should().BeFalse();
             requestHeaders.AddExternalAddress.Should().BeFalse();
             requestHeaders.Overrides.Should().BeEmpty();
@@ -208,10 +208,10 @@
 
             var response = routeSettings.Proxy.DownstreamResponse;
             var responseHeaders = response.Headers;
-            responseHeaders.AllowHeadersWithEmptyValue.Should().BeFalse();
-            responseHeaders.AllowHeadersWithUnderscoreInName.Should().BeFalse();
+            responseHeaders.DiscardEmpty.Should().BeFalse();
+            responseHeaders.DiscardUnderscore.Should().BeFalse();
             responseHeaders.DiscardInboundHeaders.Should().BeFalse();
-            responseHeaders.IgnoreVia.Should().BeFalse();
+            responseHeaders.SkipVia.Should().BeFalse();
             responseHeaders.AddCorrelationId.Should().BeFalse();
             responseHeaders.AddCallId.Should().BeFalse();
             responseHeaders.AddServer.Should().BeFalse();

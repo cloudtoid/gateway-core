@@ -21,10 +21,10 @@
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         internal DownstreamResponseHeadersSettings(
-            bool allowHeadersWithEmptyValue,
-            bool allowHeadersWithUnderscoreInName,
+            bool discardEmpty,
+            bool discardUnderscore,
             bool discardInboundHeaders,
-            bool ignoreVia,
+            bool skipVia,
             bool addCorrelationId,
             bool addCallId,
             bool addServer,
@@ -32,10 +32,10 @@
             IReadOnlyDictionary<string, HeaderOverride> overrides,
             ISet<string> discards)
         {
-            AllowHeadersWithEmptyValue = allowHeadersWithEmptyValue;
-            AllowHeadersWithUnderscoreInName = allowHeadersWithUnderscoreInName;
+            DiscardEmpty = discardEmpty;
+            DiscardUnderscore = discardUnderscore;
             DiscardInboundHeaders = discardInboundHeaders;
-            IgnoreVia = ignoreVia;
+            SkipVia = skipVia;
             AddCorrelationId = addCorrelationId;
             AddCallId = addCallId;
             AddServer = addServer;
@@ -49,13 +49,13 @@
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
         }
 
-        public bool AllowHeadersWithEmptyValue { get; }
+        public bool DiscardEmpty { get; }
 
-        public bool AllowHeadersWithUnderscoreInName { get; }
+        public bool DiscardUnderscore { get; }
 
         public bool DiscardInboundHeaders { get; }
 
-        public bool IgnoreVia { get; }
+        public bool SkipVia { get; }
 
         public bool AddCorrelationId { get; }
 

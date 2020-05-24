@@ -26,28 +26,28 @@
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         internal UpstreamRequestHeadersSettings(
-            bool allowHeadersWithEmptyValue,
-            bool allowHeadersWithUnderscoreInName,
+            bool discardEmpty,
+            bool discardUnderscore,
             bool addExternalAddress,
             bool addProxyName,
             bool discardInboundHeaders,
-            bool ignoreVia,
-            bool ignoreCorrelationId,
-            bool ignoreCallId,
-            bool ignoreForwarded,
+            bool skipVia,
+            bool skipCorrelationId,
+            bool skipCallId,
+            bool skipForwarded,
             bool useXForwarded,
             IReadOnlyDictionary<string, HeaderOverride> overrides,
             ISet<string> discards)
         {
-            AllowHeadersWithEmptyValue = allowHeadersWithEmptyValue;
-            AllowHeadersWithUnderscoreInName = allowHeadersWithUnderscoreInName;
+            DiscardEmpty = discardEmpty;
+            DiscardUnderscore = discardUnderscore;
             AddExternalAddress = addExternalAddress;
             AddProxyName = addProxyName;
             DiscardInboundHeaders = discardInboundHeaders;
-            IgnoreVia = ignoreVia;
-            IgnoreCorrelationId = ignoreCorrelationId;
-            IgnoreCallId = ignoreCallId;
-            IgnoreForwarded = ignoreForwarded;
+            SkipVia = skipVia;
+            SkipCorrelationId = skipCorrelationId;
+            SkipCallId = skipCallId;
+            SkipForwarded = skipForwarded;
             UseXForwarded = useXForwarded;
             Overrides = overrides;
             Discards = discards;
@@ -58,9 +58,9 @@
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
         }
 
-        public bool AllowHeadersWithEmptyValue { get; }
+        public bool DiscardEmpty { get; }
 
-        public bool AllowHeadersWithUnderscoreInName { get; }
+        public bool DiscardUnderscore { get; }
 
         public bool AddExternalAddress { get; }
 
@@ -68,13 +68,13 @@
 
         public bool DiscardInboundHeaders { get; }
 
-        public bool IgnoreVia { get; }
+        public bool SkipVia { get; }
 
-        public bool IgnoreCorrelationId { get; }
+        public bool SkipCorrelationId { get; }
 
-        public bool IgnoreCallId { get; }
+        public bool SkipCallId { get; }
 
-        public bool IgnoreForwarded { get; }
+        public bool SkipForwarded { get; }
 
         public bool UseXForwarded { get; }
 

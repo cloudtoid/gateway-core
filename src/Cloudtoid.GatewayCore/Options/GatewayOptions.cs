@@ -76,23 +76,25 @@
                     public sealed class HeadersOptions
                     {
                         /// <summary>
-                        /// By default, headers with an empty value are dropped.
+                        /// Gets or sets if inbound headers with empty value should be discarded.
+                        /// The default value is <c>false</c>, meaning that headers with empty value are kept.
                         /// </summary>
-                        public bool AllowHeadersWithEmptyValue { get; set; }
+                        public bool DiscardEmpty { get; set; }
 
                         /// <summary>
-                        /// By default, headers with an underscore in their names are dropped.
+                        /// Gets or sets if inbound headers with an underscore in their name should be discarded.
+                        /// The default value is <c>false</c>, meaning that headers with an underscore in their name are kept.
                         /// </summary>
-                        public bool AllowHeadersWithUnderscoreInName { get; set; }
+                        public bool DiscardUnderscore { get; set; }
 
                         /// <summary>
-                        /// If <c>true</c>, an <c>x-gwcore-external-address</c> header with the IP address of the immediate caller is added to the outbound upstream call.
+                        /// Gets or sets if an <c>x-gwcore-external-address</c> header with the IP address of the immediate caller should be added to the outbound upstream call.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool AddExternalAddress { get; set; }
 
                         /// <summary>
-                        /// If <c>false</c>, it will copy all headers (expect for a few that are blocked) from the inbound downstream request to the outbound upstream request. This includes both request and content headers.
+                        /// Gets or sets if downstream inbound request and content headers should be discarded and not forwarded to the upstream.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool DiscardInboundHeaders { get; set; }
@@ -101,19 +103,19 @@
                         /// If <c>false</c>, it will append a <c>via</c> header. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via">here</a> for more information.
                         /// The default value is <c>false</c>.
                         /// </summary>
-                        public bool IgnoreVia { get; set; }
+                        public bool SkipVia { get; set; }
 
                         /// <summary>
                         /// If <c>false</c>, it will append a correlation identifier header if not present. The actual header name is defined by <see cref="CorrelationIdHeader"/>
                         /// The default value is <c>false</c>.
                         /// </summary>
-                        public bool IgnoreCorrelationId { get; set; }
+                        public bool SkipCorrelationId { get; set; }
 
                         /// <summary>
                         /// If <c>false</c>, it will append a <c>x-call-id</c> header. This is a guid that is always new for each call.
                         /// The default value is <c>false</c>.
                         /// </summary>
-                        public bool IgnoreCallId { get; set; }
+                        public bool SkipCallId { get; set; }
 
                         /// <summary>
                         /// If <c>false</c>, it will set <c>forwarded</c> header or <c>x-forwarded-*</c> headers. Also see <see cref="UseXForwarded"/>.
@@ -126,10 +128,10 @@
                         /// </list>
                         /// The default value is <c>false</c>.
                         /// </summary>
-                        public bool IgnoreForwarded { get; set; }
+                        public bool SkipForwarded { get; set; }
 
                         /// <summary>
-                        /// If <c>false</c>, it will use <c>x-forwarded-*</c> headers instead of the standard <c>forwarded</c> header. Also see <see cref="IgnoreForwarded"/>.
+                        /// If <c>false</c>, it will use <c>x-forwarded-*</c> headers instead of the standard <c>forwarded</c> header. Also see <see cref="SkipForwarded"/>.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool UseXForwarded { get; set; }
@@ -236,17 +238,19 @@
                     public sealed class HeadersOptions
                     {
                         /// <summary>
-                        /// By default, headers with an empty value are dropped.
+                        /// Gets or sets if inbound headers with empty value should be discarded.
+                        /// The default value is <c>false</c>, meaning that headers with empty value are kept.
                         /// </summary>
-                        public bool AllowHeadersWithEmptyValue { get; set; }
+                        public bool DiscardEmpty { get; set; }
 
                         /// <summary>
-                        /// By default, headers with an underscore in their names are dropped.
+                        /// Gets or sets if inbound headers with an underscore in their name should be discarded.
+                        /// The default value is <c>false</c>, meaning that headers with an underscore in their name are kept.
                         /// </summary>
-                        public bool AllowHeadersWithUnderscoreInName { get; set; }
+                        public bool DiscardUnderscore { get; set; }
 
                         /// <summary>
-                        /// If <c>false</c>, it will copy all headers from the inbound upstream response to the outbound downstream response. This includes response, content, and trailing headers.
+                        /// Gets or sets if upstream inbound response, content, and trailing headers should be discarded and not forwarded to the downstream client.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool DiscardInboundHeaders { get; set; }
@@ -255,7 +259,7 @@
                         /// If <c>false</c>, it will append a <c>via</c> header. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via">here</a> for more information.
                         /// The default value is <c>false</c>.
                         /// </summary>
-                        public bool IgnoreVia { get; set; }
+                        public bool SkipVia { get; set; }
 
                         /// <summary>
                         /// If <c>true</c>, it will append a correlation identifier header to the outbound downstream response. The actual header name is defined by <see cref="CorrelationIdHeader"/>

@@ -5,8 +5,8 @@
         "to": "https://localhost:$upstream-port/upstream/",
         "upstreamRequest": {
           "headers": {
-            "ignoreCorrelationId": true,
-            "ignoreCallId": true
+            "skipCorrelationId": true,
+            "skipCallId": true
           }
         },
         "downstreamResponse": {

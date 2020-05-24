@@ -11,20 +11,23 @@
         "upstreamRequest": {
           "httpVersion": "3.0",
           "headers": {
-            "allowHeadersWithEmptyValue": true,
-            "allowHeadersWithUnderscoreInName": true,
-            "addExternalAddress": true,
             "discardInboundHeaders": true,
-            "ignoreVia": true,
-            "ignoreCorrelationId": true,
-            "ignoreCallId": true,
-            "ignoreForwarded": true,
+            "discardEmpty": true,
+            "discardUnderscore": true,
+            "discards": [ "x-discard-1", "x-discard-2" ],
+
+            "addExternalAddress": true,
+
+            "skipCorrelationId": true,
+            "skipCallId": true,
+            "skipVia": true,
+            "skipForwarded": true,
             "useXForwarded": true,
+
             "overrides": {
               "x-extra-1": [ "value1_1", "value1_2" ],
               "x-extra-2": [ "value2_1", "value2_2" ]
-            },
-            "discards": [ "x-discard-1", "x-discard-2" ]
+            }
           },
           "sender": {
             "httpClientName": "api-route-http-client-name",
@@ -44,13 +47,17 @@
         },
         "downstreamResponse": {
           "headers": {
-            "allowHeadersWithEmptyValue": true,
-            "allowHeadersWithUnderscoreInName": true,
             "discardInboundHeaders": true,
-            "ignoreVia": true,
+            "discardEmpty": true,
+            "discardUnderscore": true,
+            "discards": [ "x-discard-1", "x-discard-2" ],
+
+            "addServer": true,
             "addCorrelationId": true,
             "addCallId": true,
-            "addServer": true,
+
+            "skipVia": true,
+
             "cookies": {
               "*": {
                 "secure": true,
@@ -75,8 +82,7 @@
             "overrides": {
               "x-extra-1": [ "value1_1", "value1_2" ],
               "x-extra-2": [ "value2_1", "value2_2" ]
-            },
-            "discards": [ "x-discard-1", "x-discard-2" ]
+            }
           }
         }
       }

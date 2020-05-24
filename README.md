@@ -79,7 +79,7 @@ The correlation-id header can also be added to the response message by explicitl
             "addCorrelationId": true
 ```
 
-It is also possible to omit this header from the request to the proxied server using `ignoreCorrelationId` as shown below:
+It is also possible to omit this header from the request to the proxied server using `skipCorrelationId` as shown below:
 
 ```json
 {
@@ -89,12 +89,12 @@ It is also possible to omit this header from the request to the proxied server u
         "to": "http://upstream/v1/",
         "upstreamRequest": {
           "headers": {
-            "ignoreCorrelationId": true,
+            "skipCorrelationId": true,
 ```
 
 ### Call-id header
 
-A unique call-id is generated and forwarded for every request received by GatewayCore. The header that is appended is `x-call-id` and can be removed from outbound upstream requests using `ignoreCallId`. It can also be included in responses sent to the client by enabling `addCallId` as shown in the sample below:
+A unique call-id is generated and forwarded for every request received by GatewayCore. The header that is appended is `x-call-id` and can be removed from outbound upstream requests using `skipCallId`. It can also be included in responses sent to the client by enabling `addCallId` as shown in the sample below:
 
 ```json
 {
@@ -104,7 +104,7 @@ A unique call-id is generated and forwarded for every request received by Gatewa
         "to": "http://upstream/v1/",
         "upstreamRequest": {
           "headers": {
-            "ignoreCallId": true
+            "skipCallId": true
           }
         },
         "downstreamResponse": {
@@ -147,7 +147,7 @@ GatewayCore appends one of the following values:
 
 > As per the above, GatewayCore omits the protocol for HTTP requests and responses.
 
-The Via header is included by default on both the request to the proxied server and the response to the client. You can change this behavior using `ignoreVia` as shown below:
+The Via header is included by default on both the request to the proxied server and the response to the client. You can change this behavior using `skipVia` as shown below:
 
 ```json
 {
@@ -157,13 +157,13 @@ The Via header is included by default on both the request to the proxied server 
         "to": "http://upstream/v1/",
         "upstreamRequest": {
           "headers": {
-            "ignoreVia": true,
+            "skipVia": true,
             }
           }
         },
         "downstreamResponse": {
           "headers": {
-            "ignoreVia": true,
+            "skipVia": true,
 ```
 
 ### Forwarded category of headers
@@ -190,7 +190,7 @@ GatewayCore uses the `Forwarded` header by default and replaces all inbound `X-F
             "useXForwarded": true,
 ```
 
-It is also possible to not include any of these headers on proxy's outbound request by using `ignoreForwarded` as per below:
+It is also possible to not include any of these headers on proxy's outbound request by using `skipForwarded` as per below:
 
 ```json
 {
@@ -200,7 +200,7 @@ It is also possible to not include any of these headers on proxy's outbound requ
         "to": "http://upstream/v1/",
         "upstreamRequest": {
           "headers": {
-            "ignoreForwarded": true,
+            "skipForwarded": true,
 ```
 
 ### Server header
@@ -412,14 +412,14 @@ It is typically unexpected to receive headers with no values, or that their name
         "to": "http://upstream/v1/",
         "upstreamRequest": {
           "headers": {
-            "allowHeadersWithEmptyValue": true,
-            "allowHeadersWithUnderscoreInName": true
+            "discardEmpty": true,
+            "discardUnderscore": true
           }
         },
         "downstreamResponse": {
           "headers": {
-            "allowHeadersWithEmptyValue": true,
-            "allowHeadersWithUnderscoreInName": true
+            "discardEmpty": true,
+            "discardUnderscore": true
 ```
 
 ## Expressions

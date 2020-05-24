@@ -161,15 +161,15 @@
             bool addProxyName)
         {
             return new UpstreamRequestHeadersSettings(
-                options.AllowHeadersWithEmptyValue,
-                options.AllowHeadersWithUnderscoreInName,
+                options.DiscardEmpty,
+                options.DiscardUnderscore,
                 options.AddExternalAddress,
                 addProxyName,
                 options.DiscardInboundHeaders,
-                options.IgnoreVia,
-                options.IgnoreCorrelationId,
-                options.IgnoreCallId,
-                options.IgnoreForwarded,
+                options.SkipVia,
+                options.SkipCorrelationId,
+                options.SkipCallId,
+                options.SkipForwarded,
                 options.UseXForwarded,
                 Create(context, options.Overrides),
                 options.Discards);
@@ -280,10 +280,10 @@
             DownstreamResponseOptions.HeadersOptions options)
         {
             return new DownstreamResponseHeadersSettings(
-                options.AllowHeadersWithEmptyValue,
-                options.AllowHeadersWithUnderscoreInName,
+                options.DiscardEmpty,
+                options.DiscardUnderscore,
                 options.DiscardInboundHeaders,
-                options.IgnoreVia,
+                options.SkipVia,
                 options.AddCorrelationId,
                 options.AddCallId,
                 options.AddServer,

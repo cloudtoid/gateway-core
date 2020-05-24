@@ -6,7 +6,7 @@
         "upstreamRequest": {
           "headers": {
             "useXForwarded": true,
-            "ignoreForwarded": true
+            "skipForwarded": true
           }
         }
       }

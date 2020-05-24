@@ -70,16 +70,16 @@
             if (!ResponseTrailerExtensions.SupportsTrailers(context.Response))
                 return Task.CompletedTask;
 
-            var allowHeadersWithEmptyValue = options.AllowHeadersWithEmptyValue;
-            var allowHeadersWithUnderscoreInName = options.AllowHeadersWithUnderscoreInName;
+            var discardEmpty = options.DiscardEmpty;
+            var discardUnderscore = options.DiscardUnderscore;
 
             foreach (var header in headers)
             {
                 if (!sanetizer.IsValid(
                     header.Key,
                     header.Value,
-                    allowHeadersWithEmptyValue,
-                    allowHeadersWithUnderscoreInName))
+                    discardEmpty,
+                    discardUnderscore))
                     continue;
 
                 AddHeaderValues(context, header.Key, header.Value.AsStringValues());

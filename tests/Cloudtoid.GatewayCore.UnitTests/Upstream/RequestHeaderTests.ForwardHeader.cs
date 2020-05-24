@@ -171,7 +171,7 @@
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreForwarded = true;
+            headersOptions.SkipForwarded = true;
             headersOptions.UseXForwarded = false;
 
             var context = new DefaultHttpContext();
@@ -192,7 +192,7 @@
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreForwarded = true;
+            headersOptions.SkipForwarded = true;
             headersOptions.UseXForwarded = true;
 
             var context = new DefaultHttpContext();
@@ -214,7 +214,7 @@
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
             headersOptions.DiscardInboundHeaders = true;
-            headersOptions.IgnoreForwarded = false;
+            headersOptions.SkipForwarded = false;
             headersOptions.UseXForwarded = false;
 
             var context = new DefaultHttpContext();
@@ -245,7 +245,7 @@
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
             headersOptions.DiscardInboundHeaders = true;
-            headersOptions.IgnoreForwarded = false;
+            headersOptions.SkipForwarded = false;
             headersOptions.UseXForwarded = true;
 
             var context = new DefaultHttpContext();
@@ -276,7 +276,7 @@
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
             headersOptions.DiscardInboundHeaders = true;
-            headersOptions.IgnoreForwarded = false;
+            headersOptions.SkipForwarded = false;
             headersOptions.UseXForwarded = false;
 
             var context = new DefaultHttpContext();
@@ -305,7 +305,7 @@
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreForwarded = false;
+            headersOptions.SkipForwarded = false;
             headersOptions.UseXForwarded = true;
 
             var context = new DefaultHttpContext();
@@ -329,7 +329,7 @@
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreForwarded = false;
+            headersOptions.SkipForwarded = false;
             headersOptions.UseXForwarded = true;
 
             var context = new DefaultHttpContext();
@@ -354,7 +354,7 @@
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreForwarded = false;
+            headersOptions.SkipForwarded = false;
             headersOptions.UseXForwarded = true;
 
             var context = new DefaultHttpContext();
@@ -381,7 +381,7 @@
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreForwarded = false;
+            headersOptions.SkipForwarded = false;
             headersOptions.UseXForwarded = true;
 
             var context = new DefaultHttpContext();
@@ -410,7 +410,7 @@
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
             headersOptions.DiscardInboundHeaders = false;
-            headersOptions.IgnoreForwarded = false;
+            headersOptions.SkipForwarded = false;
             headersOptions.UseXForwarded = false;
 
             var context = new DefaultHttpContext();
@@ -438,7 +438,7 @@
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
             headersOptions.DiscardInboundHeaders = false;
-            headersOptions.IgnoreForwarded = false;
+            headersOptions.SkipForwarded = false;
             headersOptions.UseXForwarded = false;
 
             var context = new DefaultHttpContext();
@@ -468,7 +468,7 @@
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
             headersOptions.DiscardInboundHeaders = false;
-            headersOptions.IgnoreForwarded = false;
+            headersOptions.SkipForwarded = false;
             headersOptions.UseXForwarded = false;
 
             var context = new DefaultHttpContext();
@@ -499,7 +499,7 @@
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
             headersOptions.DiscardInboundHeaders = false;
-            headersOptions.IgnoreForwarded = false;
+            headersOptions.SkipForwarded = false;
             headersOptions.UseXForwarded = false;
 
             var context = new DefaultHttpContext();
@@ -530,7 +530,7 @@
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
             headersOptions.DiscardInboundHeaders = false;
-            headersOptions.IgnoreForwarded = false;
+            headersOptions.SkipForwarded = false;
             headersOptions.UseXForwarded = true;
 
             var context = new DefaultHttpContext();
@@ -556,7 +556,7 @@
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
             headersOptions.DiscardInboundHeaders = false;
-            headersOptions.IgnoreForwarded = false;
+            headersOptions.SkipForwarded = false;
             headersOptions.UseXForwarded = true;
 
             var context = new DefaultHttpContext();
@@ -575,7 +575,7 @@
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreForwarded = false;
+            headersOptions.SkipForwarded = false;
             headersOptions.UseXForwarded = true;
 
             var context = new DefaultHttpContext();
@@ -599,7 +599,7 @@
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreForwarded = false;
+            headersOptions.SkipForwarded = false;
             headersOptions.UseXForwarded = false;
 
             var context = new DefaultHttpContext();

@@ -31,35 +31,19 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_HeaderWithUnderscore_HeaderRemovedAsync()
+        public async Task SetHeadersAsync_AllowUnderscore_HeaderKeptAsync()
         {
             // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
+            headersOptions.DiscardUnderscore = false;
+
             var context = new DefaultHttpContext();
             context.Request.Headers.Add("X-Good-Header", "some-value");
             context.Request.Headers.Add("X_Bad_Header", "some-value");
 
             // Act
             var message = await SetHeadersAsync(context);
-
-            // Assert
-            message.Headers.Contains("X-Good-Header").Should().BeTrue();
-            message.Headers.Contains("X_Bad_Header").Should().BeFalse();
-        }
-
-        [TestMethod]
-        public async Task SetHeadersAsync_AllowHeadersWithUnderscore_HeaderKeptAsync()
-        {
-            // Arrange
-            var options = TestExtensions.CreateDefaultOptions();
-            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.AllowHeadersWithUnderscoreInName = true;
-
-            var context = new DefaultHttpContext();
-            context.Request.Headers.Add("X-Good-Header", "some-value");
-            context.Request.Headers.Add("X_Bad_Header", "some-value");
-
-            // Act
-            var message = await SetHeadersAsync(context, options);
 
             // Assert
             message.Headers.Contains("X-Good-Header").Should().BeTrue();
@@ -67,9 +51,33 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_HeaderWithEmptyValue_HeaderRemovedAsync()
+        public async Task SetHeadersAsync_DiscardWithUnderscore_HeaderDiscardedAsync()
         {
             // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
+            headersOptions.DiscardUnderscore = true;
+
+            var context = new DefaultHttpContext();
+            context.Request.Headers.Add("X-Good-Header", "some-value");
+            context.Request.Headers.Add("X_Bad_Header", "some-value");
+
+            // Act
+            var message = await SetHeadersAsync(context, options);
+
+            // Assert
+            message.Headers.Contains("X-Good-Header").Should().BeTrue();
+            message.Headers.Contains("X_Bad_Header").Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_AllowEmptyValue_HeaderKeptAsync()
+        {
+            // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
+            headersOptions.DiscardEmpty = false;
+
             var context = new DefaultHttpContext();
             context.Request.Headers.Add("X-Empty-Header", string.Empty);
 
@@ -77,16 +85,16 @@
             var message = await SetHeadersAsync(context);
 
             // Assert
-            message.Headers.Contains("X-Empty-Header").Should().BeFalse();
+            message.Headers.Contains("X-Empty-Header").Should().BeTrue();
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_AllowHeaderWithEmptyValue_HeaderIsKeptAsync()
+        public async Task SetHeadersAsync_DiscardEmptyValue_HeaderDiscardedAsync()
         {
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.AllowHeadersWithEmptyValue = true;
+            headersOptions.DiscardEmpty = true;
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add("X-Empty-Header", string.Empty);
@@ -95,7 +103,7 @@
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.Contains("X-Empty-Header").Should().BeTrue();
+            message.Headers.Contains("X-Empty-Header").Should().BeFalse();
         }
 
         [TestMethod]
@@ -275,7 +283,7 @@
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
             headersOptions.DiscardInboundHeaders = true;
-            headersOptions.IgnoreCorrelationId = false;
+            headersOptions.SkipCorrelationId = false;
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, "some-value");
@@ -299,7 +307,7 @@
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
             headersOptions.DiscardInboundHeaders = false;
-            headersOptions.IgnoreCorrelationId = false;
+            headersOptions.SkipCorrelationId = false;
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, "some-value");
@@ -322,7 +330,7 @@
             const string HeaderName = "x-correlation-id";
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreCorrelationId = true;
+            headersOptions.SkipCorrelationId = true;
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, "some-value");
@@ -341,7 +349,7 @@
             const string HeaderName = "x-correlation-id";
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreCorrelationId = false;
+            headersOptions.SkipCorrelationId = false;
 
             var context = new DefaultHttpContext();
 
@@ -363,7 +371,7 @@
             const string HeaderName = "x-correlation-id";
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreCorrelationId = false;
+            headersOptions.SkipCorrelationId = false;
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, "some-value");
@@ -382,7 +390,7 @@
             const string HeaderName = "x-call-id";
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreCallId = true;
+            headersOptions.SkipCallId = true;
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, "some-value");
@@ -401,7 +409,7 @@
             const string HeaderName = "x-call-id";
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreCallId = false;
+            headersOptions.SkipCallId = false;
 
             var context = new DefaultHttpContext();
 
@@ -493,7 +501,7 @@
             var options = TestExtensions.CreateDefaultOptions();
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = "some-proxy";
-            proxy.UpstreamRequest.Headers.IgnoreVia = true;
+            proxy.UpstreamRequest.Headers.SkipVia = true;
 
             var context = new DefaultHttpContext();
             context.Request.Protocol = "HTTP/2";
@@ -514,7 +522,7 @@
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = "some-proxy";
             proxy.UpstreamRequest.Headers.DiscardInboundHeaders = true;
-            proxy.UpstreamRequest.Headers.IgnoreVia = false;
+            proxy.UpstreamRequest.Headers.SkipVia = false;
 
             var context = new DefaultHttpContext();
             context.Request.Protocol = "HTTP/2";

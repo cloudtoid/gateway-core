@@ -5,12 +5,12 @@
         "to": "https://localhost:$upstream-port/upstream/",
         "upstreamRequest": {
           "headers": {
-            "ignoreVia": true
+            "skipVia": true
           }
         },
         "downstreamResponse": {
           "headers": {
-            "ignoreVia": true,
+            "skipVia": true,
           }
         }
       }

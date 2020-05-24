@@ -62,7 +62,7 @@
             if (!settings.DiscardInboundHeaders)
                 AddUpstreamResponseHeadersToDownstream(context, upstreamResponse);
 
-            if (!settings.IgnoreVia)
+            if (!settings.SkipVia)
                 AddViaHeader(context, upstreamResponse);
 
             if (settings.AddCorrelationId)
@@ -87,8 +87,8 @@
                 return;
 
             var options = context.ProxyDownstreamResponseHeaderSettings;
-            var allowHeadersWithEmptyValue = options.AllowHeadersWithEmptyValue;
-            var allowHeadersWithUnderscoreInName = options.AllowHeadersWithUnderscoreInName;
+            var discardEmpty = options.DiscardEmpty;
+            var discardUnderscore = options.DiscardUnderscore;
             var correlationIdHeader = context.CorrelationIdHeader;
             var doNotTransferHeaders = options.DoNotTransferHeaders;
 
@@ -99,8 +99,8 @@
                 if (!sanetizer.IsValid(
                     name,
                     header.Value,
-                    allowHeadersWithEmptyValue,
-                    allowHeadersWithUnderscoreInName))
+                    discardEmpty,
+                    discardUnderscore))
                     continue;
 
                 if (name.EqualsOrdinalIgnoreCase(correlationIdHeader))

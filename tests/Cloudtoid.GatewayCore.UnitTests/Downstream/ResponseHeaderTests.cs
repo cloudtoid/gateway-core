@@ -16,9 +16,13 @@
     public sealed class ResponseHeaderTests
     {
         [TestMethod]
-        public async Task SetHeadersAsync_HeaderWithUnderscore_HeaderRemovedAsync()
+        public async Task SetHeadersAsync_AllowUnderscore_HeaderKeptAsync()
         {
             // Arrange
+            var options = TestExtensions.CreateDefaultOptions();
+            var headersOptions = options.Routes["/api/"].Proxy!.DownstreamResponse.Headers;
+            headersOptions.DiscardUnderscore = false;
+
             var message = new HttpResponseMessage();
             message.Headers.Add("X-Good-Header", "some-value");
             message.Headers.Add("X_Bad_Header", "some-value");
@@ -28,16 +32,16 @@
 
             // Assert
             response.Headers.ContainsKey("X-Good-Header").Should().BeTrue();
-            response.Headers.ContainsKey("X_Bad_Header").Should().BeFalse();
+            response.Headers.ContainsKey("X_Bad_Header").Should().BeTrue();
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_AllowHeadersWithUnderscore_HeaderKeptAsync()
+        public async Task SetHeadersAsync_DiscardUnderscore_HeaderDiscardedAsync()
         {
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.DownstreamResponse.Headers;
-            headersOptions.AllowHeadersWithUnderscoreInName = true;
+            headersOptions.DiscardUnderscore = true;
 
             var message = new HttpResponseMessage();
             message.Headers.Add("X-Good-Header", "some-value");
@@ -48,7 +52,7 @@
 
             // Assert
             response.Headers.ContainsKey("X-Good-Header").Should().BeTrue();
-            response.Headers.ContainsKey("X_Bad_Header").Should().BeTrue();
+            response.Headers.ContainsKey("X_Bad_Header").Should().BeFalse();
         }
 
         [TestMethod]
@@ -422,7 +426,7 @@
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = null;
             proxy.DownstreamResponse.Headers.DiscardInboundHeaders = false;
-            proxy.DownstreamResponse.Headers.IgnoreVia = false;
+            proxy.DownstreamResponse.Headers.SkipVia = false;
 
             var message = new HttpResponseMessage();
             message.Version = new System.Version(2, 0);
@@ -442,7 +446,7 @@
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = "some-proxy";
             proxy.DownstreamResponse.Headers.DiscardInboundHeaders = false;
-            proxy.DownstreamResponse.Headers.IgnoreVia = false;
+            proxy.DownstreamResponse.Headers.SkipVia = false;
 
             var message = new HttpResponseMessage();
 
@@ -461,7 +465,7 @@
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = "some-proxy";
             proxy.DownstreamResponse.Headers.DiscardInboundHeaders = false;
-            proxy.DownstreamResponse.Headers.IgnoreVia = false;
+            proxy.DownstreamResponse.Headers.SkipVia = false;
 
             var message = new HttpResponseMessage();
             message.Version = new System.Version(2, 0);
@@ -482,7 +486,7 @@
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = "some-proxy";
             proxy.DownstreamResponse.Headers.DiscardInboundHeaders = false;
-            proxy.DownstreamResponse.Headers.IgnoreVia = false;
+            proxy.DownstreamResponse.Headers.SkipVia = false;
 
             var message = new HttpResponseMessage();
             message.Version = new System.Version(2, 0);
@@ -503,7 +507,7 @@
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = "some-proxy";
             proxy.DownstreamResponse.Headers.DiscardInboundHeaders = false;
-            proxy.DownstreamResponse.Headers.IgnoreVia = true;
+            proxy.DownstreamResponse.Headers.SkipVia = true;
 
             var message = new HttpResponseMessage();
             message.Version = new System.Version(2, 0);
@@ -524,7 +528,7 @@
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = "some-proxy";
             proxy.DownstreamResponse.Headers.DiscardInboundHeaders = true;
-            proxy.DownstreamResponse.Headers.IgnoreVia = false;
+            proxy.DownstreamResponse.Headers.SkipVia = false;
 
             var message = new HttpResponseMessage();
             message.Version = new System.Version(2, 0);
@@ -545,7 +549,7 @@
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = "some-proxy";
             proxy.DownstreamResponse.Headers.DiscardInboundHeaders = false;
-            proxy.DownstreamResponse.Headers.IgnoreVia = false;
+            proxy.DownstreamResponse.Headers.SkipVia = false;
 
             var message = new HttpResponseMessage();
             message.Version = new System.Version(2, 0);

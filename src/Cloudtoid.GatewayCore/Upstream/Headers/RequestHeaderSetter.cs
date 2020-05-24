@@ -61,7 +61,7 @@
             if (!settings.DiscardInboundHeaders)
                 AddDownstreamRequestHeadersToUpstream(context, upstreamRequest);
 
-            if (!settings.IgnoreVia)
+            if (!settings.SkipVia)
                 AddViaHeader(context, upstreamRequest);
 
             if (settings.AddExternalAddress)
@@ -70,13 +70,13 @@
             if (settings.AddProxyName)
                 AddProxyNameHeader(context, upstreamRequest);
 
-            if (!settings.IgnoreForwarded)
+            if (!settings.SkipForwarded)
                 AddForwardedHeaders(context, upstreamRequest);
 
-            if (!settings.IgnoreCorrelationId)
+            if (!settings.SkipCorrelationId)
                 AddCorrelationIdHeader(context, upstreamRequest);
 
-            if (!settings.IgnoreCallId)
+            if (!settings.SkipCallId)
                 AddCallIdHeader(context, upstreamRequest);
 
             AddExtraHeaders(context, upstreamRequest);
@@ -90,8 +90,8 @@
         {
             var options = context.ProxyUpstreamRequestHeadersSettings;
             var headers = context.Request.Headers;
-            var allowHeadersWithEmptyValue = options.AllowHeadersWithEmptyValue;
-            var allowHeadersWithUnderscoreInName = options.AllowHeadersWithUnderscoreInName;
+            var discardEmpty = options.DiscardEmpty;
+            var discardUnderscore = options.DiscardUnderscore;
             var doNotTransferHeaders = options.DoNotTransferHeaders;
             var nonStandardHopByHopHeaders = GetNonStandardHopByHopHeaders(context);
             var correlationIdHeader = context.CorrelationIdHeader;
@@ -103,8 +103,8 @@
                 if (!sanetizer.IsValid(
                     name,
                     header.Value,
-                    allowHeadersWithEmptyValue,
-                    allowHeadersWithUnderscoreInName))
+                    discardEmpty,
+                    discardUnderscore))
                     continue;
 
                 if (doNotTransferHeaders.Contains(name))

@@ -101,8 +101,8 @@
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var allowHeadersWithEmptyValue = options.AllowHeadersWithEmptyValue;
-            var allowHeadersWithUnderscoreInName = options.AllowHeadersWithUnderscoreInName;
+            var discardEmpty = options.DiscardEmpty;
+            var discardUnderscore = options.DiscardUnderscore;
 
             foreach (var header in upstreamResponse.Content.Headers)
             {
@@ -111,8 +111,8 @@
                 if (!sanetizer.IsValid(
                     name,
                     header.Value,
-                    allowHeadersWithEmptyValue,
-                    allowHeadersWithUnderscoreInName))
+                    discardEmpty,
+                    discardUnderscore))
                     continue;
 
                 if (HeaderTransferBlacklist.Contains(name))
