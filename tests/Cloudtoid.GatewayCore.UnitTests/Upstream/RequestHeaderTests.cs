@@ -236,7 +236,7 @@
             const string HeaderName = "x-custom-test";
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreAllDownstreamHeaders = true;
+            headersOptions.DiscardInboundHeaders = true;
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, "some-value");
@@ -255,7 +255,7 @@
             const string HeaderName = "x-custom-test";
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreAllDownstreamHeaders = false;
+            headersOptions.DiscardInboundHeaders = false;
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, new[] { "first-value", "second-value" });
@@ -274,7 +274,7 @@
             const string HeaderName = "x-correlation-id";
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreAllDownstreamHeaders = true;
+            headersOptions.DiscardInboundHeaders = true;
             headersOptions.IgnoreCorrelationId = false;
 
             var context = new DefaultHttpContext();
@@ -298,7 +298,7 @@
             const string HeaderName = "x-correlation-id";
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IgnoreAllDownstreamHeaders = false;
+            headersOptions.DiscardInboundHeaders = false;
             headersOptions.IgnoreCorrelationId = false;
 
             var context = new DefaultHttpContext();
@@ -513,7 +513,7 @@
             var options = TestExtensions.CreateDefaultOptions();
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = "some-proxy";
-            proxy.UpstreamRequest.Headers.IgnoreAllDownstreamHeaders = true;
+            proxy.UpstreamRequest.Headers.DiscardInboundHeaders = true;
             proxy.UpstreamRequest.Headers.IgnoreVia = false;
 
             var context = new DefaultHttpContext();

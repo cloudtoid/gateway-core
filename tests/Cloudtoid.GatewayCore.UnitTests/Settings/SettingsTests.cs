@@ -47,7 +47,7 @@
             var requestHeaders = request.Headers;
             requestHeaders.AllowHeadersWithEmptyValue.Should().BeTrue();
             requestHeaders.AllowHeadersWithUnderscoreInName.Should().BeTrue();
-            requestHeaders.IgnoreAllDownstreamHeaders.Should().BeTrue();
+            requestHeaders.DiscardInboundHeaders.Should().BeTrue();
             requestHeaders.IgnoreVia.Should().BeTrue();
             requestHeaders.IgnoreCorrelationId.Should().BeTrue();
             requestHeaders.IgnoreCallId.Should().BeTrue();
@@ -81,7 +81,7 @@
 
             var response = routeSettings.Proxy.DownstreamResponse;
             var responseHeaders = response.Headers;
-            responseHeaders.IgnoreAllUpstreamHeaders.Should().BeTrue();
+            responseHeaders.DiscardInboundHeaders.Should().BeTrue();
             responseHeaders.IgnoreVia.Should().BeTrue();
             responseHeaders.IncludeCorrelationId.Should().BeTrue();
             responseHeaders.IncludeCallId.Should().BeTrue();
@@ -181,7 +181,7 @@
             var requestHeaders = request.Headers;
             requestHeaders.AllowHeadersWithEmptyValue.Should().BeFalse();
             requestHeaders.AllowHeadersWithUnderscoreInName.Should().BeFalse();
-            requestHeaders.IgnoreAllDownstreamHeaders.Should().BeFalse();
+            requestHeaders.DiscardInboundHeaders.Should().BeFalse();
             requestHeaders.IgnoreVia.Should().BeFalse();
             requestHeaders.IgnoreCorrelationId.Should().BeFalse();
             requestHeaders.IgnoreCallId.Should().BeFalse();
@@ -210,7 +210,7 @@
             var responseHeaders = response.Headers;
             responseHeaders.AllowHeadersWithEmptyValue.Should().BeFalse();
             responseHeaders.AllowHeadersWithUnderscoreInName.Should().BeFalse();
-            responseHeaders.IgnoreAllUpstreamHeaders.Should().BeFalse();
+            responseHeaders.DiscardInboundHeaders.Should().BeFalse();
             responseHeaders.IgnoreVia.Should().BeFalse();
             responseHeaders.IncludeCorrelationId.Should().BeFalse();
             responseHeaders.IncludeCallId.Should().BeFalse();

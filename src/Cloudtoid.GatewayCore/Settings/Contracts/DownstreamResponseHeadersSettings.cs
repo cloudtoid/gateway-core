@@ -23,7 +23,7 @@
         internal DownstreamResponseHeadersSettings(
             bool allowHeadersWithEmptyValue,
             bool allowHeadersWithUnderscoreInName,
-            bool ignoreAllUpstreamHeaders,
+            bool discardInboundHeaders,
             bool ignoreVia,
             bool includeCorrelationId,
             bool includeCallId,
@@ -34,7 +34,7 @@
         {
             AllowHeadersWithEmptyValue = allowHeadersWithEmptyValue;
             AllowHeadersWithUnderscoreInName = allowHeadersWithUnderscoreInName;
-            IgnoreAllUpstreamHeaders = ignoreAllUpstreamHeaders;
+            DiscardInboundHeaders = discardInboundHeaders;
             IgnoreVia = ignoreVia;
             IncludeCorrelationId = includeCorrelationId;
             IncludeCallId = includeCallId;
@@ -53,7 +53,7 @@
 
         public bool AllowHeadersWithUnderscoreInName { get; }
 
-        public bool IgnoreAllUpstreamHeaders { get; }
+        public bool DiscardInboundHeaders { get; }
 
         public bool IgnoreVia { get; }
 

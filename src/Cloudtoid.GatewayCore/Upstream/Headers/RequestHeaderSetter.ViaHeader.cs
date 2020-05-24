@@ -18,7 +18,7 @@
         {
             var builder = new StringBuilder();
 
-            if (!context.ProxyUpstreamRequestHeadersSettings.IgnoreAllDownstreamHeaders)
+            if (!context.ProxyUpstreamRequestHeadersSettings.DiscardInboundHeaders)
             {
                 if (context.Request.Headers.TryGetValue(HeaderNames.Via, out var values) && values.Count > 0)
                 {

@@ -59,7 +59,7 @@
 
             var settings = context.ProxyDownstreamResponseHeaderSettings;
 
-            if (!settings.IgnoreAllUpstreamHeaders)
+            if (!settings.DiscardInboundHeaders)
                 AddUpstreamResponseHeadersToDownstream(context, upstreamResponse);
 
             if (!settings.IgnoreVia)
@@ -160,7 +160,7 @@
         protected virtual void AddViaHeader(ProxyContext context, HttpResponseMessage upstreamResponse)
         {
             IEnumerable<string>? values = null;
-            if (!context.ProxyDownstreamResponseHeaderSettings.IgnoreAllUpstreamHeaders)
+            if (!context.ProxyDownstreamResponseHeaderSettings.DiscardInboundHeaders)
                 upstreamResponse.Headers.TryGetValues(HeaderNames.Via, out values);
 
             var version = upstreamResponse.Version;

@@ -14,7 +14,7 @@
             "allowHeadersWithEmptyValue": true,
             "allowHeadersWithUnderscoreInName": true,
             "includeExternalAddress": true,
-            "ignoreAllDownstreamHeaders": true,
+            "discardInboundHeaders": true,
             "ignoreVia": true,
             "ignoreCorrelationId": true,
             "ignoreCallId": true,
@@ -46,7 +46,7 @@
           "headers": {
             "allowHeadersWithEmptyValue": true,
             "allowHeadersWithUnderscoreInName": true,
-            "ignoreAllUpstreamHeaders": true,
+            "discardInboundHeaders": true,
             "ignoreVia": true,
             "includeCorrelationId": true,
             "includeCallId": true,

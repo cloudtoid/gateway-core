@@ -39,7 +39,7 @@
         {
             var latestValue = CreateLatestForwardHeaderValue(context);
 
-            var value = context.ProxyUpstreamRequestHeadersSettings.IgnoreAllDownstreamHeaders
+            var value = context.ProxyUpstreamRequestHeadersSettings.DiscardInboundHeaders
                 ? CreateForwardHeaderValue(latestValue)
                 : CreateForwardHeaderValue(GetCurrentForwardedHeaderValues(context.Request.Headers).Concat(latestValue));
 
@@ -56,7 +56,7 @@
         private void AddXForwardedHeaders(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
             var forwardedHeaderValues =
-                context.ProxyUpstreamRequestHeadersSettings.IgnoreAllDownstreamHeaders
+                context.ProxyUpstreamRequestHeadersSettings.DiscardInboundHeaders
                 ? ValueList<ForwardedHeaderValue>.Empty
                 : new ValueList<ForwardedHeaderValue>(GetCurrentForwardedHeaderValues(context.Request.Headers));
 

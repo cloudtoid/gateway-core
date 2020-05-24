@@ -131,7 +131,7 @@
             const string HeaderName = "x-custom-test";
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.DownstreamResponse.Headers;
-            headersOptions.IgnoreAllUpstreamHeaders = true;
+            headersOptions.DiscardInboundHeaders = true;
 
             var message = new HttpResponseMessage();
             message.Headers.Add(HeaderName, "some-value");
@@ -150,7 +150,7 @@
             const string HeaderName = "x-custom-test";
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.DownstreamResponse.Headers;
-            headersOptions.IgnoreAllUpstreamHeaders = false;
+            headersOptions.DiscardInboundHeaders = false;
 
             var message = new HttpResponseMessage();
             message.Headers.Add(HeaderName, new[] { "value-1", "value-2" });
@@ -421,7 +421,7 @@
             var options = TestExtensions.CreateDefaultOptions();
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = null;
-            proxy.DownstreamResponse.Headers.IgnoreAllUpstreamHeaders = false;
+            proxy.DownstreamResponse.Headers.DiscardInboundHeaders = false;
             proxy.DownstreamResponse.Headers.IgnoreVia = false;
 
             var message = new HttpResponseMessage();
@@ -441,7 +441,7 @@
             var options = TestExtensions.CreateDefaultOptions();
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = "some-proxy";
-            proxy.DownstreamResponse.Headers.IgnoreAllUpstreamHeaders = false;
+            proxy.DownstreamResponse.Headers.DiscardInboundHeaders = false;
             proxy.DownstreamResponse.Headers.IgnoreVia = false;
 
             var message = new HttpResponseMessage();
@@ -460,7 +460,7 @@
             var options = TestExtensions.CreateDefaultOptions();
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = "some-proxy";
-            proxy.DownstreamResponse.Headers.IgnoreAllUpstreamHeaders = false;
+            proxy.DownstreamResponse.Headers.DiscardInboundHeaders = false;
             proxy.DownstreamResponse.Headers.IgnoreVia = false;
 
             var message = new HttpResponseMessage();
@@ -481,7 +481,7 @@
             var options = TestExtensions.CreateDefaultOptions();
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = "some-proxy";
-            proxy.DownstreamResponse.Headers.IgnoreAllUpstreamHeaders = false;
+            proxy.DownstreamResponse.Headers.DiscardInboundHeaders = false;
             proxy.DownstreamResponse.Headers.IgnoreVia = false;
 
             var message = new HttpResponseMessage();
@@ -502,7 +502,7 @@
             var options = TestExtensions.CreateDefaultOptions();
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = "some-proxy";
-            proxy.DownstreamResponse.Headers.IgnoreAllUpstreamHeaders = false;
+            proxy.DownstreamResponse.Headers.DiscardInboundHeaders = false;
             proxy.DownstreamResponse.Headers.IgnoreVia = true;
 
             var message = new HttpResponseMessage();
@@ -523,7 +523,7 @@
             var options = TestExtensions.CreateDefaultOptions();
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = "some-proxy";
-            proxy.DownstreamResponse.Headers.IgnoreAllUpstreamHeaders = true;
+            proxy.DownstreamResponse.Headers.DiscardInboundHeaders = true;
             proxy.DownstreamResponse.Headers.IgnoreVia = false;
 
             var message = new HttpResponseMessage();
@@ -544,7 +544,7 @@
             var options = TestExtensions.CreateDefaultOptions();
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = "some-proxy";
-            proxy.DownstreamResponse.Headers.IgnoreAllUpstreamHeaders = false;
+            proxy.DownstreamResponse.Headers.DiscardInboundHeaders = false;
             proxy.DownstreamResponse.Headers.IgnoreVia = false;
 
             var message = new HttpResponseMessage();

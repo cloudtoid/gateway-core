@@ -95,7 +95,7 @@
             HttpRequestMessage upstreamRequest,
             CancellationToken cancellationToken)
         {
-            if (context.ProxyUpstreamRequestHeadersSettings.IgnoreAllDownstreamHeaders)
+            if (context.ProxyUpstreamRequestHeadersSettings.DiscardInboundHeaders)
                 return Task.CompletedTask;
 
             foreach (var header in context.Request.Headers)

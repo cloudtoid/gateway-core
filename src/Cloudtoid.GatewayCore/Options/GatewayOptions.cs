@@ -46,14 +46,14 @@
                 /// Gets or sets an expression that defines the name of this proxy. This name is used in the following scenarios:
                 /// <list type="bullet">
                 /// <item>This value is used in the Via HTTP header send on the outbound upstream request, and also the outbound downstream response. The default value is <c>"gwcore"</c></item>
-                /// <item>If this is not <see langword="null"/>, an "x-gwcore-proxy-name" header with this value is added to the outbound upstream request.</item>
+                /// <item>If this is not <see langword="null"/>, an <c>x-gwcore-proxy-name</c> header with this value is added to the outbound upstream request.</item>
                 /// </list>
                 /// </summary>
                 public string? ProxyName { get; set; }
 
                 /// <summary>
                 /// Gets or sets the header name for passing the correlation identifier.
-                /// The default value is "x-correlation-id".
+                /// The default value is <c>x-correlation-id</c>.
                 /// </summary>
                 public string? CorrelationIdHeader { get; set; }
 
@@ -86,50 +86,50 @@
                         public bool AllowHeadersWithUnderscoreInName { get; set; }
 
                         /// <summary>
-                        /// If true, an "x-gwcore-external-address" header with the immediate downstream IP address is added to the outbound upstream call.
+                        /// If <c>true</c>, an <c>x-gwcore-external-address</c> header with the immediate downstream IP address is added to the outbound upstream call.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IncludeExternalAddress { get; set; }
 
                         /// <summary>
-                        /// If false, it will copy all headers (expect for a few that are blocked) from the inbound downstream request to the outbound upstream request. This includes both request and content headers.
+                        /// If <c>false</c>, it will copy all headers (expect for a few that are blocked) from the inbound downstream request to the outbound upstream request. This includes both request and content headers.
                         /// The default value is <c>false</c>.
                         /// </summary>
-                        public bool IgnoreAllDownstreamHeaders { get; set; }
+                        public bool DiscardInboundHeaders { get; set; }
 
                         /// <summary>
-                        /// If false, it will append a "Via" header. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via">here</a> for more information.
+                        /// If <c>false</c>, it will append a <c>via</c> header. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via">here</a> for more information.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IgnoreVia { get; set; }
 
                         /// <summary>
-                        /// If false, it will append a correlation identifier header if not present. The actual header name is defined by <see cref="CorrelationIdHeader"/>
+                        /// If <c>false</c>, it will append a correlation identifier header if not present. The actual header name is defined by <see cref="CorrelationIdHeader"/>
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IgnoreCorrelationId { get; set; }
 
                         /// <summary>
-                        /// If false, it will append a "x-call-id" header. This is a guid that is always new for each call.
+                        /// If <c>false</c>, it will append a <c>x-call-id</c> header. This is a guid that is always new for each call.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IgnoreCallId { get; set; }
 
                         /// <summary>
-                        /// If false, it will set "Forwarded" header or "x-forwarded-*" headers. Also see <see cref="UseXForwarded"/>.
+                        /// If <c>false</c>, it will set <c>forwarded</c> header or <c>x-forwarded-*</c> headers. Also see <see cref="UseXForwarded"/>.
                         /// The information included in this header(s) consist of:
                         /// <list type="bullet">
                         /// <item><term>By</term><description>The interface where the request came in to the proxy server.</description></item>
                         /// <item><term>For</term><description>The client that initiated the request and subsequent proxies in a chain of proxies.</description></item>
                         /// <item><term>Host</term><description>The Host request header field as received by the proxy.</description></item>
-                        /// <item><term>Proto</term><description>Indicates which protocol was used to make the request (typically "HTTP" or "HTTPS").</description></item>
+                        /// <item><term>Proto</term><description>Indicates which protocol was used to make the request (typically <c>HTTP</c> or <c>HTTPS</c>).</description></item>
                         /// </list>
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IgnoreForwarded { get; set; }
 
                         /// <summary>
-                        /// If false, it will use "x-forwarded-*" headers instead of the standard "Forwarded" header. Also see <see cref="IgnoreForwarded"/>.
+                        /// If <c>false</c>, it will use <c>x-forwarded-*</c> headers instead of the standard <c>forwarded</c> header. Also see <see cref="IgnoreForwarded"/>.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool UseXForwarded { get; set; }
@@ -246,39 +246,39 @@
                         public bool AllowHeadersWithUnderscoreInName { get; set; }
 
                         /// <summary>
-                        /// If false, it will copy all headers from the inbound upstream response to the outbound downstream response. This includes response, content, and trailing headers.
+                        /// If <c>false</c>, it will copy all headers from the inbound upstream response to the outbound downstream response. This includes response, content, and trailing headers.
                         /// The default value is <c>false</c>.
                         /// </summary>
-                        public bool IgnoreAllUpstreamHeaders { get; set; }
+                        public bool DiscardInboundHeaders { get; set; }
 
                         /// <summary>
-                        /// If false, it will append a "Via" header. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via">here</a> for more information.
+                        /// If <c>false</c>, it will append a <c>via</c> header. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via">here</a> for more information.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IgnoreVia { get; set; }
 
                         /// <summary>
-                        /// If true, it will append a correlation identifier header to the outbound downstream response. The actual header name is defined by <see cref="CorrelationIdHeader"/>
+                        /// If <c>true</c>, it will append a correlation identifier header to the outbound downstream response. The actual header name is defined by <see cref="CorrelationIdHeader"/>
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IncludeCorrelationId { get; set; }
 
                         /// <summary>
-                        /// If true, it will append a "x-call-id" header. This is a guid that is always new for each call.
+                        /// If <c>true</c>, it will append a <c>x-call-id</c> header. This is a guid that is always new for each call.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IncludeCallId { get; set; }
 
                         /// <summary>
-                        /// If true, it will append a "Server" header. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server">here</a> for more information.
+                        /// If <c>true</c>, it will append a <c>server</c> header. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server">here</a> for more information.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool IncludeServer { get; set; }
 
                         /// <summary>
                         /// Gets or sets the list of cookie configurations that is applied to the
-                        /// 'set-cookie' headers in the inbound upstream response. If the cookie name is
-                        /// symbol '*', then the settings are applied to all 'set-cookie' headers.
+                        /// <c>set-cookie</c> headers in the inbound upstream response. If the cookie name is
+                        /// symbol <c>'*'</c>, then the settings are applied to all <c>set-cookie</c> headers.
                         /// </summary>
                         public Dictionary<string, CookieOptions> Cookies { get; set; } = new Dictionary<string, CookieOptions>(StringComparer.OrdinalIgnoreCase);
 
@@ -310,7 +310,7 @@
                             /// <summary>
                             /// The SameSite attribute asserts that a cookie must not be sent with cross-origin requests,
                             /// providing some protection against cross-site request forgery attacks
-                            /// The valid values are <c>"strict"</c>, <c>"lax"</c>, and <c>"none"</c>.
+                            /// The valid values are <c>strict</c>, <c>lax</c>, and <c>none</c>.
                             /// </summary>
                             public string? SameSite { get; set; }
 
@@ -320,7 +320,7 @@
                             /// agent will include the cookie in the Cookie header when making HTTP requests
                             /// to example.com, www.example.com, and www.corp.example.com.
                             /// Use this property to specify or override the domain attribute.
-                            /// Set this value to an empty string ("") to remove the domain attribute from the cookie.
+                            /// Set this value to an empty string (<c>""</c>) to remove the domain attribute from the cookie.
                             /// </summary>
                             public string? Domain { get; set; }
                         }

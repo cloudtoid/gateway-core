@@ -30,7 +30,7 @@
             bool allowHeadersWithUnderscoreInName,
             bool includeExternalAddress,
             bool includeProxyName,
-            bool ignoreAllDownstreamHeaders,
+            bool discardInboundHeaders,
             bool ignoreVia,
             bool ignoreCorrelationId,
             bool ignoreCallId,
@@ -43,7 +43,7 @@
             AllowHeadersWithUnderscoreInName = allowHeadersWithUnderscoreInName;
             IncludeExternalAddress = includeExternalAddress;
             IncludeProxyName = includeProxyName;
-            IgnoreAllDownstreamHeaders = ignoreAllDownstreamHeaders;
+            DiscardInboundHeaders = discardInboundHeaders;
             IgnoreVia = ignoreVia;
             IgnoreCorrelationId = ignoreCorrelationId;
             IgnoreCallId = ignoreCallId;
@@ -66,7 +66,7 @@
 
         public bool IncludeProxyName { get; }
 
-        public bool IgnoreAllDownstreamHeaders { get; }
+        public bool DiscardInboundHeaders { get; }
 
         public bool IgnoreVia { get; }
 

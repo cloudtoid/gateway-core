@@ -58,7 +58,7 @@
             CheckValue(upstreamResponse, nameof(upstreamResponse));
 
             var options = context.ProxyDownstreamResponseHeaderSettings;
-            if (options.IgnoreAllUpstreamHeaders)
+            if (options.DiscardInboundHeaders)
                 return Task.CompletedTask;
 
             cancellationToken.ThrowIfCancellationRequested();

@@ -165,7 +165,7 @@
                 options.AllowHeadersWithUnderscoreInName,
                 options.IncludeExternalAddress,
                 includeProxyName,
-                options.IgnoreAllDownstreamHeaders,
+                options.DiscardInboundHeaders,
                 options.IgnoreVia,
                 options.IgnoreCorrelationId,
                 options.IgnoreCallId,
@@ -282,7 +282,7 @@
             return new DownstreamResponseHeadersSettings(
                 options.AllowHeadersWithEmptyValue,
                 options.AllowHeadersWithUnderscoreInName,
-                options.IgnoreAllUpstreamHeaders,
+                options.DiscardInboundHeaders,
                 options.IgnoreVia,
                 options.IncludeCorrelationId,
                 options.IncludeCallId,

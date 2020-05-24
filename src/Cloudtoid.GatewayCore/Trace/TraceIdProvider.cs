@@ -16,7 +16,7 @@
 
         public virtual string GetOrCreateCorrelationId(ProxyContext context)
         {
-            if (context.ProxyUpstreamRequestHeadersSettings.IgnoreAllDownstreamHeaders)
+            if (context.ProxyUpstreamRequestHeadersSettings.DiscardInboundHeaders)
                 return CreateCorrelationId();
 
             var correlationIdHeader = GetCorrelationIdHeader(context);

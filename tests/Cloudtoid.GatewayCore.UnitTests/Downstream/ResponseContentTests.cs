@@ -108,7 +108,7 @@
             var message = CreateHttpResponseMessage((header, value));
 
             var options = TestExtensions.CreateDefaultOptions();
-            options.Routes["/api/"].Proxy!.DownstreamResponse.Headers.IgnoreAllUpstreamHeaders = true;
+            options.Routes["/api/"].Proxy!.DownstreamResponse.Headers.DiscardInboundHeaders = true;
 
             // Act
             var response = await SetContentAsync(message, options: options);

@@ -79,7 +79,7 @@ The correlation-id header can also be added to the response message by explicitl
             "includeCorrelationId": true
 ```
 
-It is also possible to omit this header from the request to the proxied server using `'ignoreCorrelationId'` as shown below:
+It is also possible to omit this header from the request to the proxied server using `ignoreCorrelationId` as shown below:
 
 ```json
 {
@@ -124,7 +124,7 @@ A proxy typically uses the [`Via`](https://developer.mozilla.org/en-US/docs/Web/
 
 This header is a comma-separated list of proxies along the message chain with the closest proxy to the sender being the left-most value.
 
-The value added by GatewayCore includes the pseudonym of the proxy. This name is `gwcore` but can be customized, as shown below:
+The value added by GatewayCore includes the pseudonym of the proxy. This default name is `gwcore` but can be customized with `proxyName`:
 
 ```json
 {
@@ -302,7 +302,7 @@ GatewayCore pools [`HttpMessageHandler`](https://docs.microsoft.com/en-us/dotnet
 
 > Avoid enabling `UseCookies` unless you are confident that this is the behavior that your application needs.
 
-## Add, update, or remove headers
+## Add, update, or discard headers
 
 In addition to the controls offered through explicit configuration options, GatewayCore makes it easy to add, change, or remove headers on both outbound requests to downstream systems, as well as responses to clients.
 
@@ -356,9 +356,9 @@ GatewayCore can update headers that it proxies. In the example below, it changes
 
 > A header value can be text or an [expression](#Expressions).
 
-### Removing headers
+### Discarding headers
 
-Headers can be removed from proxied requests, as well as responses. Use the `discarded` option to remove headers:
+The value of inbound headers can be discarded from proxied requests, as well as responses. Use the `discarded` option to ignore the value of these headers:
 
 ```json
 {
@@ -376,6 +376,52 @@ Headers can be removed from proxied requests, as well as responses. Use the `dis
             "discards": [ "x-header-1", "x-header-2" ]
 ```
 
+## All other header options
+
+### Discard all inbound headers
+
+It is possible to discard the values of all inbound headers. Use `discardInboundHeaders` to drop all inbound client request headers; use `discardInboundHeaders` to perform the same on all inbound response headers:
+
+```json
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "http://upstream/v1/",
+        "upstreamRequest": {
+          "headers": {
+            "discardInboundHeaders": true
+          }
+        },
+        "downstreamResponse": {
+          "headers": {
+            "discardInboundHeaders": true
+```
+
+## Unconventional header names
+
+It is typically unexpected to receive headers with no values
+
+According to [RFC7230](https://tools.ietf.org/html/rfc7230#section-3.2) which lays out the message syntax for HTTP/1.1,   
+
+It is typically unexpected to receive headers with no values, or that their names include an underscore character (`_`). GatewayCore does not proxy such headers, but this behavior can be changed using the following configurations:
+
+```json
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "http://upstream/v1/",
+        "upstreamRequest": {
+          "headers": {
+            "allowHeadersWithEmptyValue": true,
+            "allowHeadersWithUnderscoreInName": true
+          }
+        },
+        "downstreamResponse": {
+          "headers": {
+            "allowHeadersWithEmptyValue": true,
+            "allowHeadersWithUnderscoreInName": true
+```
+
 ## Expressions
 
 # Advanced extensibility and configuration
@@ -383,6 +429,7 @@ Headers can be removed from proxied requests, as well as responses. Use the `dis
 When using the GatewayCore as a library within your .net core application, you have full control over most portions of the proxy pipeline and other gateway components.
 
 ## Upstream request http client
+
 
 
 

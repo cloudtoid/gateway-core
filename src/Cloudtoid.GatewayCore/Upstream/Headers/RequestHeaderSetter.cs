@@ -58,7 +58,7 @@
 
             var settings = context.ProxyUpstreamRequestHeadersSettings;
 
-            if (!settings.IgnoreAllDownstreamHeaders)
+            if (!settings.DiscardInboundHeaders)
                 AddDownstreamRequestHeadersToUpstream(context, upstreamRequest);
 
             if (!settings.IgnoreVia)
