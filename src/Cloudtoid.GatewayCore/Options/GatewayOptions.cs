@@ -52,7 +52,7 @@
                 public string? ProxyName { get; set; }
 
                 /// <summary>
-                /// Gets or sets the header name for passing the correlation identifier.
+                /// Gets or sets the name of headers that hold correlation identifiers.
                 /// The default value is <c>x-correlation-id</c>.
                 /// </summary>
                 public string? CorrelationIdHeader { get; set; }
@@ -64,8 +64,8 @@
                 public sealed class UpstreamRequestOptions
                 {
                     /// <summary>
-                    /// This is the HTTP protocol for the outbound upstream request.
-                    /// The default value if HTTP/2.0
+                    /// Gets or sets the HTTP protocol of outbound upstream requests.
+                    /// The default value if HTTP/2.0.
                     /// </summary>
                     public string? HttpVersion { get; set; }
 
@@ -105,38 +105,42 @@
                         public bool AddExternalAddress { get; set; }
 
                         /// <summary>
-                        /// If <c>false</c>, it will append a correlation identifier header if not present. The actual header name is defined by <see cref="CorrelationIdHeader"/>
-                        /// The default value is <c>false</c>.
+                        /// Gets or sets if a correlation identifier header, if not present on the inbound request, should be added
+                        /// to the outbound request. The default value is <c>false</c>, meaning that a correlation identifier header is included.
+                        /// The name of this header is <c>x-correlation-id</c>, but it can be altered using <see cref="CorrelationIdHeader"/>.
                         /// </summary>
                         public bool SkipCorrelationId { get; set; }
 
                         /// <summary>
-                        /// If <c>false</c>, it will append a <c>x-call-id</c> header. This is a guid that is always new for each call.
+                        /// Gets or sets if an <c>x-call-id</c> header should be added. This is a <c>guid</c> that is generated on each call.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool SkipCallId { get; set; }
 
                         /// <summary>
-                        /// If <c>false</c>, it will append a <c>via</c> header. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via">here</a> for more information.
+                        /// Gets or sets if a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via"><c>via</c></a> header should be appended to the outbound request.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool SkipVia { get; set; }
 
                         /// <summary>
-                        /// If <c>false</c>, it will set <c>forwarded</c> header or <c>x-forwarded-*</c> headers. Also see <see cref="UseXForwarded"/>.
-                        /// The information included in this header(s) consist of:
+                        /// Gets or sets if a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded"><c>forwarded</c></a> header
+                        /// or <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For"><c>x-forwarded-*</c></a> headers
+                        /// should be added to outbound requests. The default value is <c>false</c> and the final header is decided based on the value of
+                        /// <see cref="UseXForwarded"/>.
+                        /// The information captured by these headers consist of:
                         /// <list type="bullet">
                         /// <item><term>By</term><description>The interface where the request came in to the proxy server.</description></item>
                         /// <item><term>For</term><description>The client that initiated the request and subsequent proxies in a chain of proxies.</description></item>
                         /// <item><term>Host</term><description>The Host request header field as received by the proxy.</description></item>
                         /// <item><term>Proto</term><description>Indicates which protocol was used to make the request (typically <c>HTTP</c> or <c>HTTPS</c>).</description></item>
                         /// </list>
-                        /// The default value is <c>false</c>.
                         /// </summary>
                         public bool SkipForwarded { get; set; }
 
                         /// <summary>
-                        /// If <c>false</c>, it will use <c>x-forwarded-*</c> headers instead of the standard <c>forwarded</c> header. Also see <see cref="SkipForwarded"/>.
+                        /// Gets or sets if <c>x-forwarded-*</c> headers should be used instead of the standard
+                        /// <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded"><c>forwarded</c></a> header.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool UseXForwarded { get; set; }
@@ -151,7 +155,7 @@
                     public sealed class SenderOptions
                     {
                         /// <summary>
-                        /// TGets or sets the name of the <see cref="HttpClient"/> that will be used to send the request.
+                        /// Gets or sets the name of the <see cref="HttpClient"/> that will be used to send the request.
                         /// The default value is a system generated unique name.
                         /// </summary>
                         public string? HttpClientName { get; set; }
@@ -261,25 +265,27 @@
                         public HashSet<string> Discards { get; set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
                         /// <summary>
-                        /// If <c>true</c>, it will append a <c>server</c> header. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server">here</a> for more information.
+                        /// Gets or sets if a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server"><c>server</c></a> header should be added. The value of this header is set to <c>gwcore</c>.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool AddServer { get; set; }
 
                         /// <summary>
-                        /// If <c>true</c>, it will append a correlation identifier header to the outbound downstream response. The actual header name is defined by <see cref="CorrelationIdHeader"/>
-                        /// The default value is <c>false</c>.
+                        /// Gets or sets if a correlation identifier header, if not present on the inbound response, should be added
+                        /// to the outbound response. The default value is <c>false</c>, meaning that a correlation identifier header
+                        /// is not included.
+                        /// The name of this header is <c>x-correlation-id</c>, but it can be altered using <see cref="CorrelationIdHeader"/>.
                         /// </summary>
                         public bool AddCorrelationId { get; set; }
 
                         /// <summary>
-                        /// If <c>true</c>, it will append a <c>x-call-id</c> header. This is a guid that is always new for each call.
+                        /// Gets or sets if an <c>x-call-id</c> header should be added. This is a <c>guid</c> that is generated on each call.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool AddCallId { get; set; }
 
                         /// <summary>
-                        /// If <c>false</c>, it will append a <c>via</c> header. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via">here</a> for more information.
+                        /// Gets or sets if a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via"><c>via</c></a> header should be appended to the outbound response.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool SkipVia { get; set; }

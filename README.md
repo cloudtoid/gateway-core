@@ -49,11 +49,11 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 
 ## Tracing
 
-GatewayCore uses two headers to pass on trace identifiers to both the server and the client:
+GatewayCore uses two headers to relay trace identifiers to servers, as well as clients:
 
 ### Correlation-id header
 
-A request originated from a client can include a correlation-id header that is passed on unchanged to the proxied server. The default correlation-id header is `x-correlation-id` but can be renamed as shown here:
+Requests originated from clients can include a correlation-id header that is forwarded unchanged to proxied servers. The default correlation-id header is `x-correlation-id`, but it can be renamed as shown here:
 
 ```json
 {
@@ -64,9 +64,9 @@ A request originated from a client can include a correlation-id header that is p
         "correlationIdHeader": "x-request-id",
 ```
 
-In the case of a missing correlation-id header, GatewayCore generates a unique identifier instead.
+> GatewayCore generates a unique correlation identifier for requests that do not have a correlation-id header.
 
-The correlation-id header can also be added to the response message by explicitly enabling `addCorrelationId`:
+The correlation-id header is not included in response messages, but you can add it by explicitly enabling `addCorrelationId`.
 
 ```json
 {
@@ -79,7 +79,7 @@ The correlation-id header can also be added to the response message by explicitl
             "addCorrelationId": true
 ```
 
-It is also possible to omit this header from the request to the proxied server using `skipCorrelationId` as shown below:
+It is also possible to omit the correlation-id header from outbound requests using `skipCorrelationId` as shown below:
 
 ```json
 {
@@ -94,7 +94,7 @@ It is also possible to omit this header from the request to the proxied server u
 
 ### Call-id header
 
-A unique call-id is generated and forwarded for every request received by GatewayCore. The header that is appended is `x-call-id` and can be removed from outbound upstream requests using `skipCallId`. It can also be included in responses sent to the client by enabling `addCallId` as shown in the sample below:
+A unique call-id is generated and forwarded on every request received by GatewayCore. The header with this unique id is `x-call-id` and can be dropped from outbound upstream requests using `skipCallId`:
 
 ```json
 {
@@ -105,18 +105,26 @@ A unique call-id is generated and forwarded for every request received by Gatewa
         "upstreamRequest": {
           "headers": {
             "skipCallId": true
-          }
-        },
+```
+
+The `x-call-id` header can also be included in responses sent to clients if `addCallId` is explicitly enabled:
+
+```json
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "http://upstream/v1/",
         "downstreamResponse": {
           "headers": {
             "addCallId": true
 ```
 
-> An inbound call-id header received from the client or the proxied server is silently ignored.
+> All inbound call-id headers are silently ignored.
 
 ## Route tracking
 
-There are four types of route tracking, two that include information about the proxies and two that carry client details.
+There are four types of route tracking: two that offer information on proxies, and two that carry client details.
 
 ### Via header
 
@@ -145,9 +153,9 @@ GatewayCore appends one of the following values:
 | `HTTP/X.Y` | `X.Y \<proxy-name>` | `X.Y gwcore` |
 | `<protocol>\<version>` | `<protocol>\<version> <proxy-name>` |  
 
-> As per the above, GatewayCore omits the protocol for HTTP requests and responses.
+> As illustrated above, GatewayCore omits the protocol for HTTP requests and responses.
 
-The Via header is included by default on both the request to the proxied server and the response to the client. You can change this behavior using `skipVia` as shown below:
+The `Via` header is included by default on both requests to proxied servers, as well as responses to clients. You can change this behavior using `skipVia` as shown below:
 
 ```json
 {
@@ -177,7 +185,7 @@ The information included in these headers typically consists of the IP address o
 
 > IP V6 addresses are quoted and enclosed in square brackets.
 
-GatewayCore uses the `Forwarded` header by default and replaces all inbound `X-Forwarded-*` headers. You can use `useXForwarded` to reverse this behavior and to prefer `X-Forwarded-*` headers instead:
+GatewayCore uses the `Forwarded` header by default and replaces all inbound `X-Forwarded-*` headers. You can enable `useXForwarded` to reverse this behavior and prefer `X-Forwarded-*` headers instead:
 
 ```json
 {
@@ -190,7 +198,7 @@ GatewayCore uses the `Forwarded` header by default and replaces all inbound `X-F
             "useXForwarded": true,
 ```
 
-It is also possible to not include any of these headers on proxy's outbound request by using `skipForwarded` as per below:
+It is also possible to omit these headers on outbound requests by using `skipForwarded`:
 
 ```json
 {
@@ -207,7 +215,7 @@ It is also possible to not include any of these headers on proxy's outbound requ
 
 The ['Server'](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server) HTTP response header describes the software used by the upstream server that handled the request and generated a response.
 
-GatewayCore removes the inbound response `Server` header, and by default, it does not include a `Server` header on the outbound response to the client. This default behavior can be changed to include a `Server` header with `gwcore` as its value:
+GatewayCore discards inbound `Server` headers and does not include a `Server` header on its outbound responses to clients. This default behavior can be changed to include a `Server` header with `gwcore` as its value:
 
 ```json
 {
@@ -224,7 +232,7 @@ GatewayCore removes the inbound response `Server` header, and by default, it doe
 
 ### External address header
 
-GatewayCore can pass on the IP address of the immediate downstream client to the upstream system. The IP address is forwarded using the custom `x-gwcore-external-address` header. To enable this behavior, use `addExternalAddress` as per below:
+GatewayCore can forward the IP address of an immediate downstream client. This IP address is sent using the custom `x-gwcore-external-address` header and can be enabled with the `addExternalAddress` option:
 
 ```json
 {
@@ -378,9 +386,9 @@ The value of inbound headers can be discarded from proxied requests, as well as 
 
 ## All other header options
 
-### Discard all inbound headers
+### Discard inbound headers
 
-It is possible to discard the values of all inbound headers. Use `discardInboundHeaders` to drop all inbound client request headers; use `discardInboundHeaders` to perform the same on all inbound response headers:
+It is possible to discard the values of all inbound headers. Use `discardInboundHeaders` to drop all inbound client request headers, as well as all outbound response headers:
 
 ```json
   "routes": {
@@ -397,13 +405,9 @@ It is possible to discard the values of all inbound headers. Use `discardInbound
             "discardInboundHeaders": true
 ```
 
-## Unconventional header names
+## Empty headers
 
-It is typically unexpected to receive headers with no values
-
-According to [RFC7230](https://tools.ietf.org/html/rfc7230#section-3.2) which lays out the message syntax for HTTP/1.1,   
-
-It is typically unexpected to receive headers with no values, or that their names include an underscore character (`_`). GatewayCore does not proxy such headers, but this behavior can be changed using the following configurations:
+It is typically unexpected to receive headers that do not have a value, but it is perfectly valid to have headers such as `HTTP2-Settings` with an empty value. You can set `discardEmpty` to `true` to discard headers with no value:
 
 ```json
   "routes": {
@@ -413,13 +417,30 @@ It is typically unexpected to receive headers with no values, or that their name
         "upstreamRequest": {
           "headers": {
             "discardEmpty": true,
-            "discardUnderscore": true
           }
         },
         "downstreamResponse": {
           "headers": {
             "discardEmpty": true,
-            "discardUnderscore": true
+```
+
+## Headers with underscore
+
+Some clients and servers do not expect an underscore character (`_`) in header names. Use `discardUnderscore` to remove these headers:
+
+```json
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "http://upstream/v1/",
+        "upstreamRequest": {
+          "headers": {
+            "discardUnderscore": true,
+          }
+        },
+        "downstreamResponse": {
+          "headers": {
+            "discardUnderscore": true,
 ```
 
 ## Expressions
