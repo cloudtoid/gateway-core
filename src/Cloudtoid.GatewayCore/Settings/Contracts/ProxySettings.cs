@@ -24,7 +24,7 @@
 
         public string To { get; }
 
-        public bool IncludeProxyName => proxyNameExpression != null;
+        public bool AddProxyName => proxyNameExpression != null;
 
         public UpstreamRequestSettings UpstreamRequest { get; }
 

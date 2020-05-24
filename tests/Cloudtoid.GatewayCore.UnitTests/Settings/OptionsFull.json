@@ -13,7 +13,7 @@
           "headers": {
             "allowHeadersWithEmptyValue": true,
             "allowHeadersWithUnderscoreInName": true,
-            "includeExternalAddress": true,
+            "addExternalAddress": true,
             "discardInboundHeaders": true,
             "ignoreVia": true,
             "ignoreCorrelationId": true,
@@ -48,9 +48,9 @@
             "allowHeadersWithUnderscoreInName": true,
             "discardInboundHeaders": true,
             "ignoreVia": true,
-            "includeCorrelationId": true,
-            "includeCallId": true,
-            "includeServer": true,
+            "addCorrelationId": true,
+            "addCallId": true,
+            "addServer": true,
             "cookies": {
               "*": {
                 "secure": true,

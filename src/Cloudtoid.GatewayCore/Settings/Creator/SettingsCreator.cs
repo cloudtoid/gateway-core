@@ -146,25 +146,25 @@
         private UpstreamRequestSettings Create(
             RouteSettingsContext context,
             UpstreamRequestOptions options,
-            bool includeProxyName)
+            bool addProxyName)
         {
             return new UpstreamRequestSettings(
                 context,
                 options.HttpVersion,
-                Create(context, options.Headers, includeProxyName),
+                Create(context, options.Headers, addProxyName),
                 Create(context, options.Sender));
         }
 
         private UpstreamRequestHeadersSettings Create(
             RouteSettingsContext context,
             UpstreamRequestOptions.HeadersOptions options,
-            bool includeProxyName)
+            bool addProxyName)
         {
             return new UpstreamRequestHeadersSettings(
                 options.AllowHeadersWithEmptyValue,
                 options.AllowHeadersWithUnderscoreInName,
-                options.IncludeExternalAddress,
-                includeProxyName,
+                options.AddExternalAddress,
+                addProxyName,
                 options.DiscardInboundHeaders,
                 options.IgnoreVia,
                 options.IgnoreCorrelationId,
@@ -284,9 +284,9 @@
                 options.AllowHeadersWithUnderscoreInName,
                 options.DiscardInboundHeaders,
                 options.IgnoreVia,
-                options.IncludeCorrelationId,
-                options.IncludeCallId,
-                options.IncludeServer,
+                options.AddCorrelationId,
+                options.AddCallId,
+                options.AddServer,
                 Create(context, options.Cookies),
                 Create(context, options.Overrides),
                 options.Discards);

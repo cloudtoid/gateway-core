@@ -25,9 +25,9 @@
             bool allowHeadersWithUnderscoreInName,
             bool discardInboundHeaders,
             bool ignoreVia,
-            bool includeCorrelationId,
-            bool includeCallId,
-            bool includeServer,
+            bool addCorrelationId,
+            bool addCallId,
+            bool addServer,
             IReadOnlyDictionary<string, CookieSettings> cookies,
             IReadOnlyDictionary<string, HeaderOverride> overrides,
             ISet<string> discards)
@@ -36,9 +36,9 @@
             AllowHeadersWithUnderscoreInName = allowHeadersWithUnderscoreInName;
             DiscardInboundHeaders = discardInboundHeaders;
             IgnoreVia = ignoreVia;
-            IncludeCorrelationId = includeCorrelationId;
-            IncludeCallId = includeCallId;
-            IncludeServer = includeServer;
+            AddCorrelationId = addCorrelationId;
+            AddCallId = addCallId;
+            AddServer = addServer;
             Cookies = cookies;
             Overrides = overrides;
             Discards = discards;
@@ -57,11 +57,11 @@
 
         public bool IgnoreVia { get; }
 
-        public bool IncludeCorrelationId { get; }
+        public bool AddCorrelationId { get; }
 
-        public bool IncludeCallId { get; }
+        public bool AddCallId { get; }
 
-        public bool IncludeServer { get; }
+        public bool AddServer { get; }
 
         public IReadOnlyDictionary<string, CookieSettings> Cookies { get; }
 

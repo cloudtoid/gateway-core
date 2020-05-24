@@ -6,7 +6,7 @@
         "correlationIdHeader": "x-c-custom",
         "downstreamResponse": {
           "headers": {
-            "includeCorrelationId": true
+            "addCorrelationId": true
           }
         }
       }

@@ -64,10 +64,10 @@
             if (!settings.IgnoreVia)
                 AddViaHeader(context, upstreamRequest);
 
-            if (settings.IncludeExternalAddress)
+            if (settings.AddExternalAddress)
                 AddExternalAddressHeader(context, upstreamRequest);
 
-            if (settings.IncludeProxyName)
+            if (settings.AddProxyName)
                 AddProxyNameHeader(context, upstreamRequest);
 
             if (!settings.IgnoreForwarded)

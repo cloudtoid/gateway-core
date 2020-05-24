@@ -86,10 +86,10 @@
                         public bool AllowHeadersWithUnderscoreInName { get; set; }
 
                         /// <summary>
-                        /// If <c>true</c>, an <c>x-gwcore-external-address</c> header with the immediate downstream IP address is added to the outbound upstream call.
+                        /// If <c>true</c>, an <c>x-gwcore-external-address</c> header with the IP address of the immediate caller is added to the outbound upstream call.
                         /// The default value is <c>false</c>.
                         /// </summary>
-                        public bool IncludeExternalAddress { get; set; }
+                        public bool AddExternalAddress { get; set; }
 
                         /// <summary>
                         /// If <c>false</c>, it will copy all headers (expect for a few that are blocked) from the inbound downstream request to the outbound upstream request. This includes both request and content headers.
@@ -261,19 +261,19 @@
                         /// If <c>true</c>, it will append a correlation identifier header to the outbound downstream response. The actual header name is defined by <see cref="CorrelationIdHeader"/>
                         /// The default value is <c>false</c>.
                         /// </summary>
-                        public bool IncludeCorrelationId { get; set; }
+                        public bool AddCorrelationId { get; set; }
 
                         /// <summary>
                         /// If <c>true</c>, it will append a <c>x-call-id</c> header. This is a guid that is always new for each call.
                         /// The default value is <c>false</c>.
                         /// </summary>
-                        public bool IncludeCallId { get; set; }
+                        public bool AddCallId { get; set; }
 
                         /// <summary>
                         /// If <c>true</c>, it will append a <c>server</c> header. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server">here</a> for more information.
                         /// The default value is <c>false</c>.
                         /// </summary>
-                        public bool IncludeServer { get; set; }
+                        public bool AddServer { get; set; }
 
                         /// <summary>
                         /// Gets or sets the list of cookie configurations that is applied to the

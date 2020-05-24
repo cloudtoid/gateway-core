@@ -66,7 +66,7 @@ A request originated from a client can include a correlation-id header that is p
 
 In the case of a missing correlation-id header, GatewayCore generates a unique identifier instead.
 
-The correlation-id header can also be added to the response message by explicitly enabling `includeCorrelationId`:
+The correlation-id header can also be added to the response message by explicitly enabling `addCorrelationId`:
 
 ```json
 {
@@ -76,7 +76,7 @@ The correlation-id header can also be added to the response message by explicitl
         "to": "http://upstream/v1/",
         "downstreamResponse": {
           "headers": {
-            "includeCorrelationId": true
+            "addCorrelationId": true
 ```
 
 It is also possible to omit this header from the request to the proxied server using `ignoreCorrelationId` as shown below:
@@ -94,7 +94,7 @@ It is also possible to omit this header from the request to the proxied server u
 
 ### Call-id header
 
-A unique call-id is generated and forwarded for every request received by GatewayCore. The header that is appended is `x-call-id` and can be removed from outbound upstream requests using `ignoreCallId`. It can also be included in responses sent to the client by enabling `includeCallId` as shown in the sample below:
+A unique call-id is generated and forwarded for every request received by GatewayCore. The header that is appended is `x-call-id` and can be removed from outbound upstream requests using `ignoreCallId`. It can also be included in responses sent to the client by enabling `addCallId` as shown in the sample below:
 
 ```json
 {
@@ -109,7 +109,7 @@ A unique call-id is generated and forwarded for every request received by Gatewa
         },
         "downstreamResponse": {
           "headers": {
-            "includeCallId": true
+            "addCallId": true
 ```
 
 > An inbound call-id header received from the client or the proxied server is silently ignored.
@@ -217,14 +217,14 @@ GatewayCore removes the inbound response `Server` header, and by default, it doe
         "to": "http://upstream/v1/",
         "downstreamResponse": {
           "headers": {
-            "includeServer": true,
+            "addServer": true,
 ```
 
 > [Security through obscurity](https://en.wikipedia.org/wiki/Security_through_obscurity): A `Server` header can reveal information that might make it easier for attackers to exploit known security holes. It is recommended not to include this header.
 
 ### External address header
 
-GatewayCore can pass on the IP address of the immediate downstream client to the upstream system. The IP address is forwarded using the custom `x-gwcore-external-address` header. To enable this behavior, use `includeExternalAddress` as per below:
+GatewayCore can pass on the IP address of the immediate downstream client to the upstream system. The IP address is forwarded using the custom `x-gwcore-external-address` header. To enable this behavior, use `addExternalAddress` as per below:
 
 ```json
 {
@@ -234,7 +234,7 @@ GatewayCore can pass on the IP address of the immediate downstream client to the
         "to": "http://upstream/v1/",
         "upstreamRequest": {
           "headers": {
-            "includeExternalAddress": true,
+            "addExternalAddress": true,
 ```
 
 ## Cookie handling

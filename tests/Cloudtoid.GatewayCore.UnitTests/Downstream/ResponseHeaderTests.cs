@@ -163,13 +163,13 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_IncludeCorrelationId_HeaderIncludedAsync()
+        public async Task SetHeadersAsync_AddCorrelationId_HeaderIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-correlation-id";
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.DownstreamResponse.Headers;
-            headersOptions.IncludeCorrelationId = true;
+            headersOptions.AddCorrelationId = true;
 
             var message = new HttpResponseMessage();
             message.Headers.Add(HeaderName, "old-value");
@@ -182,13 +182,13 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_NotIncludeCorrelationId_HeaderNotIncludedAsync()
+        public async Task SetHeadersAsync_NotAddCorrelationId_HeaderNotIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-correlation-id";
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.DownstreamResponse.Headers;
-            headersOptions.IncludeCorrelationId = false;
+            headersOptions.AddCorrelationId = false;
 
             var message = new HttpResponseMessage();
             message.Headers.Add(HeaderName, "old-value");
@@ -201,14 +201,14 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_IncludeCorrelationIdWithNonDefaultHeaderName_HeaderIncludedAsync()
+        public async Task SetHeadersAsync_AddCorrelationIdWithNonDefaultHeaderName_HeaderIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-test-id";
             var options = TestExtensions.CreateDefaultOptions();
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.CorrelationIdHeader = HeaderName;
-            proxy.DownstreamResponse.Headers.IncludeCorrelationId = true;
+            proxy.DownstreamResponse.Headers.AddCorrelationId = true;
 
             var message = new HttpResponseMessage();
             message.Headers.Add(HeaderName, "old-value");
@@ -227,7 +227,7 @@
             const string HeaderName = "x-call-id";
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.DownstreamResponse.Headers;
-            headersOptions.IncludeCallId = true;
+            headersOptions.AddCallId = true;
 
             var message = new HttpResponseMessage();
             message.Headers.Add(HeaderName, "old-value");
@@ -246,7 +246,7 @@
             const string HeaderName = "x-call-id";
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.DownstreamResponse.Headers;
-            headersOptions.IncludeCallId = false;
+            headersOptions.AddCallId = false;
 
             var message = new HttpResponseMessage();
             message.Headers.Add(HeaderName, "old-value");
@@ -264,7 +264,7 @@
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.DownstreamResponse.Headers;
-            headersOptions.IncludeServer = true;
+            headersOptions.AddServer = true;
 
             var message = new HttpResponseMessage();
             message.Headers.Add(HeaderNames.Server, "old-value");
@@ -282,7 +282,7 @@
             // Arrange
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.DownstreamResponse.Headers;
-            headersOptions.IncludeServer = false;
+            headersOptions.AddServer = false;
 
             var message = new HttpResponseMessage();
             message.Headers.Add(HeaderNames.Server, "old-value");

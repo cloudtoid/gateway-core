@@ -53,7 +53,7 @@
             requestHeaders.IgnoreCallId.Should().BeTrue();
             requestHeaders.IgnoreForwarded.Should().BeTrue();
             requestHeaders.UseXForwarded.Should().BeTrue();
-            requestHeaders.IncludeExternalAddress.Should().BeTrue();
+            requestHeaders.AddExternalAddress.Should().BeTrue();
             requestHeaders.Overrides.Values.Select(h => (h.Name, Values: h.GetValues(context)))
                 .Should()
                 .BeEquivalentTo(
@@ -83,9 +83,9 @@
             var responseHeaders = response.Headers;
             responseHeaders.DiscardInboundHeaders.Should().BeTrue();
             responseHeaders.IgnoreVia.Should().BeTrue();
-            responseHeaders.IncludeCorrelationId.Should().BeTrue();
-            responseHeaders.IncludeCallId.Should().BeTrue();
-            responseHeaders.IncludeServer.Should().BeTrue();
+            responseHeaders.AddCorrelationId.Should().BeTrue();
+            responseHeaders.AddCallId.Should().BeTrue();
+            responseHeaders.AddServer.Should().BeTrue();
             responseHeaders.Cookies.Values
                 .Should()
                 .BeEquivalentTo(
@@ -187,7 +187,7 @@
             requestHeaders.IgnoreCallId.Should().BeFalse();
             requestHeaders.IgnoreForwarded.Should().BeFalse();
             requestHeaders.UseXForwarded.Should().BeFalse();
-            requestHeaders.IncludeExternalAddress.Should().BeFalse();
+            requestHeaders.AddExternalAddress.Should().BeFalse();
             requestHeaders.Overrides.Should().BeEmpty();
             requestHeaders.Discards.Should().BeEmpty();
 
@@ -212,9 +212,9 @@
             responseHeaders.AllowHeadersWithUnderscoreInName.Should().BeFalse();
             responseHeaders.DiscardInboundHeaders.Should().BeFalse();
             responseHeaders.IgnoreVia.Should().BeFalse();
-            responseHeaders.IncludeCorrelationId.Should().BeFalse();
-            responseHeaders.IncludeCallId.Should().BeFalse();
-            responseHeaders.IncludeServer.Should().BeFalse();
+            responseHeaders.AddCorrelationId.Should().BeFalse();
+            responseHeaders.AddCallId.Should().BeFalse();
+            responseHeaders.AddServer.Should().BeFalse();
             responseHeaders.Cookies.Should().BeEmpty();
             responseHeaders.Overrides.Should().BeEmpty();
             responseHeaders.Discards.Should().BeEmpty();

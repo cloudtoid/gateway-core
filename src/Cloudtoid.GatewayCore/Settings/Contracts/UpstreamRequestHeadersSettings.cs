@@ -28,8 +28,8 @@
         internal UpstreamRequestHeadersSettings(
             bool allowHeadersWithEmptyValue,
             bool allowHeadersWithUnderscoreInName,
-            bool includeExternalAddress,
-            bool includeProxyName,
+            bool addExternalAddress,
+            bool addProxyName,
             bool discardInboundHeaders,
             bool ignoreVia,
             bool ignoreCorrelationId,
@@ -41,8 +41,8 @@
         {
             AllowHeadersWithEmptyValue = allowHeadersWithEmptyValue;
             AllowHeadersWithUnderscoreInName = allowHeadersWithUnderscoreInName;
-            IncludeExternalAddress = includeExternalAddress;
-            IncludeProxyName = includeProxyName;
+            AddExternalAddress = addExternalAddress;
+            AddProxyName = addProxyName;
             DiscardInboundHeaders = discardInboundHeaders;
             IgnoreVia = ignoreVia;
             IgnoreCorrelationId = ignoreCorrelationId;
@@ -62,9 +62,9 @@
 
         public bool AllowHeadersWithUnderscoreInName { get; }
 
-        public bool IncludeExternalAddress { get; }
+        public bool AddExternalAddress { get; }
 
-        public bool IncludeProxyName { get; }
+        public bool AddProxyName { get; }
 
         public bool DiscardInboundHeaders { get; }
 

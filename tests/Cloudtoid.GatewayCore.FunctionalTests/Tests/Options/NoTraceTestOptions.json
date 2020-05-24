@@ -11,8 +11,8 @@
         },
         "downstreamResponse": {
           "headers": {
-            "includeCorrelationId": true,
-            "includeCallId": true
+            "addCorrelationId": true,
+            "addCallId": true
           }
         }
       }

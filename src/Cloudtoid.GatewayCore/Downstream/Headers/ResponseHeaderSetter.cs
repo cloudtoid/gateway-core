@@ -65,13 +65,13 @@
             if (!settings.IgnoreVia)
                 AddViaHeader(context, upstreamResponse);
 
-            if (settings.IncludeCorrelationId)
+            if (settings.AddCorrelationId)
                 AddCorrelationIdHeader(context, upstreamResponse);
 
-            if (settings.IncludeCallId)
+            if (settings.AddCallId)
                 AddCallIdHeader(context, upstreamResponse);
 
-            if (settings.IncludeServer)
+            if (settings.AddServer)
                 AddServerHeader(context, upstreamResponse);
 
             AddExtraHeaders(context);

@@ -5,7 +5,7 @@
         "to": "https://localhost:$upstream-port/upstream/",
         "downstreamResponse": {
           "headers": {
-            "includeCorrelationId": true
+            "addCorrelationId": true
           }
         }
       }

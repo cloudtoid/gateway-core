@@ -169,14 +169,14 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_IncludeExternalAddress_HeaderIncludedAsync()
+        public async Task SetHeadersAsync_AddExternalAddress_HeaderIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-gwcore-external-address";
 
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IncludeExternalAddress = true;
+            headersOptions.AddExternalAddress = true;
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, "3.2.1.0");
@@ -190,14 +190,14 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_IncludeExternalAddressButNullRemoteAddress_HeaderNotIncludedAsync()
+        public async Task SetHeadersAsync_AddExternalAddressButNullRemoteAddress_HeaderNotIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-gwcore-external-address";
 
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IncludeExternalAddress = true;
+            headersOptions.AddExternalAddress = true;
 
             var context = new DefaultHttpContext();
             context.Request.Headers.Add(HeaderName, "3.2.1.0");
@@ -211,13 +211,13 @@
         }
 
         [TestMethod]
-        public async Task SetHeadersAsync_NotIncludeExternalAddress_HeaderNotIncludedAsync()
+        public async Task SetHeadersAsync_NotAddExternalAddress_HeaderNotIncludedAsync()
         {
             // Arrange
             const string HeaderName = "x-gwcore-external-address";
             var options = TestExtensions.CreateDefaultOptions();
             var headersOptions = options.Routes["/api/"].Proxy!.UpstreamRequest.Headers;
-            headersOptions.IncludeExternalAddress = false;
+            headersOptions.AddExternalAddress = false;
 
             var context = new DefaultHttpContext();
             context.Connection.RemoteIpAddress = IpV4Sample;

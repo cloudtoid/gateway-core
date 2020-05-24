@@ -5,7 +5,7 @@
         "to": "https://localhost:$upstream-port/upstream/",
         "upstreamRequest": {
           "headers": {
-            "includeExternalAddress": true
+            "addExternalAddress": true
           }
         }
       }
