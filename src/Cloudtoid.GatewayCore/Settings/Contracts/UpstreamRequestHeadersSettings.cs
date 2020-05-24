@@ -26,18 +26,18 @@
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         internal UpstreamRequestHeadersSettings(
+            bool discardInboundHeaders,
             bool discardEmpty,
             bool discardUnderscore,
+            ISet<string> discards,
             bool addExternalAddress,
             bool addProxyName,
-            bool discardInboundHeaders,
-            bool skipVia,
             bool skipCorrelationId,
             bool skipCallId,
+            bool skipVia,
             bool skipForwarded,
             bool useXForwarded,
-            IReadOnlyDictionary<string, HeaderOverride> overrides,
-            ISet<string> discards)
+            IReadOnlyDictionary<string, HeaderOverride> overrides)
         {
             DiscardEmpty = discardEmpty;
             DiscardUnderscore = discardUnderscore;
@@ -58,29 +58,29 @@
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
         }
 
+        public bool DiscardInboundHeaders { get; }
+
         public bool DiscardEmpty { get; }
 
         public bool DiscardUnderscore { get; }
+
+        public ISet<string> Discards { get; }
 
         public bool AddExternalAddress { get; }
 
         public bool AddProxyName { get; }
 
-        public bool DiscardInboundHeaders { get; }
-
-        public bool SkipVia { get; }
-
         public bool SkipCorrelationId { get; }
 
         public bool SkipCallId { get; }
+
+        public bool SkipVia { get; }
 
         public bool SkipForwarded { get; }
 
         public bool UseXForwarded { get; }
 
         public IReadOnlyDictionary<string, HeaderOverride> Overrides { get; }
-
-        public ISet<string> Discards { get; }
 
         /// <summary>
         /// This is a list of headers that should not be passed on to the upstream system as they are.

@@ -161,18 +161,18 @@
             bool addProxyName)
         {
             return new UpstreamRequestHeadersSettings(
+                options.DiscardInboundHeaders,
                 options.DiscardEmpty,
                 options.DiscardUnderscore,
+                options.Discards,
                 options.AddExternalAddress,
                 addProxyName,
-                options.DiscardInboundHeaders,
-                options.SkipVia,
                 options.SkipCorrelationId,
                 options.SkipCallId,
+                options.SkipVia,
                 options.SkipForwarded,
                 options.UseXForwarded,
-                Create(context, options.Overrides),
-                options.Discards);
+                Create(context, options.Overrides));
         }
 
         private UpstreamRequestSenderSettings Create(
@@ -280,16 +280,16 @@
             DownstreamResponseOptions.HeadersOptions options)
         {
             return new DownstreamResponseHeadersSettings(
+                options.DiscardInboundHeaders,
                 options.DiscardEmpty,
                 options.DiscardUnderscore,
-                options.DiscardInboundHeaders,
-                options.SkipVia,
+                options.Discards,
+                options.AddServer,
                 options.AddCorrelationId,
                 options.AddCallId,
-                options.AddServer,
+                options.SkipVia,
                 Create(context, options.Cookies),
-                Create(context, options.Overrides),
-                options.Discards);
+                Create(context, options.Overrides));
         }
 
         private HeaderOverride? Create(

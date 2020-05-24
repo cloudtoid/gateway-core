@@ -76,6 +76,12 @@
                     public sealed class HeadersOptions
                     {
                         /// <summary>
+                        /// Gets or sets if downstream inbound request and content headers should be discarded and not forwarded to the upstream.
+                        /// The default value is <c>false</c>.
+                        /// </summary>
+                        public bool DiscardInboundHeaders { get; set; }
+
+                        /// <summary>
                         /// Gets or sets if inbound headers with empty value should be discarded.
                         /// The default value is <c>false</c>, meaning that headers with empty value are kept.
                         /// </summary>
@@ -88,22 +94,15 @@
                         public bool DiscardUnderscore { get; set; }
 
                         /// <summary>
+                        /// Gets or sets the inbound downstream headers that should be discarded.
+                        /// </summary>
+                        public HashSet<string> Discards { get; set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                        /// <summary>
                         /// Gets or sets if an <c>x-gwcore-external-address</c> header with the IP address of the immediate caller should be added to the outbound upstream call.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool AddExternalAddress { get; set; }
-
-                        /// <summary>
-                        /// Gets or sets if downstream inbound request and content headers should be discarded and not forwarded to the upstream.
-                        /// The default value is <c>false</c>.
-                        /// </summary>
-                        public bool DiscardInboundHeaders { get; set; }
-
-                        /// <summary>
-                        /// If <c>false</c>, it will append a <c>via</c> header. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via">here</a> for more information.
-                        /// The default value is <c>false</c>.
-                        /// </summary>
-                        public bool SkipVia { get; set; }
 
                         /// <summary>
                         /// If <c>false</c>, it will append a correlation identifier header if not present. The actual header name is defined by <see cref="CorrelationIdHeader"/>
@@ -116,6 +115,12 @@
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool SkipCallId { get; set; }
+
+                        /// <summary>
+                        /// If <c>false</c>, it will append a <c>via</c> header. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via">here</a> for more information.
+                        /// The default value is <c>false</c>.
+                        /// </summary>
+                        public bool SkipVia { get; set; }
 
                         /// <summary>
                         /// If <c>false</c>, it will set <c>forwarded</c> header or <c>x-forwarded-*</c> headers. Also see <see cref="UseXForwarded"/>.
@@ -141,11 +146,6 @@
                         /// if a header already exists, its value is replaced with the new value specified here.
                         /// </summary>
                         public Dictionary<string, string[]> Overrides { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
-
-                        /// <summary>
-                        /// Gets or sets the inbound downstream headers that should be discarded.
-                        /// </summary>
-                        public HashSet<string> Discards { get; set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                     }
 
                     public sealed class SenderOptions
@@ -238,6 +238,12 @@
                     public sealed class HeadersOptions
                     {
                         /// <summary>
+                        /// Gets or sets if upstream inbound response, content, and trailing headers should be discarded and not forwarded to the downstream client.
+                        /// The default value is <c>false</c>.
+                        /// </summary>
+                        public bool DiscardInboundHeaders { get; set; }
+
+                        /// <summary>
                         /// Gets or sets if inbound headers with empty value should be discarded.
                         /// The default value is <c>false</c>, meaning that headers with empty value are kept.
                         /// </summary>
@@ -250,16 +256,15 @@
                         public bool DiscardUnderscore { get; set; }
 
                         /// <summary>
-                        /// Gets or sets if upstream inbound response, content, and trailing headers should be discarded and not forwarded to the downstream client.
-                        /// The default value is <c>false</c>.
+                        /// Gets or sets the inbound upstream headers that should be discarded.
                         /// </summary>
-                        public bool DiscardInboundHeaders { get; set; }
+                        public HashSet<string> Discards { get; set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
                         /// <summary>
-                        /// If <c>false</c>, it will append a <c>via</c> header. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via">here</a> for more information.
+                        /// If <c>true</c>, it will append a <c>server</c> header. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server">here</a> for more information.
                         /// The default value is <c>false</c>.
                         /// </summary>
-                        public bool SkipVia { get; set; }
+                        public bool AddServer { get; set; }
 
                         /// <summary>
                         /// If <c>true</c>, it will append a correlation identifier header to the outbound downstream response. The actual header name is defined by <see cref="CorrelationIdHeader"/>
@@ -274,10 +279,10 @@
                         public bool AddCallId { get; set; }
 
                         /// <summary>
-                        /// If <c>true</c>, it will append a <c>server</c> header. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server">here</a> for more information.
+                        /// If <c>false</c>, it will append a <c>via</c> header. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via">here</a> for more information.
                         /// The default value is <c>false</c>.
                         /// </summary>
-                        public bool AddServer { get; set; }
+                        public bool SkipVia { get; set; }
 
                         /// <summary>
                         /// Gets or sets the list of cookie configurations that is applied to the
@@ -291,11 +296,6 @@
                         /// if a header already exists, its value is replaced with the new value specified here.
                         /// </summary>
                         public Dictionary<string, string[]> Overrides { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
-
-                        /// <summary>
-                        /// Gets or sets the inbound upstream headers that should be discarded.
-                        /// </summary>
-                        public HashSet<string> Discards { get; set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
                         public sealed class CookieOptions
                         {

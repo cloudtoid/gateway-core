@@ -21,27 +21,27 @@
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         internal DownstreamResponseHeadersSettings(
+            bool discardInboundHeaders,
             bool discardEmpty,
             bool discardUnderscore,
-            bool discardInboundHeaders,
-            bool skipVia,
+            ISet<string> discards,
+            bool addServer,
             bool addCorrelationId,
             bool addCallId,
-            bool addServer,
+            bool skipVia,
             IReadOnlyDictionary<string, CookieSettings> cookies,
-            IReadOnlyDictionary<string, HeaderOverride> overrides,
-            ISet<string> discards)
+            IReadOnlyDictionary<string, HeaderOverride> overrides)
         {
+            DiscardInboundHeaders = discardInboundHeaders;
             DiscardEmpty = discardEmpty;
             DiscardUnderscore = discardUnderscore;
-            DiscardInboundHeaders = discardInboundHeaders;
-            SkipVia = skipVia;
+            Discards = discards;
+            AddServer = addServer;
             AddCorrelationId = addCorrelationId;
             AddCallId = addCallId;
-            AddServer = addServer;
+            SkipVia = skipVia;
             Cookies = cookies;
             Overrides = overrides;
-            Discards = discards;
 
             DoNotTransferHeaders = DoNotTransferBaseHeaders
                 .Concat(overrides.Keys)
@@ -49,25 +49,25 @@
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
         }
 
+        public bool DiscardInboundHeaders { get; }
+
         public bool DiscardEmpty { get; }
 
         public bool DiscardUnderscore { get; }
 
-        public bool DiscardInboundHeaders { get; }
+        public ISet<string> Discards { get; }
 
-        public bool SkipVia { get; }
+        public bool AddServer { get; }
 
         public bool AddCorrelationId { get; }
 
         public bool AddCallId { get; }
 
-        public bool AddServer { get; }
+        public bool SkipVia { get; }
 
         public IReadOnlyDictionary<string, CookieSettings> Cookies { get; }
 
         public IReadOnlyDictionary<string, HeaderOverride> Overrides { get; }
-
-        public ISet<string> Discards { get; }
 
         /// <summary>
         /// This is a list of headers that should not be passed on to the downstream client as they are.
