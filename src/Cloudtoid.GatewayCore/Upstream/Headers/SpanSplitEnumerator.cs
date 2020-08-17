@@ -1,9 +1,9 @@
 ﻿// DELETE this once .NET Core has support for Span<T>.Split()
 // This code was taken from an upcoming version of .NET
+using System;
+
 namespace Cloudtoid
 {
-    using System;
-
     internal ref struct SpanSplitEnumerator<T> where T : IEquatable<T>
     {
         private readonly ReadOnlySpan<T> sequence;

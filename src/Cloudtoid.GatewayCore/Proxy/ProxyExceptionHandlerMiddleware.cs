@@ -1,13 +1,13 @@
-﻿namespace Cloudtoid.GatewayCore.Proxy
-{
-    using System;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Net;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Logging;
-    using static Contract;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using static Cloudtoid.Contract;
 
+namespace Cloudtoid.GatewayCore.Proxy
+{
     internal sealed class ProxyExceptionHandlerMiddleware
     {
         private readonly RequestDelegate next;

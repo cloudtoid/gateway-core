@@ -1,8 +1,8 @@
-﻿namespace Cloudtoid.GatewayCore.Routes
-{
-    using System.Diagnostics.CodeAnalysis;
-    using Microsoft.AspNetCore.Http;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Http;
 
+namespace Cloudtoid.GatewayCore.Routes
+{
     internal interface IRouteResolver
     {
         bool TryResolve(

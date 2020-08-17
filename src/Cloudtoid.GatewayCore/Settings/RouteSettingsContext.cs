@@ -1,8 +1,8 @@
-﻿namespace Cloudtoid.GatewayCore.Settings
-{
-    using System.Diagnostics.CodeAnalysis;
-    using Cloudtoid.GatewayCore.Expression;
+﻿using System.Diagnostics.CodeAnalysis;
+using Cloudtoid.GatewayCore.Expression;
 
+namespace Cloudtoid.GatewayCore.Settings
+{
     internal sealed class RouteSettingsContext
     {
         private readonly IExpressionEvaluator evaluator;

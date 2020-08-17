@@ -1,15 +1,15 @@
-﻿namespace Cloudtoid.GatewayCore.UnitTests
-{
-    using System;
-    using System.Threading.Tasks;
-    using Cloudtoid.GatewayCore.Upstream;
-    using Cloudtoid.UrlPattern;
-    using FluentAssertions;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Http.Extensions;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Threading.Tasks;
+using Cloudtoid.GatewayCore.Upstream;
+using Cloudtoid.UrlPattern;
+using FluentAssertions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+namespace Cloudtoid.GatewayCore.UnitTests
+{
     [TestClass]
     public sealed class UpstreamUrlCreatorTests
     {

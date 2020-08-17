@@ -27,11 +27,11 @@
 
   <!-- Test Package Versions -->
   <PropertyGroup>
-    <MicrosoftDotNetTestSdk>16.6.*</MicrosoftDotNetTestSdk>
+    <MicrosoftDotNetTestSdk>16.7.*</MicrosoftDotNetTestSdk>
     <MSTestVersion>2.1.1</MSTestVersion>
     <NSubstituteVersion>4.2.*</NSubstituteVersion>
     <FluentAssertionsVersion>5.10.*</FluentAssertionsVersion>
-    <CoverletVersion>2.8.*</CoverletVersion>
+    <CoverletVersion>2.9.*</CoverletVersion>
   </PropertyGroup>
 
   <!-- Package dependencies -->

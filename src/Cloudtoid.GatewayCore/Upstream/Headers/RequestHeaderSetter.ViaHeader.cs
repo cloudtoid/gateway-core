@@ -1,9 +1,9 @@
-﻿namespace Cloudtoid.GatewayCore.Upstream
-{
-    using System.Net.Http;
-    using System.Text;
-    using Microsoft.Net.Http.Headers;
+﻿using System.Net.Http;
+using System.Text;
+using Microsoft.Net.Http.Headers;
 
+namespace Cloudtoid.GatewayCore.Upstream
+{
     public partial class RequestHeaderSetter
     {
         private const string HttpProtocolPrefix = "HTTP/";

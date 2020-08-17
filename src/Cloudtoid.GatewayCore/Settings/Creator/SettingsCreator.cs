@@ -1,20 +1,20 @@
-﻿namespace Cloudtoid.GatewayCore.Settings
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
-    using System.Linq;
-    using Cloudtoid.GatewayCore.Expression;
-    using Cloudtoid.UrlPattern;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Net.Http.Headers;
-    using static Cloudtoid.GatewayCore.GatewayOptions;
-    using static Cloudtoid.GatewayCore.GatewayOptions.RouteOptions;
-    using static Cloudtoid.GatewayCore.GatewayOptions.RouteOptions.ProxyOptions;
-    using static Cloudtoid.GatewayCore.GatewayOptions.RouteOptions.ProxyOptions.DownstreamResponseOptions.HeadersOptions;
-    using static Contract;
-    using SenderDefaults = Defaults.Route.Proxy.Upstream.Request.Sender;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using Cloudtoid.GatewayCore.Expression;
+using Cloudtoid.UrlPattern;
+using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
+using static Cloudtoid.Contract;
+using static Cloudtoid.GatewayCore.GatewayOptions;
+using static Cloudtoid.GatewayCore.GatewayOptions.RouteOptions;
+using static Cloudtoid.GatewayCore.GatewayOptions.RouteOptions.ProxyOptions;
+using static Cloudtoid.GatewayCore.GatewayOptions.RouteOptions.ProxyOptions.DownstreamResponseOptions.HeadersOptions;
+using SenderDefaults = Cloudtoid.GatewayCore.Settings.Defaults.Route.Proxy.Upstream.Request.Sender;
 
+namespace Cloudtoid.GatewayCore.Settings
+{
     internal sealed class SettingsCreator : ISettingsCreator
     {
         private static readonly IDictionary<string, SameSiteMode> SameSiteModes = new Dictionary<string, SameSiteMode>(StringComparer.OrdinalIgnoreCase)

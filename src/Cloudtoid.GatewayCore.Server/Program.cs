@@ -1,11 +1,11 @@
-﻿namespace Cloudtoid.GatewayCore.Server
-{
-    using System;
-    using System.IO;
-    using System.Reflection;
-    using Microsoft.Extensions.CommandLineUtils;
-    using Microsoft.Extensions.Configuration;
+﻿using System;
+using System.IO;
+using System.Reflection;
+using Microsoft.Extensions.CommandLineUtils;
+using Microsoft.Extensions.Configuration;
 
+namespace Cloudtoid.GatewayCore.Server
+{
     public static class Program
     {
         private const string DefaultConfigFile = "default-config.json";

@@ -1,9 +1,9 @@
-﻿namespace Cloudtoid.GatewayCore
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Net.Http;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
 
+namespace Cloudtoid.GatewayCore
+{
     public sealed class GatewayOptions
     {
         /// <summary>

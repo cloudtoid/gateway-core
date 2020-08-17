@@ -1,8 +1,8 @@
-﻿namespace Cloudtoid.GatewayCore.Settings
-{
-    using System;
-    using static System.Threading.Timeout;
+﻿using System;
+using static System.Threading.Timeout;
 
+namespace Cloudtoid.GatewayCore.Settings
+{
     internal static class Defaults
     {
         internal static class System

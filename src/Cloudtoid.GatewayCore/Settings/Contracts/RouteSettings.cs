@@ -1,8 +1,8 @@
-﻿namespace Cloudtoid.GatewayCore.Settings
-{
-    using Cloudtoid.GatewayCore.Expression;
-    using Cloudtoid.UrlPattern;
+﻿using Cloudtoid.GatewayCore.Expression;
+using Cloudtoid.UrlPattern;
 
+namespace Cloudtoid.GatewayCore.Settings
+{
     public sealed class RouteSettings
     {
         internal RouteSettings(

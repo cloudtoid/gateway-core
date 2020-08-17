@@ -1,14 +1,14 @@
-﻿namespace Cloudtoid.GatewayCore
-{
-    using System;
-    using Cloudtoid.GatewayCore.Downstream;
-    using Cloudtoid.GatewayCore.Proxy;
-    using Cloudtoid.GatewayCore.Upstream;
-    using Cloudtoid.UrlPattern;
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.Extensions.DependencyInjection;
-    using static Contract;
+﻿using System;
+using Cloudtoid.GatewayCore.Downstream;
+using Cloudtoid.GatewayCore.Proxy;
+using Cloudtoid.GatewayCore.Upstream;
+using Cloudtoid.UrlPattern;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using static Cloudtoid.Contract;
 
+namespace Cloudtoid.GatewayCore
+{
     public static class DependencyInjection
     {
         /// <summary>

@@ -1,13 +1,13 @@
-﻿namespace Cloudtoid.GatewayCore.UnitTests
-{
-    using System;
-    using System.Net;
-    using System.Reflection;
-    using Cloudtoid.GatewayCore.Headers;
-    using FluentAssertions;
-    using Microsoft.Net.Http.Headers;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Net;
+using System.Reflection;
+using Cloudtoid.GatewayCore.Headers;
+using FluentAssertions;
+using Microsoft.Net.Http.Headers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+namespace Cloudtoid.GatewayCore.UnitTests
+{
     [TestClass]
     public sealed class HeadersTests
     {

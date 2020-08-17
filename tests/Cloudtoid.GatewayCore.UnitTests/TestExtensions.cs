@@ -1,19 +1,19 @@
-﻿namespace Cloudtoid.GatewayCore.UnitTests
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
-    using System.Linq;
-    using Cloudtoid.GatewayCore.Settings;
-    using Cloudtoid.GatewayCore.Trace;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.DependencyInjection.Extensions;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
-    using NSubstitute;
-    using static Contract;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using Cloudtoid.GatewayCore.Settings;
+using Cloudtoid.GatewayCore.Trace;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using NSubstitute;
+using static Cloudtoid.Contract;
 
+namespace Cloudtoid.GatewayCore.UnitTests
+{
     internal static class TestExtensions
     {
         public static IServiceCollection AddTest(this IServiceCollection services)

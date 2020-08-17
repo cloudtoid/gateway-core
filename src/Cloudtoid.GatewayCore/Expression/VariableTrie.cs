@@ -1,12 +1,12 @@
-﻿namespace Cloudtoid.GatewayCore.Expression
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
-    using Cloudtoid.UrlPattern;
-    using static Contract;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using Cloudtoid.UrlPattern;
+using static Cloudtoid.Contract;
 
+namespace Cloudtoid.GatewayCore.Expression
+{
     internal sealed class VariableTrie<TValue> where TValue : class
     {
         private readonly VariableTrie<TValue>?[] map = new VariableTrie<TValue>?[PatternVariables.ValidVariableCharacters.Length];

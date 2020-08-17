@@ -1,9 +1,9 @@
-﻿namespace Cloudtoid.GatewayCore.Downstream
-{
-    using System.Net.Http;
-    using System.Threading;
-    using System.Threading.Tasks;
+﻿using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
+namespace Cloudtoid.GatewayCore.Downstream
+{
     /// <summary>
     /// By implementing this interface, one can have full control over the outbound downstream response headers. However, a fully functioning implementation is nontrivial. Therefore, before implementing this interface, consider the following extensibility points:
     /// <list type="number">

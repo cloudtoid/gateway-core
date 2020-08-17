@@ -1,28 +1,27 @@
-﻿namespace Cloudtoid.GatewayCore.UnitTests
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
-    using System.IO;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Reflection;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Cloudtoid.GatewayCore;
-    using Cloudtoid.GatewayCore.Expression;
-    using Cloudtoid.GatewayCore.Settings;
-    using Cloudtoid.GatewayCore.Trace;
-    using FluentAssertions;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Http;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using NSubstitute;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using Cloudtoid.GatewayCore.Expression;
+using Cloudtoid.GatewayCore.Settings;
+using Cloudtoid.GatewayCore.Trace;
+using FluentAssertions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NSubstitute;
 
+namespace Cloudtoid.GatewayCore.UnitTests
+{
     [TestClass]
     public sealed class SettingsTests
     {

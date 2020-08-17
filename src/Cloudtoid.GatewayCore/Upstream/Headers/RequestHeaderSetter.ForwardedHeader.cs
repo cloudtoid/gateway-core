@@ -1,16 +1,16 @@
-﻿namespace Cloudtoid.GatewayCore.Upstream
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Http;
-    using System.Net.Sockets;
-    using System.Text;
-    using Cloudtoid.GatewayCore.Headers;
-    using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Sockets;
+using System.Text;
+using Cloudtoid.GatewayCore.Headers;
+using Microsoft.AspNetCore.Http;
 
+namespace Cloudtoid.GatewayCore.Upstream
+{
     public partial class RequestHeaderSetter
     {
         private const string ForwardedBy = "by=";
@@ -57,8 +57,8 @@
         {
             var forwardedHeaderValues =
                 context.ProxyUpstreamRequestHeadersSettings.DiscardInboundHeaders
-                ? ValueList<ForwardedHeaderValue>.Empty
-                : new ValueList<ForwardedHeaderValue>(GetCurrentForwardedHeaderValues(context.Request.Headers));
+                ? ReadOnlyValueList<ForwardedHeaderValue>.Empty
+                : new ReadOnlyValueList<ForwardedHeaderValue>(GetCurrentForwardedHeaderValues(context.Request.Headers));
 
             AddXForwardedForHeader(context, upstreamRequest, in forwardedHeaderValues);
             AddXForwardedProtocolHeader(context, upstreamRequest, in forwardedHeaderValues);
@@ -69,7 +69,7 @@
         protected virtual void AddXForwardedForHeader(
             ProxyContext context,
             HttpRequestMessage upstreamRequest,
-            in ValueList<ForwardedHeaderValue> forwardedHeaderValues)
+            in ReadOnlyValueList<ForwardedHeaderValue> forwardedHeaderValues)
         {
             var @for = CreateXForwardedForHeader(context, in forwardedHeaderValues);
             if (@for is null)
@@ -84,7 +84,7 @@
 
         private static string? CreateXForwardedForHeader(
             ProxyContext context,
-            in ValueList<ForwardedHeaderValue> forwardedHeaderValues)
+            in ReadOnlyValueList<ForwardedHeaderValue> forwardedHeaderValues)
         {
             var result = GetRemoteIpAddressOrDefault(context);
             if (string.IsNullOrEmpty(result))
@@ -122,7 +122,7 @@
         protected virtual void AddXForwardedProtocolHeader(
             ProxyContext context,
             HttpRequestMessage upstreamRequest,
-            in ValueList<ForwardedHeaderValue> forwardedHeaderValues)
+            in ReadOnlyValueList<ForwardedHeaderValue> forwardedHeaderValues)
         {
             var proto = forwardedHeaderValues.FirstOrDefault(v => !string.IsNullOrEmpty(v.Proto)).Proto ?? context.Request.Scheme;
             if (string.IsNullOrEmpty(proto))
@@ -139,7 +139,7 @@
         protected virtual void AddXForwardedHostHeader(
             ProxyContext context,
             HttpRequestMessage upstreamRequest,
-            in ValueList<ForwardedHeaderValue> forwardedHeaderValues)
+            in ReadOnlyValueList<ForwardedHeaderValue> forwardedHeaderValues)
         {
             var host = forwardedHeaderValues.FirstOrDefault(v => !string.IsNullOrEmpty(v.Host)).Host ?? context.Request.Host.Value;
             if (string.IsNullOrEmpty(host))

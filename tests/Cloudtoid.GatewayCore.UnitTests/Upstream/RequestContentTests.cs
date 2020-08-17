@@ -1,22 +1,20 @@
-﻿namespace Cloudtoid.GatewayCore.UnitTests
-{
-    using System;
-    using System.IO;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Text;
-    using System.Threading.Tasks;
-    using Cloudtoid.GatewayCore;
-    using Cloudtoid.GatewayCore.Upstream;
-    using FluentAssertions;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.DependencyInjection.Extensions;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Primitives;
-    using Microsoft.Net.Http.Headers;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using Cloudtoid.GatewayCore.Upstream;
+using FluentAssertions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+namespace Cloudtoid.GatewayCore.UnitTests
+{
     [TestClass]
     public sealed class RequestContentTests
     {

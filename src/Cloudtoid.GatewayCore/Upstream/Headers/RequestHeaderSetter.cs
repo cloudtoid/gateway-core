@@ -1,18 +1,18 @@
-﻿namespace Cloudtoid.GatewayCore.Upstream
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
-    using System.Net.Http;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Cloudtoid.GatewayCore.Headers;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Primitives;
-    using Microsoft.Net.Http.Headers;
-    using static Contract;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Cloudtoid.GatewayCore.Headers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
+using static Cloudtoid.Contract;
 
+namespace Cloudtoid.GatewayCore.Upstream
+{
     /// <summary>
     /// By inheriting from this class, one can have full control over the outbound upstream request headers. Please consider the following extensibility points:
     /// <list type="number">

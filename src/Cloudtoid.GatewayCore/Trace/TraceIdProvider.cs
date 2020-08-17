@@ -1,7 +1,7 @@
-﻿namespace Cloudtoid.GatewayCore.Trace
-{
-    using static Contract;
+﻿using static Cloudtoid.Contract;
 
+namespace Cloudtoid.GatewayCore.Trace
+{
     public class TraceIdProvider : ITraceIdProvider
     {
         private readonly IGuidProvider guidProvider;

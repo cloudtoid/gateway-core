@@ -1,15 +1,15 @@
-﻿namespace Cloudtoid.GatewayCore.UnitTests
-{
-    using System.Linq;
-    using System.Net;
-    using System.Threading.Tasks;
-    using Cloudtoid.GatewayCore.Headers;
-    using FluentAssertions;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Primitives;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using static Cloudtoid.GatewayCore.Upstream.RequestHeaderSetter;
+﻿using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using Cloudtoid.GatewayCore.Headers;
+using FluentAssertions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using static Cloudtoid.GatewayCore.Upstream.RequestHeaderSetter;
 
+namespace Cloudtoid.GatewayCore.UnitTests
+{
     public sealed partial class RequestHeaderTests
     {
         private const string ForwardedHeader = "Forwarded";

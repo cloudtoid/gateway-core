@@ -1,7 +1,7 @@
-﻿namespace Cloudtoid.GatewayCore.UnitTests
-{
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+namespace Cloudtoid.GatewayCore.UnitTests
+{
     [TestClass]
     public sealed class TrailingHeaderTests
     {

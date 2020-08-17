@@ -1,9 +1,9 @@
-﻿namespace Cloudtoid.GatewayCore.Proxy
-{
-    using System;
-    using System.Net;
-    using static Contract;
+﻿using System;
+using System.Net;
+using static Cloudtoid.Contract;
 
+namespace Cloudtoid.GatewayCore.Proxy
+{
     /// <summary>
     /// This exception class should be used to set the status code of the outbound downstream response
     /// to an HTTP status code that indicates a failure.

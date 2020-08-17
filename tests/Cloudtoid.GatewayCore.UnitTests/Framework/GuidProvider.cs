@@ -1,7 +1,7 @@
-﻿namespace Cloudtoid.GatewayCore.UnitTests
-{
-    using System;
+﻿using System;
 
+namespace Cloudtoid.GatewayCore.UnitTests
+{
     internal sealed class GuidProvider : IGuidProvider
     {
         private GuidProvider()

@@ -1,11 +1,11 @@
-﻿namespace Cloudtoid.GatewayCore.UnitTests
-{
-    using System;
-    using System.Linq;
-    using Cloudtoid.GatewayCore.Expression;
-    using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Linq;
+using Cloudtoid.GatewayCore.Expression;
+using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+namespace Cloudtoid.GatewayCore.UnitTests
+{
     [TestClass]
     public sealed class VariableTrieTests
     {

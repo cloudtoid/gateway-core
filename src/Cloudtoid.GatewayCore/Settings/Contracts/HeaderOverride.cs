@@ -1,8 +1,8 @@
-﻿namespace Cloudtoid.GatewayCore.Settings
-{
-    using System.Collections.Generic;
-    using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
+namespace Cloudtoid.GatewayCore.Settings
+{
     public sealed class HeaderOverride
     {
         private readonly RouteSettingsContext context;

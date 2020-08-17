@@ -1,12 +1,12 @@
-﻿namespace Cloudtoid.GatewayCore.Downstream
-{
-    using System.Net.Http;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http.Features;
-    using Microsoft.Extensions.Logging;
-    using static Contract;
+﻿using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.Logging;
+using static Cloudtoid.Contract;
 
+namespace Cloudtoid.GatewayCore.Downstream
+{
     internal sealed class ResponseSender : IResponseSender
     {
         private readonly IResponseHeaderSetter headerSetter;

@@ -1,14 +1,14 @@
-﻿namespace Cloudtoid.GatewayCore.Upstream
-{
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Cloudtoid.GatewayCore.Expression;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Http.Extensions;
-    using Microsoft.Extensions.Logging;
-    using static Contract;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Cloudtoid.GatewayCore.Expression;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.Extensions.Logging;
+using static Cloudtoid.Contract;
 
+namespace Cloudtoid.GatewayCore.Upstream
+{
     /// <inheritdoc/>
     internal sealed class UpstreamUrlCreator : IUpstreamUrlCreator
     {

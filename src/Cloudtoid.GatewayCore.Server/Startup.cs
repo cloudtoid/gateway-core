@@ -1,16 +1,15 @@
+using System.Threading.Tasks;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using static Cloudtoid.Contract;
+
 namespace Cloudtoid.GatewayCore.Server
 {
-    using System.Threading.Tasks;
-    using Cloudtoid.GatewayCore;
-    using Microsoft.AspNetCore;
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Server.Kestrel.Core;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Hosting;
-    using static Contract;
-
     internal sealed class Startup
     {
         public void ConfigureServices(IServiceCollection services)

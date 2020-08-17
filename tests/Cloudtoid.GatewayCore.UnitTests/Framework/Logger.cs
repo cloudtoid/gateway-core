@@ -1,10 +1,10 @@
-﻿namespace Cloudtoid.GatewayCore.UnitTests
-{
-    using System;
-    using System.Collections.Generic;
-    using Microsoft.Extensions.Logging;
-    using static Contract;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
+using static Cloudtoid.Contract;
 
+namespace Cloudtoid.GatewayCore.UnitTests
+{
     internal class Logger<T> : ILogger<T>
     {
         public Logger(ILoggerFactory factory)

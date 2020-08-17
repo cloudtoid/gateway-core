@@ -1,7 +1,7 @@
-﻿namespace Cloudtoid.GatewayCore.Settings
-{
-    using Microsoft.Net.Http.Headers;
+﻿using Microsoft.Net.Http.Headers;
 
+namespace Cloudtoid.GatewayCore.Settings
+{
     public sealed class CookieSettings
     {
         internal CookieSettings(

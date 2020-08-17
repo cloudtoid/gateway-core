@@ -1,11 +1,11 @@
-﻿namespace Cloudtoid.GatewayCore.Upstream
-{
-    using System.Net.Http;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-    using static Contract;
+﻿using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using static Cloudtoid.Contract;
 
+namespace Cloudtoid.GatewayCore.Upstream
+{
     internal sealed class RequestCreator : IRequestCreator
     {
         private readonly IUpstreamUrlCreator upstreamUrlCreator;

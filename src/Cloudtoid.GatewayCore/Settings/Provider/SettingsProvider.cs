@@ -1,11 +1,11 @@
-﻿namespace Cloudtoid.GatewayCore.Settings
-{
-    using System.Collections.Generic;
-    using System.Net.Http;
-    using Microsoft.Extensions.Http;
-    using Microsoft.Extensions.Options;
-    using static Contract;
+﻿using System.Collections.Generic;
+using System.Net.Http;
+using Microsoft.Extensions.Http;
+using Microsoft.Extensions.Options;
+using static Cloudtoid.Contract;
 
+namespace Cloudtoid.GatewayCore.Settings
+{
     internal sealed class SettingsProvider : ISettingsProvider
     {
         private readonly ISettingsCreator settingsCreator;

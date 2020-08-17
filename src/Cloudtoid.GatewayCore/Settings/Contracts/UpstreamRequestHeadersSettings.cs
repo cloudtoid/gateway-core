@@ -1,11 +1,11 @@
-﻿namespace Cloudtoid.GatewayCore.Settings
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Cloudtoid.GatewayCore.Headers;
-    using Microsoft.Net.Http.Headers;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Cloudtoid.GatewayCore.Headers;
+using Microsoft.Net.Http.Headers;
 
+namespace Cloudtoid.GatewayCore.Settings
+{
     public sealed class UpstreamRequestHeadersSettings
     {
         private static readonly ISet<string> DoNotTransferBaseHeaders =

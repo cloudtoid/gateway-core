@@ -1,13 +1,13 @@
-﻿namespace Cloudtoid.GatewayCore.FunctionalTests
-{
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Configuration;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
+namespace Cloudtoid.GatewayCore.FunctionalTests
+{
     internal sealed class TestExecutor
     {
         private static readonly Range ProxyPortRange = new Range(5000, 5100);

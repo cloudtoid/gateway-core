@@ -1,17 +1,17 @@
-﻿namespace Cloudtoid.GatewayCore.Expression
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-    using System.Threading;
-    using Cloudtoid.UrlPattern;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Http.Extensions;
-    using Microsoft.Extensions.Logging;
-    using static Contract;
-    using Cache = System.Collections.Generic.IReadOnlyDictionary<string, ExpressionEvaluator.ParsedExpression>;
-    using SystemVariableEvaluator = System.Func<ProxyContext, string?>;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading;
+using Cloudtoid.UrlPattern;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.Extensions.Logging;
+using static Cloudtoid.Contract;
+using Cache = System.Collections.Generic.IReadOnlyDictionary<string, Cloudtoid.GatewayCore.Expression.ExpressionEvaluator.ParsedExpression>;
+using SystemVariableEvaluator = System.Func<Cloudtoid.GatewayCore.ProxyContext, string?>;
 
+namespace Cloudtoid.GatewayCore.Expression
+{
     internal sealed class ExpressionEvaluator : IExpressionEvaluator
     {
         private static readonly VariableTrie<SystemVariableEvaluator> SystemVariablesTrie = BuildTrie();

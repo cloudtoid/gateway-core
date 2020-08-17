@@ -1,10 +1,10 @@
-﻿namespace Cloudtoid.GatewayCore.Headers
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Microsoft.Net.Http.Headers;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Net.Http.Headers;
 
+namespace Cloudtoid.GatewayCore.Headers
+{
     // The list below came from System.Net.Http.Headers.KnownHeaders, System.Net.HttpRequestHeader and
     // System.Net.HttpResponseHeader. See .NET runtime on github.
     internal static class HeaderTypes

@@ -1,8 +1,8 @@
-﻿namespace Cloudtoid.GatewayCore
-{
-    using System.Collections.Generic;
-    using Cloudtoid.GatewayCore.Settings;
+﻿using System.Collections.Generic;
+using Cloudtoid.GatewayCore.Settings;
 
+namespace Cloudtoid.GatewayCore
+{
     public sealed class Route
     {
         internal Route(

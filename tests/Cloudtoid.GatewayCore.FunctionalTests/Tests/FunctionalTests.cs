@@ -1,14 +1,15 @@
-﻿namespace Cloudtoid.GatewayCore.FunctionalTests
-{
-    using System;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Net.Http.Headers;
-    using System.Threading.Tasks;
-    using FluentAssertions;
-    using Microsoft.Net.Http.Headers;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Microsoft.Net.Http.Headers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Method = System.Net.Http.HttpMethod;
 
+namespace Cloudtoid.GatewayCore.FunctionalTests
+{
     [TestClass]
     public sealed class FunctionalTests
     {
@@ -17,7 +18,7 @@
         [TestMethod("Basic plumbing")]
         public async Task BasicPlumbingTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "echo?message=test");
+            var request = new HttpRequestMessage(Method.Get, "echo?message=test");
             await executor.ExecuteAsync(
                 request,
                 async response =>
@@ -39,7 +40,7 @@
         [TestMethod("Should have correlation id and call id headers on both request and response")]
         public async Task TraceTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "trace?message=test");
+            var request = new HttpRequestMessage(Method.Get, "trace?message=test");
             await executor.ExecuteAsync(
                 "TraceTestOptions.json",
                 request,
@@ -56,7 +57,7 @@
         [TestMethod("Should have correlation id and call id headers on response but not request")]
         public async Task NoTraceTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "noTrace?message=test");
+            var request = new HttpRequestMessage(Method.Get, "noTrace?message=test");
             await executor.ExecuteAsync(
                 "NoTraceTestOptions.json",
                 request,
@@ -73,7 +74,7 @@
         [TestMethod("Should have a custom correlation id header on both request and response")]
         public async Task CorrelationIdTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "customCorrelationId?message=test");
+            var request = new HttpRequestMessage(Method.Get, "customCorrelationId?message=test");
             await executor.ExecuteAsync(
                 "CustomCorrelationIdTestOptions.json",
                 request,
@@ -89,7 +90,7 @@
         [TestMethod("Should boomerang the client's correlation id")]
         public async Task OriginalCorrelationIdTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "originalCorrelationId?message=test");
+            var request = new HttpRequestMessage(Method.Get, "originalCorrelationId?message=test");
             request.Headers.Add(Constants.CorrelationId, "corr-id-1");
             await executor.ExecuteAsync(
                 "OriginalCorrelationIdTestOptions.json",
@@ -107,7 +108,7 @@
         [TestMethod("Should boomerang gateway's newly generated call id and drop the one provided on both request and response")]
         public async Task CallIdTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "callId?message=test");
+            var request = new HttpRequestMessage(Method.Get, "callId?message=test");
             request.Headers.Add(Constants.CallId, "call-id-1");
             await executor.ExecuteAsync(
                 "CallIdTestOptions.json",
@@ -128,7 +129,7 @@
         [TestMethod("Should have server header that ignores the upstream server header")]
         public async Task ServerTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "server?message=test");
+            var request = new HttpRequestMessage(Method.Get, "server?message=test");
             await executor.ExecuteAsync(
                 "ServerTestOptions.json",
                 request,
@@ -145,7 +146,7 @@
         [TestMethod("Should not have a server header")]
         public async Task NoServerTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "server?message=test");
+            var request = new HttpRequestMessage(Method.Get, "server?message=test");
             await executor.ExecuteAsync(
                 request,
                 async response =>
@@ -160,7 +161,7 @@
         [TestMethod("Should have an external address header (x-gwcore-external-address)")]
         public async Task ExternalAddressTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "externalAddress?message=test");
+            var request = new HttpRequestMessage(Method.Get, "externalAddress?message=test");
             await executor.ExecuteAsync(
                 "ExternalAddressTestOptions.json",
                 request,
@@ -170,7 +171,7 @@
         [TestMethod("Should not have an external address header (x-gwcore-external-address)")]
         public async Task NoExternalAddressTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "noExternalAddress?message=test");
+            var request = new HttpRequestMessage(Method.Get, "noExternalAddress?message=test");
             await executor.ExecuteAsync(
                 request,
                 response => EnsureResponseSucceededAsync(response));
@@ -179,7 +180,7 @@
         [TestMethod("Should have a via header on both request and response")]
         public async Task ViaTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "via?message=test");
+            var request = new HttpRequestMessage(Method.Get, "via?message=test");
             await executor.ExecuteAsync(
                 request,
                 async response =>
@@ -194,7 +195,7 @@
         [TestMethod("Should not have a via header on both request and response")]
         public async Task NoViaTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "noVia?message=test");
+            var request = new HttpRequestMessage(Method.Get, "noVia?message=test");
             await executor.ExecuteAsync(
                 "NoViaTestOptions.json",
                 request,
@@ -210,7 +211,7 @@
         [TestMethod("Should have a via header on both request and response with custom proxy name")]
         public async Task ViaCustomProxyNameTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "viaCustomProxyName?message=test");
+            var request = new HttpRequestMessage(Method.Get, "viaCustomProxyName?message=test");
             await executor.ExecuteAsync(
                 "ViaCustomProxyNameTestOptions.json",
                 request,
@@ -226,7 +227,7 @@
         [TestMethod("Should have a via header with two values")]
         public async Task ViaTwoProxiesTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "viaTwoProxies?message=test");
+            var request = new HttpRequestMessage(Method.Get, "viaTwoProxies?message=test");
             request.Headers.Via.Add(new ViaHeaderValue("1.1", "first-leg"));
             await executor.ExecuteAsync(
                 request,
@@ -242,7 +243,7 @@
         [TestMethod("Should have a Forwarded header")]
         public async Task ForwardedTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "forwarded?message=test");
+            var request = new HttpRequestMessage(Method.Get, "forwarded?message=test");
             await executor.ExecuteAsync(
                 request,
                 response => EnsureResponseSucceededAsync(response));
@@ -251,7 +252,7 @@
         [TestMethod("Should not have forwarded or x-forwarded headers")]
         public async Task NoForwardedTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "noForwarded?message=test");
+            var request = new HttpRequestMessage(Method.Get, "noForwarded?message=test");
             request.Headers.Add(Constants.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=test");
             request.Headers.Add(Constants.XForwardedFor, "some-for");
             request.Headers.Add(Constants.XForwardedHost, "some-host");
@@ -262,7 +263,7 @@
                 request,
                 response => EnsureResponseSucceededAsync(response));
 
-            request = new HttpRequestMessage(HttpMethod.Get, "noForwarded?message=test");
+            request = new HttpRequestMessage(Method.Get, "noForwarded?message=test");
             request.Headers.Add(Constants.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=test");
             request.Headers.Add(Constants.XForwardedFor, "some-for");
             request.Headers.Add(Constants.XForwardedHost, "some-host");
@@ -277,7 +278,7 @@
         [TestMethod("Should have a Forwarded header that includes earlier forwarded and x-forwarded header values")]
         public async Task ForwardedMultiProxiesTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "forwardedMultiProxies?message=test");
+            var request = new HttpRequestMessage(Method.Get, "forwardedMultiProxies?message=test");
             request.Headers.Add(Constants.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=test, for=192.0.2.12;proto=https;by=203.0.113.43;host=test2");
             request.Headers.Add(Constants.XForwardedFor, "some-for");
             request.Headers.Add(Constants.XForwardedHost, "some-host");
@@ -291,7 +292,7 @@
         [TestMethod("Should have x-forwarded headers")]
         public async Task XForwardedTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "xForwarded?message=test");
+            var request = new HttpRequestMessage(Method.Get, "xForwarded?message=test");
             await executor.ExecuteAsync(
                 "XForwardedTestOptions.json",
                 request,
@@ -301,7 +302,7 @@
         [TestMethod("Should have x-forwarded headers that include earlier forwarded and x-forwarded header values")]
         public async Task XForwardedMultiProxiesTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "xForwardedMultiProxies?message=test");
+            var request = new HttpRequestMessage(Method.Get, "xForwardedMultiProxies?message=test");
             request.Headers.Add(Constants.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host-test, for=[1020:3040:5060:7080:9010:1112:1314:1516]:10;proto=https;by=203.0.113.43;host=test2");
             request.Headers.Add(Constants.XForwardedFor, "some-for");
             request.Headers.Add(Constants.XForwardedHost, "some-host");
@@ -316,7 +317,7 @@
         [TestMethod("Should have a set-cookie header with modified values")]
         public async Task SetCookieTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "setCookie?message=test");
+            var request = new HttpRequestMessage(Method.Get, "setCookie?message=test");
             await executor.ExecuteAsync(
                 "SetCookieTestOptions.json",
                 request,
@@ -340,7 +341,7 @@
         [TestMethod("Should have added override headers")]
         public async Task AddOverrideTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "addOverride?message=test");
+            var request = new HttpRequestMessage(Method.Get, "addOverride?message=test");
             await executor.ExecuteAsync(
                 "AddOverridesTestOptions.json",
                 request,
@@ -358,7 +359,7 @@
         [TestMethod("Should have modified override headers")]
         public async Task UpdateOverrideTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "updateOverride?message=test");
+            var request = new HttpRequestMessage(Method.Get, "updateOverride?message=test");
             request.Headers.Add(Constants.OneValue, "one");
             request.Headers.Add(Constants.TwoValues, new[] { "one", "two" });
             request.Headers.Add(Constants.Expression, new[] { "one", "two" });
@@ -380,7 +381,7 @@
         [TestMethod("Should not have discarded headers")]
         public async Task RemoveOverrideTestAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "discard?message=test");
+            var request = new HttpRequestMessage(Method.Get, "discard?message=test");
             request.Headers.Add(Constants.OneValue, "one");
             request.Headers.Add(Constants.TwoValues, new[] { "one", "two" });
 

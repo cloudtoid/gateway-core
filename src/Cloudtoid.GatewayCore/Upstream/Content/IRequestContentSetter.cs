@@ -1,9 +1,9 @@
-﻿namespace Cloudtoid.GatewayCore.Upstream
-{
-    using System.Net.Http;
-    using System.Threading;
-    using System.Threading.Tasks;
+﻿using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
+namespace Cloudtoid.GatewayCore.Upstream
+{
     /// <summary>
     /// By implementing this interface, one can have full control over the outbound upstream content and its content headers. However, a fully functioning implementation is nontrivial. Therefore, before implementing this interface, consider the following extensibility points:
     /// <list type="number">

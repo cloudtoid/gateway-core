@@ -1,13 +1,13 @@
-﻿namespace Cloudtoid.GatewayCore.Routes
-{
-    using System.Diagnostics.CodeAnalysis;
-    using Cloudtoid.GatewayCore.Settings;
-    using Cloudtoid.UrlPattern;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Caching.Memory;
-    using Microsoft.Extensions.Logging;
-    using static Contract;
+﻿using System.Diagnostics.CodeAnalysis;
+using Cloudtoid.GatewayCore.Settings;
+using Cloudtoid.UrlPattern;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using static Cloudtoid.Contract;
 
+namespace Cloudtoid.GatewayCore.Routes
+{
     internal sealed class RouteResolver : IRouteResolver
     {
         private static readonly MemoryCacheEntryOptions CacheEntryOptions = new MemoryCacheEntryOptions { Size = 1 };

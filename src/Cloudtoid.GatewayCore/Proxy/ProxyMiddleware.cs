@@ -1,19 +1,18 @@
-﻿namespace Cloudtoid.GatewayCore.Proxy
-{
-    using System.Diagnostics.CodeAnalysis;
-    using System.Net;
-    using System.Net.Http;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Cloudtoid;
-    using Cloudtoid.GatewayCore.Downstream;
-    using Cloudtoid.GatewayCore.Routes;
-    using Cloudtoid.GatewayCore.Trace;
-    using Cloudtoid.GatewayCore.Upstream;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Logging;
-    using static Contract;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Cloudtoid.GatewayCore.Downstream;
+using Cloudtoid.GatewayCore.Routes;
+using Cloudtoid.GatewayCore.Trace;
+using Cloudtoid.GatewayCore.Upstream;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using static Cloudtoid.Contract;
 
+namespace Cloudtoid.GatewayCore.Proxy
+{
     internal sealed class ProxyMiddleware
     {
         private readonly RequestDelegate next;

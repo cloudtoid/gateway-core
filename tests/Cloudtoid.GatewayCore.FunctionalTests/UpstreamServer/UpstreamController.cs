@@ -1,12 +1,12 @@
-﻿namespace Cloudtoid.GatewayCore.FunctionalTests
-{
-    using System;
-    using System.Linq;
-    using FluentAssertions;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Net.Http.Headers;
+﻿using System;
+using System.Linq;
+using FluentAssertions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 
+namespace Cloudtoid.GatewayCore.FunctionalTests
+{
     [ApiController]
     [Route("[controller]")]
     public class UpstreamController : ControllerBase

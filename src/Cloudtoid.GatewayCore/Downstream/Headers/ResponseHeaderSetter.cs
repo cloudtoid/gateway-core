@@ -1,18 +1,17 @@
-﻿namespace Cloudtoid.GatewayCore.Downstream
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Cloudtoid.GatewayCore.Headers;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Primitives;
-    using Microsoft.Net.Http.Headers;
-    using static Contract;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Cloudtoid.GatewayCore.Headers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
+using static Cloudtoid.Contract;
 
+namespace Cloudtoid.GatewayCore.Downstream
+{
     /// <summary>
     /// By inheriting from this class, one can have full control over the outbound downstream response headers. Please consider the following extensibility points:
     /// <list type="number">

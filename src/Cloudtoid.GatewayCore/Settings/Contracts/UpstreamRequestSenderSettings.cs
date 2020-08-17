@@ -1,8 +1,8 @@
-﻿namespace Cloudtoid.GatewayCore.Settings
-{
-    using System;
-    using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 
+namespace Cloudtoid.GatewayCore.Settings
+{
     public sealed class UpstreamRequestSenderSettings
     {
         private readonly RouteSettingsContext context;

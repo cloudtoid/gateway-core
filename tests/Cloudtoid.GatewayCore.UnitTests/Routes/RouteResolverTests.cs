@@ -1,11 +1,11 @@
-﻿namespace Cloudtoid.GatewayCore.UnitTests
-{
-    using Cloudtoid.GatewayCore.Routes;
-    using FluentAssertions;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Cloudtoid.GatewayCore.Routes;
+using FluentAssertions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+namespace Cloudtoid.GatewayCore.UnitTests
+{
     [TestClass]
     public sealed class RouteResolverTests
     {

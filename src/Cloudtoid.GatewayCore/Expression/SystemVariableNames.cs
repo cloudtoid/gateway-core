@@ -1,8 +1,8 @@
-﻿namespace Cloudtoid.GatewayCore.Expression
-{
-    using System;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
+namespace Cloudtoid.GatewayCore.Expression
+{
     // Based on NGINX: https://nginx.org/en/docs/http/ngx_http_core_module.html?&_ga=2.254306688.966016521.1583780354-1842431965.1581627980#variables
     public static class SystemVariableNames
     {

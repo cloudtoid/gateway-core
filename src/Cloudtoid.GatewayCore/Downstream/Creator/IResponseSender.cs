@@ -1,9 +1,9 @@
-﻿namespace Cloudtoid.GatewayCore.Downstream
-{
-    using System.Net.Http;
-    using System.Threading;
-    using System.Threading.Tasks;
+﻿using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
+namespace Cloudtoid.GatewayCore.Downstream
+{
     public interface IResponseSender
     {
         Task SendResponseAsync(

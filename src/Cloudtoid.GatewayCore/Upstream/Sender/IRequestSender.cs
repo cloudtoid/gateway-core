@@ -1,9 +1,9 @@
-﻿namespace Cloudtoid.GatewayCore.Upstream
-{
-    using System.Net.Http;
-    using System.Threading;
-    using System.Threading.Tasks;
+﻿using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
+namespace Cloudtoid.GatewayCore.Upstream
+{
     /// <summary>
     /// By implementing this interface, one can control how an outbound upstream request is sent over the wire.
     /// If your intent is to change or control the HTTP call (such as adding an error handler), you can achieve that in a more standardize way by configuring a named HTTP client.

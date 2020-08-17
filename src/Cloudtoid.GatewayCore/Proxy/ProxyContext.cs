@@ -1,12 +1,12 @@
-﻿namespace Cloudtoid.GatewayCore
-{
-    using System;
-    using System.Diagnostics;
-    using Cloudtoid.GatewayCore.Settings;
-    using Cloudtoid.GatewayCore.Trace;
-    using Microsoft.AspNetCore.Http;
-    using static Contract;
+﻿using System;
+using System.Diagnostics;
+using Cloudtoid.GatewayCore.Settings;
+using Cloudtoid.GatewayCore.Trace;
+using Microsoft.AspNetCore.Http;
+using static Cloudtoid.Contract;
 
+namespace Cloudtoid.GatewayCore
+{
     [DebuggerStepThrough]
     public sealed class ProxyContext
     {

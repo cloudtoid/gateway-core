@@ -1,7 +1,7 @@
-﻿namespace Cloudtoid.GatewayCore.Downstream
-{
-    using Microsoft.Extensions.Primitives;
+﻿using Microsoft.Extensions.Primitives;
 
+namespace Cloudtoid.GatewayCore.Downstream
+{
     /// <summary>
     /// By inheriting from this class, one can have some control over the outbound downstream response headers. Please consider the following extensibility points:
     /// <list type="number">

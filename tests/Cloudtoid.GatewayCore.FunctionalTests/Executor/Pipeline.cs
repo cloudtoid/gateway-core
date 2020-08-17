@@ -1,10 +1,10 @@
+using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+
 namespace Cloudtoid.GatewayCore.FunctionalTests
 {
-    using System;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Configuration;
-
     internal sealed class Pipeline : IAsyncDisposable
     {
         private readonly int proxyPort;

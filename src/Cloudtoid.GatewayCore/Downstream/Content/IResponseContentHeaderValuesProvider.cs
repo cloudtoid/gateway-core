@@ -1,7 +1,7 @@
-﻿namespace Cloudtoid.GatewayCore.Downstream
-{
-    using Microsoft.Extensions.Primitives;
+﻿using Microsoft.Extensions.Primitives;
 
+namespace Cloudtoid.GatewayCore.Downstream
+{
     /// <summary>
     /// By implementing this interface, one can partially control the outbound downstream response content headers and trailing headers. Please, consider the following extensibility points:
     /// <list type="number">

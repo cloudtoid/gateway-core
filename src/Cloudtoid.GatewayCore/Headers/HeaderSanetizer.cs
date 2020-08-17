@@ -1,11 +1,11 @@
-﻿namespace Cloudtoid.GatewayCore.Headers
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Microsoft.Extensions.Logging;
-    using static Contract;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Logging;
+using static Cloudtoid.Contract;
 
+namespace Cloudtoid.GatewayCore.Headers
+{
     internal sealed class HeaderSanetizer
     {
         private static readonly Func<string, bool> NotNullOrEmpty = s => !string.IsNullOrEmpty(s);
