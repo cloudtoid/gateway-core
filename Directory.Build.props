@@ -21,7 +21,7 @@
 
   <!-- Product Package Versions -->
   <PropertyGroup>
-    <CloudtoidCodeAnalyzerVersion>1.0.*</CloudtoidCodeAnalyzerVersion>
+    <CloudtoidCodeAnalysisVersion>1.0.*</CloudtoidCodeAnalysisVersion>
     <CloudtoidFrameworkVersion>1.0.*</CloudtoidFrameworkVersion>
     <MicrosoftExtensionsVersion>3.1.*</MicrosoftExtensionsVersion>
   </PropertyGroup>
@@ -37,7 +37,7 @@
 
   <!-- Package dependencies -->
   <ItemGroup>
-    <PackageReference Include="Cloudtoid.CodeAnalysis" Version="$(CloudtoidCodeAnalyzerVersion)" />
+    <PackageReference Include="Cloudtoid.CodeAnalysis" Version="$(CloudtoidCodeAnalysisVersion)" />
     <PackageReference Include="Cloudtoid.Framework" Version="$(CloudtoidFrameworkVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(MicrosoftExtensionsVersion)" />
