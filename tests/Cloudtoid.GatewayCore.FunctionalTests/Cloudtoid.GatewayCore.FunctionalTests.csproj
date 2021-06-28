@@ -5,11 +5,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- TODO: This is a temporary fix to make the tests discoverable in VS for Mac. Remove once the bug is fixed. -->
-    <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestVersion)" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Tests\Options\*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
