@@ -75,7 +75,7 @@ namespace Cloudtoid.GatewayCore.Server
         private static IConfiguration LoadConfig(CommandLineApplication command, string configFile)
         {
             var file = new FileInfo(configFile);
-            if (!file.Exists)
+            if (!file.Exists || file.Directory is null)
                 throw new CommandParsingException(command, $"File '{configFile}' cannot be found.");
 
             var configBuilder = new ConfigurationBuilder()

@@ -123,7 +123,7 @@ namespace Cloudtoid.GatewayCore.Upstream
         {
             if (Provider.TryGetHeaderValues(context, name, downstreamValues, out var upstreamValues) && upstreamValues.Count > 0)
             {
-                upstreamRequest.Content.Headers.TryAddWithoutValidation(name, (IEnumerable<string>)upstreamValues);
+                upstreamRequest.Content!.Headers.TryAddWithoutValidation(name, (IEnumerable<string>)upstreamValues);
                 return;
             }
 

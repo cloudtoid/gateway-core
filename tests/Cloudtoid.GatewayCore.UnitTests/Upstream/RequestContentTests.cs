@@ -206,7 +206,10 @@ namespace Cloudtoid.GatewayCore.UnitTests
                 out StringValues upstreamValues)
             {
                 if (name.EqualsOrdinalIgnoreCase(HeaderNames.ContentMD5))
+                {
+                    upstreamValues = StringValues.Empty;
                     return false;
+                }
 
                 return base.TryGetHeaderValues(context, name, downstreamValues, out upstreamValues);
             }

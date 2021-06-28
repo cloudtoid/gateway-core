@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable CA1034 // Nested types should not be visible
+
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 

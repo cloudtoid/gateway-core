@@ -31,6 +31,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                     headers.Contains(Constants.CallId).Should().BeFalse();
 
                     var contentHeaders = response.Content.Headers;
+                    contentHeaders.ContentType.Should().NotBeNull();
                     contentHeaders.ContentType.MediaType.Should().Be("text/plain");
                     contentHeaders.ContentType.CharSet.Should().Be("utf-8");
                     contentHeaders.ContentLength.Should().Be(4);
@@ -119,7 +120,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
 
                     var headers = response.Headers;
                     headers.TryGetValues("x-proxy-call-id", out var values).Should().BeTrue();
-                    var callId = values.Single();
+                    var callId = values!.Single();
 
                     headers.TryGetValues(Constants.CallId, out values).Should().BeTrue();
                     values.Should().BeEquivalentTo(new[] { callId });

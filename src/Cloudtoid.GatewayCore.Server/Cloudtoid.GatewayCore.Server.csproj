@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>$(AppDotNetVersion)</TargetFramework>
     <OutputType>Exe</OutputType>
     <AssemblyName>gwcore</AssemblyName>
   </PropertyGroup>

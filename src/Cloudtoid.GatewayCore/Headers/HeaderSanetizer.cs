@@ -30,7 +30,7 @@ namespace Cloudtoid.GatewayCore.Headers
             }
 
             // Remove headers with underscore in their names
-            if (discardUnderscore && name.Contains('_'))
+            if (discardUnderscore && name.Contains('_', StringComparison.Ordinal))
             {
                 logger.LogInformation("Removing header '{0}' as headers should not have underscores in their name.", name);
                 return false;
