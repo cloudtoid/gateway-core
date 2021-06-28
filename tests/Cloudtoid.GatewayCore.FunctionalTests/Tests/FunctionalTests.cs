@@ -38,6 +38,22 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 });
         }
 
+        [TestMethod("Should have correlation id and call id headers on request but not response")]
+        public async Task DefaultTraceTestAsync()
+        {
+            var request = new HttpRequestMessage(Method.Get, "trace?message=test");
+            await executor.ExecuteAsync(
+                request,
+                async response =>
+                {
+                    await EnsureResponseSucceededAsync(response);
+
+                    var headers = response.Headers;
+                    headers.Contains(Constants.CorrelationId).Should().BeFalse();
+                    headers.Contains(Constants.CallId).Should().BeFalse();
+                });
+        }
+
         [TestMethod("Should have correlation id and call id headers on both request and response")]
         public async Task TraceTestAsync()
         {
@@ -120,7 +136,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
 
                     var headers = response.Headers;
                     headers.TryGetValues("x-proxy-call-id", out var values).Should().BeTrue();
-                    var callId = values!.Single();
+                    var callId = values.Single();
 
                     headers.TryGetValues(Constants.CallId, out values).Should().BeTrue();
                     values.Should().BeEquivalentTo(new[] { callId });

@@ -229,6 +229,7 @@ GatewayCore discards inbound `Server` headers and does not include a `Server` he
 ```
 
 > [Security through obscurity](https://en.wikipedia.org/wiki/Security_through_obscurity): A `Server` header can reveal information that might make it easier for attackers to exploit known security holes. It is recommended not to include this header.
+> An upstream specified `Server` header is always ignored.
 
 ### External address header
 
