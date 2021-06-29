@@ -216,7 +216,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
         {
             var services = new ServiceCollection();
 
-            if (provider != null)
+            if (provider is not null)
                 services.TryAddSingleton(provider);
 
             services.AddTest().AddTestOptions(options);

@@ -331,7 +331,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 response => EnsureResponseSucceededAsync(response));
         }
 
-        [TestMethod("Should have a set-cookie header with modified values")]
+        [TestMethod("Should have set-cookie headers with modified values")]
         public async Task SetCookieTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "setCookie?message=test");

@@ -39,7 +39,7 @@ namespace Cloudtoid.GatewayCore.Routes
         {
             var path = httpContext.Request.Path;
 
-            if (cache.TryGetValue(path, out route) && route != null)
+            if (cache.TryGetValue(path, out route) && route is not null)
                 return true;
 
             foreach (var routeSetting in settings.CurrentValue.Routes)

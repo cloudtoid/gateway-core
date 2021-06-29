@@ -139,7 +139,7 @@ namespace Cloudtoid.GatewayCore.Settings
                 options.To,
                 options.ProxyName,
                 correlationIdHeader,
-                Create(context, options.UpstreamRequest, options.ProxyName != null),
+                Create(context, options.UpstreamRequest, options.ProxyName is not null),
                 Create(context, options.DownstreamResponse));
         }
 
@@ -240,7 +240,7 @@ namespace Cloudtoid.GatewayCore.Settings
             CookieOptions option)
         {
             var sameSite = SameSiteMode.Unspecified;
-            if (option.SameSite != null)
+            if (option.SameSite is not null)
             {
                 if (!SameSiteModes.TryGetValue(option.SameSite, out var site))
                 {

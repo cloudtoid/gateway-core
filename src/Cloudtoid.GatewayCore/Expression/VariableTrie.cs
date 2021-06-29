@@ -40,7 +40,7 @@ namespace Cloudtoid.GatewayCore.Expression
             out int lengthMatched)
         {
             (value, lengthMatched) = GetMatches(key).LastOrDefault();
-            return value != null;
+            return value is not null;
         }
 
         internal IEnumerable<(TValue Value, int LengthMatched)> GetMatches(string key)
@@ -54,7 +54,7 @@ namespace Cloudtoid.GatewayCore.Expression
                 if (node is null)
                     break;
 
-                if (node.value != null)
+                if (node.value is not null)
                     yield return (node.value, i);
             }
         }
@@ -71,7 +71,7 @@ namespace Cloudtoid.GatewayCore.Expression
             }
 
             var node = map[index];
-            if (node != null)
+            if (node is not null)
                 return node;
 
             return map[index] = new VariableTrie<TValue>();

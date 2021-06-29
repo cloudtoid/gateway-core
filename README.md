@@ -248,7 +248,7 @@ GatewayCore can forward the IP address of an immediate downstream client. This I
 
 ## Cookie handling
 
-The [`Set-Cookie`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie) HTTP response header is used to send cookies from the server to the client so that the client can send them back to the server later.
+The [`Set-Cookie`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie) HTTP response header is used to send cookies from the server to the client so that the client can send them back to the server later. To send multiple cookies, multiple `Set-Cookie` headers can be sent in the same response.
 
 This header can include attributes such as:
 
@@ -262,9 +262,9 @@ requests. In particular, the attribute instructs the client to omit the cookie w
 - `SameSite`: Helps with potential cross-site security issues.
   - If set to `none`, cookies are sent with both cross-site requests and same-site requests.
   - If set to `strict`, cookies are sent only for same-site requests.
-  - If set to `lax`, same-site cookies are withheld on cross-site subrequests, such as calls to load images or frames, but will be sent when a user navigates to the URL from an external site; for example, by following a link.
+  - If set to `lax`, same-site cookies are withheld on cross-site subrequests, such as calls to load images or frames, but will be sent when a user navigates to the URL from an external site; for example, by following a link. From Chrome version 80 and Edge 86, the default is `lax` and not `none`.
 
-A reverse proxy such as GatewayCore often changes the domain, path, and scheme (http/https) of proxied requests and the responses. Therefore, it might be necessary also to update the `Domain`, `Path`, `SameSite`, `Secure`, and `HttpOnly` attributes.
+A reverse proxy such as GatewayCore often modifies the domain, path, and scheme (http/https) of proxied requests and responses. Therefore, it might be necessary to update the `Domain`, `Path`, `SameSite`, `Secure`, and `HttpOnly` attributes as demonstrated below:
 
 ```json
 {
@@ -283,7 +283,7 @@ A reverse proxy such as GatewayCore often changes the domain, path, and scheme (
               },
 ```
 
-In the example above, GatewayCore will ensure that the `Set-Cookie` response header for a cookie named `sessionId` is modified such that:
+In the example above, GatewayCore ensures that the `Set-Cookie` response header for a cookie named `sessionId` is modified such that:
 
 - the `Secure` attribute is set,
 - the `HttpOnly` attribute is removed if it was specified,

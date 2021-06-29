@@ -112,7 +112,7 @@ namespace Cloudtoid.GatewayCore.Upstream
                 }
             }
 
-            if (builder != null)
+            if (builder is not null)
                 result = builder.Append(CommaAndSpace).Append(result).ToString();
 
             return result;

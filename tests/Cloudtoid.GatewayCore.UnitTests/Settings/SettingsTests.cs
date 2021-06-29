@@ -564,7 +564,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
 
             handler.Should().NotBeNull();
 
-            while (handler != null)
+            while (handler is not null)
             {
                 if (handler is SocketsHttpHandler socket)
                 {

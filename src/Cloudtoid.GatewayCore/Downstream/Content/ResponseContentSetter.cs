@@ -66,7 +66,7 @@ namespace Cloudtoid.GatewayCore.Downstream
             }
 
             var contentLength = upstreamResponse.Content.Headers?.ContentLength;
-            if (contentLength != null && contentLength <= 0)
+            if (contentLength is not null && contentLength <= 0)
             {
                 Logger.LogDebug("The inbound upstream response has a content length that is less than or equal to zero.");
                 return;

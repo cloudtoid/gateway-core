@@ -33,13 +33,13 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
 
         internal async Task StopAsync()
         {
-            if (proxy != null)
+            if (proxy is not null)
             {
                 await proxy.StopAsync();
                 proxy = null;
             }
 
-            if (upstreamService != null)
+            if (upstreamService is not null)
             {
                 await upstreamService.StopAsync();
                 upstreamService = null;

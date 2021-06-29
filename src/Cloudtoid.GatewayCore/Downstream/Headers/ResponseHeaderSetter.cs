@@ -133,7 +133,8 @@ namespace Cloudtoid.GatewayCore.Downstream
                 return value;
 
             var cookies = context.ProxyDownstreamResponseHeaderSettings.Cookies;
-            if (!cookies.TryGetValue(cookie.Name.Value, out var cookieSetting) && !cookies.TryGetValue(WildcardCookieName, out cookieSetting))
+            if (!cookies.TryGetValue(cookie.Name.Value, out var cookieSetting) &&
+                !cookies.TryGetValue(WildcardCookieName, out cookieSetting))
                 return value;
 
             cookie.SameSite = cookieSetting.SameSite;
@@ -144,7 +145,7 @@ namespace Cloudtoid.GatewayCore.Downstream
             if (cookieSetting.HttpOnly.HasValue)
                 cookie.HttpOnly = cookieSetting.HttpOnly.Value;
 
-            if (cookieSetting.Domain != null)
+            if (cookieSetting.Domain is not null)
                 cookie.Domain = cookieSetting.Domain.Length == 0 ? null : cookieSetting.Domain;
 
             return cookie.ToString();

@@ -78,7 +78,7 @@ namespace Cloudtoid.GatewayCore.Upstream
         // internal only for testing
         internal static PathString ConcatPathWithSuffix(PathString path, string suffix)
         {
-            if (path.HasValue && path.Value != null)
+            if (path.HasValue && path.Value is not null)
             {
                 return path.Value[^1] == '/' && suffix.Length > 0 && suffix[0] == '/'
                     ? new PathString(path.Value + suffix.Substring(1))

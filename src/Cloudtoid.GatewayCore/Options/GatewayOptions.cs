@@ -39,13 +39,13 @@ namespace Cloudtoid.GatewayCore
             public sealed class ProxyOptions
             {
                 /// <summary>
-                /// Gets or sets an expression that defines the URL of the upstream server to which the downstream request is forwarded to.
-                /// This is a required property.
+                /// Gets or sets the URL of the upstream server to which the downstream request is forwarded to.
+                /// This is a required property and can be an expression.
                 /// </summary>
                 public string? To { get; set; }
 
                 /// <summary>
-                /// Gets or sets an expression that defines the name of this proxy. This name is used in the following scenarios:
+                /// Gets or sets the name of this proxy. This name is used in the following scenarios and can be an expression:
                 /// <list type="bullet">
                 /// <item>This value is used in the Via HTTP header send on the outbound upstream request, and also the outbound downstream response. The default value is <c>"gwcore"</c></item>
                 /// <item>If this is not <see langword="null"/>, an <c>x-gwcore-proxy-name</c> header with this value is added to the outbound upstream request.</item>
@@ -55,7 +55,7 @@ namespace Cloudtoid.GatewayCore
 
                 /// <summary>
                 /// Gets or sets the name of headers that hold correlation identifiers.
-                /// The default value is <c>x-correlation-id</c>.
+                /// The default value is <c>x-correlation-id</c> and it can be an expression.
                 /// </summary>
                 public string? CorrelationIdHeader { get; set; }
 
@@ -66,7 +66,7 @@ namespace Cloudtoid.GatewayCore
                 public sealed class UpstreamRequestOptions
                 {
                     /// <summary>
-                    /// Gets or sets the HTTP protocol of outbound upstream requests.
+                    /// Gets or sets the HTTP protocol of outbound upstream requests and can be an expression.
                     /// The default value if HTTP/2.0.
                     /// </summary>
                     public string? HttpVersion { get; set; }
@@ -163,7 +163,7 @@ namespace Cloudtoid.GatewayCore
                         public string? HttpClientName { get; set; }
 
                         /// <summary>
-                        /// Gets or sets the total timeout in milliseconds to wait for the outbound upstream request to complete.
+                        /// Gets or sets the total timeout in milliseconds to wait for the outbound upstream request to complete. This can be an expression.
                         /// </summary>
                         public string? TimeoutInMilliseconds { get; set; }
 
@@ -327,7 +327,7 @@ namespace Cloudtoid.GatewayCore
                             public string? SameSite { get; set; }
 
                             /// <summary>
-                            /// The Domain attribute specifies those hosts to which the cookie will be sent.
+                            /// The Domain attribute specifies the hosts to which the cookie will be sent.
                             /// For example, if the value of the Domain attribute is "example.com", the user
                             /// agent will include the cookie in the Cookie header when making HTTP requests
                             /// to example.com, www.example.com, and www.corp.example.com.

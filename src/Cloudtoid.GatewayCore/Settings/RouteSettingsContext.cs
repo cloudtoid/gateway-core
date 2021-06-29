@@ -15,7 +15,7 @@ namespace Cloudtoid.GatewayCore.Settings
             this.evaluator = evaluator;
         }
 
-        public string Route { get; set; }
+        public string Route { get; }
 
         [return: NotNullIfNotNull("expression")]
         internal string? Evaluate(ProxyContext context, string? expression)
