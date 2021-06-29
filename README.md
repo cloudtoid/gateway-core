@@ -290,9 +290,26 @@ In the example above, GatewayCore ensures that the `Set-Cookie` response header 
 - the value of `SameSite` is changed to `lax`, and
 - the `Domain` attribute is updated to `example.com`
 
-> Set `domain` to an empty text (`"domain": ""`) if the `Domain` attribute should be fully removed from the `Set-Cookie` header.
+> Set `domain` to an empty text (`"domain": ""`) if the `Domain` attribute should be fully removed from the `Set-Cookie` header. Also `domain` supports expressions.
 
-It is also possible to use the wildcard symbol `"*"` to provide a rule that applies to all cookies.
+It is also possible to use the wildcard symbol `"*"` to provide a rule that applies to all cookies as shown below:
+
+```json
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "http://upstream/v1/",
+        "downstreamResponse": {
+          "headers": {
+            "cookies": {
+              "*": {
+                "secure": true,
+                "httpOnly": false,
+                "sameSite": "strict",
+                "domain": "example.com"
+              },
+```
 
 > A match of a non-wildcard rule supersedes a wildcard match.
 

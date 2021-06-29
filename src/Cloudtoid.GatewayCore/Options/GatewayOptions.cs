@@ -327,7 +327,7 @@ namespace Cloudtoid.GatewayCore
                             public string? SameSite { get; set; }
 
                             /// <summary>
-                            /// The Domain attribute specifies the hosts to which the cookie will be sent.
+                            /// The Domain attribute specifies the hosts to which the cookie will be sent and can be an expression.
                             /// For example, if the value of the Domain attribute is "example.com", the user
                             /// agent will include the cookie in the Cookie header when making HTTP requests
                             /// to example.com, www.example.com, and www.corp.example.com.

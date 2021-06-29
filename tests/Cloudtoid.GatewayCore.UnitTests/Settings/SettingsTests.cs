@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Cloudtoid.GatewayCore.Expression;
 using Cloudtoid.GatewayCore.Settings;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Logging;
@@ -158,6 +157,8 @@ namespace Cloudtoid.GatewayCore.UnitTests
                         (Name: "x-extra-1", Values: new[] { "x-extra-1:v1:" + expressionValue, "x-extra-1:v2:" + expressionValue }),
                         (Name: "x-extra-2", Values: new[] { "x-extra-2:v1:" + expressionValue, "x-extra-2:v2:" + expressionValue })
                     });
+
+            responseHeaders.Cookies.Values.Single().EvaluateDomain(context).Should().Be(expressionValue + ".com");
         }
 
         [TestMethod]

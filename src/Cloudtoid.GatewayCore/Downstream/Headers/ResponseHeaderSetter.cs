@@ -145,8 +145,9 @@ namespace Cloudtoid.GatewayCore.Downstream
             if (cookieSetting.HttpOnly.HasValue)
                 cookie.HttpOnly = cookieSetting.HttpOnly.Value;
 
-            if (cookieSetting.Domain is not null)
-                cookie.Domain = cookieSetting.Domain.Length == 0 ? null : cookieSetting.Domain;
+            var domain = cookieSetting.EvaluateDomain(context);
+            if (domain is not null)
+                cookie.Domain = domain.Length == 0 ? null : domain;
 
             return cookie.ToString();
         }

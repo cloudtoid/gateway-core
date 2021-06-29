@@ -9,13 +9,13 @@ namespace Cloudtoid.GatewayCore.Settings
             bool? secure,
             bool? httpOnly,
             SameSiteMode sameSite,
-            string? domain)
+            string? domainExpression)
         {
             Name = name;
             Secure = secure;
             HttpOnly = httpOnly;
             SameSite = sameSite;
-            Domain = domain;
+            DomainExpression = domainExpression;
         }
 
         public string Name { get; }
@@ -26,6 +26,9 @@ namespace Cloudtoid.GatewayCore.Settings
 
         public SameSiteMode SameSite { get; }
 
-        public string? Domain { get; }
+        public string? DomainExpression { get; }
+
+        public string? EvaluateDomain(ProxyContext context)
+            => context.Evaluate(DomainExpression);
     }
 }
