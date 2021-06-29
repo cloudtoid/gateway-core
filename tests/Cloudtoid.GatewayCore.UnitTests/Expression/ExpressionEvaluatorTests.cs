@@ -339,7 +339,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             GatewayOptions? options = null,
             IReadOnlyDictionary<string, string>? variables = null)
         {
-            services.AddTest().AddTestOptions(options);
+            services.AddTest(gatewayOptions: options);
             serviceProvider = services.BuildServiceProvider();
             var evaluator = serviceProvider.GetRequiredService<IExpressionEvaluator>();
             var context = serviceProvider.GetProxyContext(httpContext, variables: variables);

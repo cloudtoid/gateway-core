@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using Cloudtoid.GatewayCore.Expression;
 using Cloudtoid.GatewayCore.Settings;
 using Cloudtoid.GatewayCore.Trace;
 using Microsoft.AspNetCore.Http;
@@ -10,14 +12,17 @@ namespace Cloudtoid.GatewayCore
     [DebuggerStepThrough]
     public sealed class ProxyContext
     {
+        private readonly IExpressionEvaluator evaluator;
         private readonly ITraceIdProvider traceIdProvider;
         private string? proxyName;
         private string? correlationIdHeader;
         private string? correlationId;
         private string? callId;
         private Version? requestHttpVersion;
+        private Version? upstreamRequestHttpVersion;
 
         internal ProxyContext(
+            IExpressionEvaluator evaluator,
             ITraceIdProvider traceIdProvider,
             HttpContext httpContext,
             Route route)
@@ -25,8 +30,9 @@ namespace Cloudtoid.GatewayCore
             ProxySettings = CheckValue(
                 route.Settings.Proxy,
                 nameof(route.Settings.Proxy),
-                "This is the actual proxy context. We should never get here if the proxy is null!");
+                "This is the actual proxy context. We should never get here if the proxy is null.");
 
+            this.evaluator = evaluator;
             this.traceIdProvider = traceIdProvider;
             HttpContext = httpContext;
             Route = route;
@@ -36,17 +42,11 @@ namespace Cloudtoid.GatewayCore
 
         public HttpContext HttpContext { get; }
 
-        public HttpRequest Request
-            => HttpContext.Request;
-
-        public HttpResponse Response
-            => HttpContext.Response;
-
         public string ProxyName
-            => proxyName ??= ProxySettings.GetProxyName(this);
+            => proxyName ??= ProxySettings.EvaluateProxyName(this);
 
         public string CorrelationIdHeader
-            => correlationIdHeader ??= traceIdProvider.GetCorrelationIdHeader(this);
+            => correlationIdHeader ??= ProxySettings.EvaluateCorrelationIdHeader(this);
 
         public string CorrelationId
             => correlationId ??= traceIdProvider.GetOrCreateCorrelationId(this);
@@ -56,6 +56,15 @@ namespace Cloudtoid.GatewayCore
 
         public Version RequestHttpVersion
             => requestHttpVersion ??= HttpVersion.ParseOrDefault(Request.Protocol) ?? HttpVersion.Version11;
+
+        public Version UpstreamRequestHttpVersion
+            => upstreamRequestHttpVersion ??= ProxyUpstreamRequestSettings.EvaluateHttpVersion(this);
+
+        internal HttpRequest Request
+            => HttpContext.Request;
+
+        internal HttpResponse Response
+            => HttpContext.Response;
 
         internal RouteSettings Settings
             => Route.Settings;
@@ -76,5 +85,9 @@ namespace Cloudtoid.GatewayCore
 
         internal DownstreamResponseHeadersSettings ProxyDownstreamResponseHeaderSettings
             => ProxyDownstreamResponseSettings.Headers;
+
+        [return: NotNullIfNotNull("expression")]
+        internal string? Evaluate(string? expression)
+            => evaluator.Evaluate(this, expression);
     }
 }

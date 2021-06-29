@@ -4,28 +4,25 @@ namespace Cloudtoid.GatewayCore.Settings
 {
     public sealed class UpstreamRequestSettings
     {
-        private readonly RouteSettingsContext context;
-        private readonly string? httpVersionExpression;
-
         internal UpstreamRequestSettings(
-            RouteSettingsContext context,
             string? httpVersionExpression,
             UpstreamRequestHeadersSettings headers,
             UpstreamRequestSenderSettings sender)
         {
-            this.context = context;
-            this.httpVersionExpression = httpVersionExpression;
+            HttpVersionExpression = httpVersionExpression;
             Headers = headers;
             Sender = sender;
         }
+
+        public string? HttpVersionExpression { get; }
 
         public UpstreamRequestHeadersSettings Headers { get; }
 
         public UpstreamRequestSenderSettings Sender { get; }
 
-        public Version GetHttpVersion(ProxyContext proxyContext)
+        public Version EvaluateHttpVersion(ProxyContext context)
         {
-            var result = context.Evaluate(proxyContext, httpVersionExpression);
+            var result = context.Evaluate(HttpVersionExpression);
             return HttpVersion.ParseOrDefault(result) ?? Defaults.Route.Proxy.Upstream.Request.HttpVersion;
         }
     }

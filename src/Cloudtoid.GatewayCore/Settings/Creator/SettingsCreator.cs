@@ -24,18 +24,15 @@ namespace Cloudtoid.GatewayCore.Settings
             ["strict"] = SameSiteMode.Strict,
         };
 
-        private readonly IExpressionEvaluator evaluator;
         private readonly IPatternEngine patternEngine;
         private readonly IGuidProvider guidProvider;
         private readonly ILogger<SettingsCreator> logger;
 
         public SettingsCreator(
-            IExpressionEvaluator evaluator,
             IPatternEngine patternEngine,
             IGuidProvider guidProvider,
             ILogger<SettingsCreator> logger)
         {
-            this.evaluator = CheckValue(evaluator, nameof(evaluator));
             this.patternEngine = CheckValue(patternEngine, nameof(patternEngine));
             this.guidProvider = CheckValue(guidProvider, nameof(guidProvider));
             this.logger = CheckValue(logger, nameof(logger));
@@ -81,8 +78,7 @@ namespace Cloudtoid.GatewayCore.Settings
             }
 
             // 1) Compile the route pattern
-            var context = new RouteSettingsContext(route, evaluator);
-            var compiledRoute = Compile(context);
+            var compiledRoute = Compile(route);
             if (compiledRoute is null)
                 return null;
 
@@ -94,14 +90,14 @@ namespace Cloudtoid.GatewayCore.Settings
                 route,
                 compiledRoute,
                 variableTrie,
-                Create(context, options.Proxy));
+                Create(route, options.Proxy));
         }
 
-        private CompiledPattern? Compile(RouteSettingsContext context)
+        private CompiledPattern? Compile(string route)
         {
-            if (!patternEngine.TryCompile(context.Route, out var compiledRoute, out var compilerErrors))
+            if (!patternEngine.TryCompile(route, out var compiledRoute, out var compilerErrors))
             {
-                LogErrors(context, compilerErrors);
+                LogErrors(route, compilerErrors);
                 return null;
             }
 
@@ -109,7 +105,7 @@ namespace Cloudtoid.GatewayCore.Settings
             {
                 if (SystemVariableNames.Names.Contains(variableName))
                 {
-                    LogError(context, $"The variable name '{variableName}' collides with a system variable with the same name.");
+                    LogError(route, $"The variable name '{variableName}' collides with a system variable with the same name.");
                     return null;
                 }
             }
@@ -118,7 +114,7 @@ namespace Cloudtoid.GatewayCore.Settings
         }
 
         private ProxySettings? Create(
-            RouteSettingsContext context,
+            string route,
             ProxyOptions? options)
         {
             if (options is null)
@@ -126,7 +122,7 @@ namespace Cloudtoid.GatewayCore.Settings
 
             if (string.IsNullOrWhiteSpace(options.To))
             {
-                LogError(context, $"The '{nameof(options.To)}' cannot be empty or skipped.");
+                LogError(route, $"The '{nameof(options.To)}' cannot be empty or skipped.");
                 return null;
             }
 
@@ -135,28 +131,26 @@ namespace Cloudtoid.GatewayCore.Settings
                 : options.CorrelationIdHeader;
 
             return new ProxySettings(
-                context,
                 options.To,
                 options.ProxyName,
                 correlationIdHeader,
-                Create(context, options.UpstreamRequest, options.ProxyName is not null),
-                Create(context, options.DownstreamResponse));
+                Create(route, options.UpstreamRequest, options.ProxyName is not null),
+                Create(route, options.DownstreamResponse));
         }
 
         private UpstreamRequestSettings Create(
-            RouteSettingsContext context,
+            string route,
             UpstreamRequestOptions options,
             bool addProxyName)
         {
             return new UpstreamRequestSettings(
-                context,
                 options.HttpVersion,
-                Create(context, options.Headers, addProxyName),
-                Create(context, options.Sender));
+                Create(route, options.Headers, addProxyName),
+                Create(options.Sender));
         }
 
         private UpstreamRequestHeadersSettings Create(
-            RouteSettingsContext context,
+            string route,
             UpstreamRequestOptions.HeadersOptions options,
             bool addProxyName)
         {
@@ -172,11 +166,10 @@ namespace Cloudtoid.GatewayCore.Settings
                 options.SkipVia,
                 options.SkipForwarded,
                 options.UseXForwarded,
-                Create(context, options.Overrides));
+                Create(route, options.Overrides));
         }
 
         private UpstreamRequestSenderSettings Create(
-            RouteSettingsContext context,
             UpstreamRequestOptions.SenderOptions options)
         {
             // every time a route is created, we need to create a new named HTTP Client for it.
@@ -205,7 +198,6 @@ namespace Cloudtoid.GatewayCore.Settings
                 : SenderDefaults.ResponseDrainTimeout;
 
             return new UpstreamRequestSenderSettings(
-                context,
                 httpClientName,
                 options.TimeoutInMilliseconds,
                 connectTimeout,
@@ -222,20 +214,20 @@ namespace Cloudtoid.GatewayCore.Settings
         }
 
         private IReadOnlyDictionary<string, CookieSettings> Create(
-            RouteSettingsContext context,
+            string route,
             Dictionary<string, CookieOptions> options)
         {
             if (options.Count == 0)
                 return ImmutableDictionary<string, CookieSettings>.Empty;
 
             return options
-                .Select(c => Create(context, c.Key, c.Value))
+                .Select(c => Create(route, c.Key, c.Value))
                 .WhereNotNull()
                 .ToDictionary(c => c.Name, StringComparer.OrdinalIgnoreCase);
         }
 
         private CookieSettings? Create(
-            RouteSettingsContext context,
+            string route,
             string name,
             CookieOptions option)
         {
@@ -244,7 +236,7 @@ namespace Cloudtoid.GatewayCore.Settings
             {
                 if (!SameSiteModes.TryGetValue(option.SameSite, out var site))
                 {
-                    LogError(context, $"The '{option.SameSite}' is not a valid value for '{name}' cookie's SameSite attribute. Valid values are 'none', 'lax' and 'strict'.");
+                    LogError(route, $"The '{option.SameSite}' is not a valid value for '{name}' cookie's SameSite attribute. Valid values are 'none', 'lax' and 'strict'.");
                     return null;
                 }
 
@@ -255,28 +247,28 @@ namespace Cloudtoid.GatewayCore.Settings
         }
 
         private IReadOnlyDictionary<string, HeaderOverride> Create(
-            RouteSettingsContext context,
+            string route,
             Dictionary<string, string[]> headers)
         {
             if (headers.Count == 0)
                 return ImmutableDictionary<string, HeaderOverride>.Empty;
 
             return headers
-                .Select(h => Create(context, h.Key, h.Value))
+                .Select(h => Create(route, h.Key, h.Value))
                 .WhereNotNull()
                 .ToDictionary(h => h.Name, StringComparer.OrdinalIgnoreCase);
         }
 
         private DownstreamResponseSettings Create(
-            RouteSettingsContext context,
+            string route,
             DownstreamResponseOptions options)
         {
             return new DownstreamResponseSettings(
-                Create(context, options.Headers));
+                Create(route, options.Headers));
         }
 
         private DownstreamResponseHeadersSettings Create(
-            RouteSettingsContext context,
+            string route,
             DownstreamResponseOptions.HeadersOptions options)
         {
             return new DownstreamResponseHeadersSettings(
@@ -288,29 +280,28 @@ namespace Cloudtoid.GatewayCore.Settings
                 options.AddCorrelationId,
                 options.AddCallId,
                 options.SkipVia,
-                Create(context, options.Cookies),
-                Create(context, options.Overrides));
+                Create(route, options.Cookies),
+                Create(route, options.Overrides));
         }
 
         private HeaderOverride? Create(
-            RouteSettingsContext context,
+            string route,
             string headerName,
             string[] headerValuesExpressions)
         {
             if (!HttpHeader.IsValidName(headerName))
             {
-                LogWarning(context, $"The '{headerName}' is not a valid HTTP header name. It will be ignored.");
+                LogWarning(route, $"The '{headerName}' is not a valid HTTP header name. It will be ignored.");
                 return null;
             }
 
             if (headerValuesExpressions.IsNullOrEmpty())
             {
-                LogWarning(context, $"The '{headerName}' is either null or empty. It will be ignored.");
+                LogWarning(route, $"The '{headerName}' is either null or empty. It will be ignored.");
                 return null;
             }
 
             return new HeaderOverride(
-                context,
                 headerName,
                 headerValuesExpressions);
         }
@@ -318,16 +309,16 @@ namespace Cloudtoid.GatewayCore.Settings
         private void LogError(string message)
             => logger.LogError($"Configuration error: {message}");
 
-        private void LogError(RouteSettingsContext context, string message)
-            => logger.LogError($"Configuration error: ({context.Route}) {message}");
+        private void LogError(string route, string message)
+            => logger.LogError($"Configuration error: ({route}) {message}");
 
-        private void LogWarning(RouteSettingsContext context, string message)
-            => logger.LogWarning($"Configuration warning: ({context.Route}) {message}");
+        private void LogWarning(string route, string message)
+            => logger.LogWarning($"Configuration warning: ({route}) {message}");
 
-        private void LogErrors(RouteSettingsContext context, IReadOnlyList<PatternCompilerError> errors)
+        private void LogErrors(string route, IReadOnlyList<PatternCompilerError> errors)
         {
             foreach (var error in errors)
-                LogError(context, error.ToString());
+                LogError(route, error.ToString());
         }
     }
 }

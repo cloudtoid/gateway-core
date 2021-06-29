@@ -2,44 +2,42 @@
 {
     public sealed class ProxySettings
     {
-        private readonly RouteSettingsContext context;
-        private readonly string? proxyNameExpression;
-        private readonly string? correlationIdHeaderExpression;
-
         internal ProxySettings(
-            RouteSettingsContext context,
             string to,
             string? proxyNameExpression,
             string? correlationIdHeaderExpression,
             UpstreamRequestSettings upstreamRequest,
             DownstreamResponseSettings downstreamResponse)
         {
-            this.context = context;
             To = to;
-            this.proxyNameExpression = proxyNameExpression;
-            this.correlationIdHeaderExpression = correlationIdHeaderExpression;
+            ProxyNameExpression = proxyNameExpression;
+            CorrelationIdHeaderExpression = correlationIdHeaderExpression;
             UpstreamRequest = upstreamRequest;
             DownstreamResponse = downstreamResponse;
         }
 
         public string To { get; }
 
+        public string? ProxyNameExpression { get; }
+
+        public string? CorrelationIdHeaderExpression { get; }
+
         public UpstreamRequestSettings UpstreamRequest { get; }
 
         public DownstreamResponseSettings DownstreamResponse { get; }
 
-        public string GetProxyName(ProxyContext proxyContext)
+        public string EvaluateProxyName(ProxyContext context)
         {
-            var eval = context.Evaluate(proxyContext, proxyNameExpression);
+            var eval = context.Evaluate(ProxyNameExpression);
 
             return string.IsNullOrWhiteSpace(eval)
                 ? Defaults.Route.Proxy.ProxyName
                 : eval;
         }
 
-        public string GetCorrelationIdHeader(ProxyContext proxyContext)
+        public string EvaluateCorrelationIdHeader(ProxyContext context)
         {
-            var eval = context.Evaluate(proxyContext, correlationIdHeaderExpression);
+            var eval = context.Evaluate(CorrelationIdHeaderExpression);
 
             return string.IsNullOrWhiteSpace(eval)
                 ? Defaults.Route.Proxy.Upstream.Request.Headers.CorrelationIdHeader

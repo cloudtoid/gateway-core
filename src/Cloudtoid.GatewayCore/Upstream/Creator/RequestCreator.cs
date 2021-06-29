@@ -48,15 +48,11 @@ namespace Cloudtoid.GatewayCore.Upstream
             return upstreamRequest;
         }
 
-        private void SetHttpMethod(ProxyContext context, HttpRequestMessage upstreamRequest)
-        {
-            upstreamRequest.Method = Cloudtoid.HttpMethod.Parse(context.Request.Method);
-        }
+        private static void SetHttpMethod(ProxyContext context, HttpRequestMessage upstreamRequest)
+            => upstreamRequest.Method = HttpMethod.Parse(context.Request.Method);
 
-        private void SetHttpVersion(ProxyContext context, HttpRequestMessage upstreamRequest)
-        {
-            upstreamRequest.Version = context.ProxyUpstreamRequestSettings.GetHttpVersion(context);
-        }
+        private static void SetHttpVersion(ProxyContext context, HttpRequestMessage upstreamRequest)
+            => upstreamRequest.Version = context.UpstreamRequestHttpVersion;
 
         private async Task SetUrlAsync(
             ProxyContext context,

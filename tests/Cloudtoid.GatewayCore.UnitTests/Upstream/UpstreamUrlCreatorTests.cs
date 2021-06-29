@@ -161,7 +161,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             string expectedUrl)
         {
             var options = TestExtensions.CreateDefaultOptions(routePattern, toExpression);
-            var services = new ServiceCollection().AddTest().AddTestOptions(options);
+            var services = new ServiceCollection().AddTest(gatewayOptions: options);
             var serviceProvider = services.BuildServiceProvider();
             var patternEngine = serviceProvider.GetRequiredService<IPatternEngine>();
             var urlRewriter = serviceProvider.GetRequiredService<IUpstreamUrlCreator>();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Threading;
 using Cloudtoid.UrlPattern;
@@ -24,11 +25,11 @@ namespace Cloudtoid.GatewayCore.Expression
         }
 
         /// <inheritdoc/>
-        public string Evaluate(ProxyContext context, string expression)
+        [return: NotNullIfNotNull("expression")]
+        public string? Evaluate(ProxyContext context, string? expression)
         {
             CheckValue(context, nameof(context));
-            CheckValue(expression, nameof(expression));
-            return EvaluateCore(context, expression);
+            return expression is null ? null : EvaluateCore(context, expression);
         }
 
         private string EvaluateCore(ProxyContext context, string expression)

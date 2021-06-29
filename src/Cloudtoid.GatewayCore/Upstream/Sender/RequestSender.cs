@@ -25,7 +25,7 @@ namespace Cloudtoid.GatewayCore.Upstream
 
             var settings = context.ProxyUpstreamRequestSenderSettings;
             var client = httpClientFactory.CreateClient(settings.HttpClientName);
-            client.Timeout = settings.GetTimeout(context);
+            client.Timeout = settings.EvaluateTimeout(context);
             return await client.SendAsync(upstreamMessage, cancellationToken);
         }
     }

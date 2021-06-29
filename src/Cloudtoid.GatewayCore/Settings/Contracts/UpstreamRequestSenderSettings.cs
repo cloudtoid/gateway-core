@@ -5,11 +5,7 @@ namespace Cloudtoid.GatewayCore.Settings
 {
     public sealed class UpstreamRequestSenderSettings
     {
-        private readonly RouteSettingsContext context;
-        private readonly string? timeoutExpression;
-
         internal UpstreamRequestSenderSettings(
-            RouteSettingsContext context,
             string httpClientName,
             string? timeoutExpression,
             TimeSpan connectTimeout,
@@ -24,9 +20,8 @@ namespace Cloudtoid.GatewayCore.Settings
             bool allowAutoRedirect,
             bool useCookies)
         {
-            this.context = context;
             HttpClientName = httpClientName;
-            this.timeoutExpression = timeoutExpression;
+            TimeoutExpression = timeoutExpression;
             ConnectTimeout = connectTimeout;
             Expect100ContinueTimeout = expect100ContinueTimeout;
             PooledConnectionIdleTimeout = pooledConnectionIdleTimeout;
@@ -47,6 +42,8 @@ namespace Cloudtoid.GatewayCore.Settings
         /// <see cref="HttpClient"/> configured with the request sender settings specified in <see cref="UpstreamRequestSenderSettings"/>.
         /// </summary>
         public string HttpClientName { get; }
+
+        public string? TimeoutExpression { get; }
 
         public TimeSpan ConnectTimeout { get; }
 
@@ -70,9 +67,9 @@ namespace Cloudtoid.GatewayCore.Settings
 
         public bool UseCookies { get; }
 
-        public TimeSpan GetTimeout(ProxyContext proxyContext)
+        public TimeSpan EvaluateTimeout(ProxyContext context)
         {
-            var result = context.Evaluate(proxyContext, timeoutExpression);
+            var result = context.Evaluate(TimeoutExpression);
 
             return long.TryParse(result, out var timeout) && timeout > 0
                 ? TimeSpan.FromMilliseconds(timeout)

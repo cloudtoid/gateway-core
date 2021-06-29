@@ -201,7 +201,7 @@ namespace Cloudtoid.GatewayCore.Downstream
             var headers = context.Response.Headers;
 
             foreach (var header in context.ProxyDownstreamResponseHeaderSettings.Overrides.Values)
-                headers.Append(header.Name, header.GetValues(context).AsStringValues());
+                headers.Append(header.Name, header.EvaluateValues(context).AsStringValues());
         }
 
         protected virtual void AddHeaderValues(

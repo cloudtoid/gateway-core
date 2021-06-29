@@ -13,7 +13,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
 
         public RouteResolverTests()
         {
-            var services = new ServiceCollection().AddTest().AddTestOptions();
+            var services = new ServiceCollection().AddTest();
             var serviceProvider = services.BuildServiceProvider();
             resolver = serviceProvider.GetRequiredService<IRouteResolver>();
         }

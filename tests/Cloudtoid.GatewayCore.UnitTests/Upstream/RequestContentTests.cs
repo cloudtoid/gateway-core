@@ -187,7 +187,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             if (provider is not null)
                 services.TryAddSingleton(provider);
 
-            services.AddTest().AddTestOptions(options);
+            services.AddTest(gatewayOptions: options);
             serviceProvider = services.BuildServiceProvider();
             var setter = serviceProvider.GetRequiredService<IRequestContentSetter>();
             var context = serviceProvider.GetProxyContext(httpContext);

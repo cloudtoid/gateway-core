@@ -11,16 +11,12 @@ namespace Cloudtoid.GatewayCore.Trace
             this.guidProvider = CheckValue(guidProvider, nameof(guidProvider));
         }
 
-        public virtual string GetCorrelationIdHeader(ProxyContext context)
-            => context.ProxySettings.GetCorrelationIdHeader(context);
-
         public virtual string GetOrCreateCorrelationId(ProxyContext context)
         {
             if (context.ProxyUpstreamRequestHeadersSettings.DiscardInboundHeaders)
                 return CreateCorrelationId();
 
-            var correlationIdHeader = GetCorrelationIdHeader(context);
-            if (!context.Request.Headers.TryGetValue(correlationIdHeader, out var values) || values.Count == 0)
+            if (!context.Request.Headers.TryGetValue(context.CorrelationIdHeader, out var values) || values.Count == 0)
                 return CreateCorrelationId();
 
             return values[0];

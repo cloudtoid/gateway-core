@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Cloudtoid.GatewayCore.Downstream;
+using Cloudtoid.GatewayCore.Expression;
 using Cloudtoid.GatewayCore.Routes;
 using Cloudtoid.GatewayCore.Trace;
 using Cloudtoid.GatewayCore.Upstream;
@@ -20,6 +21,7 @@ namespace Cloudtoid.GatewayCore.Proxy
         private readonly IRequestSender sender;
         private readonly IResponseSender responseSender;
         private readonly IRouteResolver routeResolver;
+        private readonly IExpressionEvaluator evaluator;
         private readonly ITraceIdProvider traceIdProvider;
         private readonly ILogger<ProxyMiddleware> logger;
 
@@ -29,6 +31,7 @@ namespace Cloudtoid.GatewayCore.Proxy
             IRequestSender sender,
             IResponseSender responseSender,
             IRouteResolver routeResolver,
+            IExpressionEvaluator evaluator,
             ITraceIdProvider traceIdProvider,
             ILogger<ProxyMiddleware> logger)
         {
@@ -38,6 +41,7 @@ namespace Cloudtoid.GatewayCore.Proxy
             this.responseSender = CheckValue(responseSender, nameof(responseSender));
             this.routeResolver = CheckValue(routeResolver, nameof(routeResolver));
             this.traceIdProvider = CheckValue(traceIdProvider, nameof(traceIdProvider));
+            this.evaluator = CheckValue(evaluator, nameof(evaluator));
             this.logger = CheckValue(logger, nameof(logger));
         }
 
@@ -64,6 +68,7 @@ namespace Cloudtoid.GatewayCore.Proxy
                 httpContext.Request.Method);
 
             var context = new ProxyContext(
+                evaluator,
                 traceIdProvider,
                 httpContext,
                 route);

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
+using Cloudtoid.GatewayCore.Expression;
 using Cloudtoid.GatewayCore.Settings;
 using Cloudtoid.GatewayCore.Trace;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -16,7 +17,12 @@ namespace Cloudtoid.GatewayCore.UnitTests
 {
     internal static class TestExtensions
     {
-        public static IServiceCollection AddTest(this IServiceCollection services)
+        public static IServiceCollection AddTest(
+            this IServiceCollection services,
+            string? gatewayOptionsJsonFile = null,
+            bool reloadOnGatewayOptionsJsonFileChange = false,
+            GatewayOptions? gatewayOptions = null,
+            IConfigurationBuilder? configBuilder = null)
         {
             CheckValue(services, nameof(services));
 
@@ -28,17 +34,23 @@ namespace Cloudtoid.GatewayCore.UnitTests
                 .Replace(ServiceDescriptor.Singleton(typeof(ILogger<>), typeof(Logger<>)))
                 .AddGatewayCore();
 
-            return services;
-        }
+            if (gatewayOptionsJsonFile is not null)
+            {
+                configBuilder = new ConfigurationBuilder()
+                    .AddJsonFile(gatewayOptionsJsonFile, optional: false, reloadOnChange: reloadOnGatewayOptionsJsonFileChange);
+            }
 
-        public static IServiceCollection AddTestOptions(
-            this IServiceCollection services,
-            GatewayOptions? options = null)
-        {
-            options ??= CreateDefaultOptions();
-            var monitor = Substitute.For<IOptionsMonitor<GatewayOptions>>();
-            monitor.CurrentValue.Returns(options);
-            services.TryAddSingleton(monitor);
+            if (configBuilder is not null)
+            {
+                services.Configure<GatewayOptions>(configBuilder.Build());
+            }
+            else
+            {
+                var monitor = Substitute.For<IOptionsMonitor<GatewayOptions>>();
+                monitor.CurrentValue.Returns(gatewayOptions ?? CreateDefaultOptions());
+                services.TryAddSingleton(monitor);
+            }
+
             return services;
         }
 
@@ -49,17 +61,17 @@ namespace Cloudtoid.GatewayCore.UnitTests
             IReadOnlyDictionary<string, string>? variables = null)
         {
             var settingsProvider = provider.GetRequiredService<ISettingsProvider>();
-            var routeOptions = settingsProvider.CurrentValue.Routes.First();
+            var routeOptions = settingsProvider.CurrentValue.Routes[0];
 
-            httpContext ??= new DefaultHttpContext();
             var route = new Route(
                 routeOptions,
                 pathSuffix ?? string.Empty,
                 variables ?? ImmutableDictionary<string, string>.Empty);
 
             return new ProxyContext(
+                provider.GetRequiredService<IExpressionEvaluator>(),
                 provider.GetRequiredService<ITraceIdProvider>(),
-                httpContext,
+                httpContext ?? new DefaultHttpContext(),
                 route);
         }
 

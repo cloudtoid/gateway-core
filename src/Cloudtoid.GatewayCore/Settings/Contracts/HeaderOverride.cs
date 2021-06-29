@@ -5,22 +5,19 @@ namespace Cloudtoid.GatewayCore.Settings
 {
     public sealed class HeaderOverride
     {
-        private readonly RouteSettingsContext context;
-        private readonly string[] values;
-
         internal HeaderOverride(
-            RouteSettingsContext context,
             string name,
-            string[] values)
+            string[] valueExpressions)
         {
-            this.context = context;
             Name = name;
-            this.values = values;
+            ValueExpressions = valueExpressions;
         }
 
         public string Name { get; }
 
-        public IEnumerable<string> GetValues(ProxyContext proxyContext)
-            => values.Select(v => context.Evaluate(proxyContext, v));
+        public string[] ValueExpressions { get; }
+
+        public IEnumerable<string> EvaluateValues(ProxyContext context)
+            => ValueExpressions.Select(v => context.Evaluate(v));
     }
 }

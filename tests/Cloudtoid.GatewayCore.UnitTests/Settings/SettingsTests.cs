@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -9,16 +8,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Cloudtoid.GatewayCore.Expression;
 using Cloudtoid.GatewayCore.Settings;
-using Cloudtoid.GatewayCore.Trace;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NSubstitute;
 
 namespace Cloudtoid.GatewayCore.UnitTests
 {
@@ -30,18 +26,18 @@ namespace Cloudtoid.GatewayCore.UnitTests
         [TestMethod]
         public void New_FullyPopulatedOptions_AllValuesAreReadCorrectly()
         {
-            var settings = GetSettings(@"Settings/OptionsFull.json");
-            settings.System.RouteCacheMaxCount.Should().Be(1024);
+            var context = GetProxyContext(@"Settings/OptionsFull.json");
+            var settings = serviceProvider.GetRequiredService<ISettingsProvider>();
+            settings.CurrentValue.System.RouteCacheMaxCount.Should().Be(1024);
 
-            var context = GetProxyContext(settings);
             var routeSettings = context.Route.Settings;
             routeSettings.Route.Should().Be("/api/");
 
             context.ProxyName.Should().Be("some-proxy-name");
-            routeSettings.Proxy!.GetCorrelationIdHeader(context).Should().Be("x-request-id");
+            routeSettings.Proxy!.EvaluateCorrelationIdHeader(context).Should().Be("x-request-id");
 
             var request = routeSettings.Proxy.UpstreamRequest;
-            request.GetHttpVersion(context).Should().Be(HttpVersion.Version30);
+            request.EvaluateHttpVersion(context).Should().Be(HttpVersion.Version30);
 
             var requestHeaders = request.Headers;
             requestHeaders.DiscardEmpty.Should().BeTrue();
@@ -53,7 +49,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             requestHeaders.SkipForwarded.Should().BeTrue();
             requestHeaders.UseXForwarded.Should().BeTrue();
             requestHeaders.AddExternalAddress.Should().BeTrue();
-            requestHeaders.Overrides.Values.Select(h => (h.Name, Values: h.GetValues(context)))
+            requestHeaders.Overrides.Values.Select(h => (h.Name, Values: h.EvaluateValues(context)))
                 .Should()
                 .BeEquivalentTo(
                     new[]
@@ -65,7 +61,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
 
             var requestSender = request.Sender;
             requestSender.HttpClientName.Should().Be("api-route-http-client-name");
-            requestSender.GetTimeout(context).TotalMilliseconds.Should().Be(5200);
+            requestSender.EvaluateTimeout(context).TotalMilliseconds.Should().Be(5200);
             requestSender.ConnectTimeout.TotalMilliseconds.Should().Be(1000);
             requestSender.Expect100ContinueTimeout.TotalMilliseconds.Should().Be(2000);
             requestSender.PooledConnectionIdleTimeout.TotalMilliseconds.Should().Be(3000);
@@ -115,7 +111,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
                             Microsoft.Net.Http.Headers.SameSiteMode.Unspecified,
                             "test.com")
                     });
-            responseHeaders.Overrides.Values.Select(h => (h.Name, Values: h.GetValues(context)))
+            responseHeaders.Overrides.Values.Select(h => (h.Name, Values: h.EvaluateValues(context)))
                 .Should()
                 .BeEquivalentTo(
                     new[]
@@ -134,13 +130,13 @@ namespace Cloudtoid.GatewayCore.UnitTests
 
             var expressionValue = Environment.MachineName;
             context.ProxyName.Should().Be("ProxyName:" + expressionValue);
-            settings.Proxy!.GetCorrelationIdHeader(context).Should().Be("CorrelationIdHeader:" + expressionValue);
+            settings.Proxy!.EvaluateCorrelationIdHeader(context).Should().Be("CorrelationIdHeader:" + expressionValue);
 
             var request = settings.Proxy.UpstreamRequest;
-            request.GetHttpVersion(context).Should().Be(HttpVersion.Version11);
+            request.EvaluateHttpVersion(context).Should().Be(HttpVersion.Version11);
 
             var requestHeaders = request.Headers;
-            requestHeaders.Overrides.Values.Select(h => (h.Name, Values: h.GetValues(context)))
+            requestHeaders.Overrides.Values.Select(h => (h.Name, Values: h.EvaluateValues(context)))
                 .Should()
                 .BeEquivalentTo(
                     new[]
@@ -150,11 +146,11 @@ namespace Cloudtoid.GatewayCore.UnitTests
                     });
 
             var requestSender = request.Sender;
-            requestSender.GetTimeout(context).TotalMilliseconds.Should().Be(5200);
+            requestSender.EvaluateTimeout(context).TotalMilliseconds.Should().Be(5200);
 
             var response = settings.Proxy.DownstreamResponse;
             var responseHeaders = response.Headers;
-            responseHeaders.Overrides.Values.Select(h => (h.Name, Values: h.GetValues(context)))
+            responseHeaders.Overrides.Values.Select(h => (h.Name, Values: h.EvaluateValues(context)))
                 .Should()
                 .BeEquivalentTo(
                     new[]
@@ -167,15 +163,15 @@ namespace Cloudtoid.GatewayCore.UnitTests
         [TestMethod]
         public void New_EmptyOptions_AllValuesSetToDefault()
         {
-            var settings = GetSettings(@"Settings/OptionsEmpty.json");
-            settings.System.RouteCacheMaxCount.Should().Be(100000);
+            var context = GetProxyContext(@"Settings/OptionsEmpty.json");
+            var settings = serviceProvider.GetRequiredService<ISettingsProvider>();
+            settings.CurrentValue.System.RouteCacheMaxCount.Should().Be(100000);
 
-            var context = GetProxyContext(settings);
             context.ProxyName.Should().Be("gwcore");
             var routeSettings = context.Route.Settings;
 
             var request = routeSettings.Proxy!.UpstreamRequest;
-            request.GetHttpVersion(context).Should().Be(HttpVersion.Version20);
+            request.EvaluateHttpVersion(context).Should().Be(HttpVersion.Version20);
 
             var requestHeaders = request.Headers;
             requestHeaders.DiscardEmpty.Should().BeFalse();
@@ -192,7 +188,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
 
             var requestSender = request.Sender;
             requestSender.HttpClientName.Should().Be(GuidProvider.StringValue);
-            requestSender.GetTimeout(context).TotalMilliseconds.Should().Be(240000);
+            requestSender.EvaluateTimeout(context).TotalMilliseconds.Should().Be(240000);
             requestSender.ConnectTimeout.Should().Be(Timeout.InfiniteTimeSpan);
             requestSender.Expect100ContinueTimeout.TotalMilliseconds.Should().Be(1000);
             requestSender.PooledConnectionIdleTimeout.Should().Be(TimeSpan.FromMinutes(2));
@@ -226,25 +222,16 @@ namespace Cloudtoid.GatewayCore.UnitTests
             {
                 File.Copy(@"Settings/OptionsOld.json", @"Settings/OptionsReload.json", true);
 
-                var config = new ConfigurationBuilder()
-                    .AddJsonFile(@"Settings/OptionsReload.json", optional: false, reloadOnChange: true)
-                    .Build();
-
-                var services = new ServiceCollection()
-                    .AddTest()
-                    .Configure<GatewayOptions>(config);
+                var services = new ServiceCollection().AddTest(
+                    gatewayOptionsJsonFile: @"Settings/OptionsReload.json",
+                    reloadOnGatewayOptionsJsonFileChange: true);
 
                 serviceProvider = services.BuildServiceProvider();
                 var settingsProvider = serviceProvider.GetRequiredService<ISettingsProvider>();
                 var monitor = serviceProvider.GetRequiredService<IOptionsMonitor<GatewayOptions>>();
+                var evaluator = serviceProvider.GetRequiredService<IExpressionEvaluator>();
 
-                var httpContext = new DefaultHttpContext();
-                var settings = settingsProvider.CurrentValue.Routes.First();
-
-                var context = new ProxyContext(
-                    Substitute.For<ITraceIdProvider>(),
-                    httpContext,
-                    new Route(settings, string.Empty, ImmutableDictionary<string, string>.Empty));
+                var context = serviceProvider.GetProxyContext();
 
                 using (var changeEvent = new AutoResetEvent(false))
                 {
@@ -256,8 +243,8 @@ namespace Cloudtoid.GatewayCore.UnitTests
 
                     monitor.OnChange(Reset);
 
-                    var sender = settings.Proxy!.UpstreamRequest.Sender;
-                    sender.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
+                    var sender = settingsProvider.CurrentValue.Routes[0].Proxy.UpstreamRequest.Sender;
+                    sender.EvaluateTimeout(context).TotalMilliseconds.Should().Be(5000);
                     sender.AllowAutoRedirect.Should().BeFalse();
                     sender.UseCookies.Should().BeTrue();
                     ValidateSocketsHttpHandler("api-route-http-client-name", sender);
@@ -269,14 +256,9 @@ namespace Cloudtoid.GatewayCore.UnitTests
 
                     changeEvent.WaitOne();
 
-                    settings = settingsProvider.CurrentValue.Routes.First();
-                    context = new ProxyContext(
-                        Substitute.For<ITraceIdProvider>(),
-                        httpContext,
-                        new Route(settings, string.Empty, ImmutableDictionary<string, string>.Empty));
-
-                    sender = settings.Proxy!.UpstreamRequest.Sender;
-                    sender.GetTimeout(context).TotalMilliseconds.Should().Be(2000);
+                    context = serviceProvider.GetProxyContext();
+                    sender = settingsProvider.CurrentValue.Routes[0].Proxy.UpstreamRequest.Sender;
+                    sender.EvaluateTimeout(context).TotalMilliseconds.Should().Be(2000);
                     sender.AllowAutoRedirect.Should().BeTrue();
                     sender.UseCookies.Should().BeFalse();
                     ValidateSocketsHttpHandler("api-route-http-client-name", sender);
@@ -287,14 +269,9 @@ namespace Cloudtoid.GatewayCore.UnitTests
                     await Task.Delay(2000);
 
                     changeEvent.WaitOne();
-                    settings = settingsProvider.CurrentValue.Routes.First();
-                    context = new ProxyContext(
-                        Substitute.For<ITraceIdProvider>(),
-                        httpContext,
-                        new Route(settings, string.Empty, ImmutableDictionary<string, string>.Empty));
-
-                    sender = settings.Proxy!.UpstreamRequest.Sender;
-                    sender.GetTimeout(context).TotalMilliseconds.Should().Be(5000);
+                    context = serviceProvider.GetProxyContext();
+                    sender = settingsProvider.CurrentValue.Routes[0].Proxy.UpstreamRequest.Sender;
+                    sender.EvaluateTimeout(context).TotalMilliseconds.Should().Be(5000);
                     sender.AllowAutoRedirect.Should().BeFalse();
                     sender.UseCookies.Should().BeTrue();
                     ValidateSocketsHttpHandler("api-route-http-client-name", sender);
@@ -312,7 +289,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             var context = GetProxyContext(@"Settings/OptionsSenderHttpClient.json");
             var requestSender = context.Route.Settings.Proxy!.UpstreamRequest.Sender;
             requestSender.HttpClientName.Should().Be("api-route-http-client-name");
-            requestSender.GetTimeout(context).TotalMilliseconds.Should().Be(5200);
+            requestSender.EvaluateTimeout(context).TotalMilliseconds.Should().Be(5200);
             requestSender.AllowAutoRedirect.Should().BeFalse();
             requestSender.UseCookies.Should().BeTrue();
             ValidateSocketsHttpHandler("api-route-http-client-name", requestSender);
@@ -489,44 +466,16 @@ namespace Cloudtoid.GatewayCore.UnitTests
                 "The 'x-empty' is either null or empty. It will be ignored.");
         }
 
-        private GatewaySettings GetSettings(string jsonFile)
-        {
-            var config = new ConfigurationBuilder()
-                .AddJsonFile(jsonFile, optional: false)
-                .Build();
-
-            var services = new ServiceCollection()
-                .AddTest()
-                .Configure<GatewayOptions>(config);
-
-            serviceProvider = services
-                .BuildServiceProvider();
-
-            return serviceProvider
-                .GetRequiredService<ISettingsProvider>()
-                .CurrentValue;
-        }
-
-        private ProxyContext GetProxyContext(GatewaySettings settings)
-        {
-            var httpContext = new DefaultHttpContext();
-            var routeSettings = settings.Routes.First();
-
-            return new ProxyContext(
-                Substitute.For<ITraceIdProvider>(),
-                httpContext,
-                new Route(routeSettings, string.Empty, ImmutableDictionary<string, string>.Empty));
-        }
-
         private ProxyContext GetProxyContext(string jsonFile)
         {
-            var settings = GetSettings(jsonFile);
-            return GetProxyContext(settings);
+            var services = new ServiceCollection().AddTest(jsonFile);
+            serviceProvider = services.BuildServiceProvider();
+            return serviceProvider.GetProxyContext();
         }
 
         private GatewaySettings CreateSettings(GatewayOptions options)
         {
-            var services = new ServiceCollection().AddTest().AddTestOptions(options);
+            var services = new ServiceCollection().AddTest(gatewayOptions: options);
             serviceProvider = services.BuildServiceProvider();
             var settingsProvider = serviceProvider.GetRequiredService<ISettingsProvider>();
             return settingsProvider.CurrentValue;
@@ -534,7 +483,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
 
         private GatewaySettings CreateSettingsAndCheckLogs(GatewayOptions options, params string[] messages)
         {
-            var services = new ServiceCollection().AddTest().AddTestOptions(options);
+            var services = new ServiceCollection().AddTest(gatewayOptions: options);
             serviceProvider = services.BuildServiceProvider();
             var settingsProvider = serviceProvider.GetRequiredService<ISettingsProvider>();
 

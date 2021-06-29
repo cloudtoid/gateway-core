@@ -682,7 +682,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             IServiceCollection? services = null)
         {
             services ??= new ServiceCollection();
-            var serviceProvider = services.AddTest().AddTestOptions(options).BuildServiceProvider();
+            var serviceProvider = services.AddTest(gatewayOptions: options).BuildServiceProvider();
             var setter = serviceProvider.GetRequiredService<IRequestHeaderSetter>();
             var context = serviceProvider.GetProxyContext(httpContext);
             var message = new HttpRequestMessage();
