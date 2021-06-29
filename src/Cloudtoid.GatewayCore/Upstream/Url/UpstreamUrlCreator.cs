@@ -81,7 +81,7 @@ namespace Cloudtoid.GatewayCore.Upstream
             if (path.HasValue && path.Value is not null)
             {
                 return path.Value[^1] == '/' && suffix.Length > 0 && suffix[0] == '/'
-                    ? new PathString(path.Value + suffix.Substring(1))
+                    ? new PathString(path.Value + suffix[1..])
                     : new PathString(path.Value + suffix);
             }
 

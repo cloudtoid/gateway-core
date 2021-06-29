@@ -257,7 +257,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 });
         }
 
-        [TestMethod("Should have a Forwarded header")]
+        [TestMethod("Should have a forwarded header")]
         public async Task ForwardedTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "forwarded?message=test");

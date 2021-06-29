@@ -304,10 +304,7 @@ namespace Cloudtoid.GatewayCore.Expression
 
         private readonly struct RouteVariable
         {
-            internal RouteVariable(string name)
-            {
-                Name = name;
-            }
+            internal RouteVariable(string name) => Name = name;
 
             internal string Name { get; }
         }

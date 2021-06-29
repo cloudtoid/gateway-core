@@ -290,7 +290,8 @@ In the example above, GatewayCore ensures that the `Set-Cookie` response header 
 - the value of `SameSite` is changed to `lax`, and
 - the `Domain` attribute is updated to `example.com`
 
-> Set `domain` to an empty text (`"domain": ""`) if the `Domain` attribute should be fully removed from the `Set-Cookie` header. Also `domain` supports expressions.
+> Set `domain` to an empty text (`"domain": ""`) if the `Domain` attribute should be fully removed from the `Set-Cookie` header.
+> The `domain` value can be text or an [expression](#Expressions).
 
 It is also possible to use the wildcard symbol `"*"` to provide a rule that applies to all cookies as shown below:
 
@@ -382,9 +383,9 @@ GatewayCore can update headers that it proxies. In the example below, it changes
 
 > A header value can be text or an [expression](#Expressions).
 
-### Discarding headers
+### Discard headers
 
-The value of inbound headers can be discarded from proxied requests, as well as responses. Use the `discarded` option to ignore the value of these headers:
+The value of inbound headers can be discarded from proxied requests, as well as responses. Use the `discards` option to ignore the value of these headers:
 
 ```json
 {
@@ -401,8 +402,6 @@ The value of inbound headers can be discarded from proxied requests, as well as 
           "headers": {
             "discards": [ "x-header-1", "x-header-2" ]
 ```
-
-## All other header options
 
 ### Discard inbound headers
 
@@ -423,7 +422,7 @@ It is possible to discard the values of all inbound headers. Use `discardInbound
             "discardInboundHeaders": true
 ```
 
-## Empty headers
+### Empty headers
 
 It is typically unexpected to receive headers that do not have a value, but it is perfectly valid to have headers such as `HTTP2-Settings` with an empty value. You can set `discardEmpty` to `true` to discard headers with no value:
 
@@ -442,7 +441,7 @@ It is typically unexpected to receive headers that do not have a value, but it i
             "discardEmpty": true,
 ```
 
-## Headers with underscore
+### Headers with underscore
 
 Some clients and servers do not expect an underscore character (`_`) in header names. Use `discardUnderscore` to remove these headers:
 
