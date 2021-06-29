@@ -24,8 +24,6 @@
 
         public string To { get; }
 
-        public bool AddProxyName => proxyNameExpression is not null;
-
         public UpstreamRequestSettings UpstreamRequest { get; }
 
         public DownstreamResponseSettings DownstreamResponse { get; }

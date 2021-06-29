@@ -36,45 +36,45 @@ namespace Cloudtoid.GatewayCore
 
         public HttpContext HttpContext { get; }
 
-        public HttpRequest Request => HttpContext.Request;
+        public HttpRequest Request
+            => HttpContext.Request;
 
-        public HttpResponse Response => HttpContext.Response;
+        public HttpResponse Response
+            => HttpContext.Response;
 
         public string ProxyName
-            => proxyName is null ? proxyName = ProxySettings.GetProxyName(this) : proxyName;
+            => proxyName ??= ProxySettings.GetProxyName(this);
 
         public string CorrelationIdHeader
-            => correlationIdHeader is null ? correlationIdHeader = traceIdProvider.GetCorrelationIdHeader(this) : correlationIdHeader;
+            => correlationIdHeader ??= traceIdProvider.GetCorrelationIdHeader(this);
 
         public string CorrelationId
-            => correlationId is null ? correlationId = traceIdProvider.GetOrCreateCorrelationId(this) : correlationId;
+            => correlationId ??= traceIdProvider.GetOrCreateCorrelationId(this);
 
         public string CallId
-            => callId is null ? callId = traceIdProvider.CreateCallId(this) : callId;
+            => callId ??= traceIdProvider.CreateCallId(this);
 
         public Version RequestHttpVersion
-        {
-            get
-            {
-                if (requestHttpVersion is null)
-                    requestHttpVersion = HttpVersion.ParseOrDefault(Request.Protocol) ?? HttpVersion.Version11;
+            => requestHttpVersion ??= HttpVersion.ParseOrDefault(Request.Protocol) ?? HttpVersion.Version11;
 
-                return requestHttpVersion;
-            }
-        }
-
-        internal RouteSettings Settings => Route.Settings;
+        internal RouteSettings Settings
+            => Route.Settings;
 
         internal ProxySettings ProxySettings { get; }
 
-        internal UpstreamRequestSettings ProxyUpstreamRequestSettings => ProxySettings.UpstreamRequest;
+        internal UpstreamRequestSettings ProxyUpstreamRequestSettings
+            => ProxySettings.UpstreamRequest;
 
-        internal UpstreamRequestHeadersSettings ProxyUpstreamRequestHeadersSettings => ProxyUpstreamRequestSettings.Headers;
+        internal UpstreamRequestHeadersSettings ProxyUpstreamRequestHeadersSettings
+            => ProxyUpstreamRequestSettings.Headers;
 
-        internal UpstreamRequestSenderSettings ProxyUpstreamRequestSenderSettings => ProxyUpstreamRequestSettings.Sender;
+        internal UpstreamRequestSenderSettings ProxyUpstreamRequestSenderSettings
+            => ProxyUpstreamRequestSettings.Sender;
 
-        internal DownstreamResponseSettings ProxyDownstreamResponseSettings => ProxySettings.DownstreamResponse;
+        internal DownstreamResponseSettings ProxyDownstreamResponseSettings
+            => ProxySettings.DownstreamResponse;
 
-        internal DownstreamResponseHeadersSettings ProxyDownstreamResponseHeaderSettings => ProxyDownstreamResponseSettings.Headers;
+        internal DownstreamResponseHeadersSettings ProxyDownstreamResponseHeaderSettings
+            => ProxyDownstreamResponseSettings.Headers;
     }
 }
