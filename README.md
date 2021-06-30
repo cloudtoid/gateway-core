@@ -75,12 +75,11 @@ GatewayCore uses two headers to relay trace identifiers to servers, as well as c
 Requests originated from clients can include a correlation-id header that is forwarded unchanged to proxied servers. The default correlation-id header is `x-correlation-id`, but it can be renamed as shown here:
 
 ```json
-{
-  "routes": {
-    "/api/": {
-      "proxy": {
-        "to": "http://upstream/v1/",
-        "correlationIdHeader": "x-request-id",
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "correlationIdHeader": "x-request-id",
 ```
 
 > GatewayCore generates a unique correlation identifier for requests that do not have a correlation-id header.
@@ -88,27 +87,25 @@ Requests originated from clients can include a correlation-id header that is for
 The correlation-id header is not included in response messages, but you can add it by explicitly enabling `addCorrelationId`.
 
 ```json
-{
-  "routes": {
-    "/api/": {
-      "proxy": {
-        "to": "http://upstream/v1/",
-        "downstreamResponse": {
-          "headers": {
-            "addCorrelationId": true
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "downstreamResponse": {
+        "headers": {
+          "addCorrelationId": true
 ```
 
 It is also possible to omit the correlation-id header from outbound requests using `skipCorrelationId` as shown below:
 
 ```json
-{
-  "routes": {
-    "/api/": {
-      "proxy": {
-        "to": "http://upstream/v1/",
-        "upstreamRequest": {
-          "headers": {
-            "skipCorrelationId": true,
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "upstreamRequest": {
+        "headers": {
+          "skipCorrelationId": true,
 ```
 
 ### Call-id header
@@ -116,27 +113,25 @@ It is also possible to omit the correlation-id header from outbound requests usi
 A unique call-id is generated and forwarded on every request received by GatewayCore. The header with this unique id is `x-call-id` and can be dropped from outbound upstream requests using `skipCallId`:
 
 ```json
-{
-  "routes": {
-    "/api/": {
-      "proxy": {
-        "to": "http://upstream/v1/",
-        "upstreamRequest": {
-          "headers": {
-            "skipCallId": true
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "upstreamRequest": {
+        "headers": {
+          "skipCallId": true
 ```
 
 The `x-call-id` header can also be included in responses sent to clients if `addCallId` is explicitly enabled:
 
 ```json
-{
-  "routes": {
-    "/api/": {
-      "proxy": {
-        "to": "http://upstream/v1/",
-        "downstreamResponse": {
-          "headers": {
-            "addCallId": true
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "downstreamResponse": {
+        "headers": {
+          "addCallId": true
 ```
 
 > All inbound call-id headers are silently ignored.
@@ -154,12 +149,11 @@ This header is a comma-separated list of proxies along the message chain with th
 The value added by GatewayCore includes the pseudonym of the proxy. This default name is `gwcore` but can be customized with `proxyName`:
 
 ```json
-{
-  "routes": {
-    "/api/": {
-      "proxy": {
-        "to": "http://upstream/v1/",
-        "proxyName": "my-proxy-name",
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "proxyName": "my-proxy-name"
 ```
 
 GatewayCore appends one of the following values:
@@ -177,20 +171,19 @@ GatewayCore appends one of the following values:
 The `Via` header is included by default on both requests to proxied servers, as well as responses to clients. You can change this behavior using `skipVia` as shown below:
 
 ```json
-{
-  "routes": {
-    "/api/": {
-      "proxy": {
-        "to": "http://upstream/v1/",
-        "upstreamRequest": {
-          "headers": {
-            "skipVia": true,
-            }
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "upstreamRequest": {
+        "headers": {
+          "skipVia": true,
           }
-        },
-        "downstreamResponse": {
-          "headers": {
-            "skipVia": true,
+        }
+      },
+      "downstreamResponse": {
+        "headers": {
+          "skipVia": true
 ```
 
 ### Forwarded category of headers
@@ -207,27 +200,25 @@ The information included in these headers typically consists of the IP address o
 GatewayCore uses the `Forwarded` header by default and replaces all inbound `X-Forwarded-*` headers. You can enable `useXForwarded` to reverse this behavior and prefer `X-Forwarded-*` headers instead:
 
 ```json
-{
-  "routes": {
-    "/api/": {
-      "proxy": {
-        "to": "http://upstream/v1/",
-        "upstreamRequest": {
-          "headers": {
-            "useXForwarded": true,
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "upstreamRequest": {
+        "headers": {
+          "useXForwarded": true
 ```
 
 It is also possible to omit these headers on outbound requests by using `skipForwarded`:
 
 ```json
-{
-  "routes": {
-    "/api/": {
-      "proxy": {
-        "to": "http://upstream/v1/",
-        "upstreamRequest": {
-          "headers": {
-            "skipForwarded": true,
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "upstreamRequest": {
+        "headers": {
+          "skipForwarded": true
 ```
 
 ### Server header
@@ -237,14 +228,13 @@ The ['Server'](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server)
 GatewayCore discards inbound `Server` headers and does not include a `Server` header on its outbound responses to clients. This default behavior can be changed to include a `Server` header with `gwcore` as its value:
 
 ```json
-{
-  "routes": {
-    "/api/": {
-      "proxy": {
-        "to": "http://upstream/v1/",
-        "downstreamResponse": {
-          "headers": {
-            "addServer": true,
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "downstreamResponse": {
+        "headers": {
+          "addServer": true
 ```
 
 > [Security through obscurity](https://en.wikipedia.org/wiki/Security_through_obscurity): A `Server` header can reveal information that might make it easier for attackers to exploit known security holes. It is recommended not to include this header.
@@ -255,14 +245,13 @@ GatewayCore discards inbound `Server` headers and does not include a `Server` he
 GatewayCore can forward the IP address of an immediate downstream client. This IP address is sent using the custom `x-gwcore-external-address` header and can be enabled with the `addExternalAddress` option:
 
 ```json
-{
-  "routes": {
-    "/api/": {
-      "proxy": {
-        "to": "http://upstream/v1/",
-        "upstreamRequest": {
-          "headers": {
-            "addExternalAddress": true,
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "upstreamRequest": {
+        "headers": {
+          "addExternalAddress": true
 ```
 
 ## Cookie handling
@@ -286,20 +275,18 @@ requests. In particular, the attribute instructs the client to omit the cookie w
 A reverse proxy such as GatewayCore often modifies the domain, path, and scheme (http/https) of proxied requests and responses. Therefore, it might be necessary to update the `Domain`, `Path`, `SameSite`, `Secure`, and `HttpOnly` attributes as demonstrated below:
 
 ```json
-{
-  "routes": {
-    "/api/": {
-      "proxy": {
-        "to": "http://upstream/v1/",
-        "downstreamResponse": {
-          "headers": {
-            "cookies": {
-              "sessionId": {
-                "secure": true,
-                "httpOnly": false,
-                "sameSite": "lax",
-                "domain": "example.com"
-              },
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "downstreamResponse": {
+        "headers": {
+          "cookies": {
+            "sessionId": {
+              "secure": true,
+              "httpOnly": false,
+              "sameSite": "lax",
+              "domain": "example.com"
 ```
 
 In the example above, GatewayCore ensures that the `Set-Cookie` response header for a cookie named `sessionId` is modified such that:
@@ -315,20 +302,18 @@ In the example above, GatewayCore ensures that the `Set-Cookie` response header 
 It is also possible to use the wildcard symbol `"*"` to provide a rule that applies to all cookies as shown below:
 
 ```json
-{
-  "routes": {
-    "/api/": {
-      "proxy": {
-        "to": "http://upstream/v1/",
-        "downstreamResponse": {
-          "headers": {
-            "cookies": {
-              "*": {
-                "secure": true,
-                "httpOnly": false,
-                "sameSite": "strict",
-                "domain": "example.com"
-              },
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "downstreamResponse": {
+        "headers": {
+          "cookies": {
+            "*": {
+              "secure": true,
+              "httpOnly": false,
+              "sameSite": "strict",
+              "domain": "example.com"
 ```
 
 > A match of a non-wildcard rule supersedes a wildcard match.
@@ -336,14 +321,13 @@ It is also possible to use the wildcard symbol `"*"` to provide a rule that appl
 GatewayCore pools [`HttpMessageHandler`](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpmessagehandler) instances and can reuse them for outbound upstream requests. Thus, local cookie handling is disabled by default as unanticipated [`CookieContainer`](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.socketshttphandler.cookiecontainer) object sharing often results in incorrect behavior. Although strongly discouraged, it is possible to change this behavior using `UseCookie`, as shown below.
 
 ```json
-{
-  "routes": {
-    "/api/": {
-      "proxy": {
-        "to": "http://upstream/v1/",
-        "upstreamRequest": {
-          "sender": {
-            "useCookies": true
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "upstreamRequest": {
+        "sender": {
+          "useCookies": true
 ```
 
 > Avoid enabling `UseCookies` unless you are confident that this is the behavior that your application needs.
@@ -357,22 +341,21 @@ In addition to the controls offered through explicit configuration options, Gate
 GatewayCore can add additional headers to requests sent to proxied servers, as well as responses forwarded to clients. In the example below, GatewayCore adds the `x-new-request-header` header with value `new-value` to proxied requests. A similar header is also added to responses with two values: `value-1` and `value-2`:
 
 ```json
-{
-  "routes": {
-    "/api/": {
-      "proxy": {
-        "to": "http://upstream/v1/",
-        "upstreamRequest": {
-          "headers": {
-            "overrides": {
-              "x-new-request-header": [ "new-value" ]
-            }
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "upstreamRequest": {
+        "headers": {
+          "overrides": {
+            "x-new-request-header": [ "new-value" ]
           }
-        },
-        "downstreamResponse": {
-          "headers": {
-            "overrides": {
-              "x-new-response-header": [ "value-1", "value-2" ]
+        }
+      },
+      "downstreamResponse": {
+        "headers": {
+          "overrides": {
+            "x-new-response-header": [ "value-1", "value-2" ]
 ```
 
 > A header value can be text or an [expression](#Expressions).
@@ -382,22 +365,21 @@ GatewayCore can add additional headers to requests sent to proxied servers, as w
 GatewayCore can update headers that it proxies. In the example below, it changes the value of `x-request-header` header to `updated-value`. The values of a similar response header are also replaced with `value-1` and `value-2`:
 
 ```json
-{
-  "routes": {
-    "/api/": {
-      "proxy": {
-        "to": "http://upstream/v1/",
-        "upstreamRequest": {
-          "headers": {
-            "overrides": {
-              "x-request-header": [ "updated-value" ]
-            }
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "upstreamRequest": {
+        "headers": {
+          "overrides": {
+            "x-request-header": [ "updated-value" ]
           }
-        },
-        "downstreamResponse": {
-          "headers": {
-            "overrides": {
-              "x-response-header": [ "value-1", "value-2" ]
+        }
+      },
+      "downstreamResponse": {
+        "headers": {
+          "overrides": {
+            "x-response-header": [ "value-1", "value-2" ]
 ```
 
 > A header value can be text or an [expression](#Expressions).
@@ -407,19 +389,18 @@ GatewayCore can update headers that it proxies. In the example below, it changes
 The value of inbound headers can be discarded from proxied requests, as well as responses. Use the `discards` option to ignore the value of these headers:
 
 ```json
-{
-  "routes": {
-    "/api/": {
-      "proxy": {
-        "to": "http://upstream/v1/",
-        "upstreamRequest": {
-          "headers": {
-            "discards": [ "x-header-1", "x-header-2" ]
-          }
-        },
-        "downstreamResponse": {
-          "headers": {
-            "discards": [ "x-header-1", "x-header-2" ]
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "upstreamRequest": {
+        "headers": {
+          "discards": [ "x-header-1", "x-header-2" ]
+        }
+      },
+      "downstreamResponse": {
+        "headers": {
+          "discards": [ "x-header-1", "x-header-2" ]
 ```
 
 ### Discard inbound headers
@@ -427,18 +408,18 @@ The value of inbound headers can be discarded from proxied requests, as well as 
 It is possible to discard the values of all inbound headers. Use `discardInboundHeaders` to drop all inbound client request headers, as well as all outbound response headers:
 
 ```json
-  "routes": {
-    "/api/": {
-      "proxy": {
-        "to": "http://upstream/v1/",
-        "upstreamRequest": {
-          "headers": {
-            "discardInboundHeaders": true
-          }
-        },
-        "downstreamResponse": {
-          "headers": {
-            "discardInboundHeaders": true
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "upstreamRequest": {
+        "headers": {
+          "discardInboundHeaders": true
+        }
+      },
+      "downstreamResponse": {
+        "headers": {
+          "discardInboundHeaders": true
 ```
 
 ### Empty headers
@@ -446,18 +427,18 @@ It is possible to discard the values of all inbound headers. Use `discardInbound
 It is typically unexpected to receive headers that do not have a value, but it is perfectly valid to have headers such as `HTTP2-Settings` with an empty value. You can set `discardEmpty` to `true` to discard headers with no value:
 
 ```json
-  "routes": {
-    "/api/": {
-      "proxy": {
-        "to": "http://upstream/v1/",
-        "upstreamRequest": {
-          "headers": {
-            "discardEmpty": true,
-          }
-        },
-        "downstreamResponse": {
-          "headers": {
-            "discardEmpty": true,
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "upstreamRequest": {
+        "headers": {
+          "discardEmpty": true,
+        }
+      },
+      "downstreamResponse": {
+        "headers": {
+          "discardEmpty": true
 ```
 
 ### Headers with underscore
@@ -465,18 +446,18 @@ It is typically unexpected to receive headers that do not have a value, but it i
 Some clients and servers do not expect an underscore character (`_`) in header names. Use `discardUnderscore` to remove these headers:
 
 ```json
-  "routes": {
-    "/api/": {
-      "proxy": {
-        "to": "http://upstream/v1/",
-        "upstreamRequest": {
-          "headers": {
-            "discardUnderscore": true,
-          }
-        },
-        "downstreamResponse": {
-          "headers": {
-            "discardUnderscore": true,
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "upstreamRequest": {
+        "headers": {
+          "discardUnderscore": true,
+        }
+      },
+      "downstreamResponse": {
+        "headers": {
+          "discardUnderscore": true
 ```
 
 ## Expressions
@@ -502,6 +483,21 @@ Some of the configurations support the use of variables. These variables are:
 |`$server_address`|The IP address of the server which accepted the request.|
 |`$server_port`|The IP port number of the server which accepted the request.|
 |`$server_protocol`|The protocol of the inbound downstream request, usually `HTTP/1.0`, `HTTP/1.1`, or `HTTP/2.0`.|
+
+For example, the following configuration adds `x-my-custom-header` HTTP header to the proxied call to the upstream. The value of the header includes the protocol and the port number of the server:
+
+```json
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "upstreamRequest": {
+        "headers": {
+          "overrides": {
+            "x-my-custom-header": [ "$server_protocol : $server_port" ]
+```
+
+The header will like this:`x-my-custom-header: HTTP/1.1 : 5099`
 
 # Advanced extensibility and configuration
 
