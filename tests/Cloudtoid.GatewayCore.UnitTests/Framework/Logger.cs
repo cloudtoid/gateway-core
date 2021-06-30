@@ -27,7 +27,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
 
         private sealed class NoOpDisposable : IDisposable
         {
-            public static readonly NoOpDisposable Instance = new NoOpDisposable();
+            public static readonly NoOpDisposable Instance = new();
 
             private NoOpDisposable()
             {

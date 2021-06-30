@@ -274,8 +274,34 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [HttpGet("discard")]
         public string DiscardTest(string message)
         {
-            HttpContext.Request.Headers.ContainsKey(Constants.OneValue).Should().BeFalse();
-            HttpContext.Request.Headers.ContainsKey(Constants.TwoValues).Should().BeFalse();
+            var headers = HttpContext.Request.Headers;
+            headers.ContainsKey(Constants.OneValue).Should().BeFalse();
+            headers.ContainsKey(Constants.TwoValues).Should().BeFalse();
+            headers.ContainsKey(Constants.ThreeValues).Should().BeTrue();
+            headers.ContainsKey(Constants.Underscore).Should().BeFalse();
+            headers.ContainsKey(Constants.Expression).Should().BeFalse();
+
+            headers = HttpContext.Response.Headers;
+            headers.Add(Constants.OneValue, "one");
+            headers.Add(Constants.TwoValues, new[] { "one", "two" });
+            headers.Add(Constants.ThreeValues, new[] { "one", "two", "three" });
+            headers.Add(Constants.Underscore, "one");
+            headers.Add(Constants.Expression, string.Empty);
+            return message;
+        }
+
+        [HttpGet("discardInbound")]
+        public string DiscardInbondTest(string message)
+        {
+            var headers = HttpContext.Request.Headers;
+            headers.ContainsKey(Constants.OneValue).Should().BeFalse();
+            headers.ContainsKey(Constants.TwoValues).Should().BeFalse();
+            headers.ContainsKey(Constants.ThreeValues).Should().BeFalse();
+
+            headers = HttpContext.Response.Headers;
+            headers.Add(Constants.OneValue, "one");
+            headers.Add(Constants.TwoValues, new[] { "one", "two" });
+            headers.Add(Constants.ThreeValues, new[] { "one", "two", "three" });
             return message;
         }
 

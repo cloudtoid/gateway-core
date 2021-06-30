@@ -10,7 +10,7 @@ namespace Cloudtoid.GatewayCore.Routes
 {
     internal sealed class RouteResolver : IRouteResolver
     {
-        private static readonly MemoryCacheEntryOptions CacheEntryOptions = new MemoryCacheEntryOptions { Size = 1 };
+        private static readonly MemoryCacheEntryOptions CacheEntryOptions = new() { Size = 1 };
         private readonly ISettingsProvider settings;
         private readonly IPatternEngine patternEngine;
         private readonly ILogger<RouteResolver> logger;

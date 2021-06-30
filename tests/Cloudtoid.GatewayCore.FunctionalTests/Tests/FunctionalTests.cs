@@ -13,7 +13,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
     [TestClass]
     public sealed class FunctionalTests
     {
-        private readonly TestExecutor executor = new TestExecutor();
+        private readonly TestExecutor executor = new();
 
         [TestMethod("Basic plumbing")]
         public async Task BasicPlumbingTestAsync()
@@ -395,12 +395,15 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 });
         }
 
-        [TestMethod("Should not have discarded headers")]
-        public async Task RemoveOverrideTestAsync()
+        [TestMethod("Should not have discarded, empty, or headers with underscore")]
+        public async Task DiscardTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "discard?message=test");
             request.Headers.Add(Constants.OneValue, "one");
             request.Headers.Add(Constants.TwoValues, new[] { "one", "two" });
+            request.Headers.Add(Constants.ThreeValues, new[] { "one", "two", "three" });
+            request.Headers.Add(Constants.Underscore, "one");
+            request.Headers.Add(Constants.Expression, string.Empty);
 
             await executor.ExecuteAsync(
                 "DiscardTestOptions.json",
@@ -412,6 +415,31 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                     var headers = response.Headers;
                     headers.Contains(Constants.OneValue).Should().BeFalse();
                     headers.Contains(Constants.TwoValues).Should().BeFalse();
+                    headers.Contains(Constants.ThreeValues).Should().BeTrue();
+                    headers.Contains(Constants.Underscore).Should().BeFalse();
+                    headers.Contains(Constants.Expression).Should().BeFalse();
+                });
+        }
+
+        [TestMethod("Should not keep inbound headers")]
+        public async Task DiscardInboundTestAsync()
+        {
+            var request = new HttpRequestMessage(Method.Get, "discardInbound?message=test");
+            request.Headers.Add(Constants.OneValue, "one");
+            request.Headers.Add(Constants.TwoValues, new[] { "one", "two" });
+            request.Headers.Add(Constants.ThreeValues, new[] { "one", "two", "three" });
+
+            await executor.ExecuteAsync(
+                "DiscardInboundTestOptions.json",
+                request,
+                async response =>
+                {
+                    await EnsureResponseSucceededAsync(response);
+
+                    var headers = response.Headers;
+                    headers.Contains(Constants.OneValue).Should().BeFalse();
+                    headers.Contains(Constants.TwoValues).Should().BeFalse();
+                    headers.Contains(Constants.ThreeValues).Should().BeFalse();
                 });
         }
 

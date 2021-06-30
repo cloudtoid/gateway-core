@@ -5,16 +5,12 @@
         "to": "https://localhost:$upstream-port/upstream/",
         "upstreamRequest": {
           "headers": {
-            "discardEmpty": true,
-            "discardUnderscore": true,
-            "discards": [ "x-one-value", "x-two-values" ]
+            "discardInboundHeaders": true
           }
         },
         "downstreamResponse": {
           "headers": {
-            "discardEmpty": true,
-            "discardUnderscore": true,
-            "discards": [ "x-one-value", "x-two-values" ]
+            "discardInboundHeaders": true
           }
         }
       }

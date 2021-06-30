@@ -37,6 +37,6 @@ namespace Cloudtoid
     internal static class MemoryExtensions
     {
         public static SpanSplitEnumerator<char> Split(this ReadOnlySpan<char> span, char separator)
-            => new SpanSplitEnumerator<char>(span, separator);
+            => new(span, separator);
     }
 }

@@ -19,7 +19,7 @@ namespace Cloudtoid.GatewayCore.Upstream
         private const string ForwardedHost = "host=";
         private const string CommaAndSpace = ", ";
         private const char Semicolon = ';';
-        private static readonly HashSet<string> ValidWellKnownForwardedIdentifers = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly HashSet<string> ValidWellKnownForwardedIdentifers = new(StringComparer.OrdinalIgnoreCase)
         {
             "_hidden",
             "_secret",

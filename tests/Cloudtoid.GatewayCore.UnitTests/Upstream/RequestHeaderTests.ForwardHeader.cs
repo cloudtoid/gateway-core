@@ -16,10 +16,10 @@ namespace Cloudtoid.GatewayCore.UnitTests
         private const string XForwardedForHeader = "x-forwarded-for";
         private const string XForwardedHostHeader = "x-forwarded-host";
         private const string XForwardedProtoHeader = "x-forwarded-proto";
-        private static readonly IPAddress IpV4Sample = new IPAddress(new byte[] { 0, 1, 2, 3 });
-        private static readonly IPAddress IpV4Sample2 = new IPAddress(new byte[] { 4, 5, 6, 7 });
-        private static readonly IPAddress IpV6Sample = new IPAddress(new byte[] { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80, 0x90, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 });
-        private static readonly IPAddress IpV6Sample2 = new IPAddress(new byte[] { 0xa0, 0xb0, 0xc0, 0xd0, 0xe0, 0xf0, 0x1a, 0x2a, 0x3a, 0x4a, 0x5a, 0x6a, 0x7a, 0x8a, 0x9a, 0x0a });
+        private static readonly IPAddress IpV4Sample = new(new byte[] { 0, 1, 2, 3 });
+        private static readonly IPAddress IpV4Sample2 = new(new byte[] { 4, 5, 6, 7 });
+        private static readonly IPAddress IpV6Sample = new(new byte[] { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80, 0x90, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 });
+        private static readonly IPAddress IpV6Sample2 = new(new byte[] { 0xa0, 0xb0, 0xc0, 0xd0, 0xe0, 0xf0, 0x1a, 0x2a, 0x3a, 0x4a, 0x5a, 0x6a, 0x7a, 0x8a, 0x9a, 0x0a });
 
         [TestMethod]
         public void GetCurrentForwardedHeaderValues_MixedTests()

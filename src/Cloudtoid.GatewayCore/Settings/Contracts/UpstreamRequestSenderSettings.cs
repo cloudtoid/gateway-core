@@ -36,10 +36,11 @@ namespace Cloudtoid.GatewayCore.Settings
         }
 
         /// <summary>
-        /// Gets or sets the name of the <see cref="HttpClient"/> to be used for upstream requests.
-        /// Every time a route is defined in settings or an existing route is modified, we need to recreate the named
-        /// <see cref="HttpClient"/>. The name here is used by the <see cref="IHttpClientFactory"/> to get instances of
-        /// <see cref="HttpClient"/> configured with the request sender settings specified in <see cref="UpstreamRequestSenderSettings"/>.
+        /// Gets the name of the <see cref="HttpClient"/> used for upstream requests.
+        /// Every time a route is defined in settings or an existing route is modified, we need to recreate
+        /// the named <see cref="HttpClient"/>. The name here is used by the <see cref="IHttpClientFactory"/>
+        /// to get instances of <see cref="HttpClient"/> configured with the request sender settings specified
+        /// in <see cref="UpstreamRequestSenderSettings"/>.
         /// </summary>
         public string HttpClientName { get; }
 
