@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -35,6 +36,20 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                     contentHeaders.ContentType.MediaType.Should().Be("text/plain");
                     contentHeaders.ContentType.CharSet.Should().Be("utf-8");
                     contentHeaders.ContentLength.Should().Be(4);
+                });
+        }
+
+        [TestMethod("Should not return success when route doesn't exist.")]
+        public async Task NoRouteTestAsync()
+        {
+            var request = new HttpRequestMessage(Method.Get, "noRoute?message=test");
+            await executor.ExecuteAsync(
+                request,
+                response =>
+                {
+                    response.IsSuccessStatusCode.Should().BeFalse();
+                    response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+                    return Task.CompletedTask;
                 });
         }
 
@@ -355,7 +370,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 });
         }
 
-        [TestMethod("Should have added override headers")]
+        [TestMethod("Should have newly added headers")]
         public async Task AddOverrideTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "addOverride?message=test");
@@ -373,7 +388,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 });
         }
 
-        [TestMethod("Should have modified override headers")]
+        [TestMethod("Should have modified headers")]
         public async Task UpdateOverrideTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "updateOverride?message=test");
@@ -395,7 +410,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 });
         }
 
-        [TestMethod("Should not have discarded, empty, or headers with underscore")]
+        [TestMethod("Should not discard, empty, or headers with underscore")]
         public async Task DiscardTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "discard?message=test");
