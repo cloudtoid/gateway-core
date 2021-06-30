@@ -69,33 +69,33 @@ namespace Cloudtoid.GatewayCore.Expression
             => context.Request.ContentType;
 
         /// <summary>
-        /// The value correlation identifier header if not present or a newly generated one.
+        /// The value of the correlation identifier header if present or a newly generated one.
+        /// The default header name of correlation identifier is "x-correlation-id" but this can be changed
+        /// using the CorrelationIdHeader option.
         /// </summary>
         private static string? GetCorrelationId(ProxyContext context)
             => context.CorrelationId;
 
         /// <summary>
-        /// The value correlation identifier header if not present or a newly generated one.
-        /// The default header name of correlation identifier is "x-correlation-id" but this can be changed
-        /// using the CorrelationIdHeader option.
+        /// The value the call identifier header.
         /// </summary>
         private static string? GetCallId(ProxyContext context)
             => context.CallId;
 
         /// <summary>
-        /// The value of the inbound request Host header.
+        /// The value of the "Host" request header.
         /// </summary>
         private static string? GetHost(ProxyContext context)
             => context.Request.Host.HasValue ? context.Request.Host.Value : null;
 
         /// <summary>
-        /// The HTTP method of the inbound downstream request
+        /// The HTTP method of the inbound downstream request.
         /// </summary>
         private static string? GetRequestMethod(ProxyContext context)
             => context.Request.Method;
 
         /// <summary>
-        /// The scheme (HTTP or HTTPS) used by the inbound downstream request
+        /// The scheme (HTTP or HTTPS) used by the inbound downstream request.
         /// </summary>
         private static string? GetRequestScheme(ProxyContext context)
             => context.Request.Scheme;
@@ -130,25 +130,25 @@ namespace Cloudtoid.GatewayCore.Expression
             => context.Request.GetEncodedUrl();
 
         /// <summary>
-        /// The IP address of the client
+        /// The IP address of the remote client/caller.
         /// </summary>
         private static string? GetRemoteAddress(ProxyContext context)
             => context.HttpContext.Connection.RemoteIpAddress?.ToString();
 
         /// <summary>
-        /// The IP port number of the remote client.
+        /// The IP port number of the remote client/caller.
         /// </summary>
         private static string? GetRemotePort(ProxyContext context)
             => context.HttpContext.Connection.RemotePort.ToStringInvariant();
 
         /// <summary>
-        /// The IP address of the server which accepted the request
+        /// The IP address of the server which accepted the request.
         /// </summary>
         private static string? GetServerAddress(ProxyContext context)
             => context.HttpContext.Connection.LocalIpAddress?.ToString();
 
         /// <summary>
-        /// The IP port number of the server which accepted the request
+        /// The IP port number of the server which accepted the request.
         /// </summary>
         private static string? GetServerPort(ProxyContext context)
             => context.HttpContext.Connection.LocalPort.ToStringInvariant();

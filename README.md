@@ -8,11 +8,29 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 
 ## V1 - TODOs
 
-- Add functional tests
+- Add more functional tests:
+        // Tests
+        // - Need functional tests for the following settings:
+        // --- "upstreamRequest" -> "httpVersion"
+        // --- "upstreamRequest" -> "sender". Not sure how to test all of these. Maybe check the HTTP Client to see if the values are set correctly?
+        // - Fix HTTPS so it also works on Mac and Linux!
+        // - All HTTP methods (POST, DELETE, etc)
+        // - HttpClientName
+        // - Routing
+        // - Failed HTTP requests with and without content/body
+        // - Expression evaluations
+        // - Timeout (both at httpClient to upstream and inside of proxy)
+        // - Auto redirects
+        // - ProxyException and exception handling
+        // - When no route is found, do not return 200
+        // - Extra (unknown) request and response headers are just forwarded
+        // - Authentication
+        // - Run nginx side by side and ensure all headers and other properties match.
 - Write documentation
-  - Add a table of all config values with a description and links/anchors from the rest of the doc
+  - Add a table of all config values with a description and links/anchors from the rest of the doc.
+  - Mention the options-schema.json and how it can be used.
   - URL Pattern Matching
-- Add tests for trailing TrailingHeaderSetter
+- Add unit tests for trailing TrailingHeaderSetter
 - Enable github build actions
 - Publish NuGet
 - Add multiple Sample Projects
@@ -27,6 +45,7 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 - Increase code coverage
 - Add support for modification of the Path attribute in the Set-Cookie header
 - Ensure that all 3 projects compile on macos and VS for Mac
+- Publish options-schema.json on a website so it can be referenced in JSON GatewayOptions files 
 
 ## Future version
 
@@ -462,6 +481,28 @@ Some clients and servers do not expect an underscore character (`_`) in header n
 
 ## Expressions
 
+Some of the configurations support the use of variables. These variables are:
+
+| Variable | Description |
+|:--- |:--- |
+|`$content_length`|The value of the `Content-Length` request header.|
+|`$content_type`|The value of the `Content-Type` request header.|
+|`$correlation_id`|The value of the correlation identifier header if present or a newly generated one. The default header is `x-correlation-id` but the name of this header can be altered through the settings.|
+|`$call_id`|The value the `x-call-id` header that is added to all outbound requests.|
+|`$host`|The value of the `Host` request header.|
+|`$request_method`|The HTTP method of the inbound downstream request.|
+|`$request_scheme`|The scheme (HTTP or HTTPS) used by the inbound downstream request.|
+|`$request_path_base`|The unescaped path base value.|
+|`$request_path`|The unescaped path value.|
+|`$request_query_string`|The escaped query string with the leading '?' character.|
+|`$request_encoded_url`|The original escaped request URL including the query string portion (`scheme + host + path-base + path + query-string`)|
+|`$remote_address`|The IP address of the remote client/caller|
+|`$remote_port`|The IP port number of the remote client/caller|
+|`$server_name`|The name of the server which accepted the request.|
+|`$server_address`|The IP address of the server which accepted the request.|
+|`$server_port`|The IP port number of the server which accepted the request.|
+|`$server_protocol`|The protocol of the inbound downstream request, usually `HTTP/1.0`, `HTTP/1.1`, or `HTTP/2.0`.|
+
 # Advanced extensibility and configuration
 
 When using the GatewayCore as a library within your .net core application, you have full control over most portions of the proxy pipeline and other gateway components.
@@ -473,6 +514,8 @@ When using the GatewayCore as a library within your .net core application, you h
 
 ## Gateway settings and options
 
+TODO
+
 - how to pass using DI
 - A table of what they are
 
@@ -481,6 +524,7 @@ When using the GatewayCore as a library within your .net core application, you h
 | `system` | | | This is the section that contains all system wide configurations. |
 | `system:routeCacheMaxCount` | | `100,000` cache entries| This is the maximum number of mappings between "inbound downstream request path" and "outbound upstream request URL" that can be cached in memory. |
 | `routes` | | | This is the section in which proxy routes are defined. |
-| `routes:<path>` | | | This is the url path pattern that if matched, the request is proxied to the address defined by its `to` property. |
-| `routes:<path>:to` | :heavy_check_mark: | | This is an expression that defines the URL of the upstream server to which the downstream request is forwarded to. This is a required property. |
-| `routes:<path>:proxyName` | :heavy_check_mark: | `gwcore` | This is an expression that defines the name of this proxy. This value is used in the Via HTTP header send on the outbound upstream request, and the outbound downstream response. If a value is specified, an `x-gwcore-proxy-name` header with this value is also added to the outbound upstream request. |
+| `routes:<path>` | | | This is the url pattern that if matched, the request is proxied to the address defined by its `to` property. |
+| `routes:<path>:proxy` | | | This is the proxy configuration section for this url pattern match. |
+| `routes:<path>:proxy:to` | :heavy_check_mark: | | This is an expression that defines the URL of the upstream server to which the downstream request is forwarded to. This is a required property. |
+| `routes:<path>:proxy:proxyName` | :heavy_check_mark: | `gwcore` | This is an expression that defines the name of this proxy. This value is used in the Via HTTP header send on the outbound upstream request, and the outbound downstream response. If a value is specified, an `x-gwcore-proxy-name` header with this value is also added to the outbound upstream request. |

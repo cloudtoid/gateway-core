@@ -449,21 +449,5 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             var result = await response.Content.ReadAsStringAsync();
             result.Should().Be("test");
         }
-
-        // Tests
-        // - Fix HTTPS so it also works on Mac and Linux!
-        // - All HTTP methods (POST, DELETE, etc)
-        // - HttpClientName
-        // - Routing
-        // - Failed HTTP requests with and without content/body
-        // - Expression evaluations
-        // - Timeout (both at httpClient to upstream and inside of proxy)
-        // - Auto redirects
-        // - ProxyException and exception handling
-        // - When no route is found, do not return 200
-        // - Extra (unknown) request and response headers are just forwarded
-        // - Authentication
-        // - Test all known headers and their behavior
-        // - Run nginx side by side and ensure all headers and other properties match.
     }
 }
