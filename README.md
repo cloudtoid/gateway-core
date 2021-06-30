@@ -491,13 +491,13 @@ Some of the configurations support the use of variables. These variables are:
 |`$call_id`|The value the `x-call-id` header that is added to all outbound requests.|
 |`$host`|The value of the `Host` request header.|
 |`$request_method`|The HTTP method of the inbound downstream request.|
-|`$request_scheme`|The scheme (HTTP or HTTPS) used by the inbound downstream request.|
+|`$request_scheme`|The scheme (`HTTP` or `HTTPS`) used by the inbound downstream request.|
 |`$request_path_base`|The unescaped path base value.|
 |`$request_path`|The unescaped path value.|
 |`$request_query_string`|The escaped query string with the leading '?' character.|
-|`$request_encoded_url`|The original escaped request URL including the query string portion (`scheme + host + path-base + path + query-string`)|
-|`$remote_address`|The IP address of the remote client/caller|
-|`$remote_port`|The IP port number of the remote client/caller|
+|`$request_encoded_url`|The original escaped request URL including the query string portion (`scheme + host + path-base + path + query-string`).|
+|`$remote_address`|The IP address of the remote client/caller.|
+|`$remote_port`|The IP port number of the remote client/caller.|
 |`$server_name`|The name of the server which accepted the request.|
 |`$server_address`|The IP address of the server which accepted the request.|
 |`$server_port`|The IP port number of the server which accepted the request.|
@@ -509,7 +509,7 @@ When using the GatewayCore as a library within your .net core application, you h
 
 ## Upstream request http client
 
-
+TODO
 
 
 ## Gateway settings and options

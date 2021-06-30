@@ -154,13 +154,13 @@ namespace Cloudtoid.GatewayCore.Expression
             => context.HttpContext.Connection.LocalPort.ToStringInvariant();
 
         /// <summary>
-        /// The name of the server which accepted the request
+        /// The name of the server which accepted the request.
         /// </summary>
         private static string? GetServerName(ProxyContext context)
             => Environment.MachineName;
 
         /// <summary>
-        /// The protocol of the inbound downstream request, usually “HTTP/1.0”, “HTTP/1.1”, or “HTTP/2.0”
+        /// The protocol of the inbound downstream request, usually “HTTP/1.0”, “HTTP/1.1”, or “HTTP/2.0”.
         /// </summary>
         private static string? GetServerProtocol(ProxyContext context)
             => context.Request.Protocol;
