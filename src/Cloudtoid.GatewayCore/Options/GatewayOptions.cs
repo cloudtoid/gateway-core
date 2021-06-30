@@ -59,20 +59,32 @@ namespace Cloudtoid.GatewayCore
                 /// </summary>
                 public string? CorrelationIdHeader { get; set; }
 
+                /// <summary>
+                /// Gets or sets the options that control the upstream requests.
+                /// </summary>
                 public UpstreamRequestOptions UpstreamRequest { get; set; } = new UpstreamRequestOptions();
 
+                /// <summary>
+                /// Gets or sets the options that control the downstream responses sent to the clients.
+                /// </summary>
                 public DownstreamResponseOptions DownstreamResponse { get; set; } = new DownstreamResponseOptions();
 
                 public sealed class UpstreamRequestOptions
                 {
                     /// <summary>
-                    /// Gets or sets the HTTP protocol of outbound upstream requests and can be an expression.
+                    /// Gets or sets an expression that defines the HTTP protocol of outbound upstream requests.
                     /// The default value if HTTP/2.0.
                     /// </summary>
                     public string? HttpVersion { get; set; }
 
+                    /// <summary>
+                    /// Gets or sets the options that control the upstream request headers.
+                    /// </summary>
                     public HeadersOptions Headers { get; set; } = new HeadersOptions();
 
+                    /// <summary>
+                    /// Gets or sets the options that control connection to the upstream server.
+                    /// </summary>
                     public SenderOptions Sender { get; set; } = new SenderOptions();
 
                     public sealed class HeadersOptions
@@ -101,34 +113,34 @@ namespace Cloudtoid.GatewayCore
                         public HashSet<string> Discards { get; set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
                         /// <summary>
-                        /// Gets or sets if an <c>x-gwcore-external-address</c> header with the IP address of the immediate caller should be added to the outbound upstream call.
+                        /// Gets or sets if a <c>x-gwcore-external-address</c> header with the IP address of the immediate caller should be added to the outbound upstream call.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool AddExternalAddress { get; set; }
 
                         /// <summary>
-                        /// Gets or sets if a correlation identifier header, if not present on the inbound request, should be added
-                        /// to the outbound request. The default value is <c>false</c>, meaning that a correlation identifier header is included.
+                        /// Gets or sets if a `x-correlation-id` header should be skipped from the outbound upstream request if not already present.
+                        /// The default value is <c>false</c>, meaning that a correlation identifier header is included.
                         /// The name of this header is <c>x-correlation-id</c>, but it can be altered using <see cref="CorrelationIdHeader"/>.
                         /// </summary>
                         public bool SkipCorrelationId { get; set; }
 
                         /// <summary>
-                        /// Gets or sets if an <c>x-call-id</c> header should be added. This is a <c>guid</c> that is generated on each call.
+                        /// Gets or sets if an <c>x-call-id</c> header should be skipped. This is a <c>guid</c> that is generated on each call.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool SkipCallId { get; set; }
 
                         /// <summary>
-                        /// Gets or sets if a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via"><c>via</c></a> header should be appended to the outbound request.
+                        /// Gets or sets if a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via"><c>via</c></a> header should be skipped from the outbound request.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool SkipVia { get; set; }
 
                         /// <summary>
-                        /// Gets or sets if a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded"><c>forwarded</c></a> header
+                        /// Gets or sets if <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded"><c>forwarded</c></a>
                         /// or <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For"><c>x-forwarded-*</c></a> headers
-                        /// should be added to outbound requests. The default value is <c>false</c> and the final header is decided based on the value of
+                        /// should be skipped from the outbound requests. The default value is <c>false</c> and the final header is decided based on the value of
                         /// <see cref="UseXForwarded"/>.
                         /// The information captured by these headers consist of:
                         /// <list type="bullet">
@@ -149,7 +161,8 @@ namespace Cloudtoid.GatewayCore
 
                         /// <summary>
                         /// Gets or sets headers to be appended to the outbound upstream requests, or
-                        /// if a header already exists, its value is replaced with the new value specified here.
+                        /// if the header already exists, its value is replaced with the new value specified here.
+                        /// The value can be either text or an expression.
                         /// </summary>
                         public Dictionary<string, string[]> Overrides { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
                     }
@@ -169,7 +182,7 @@ namespace Cloudtoid.GatewayCore
 
                         /// <summary>
                         /// Gets or sets the connect timeout in milliseconds.
-                        /// By default, no timeout is set.
+                        /// No timeout is set by default.
                         /// </summary>
                         public int? ConnectTimeoutInMilliseconds { get; set; }
 
@@ -210,7 +223,7 @@ namespace Cloudtoid.GatewayCore
                         public int? MaxConnectionsPerServer { get; set; }
 
                         /// <summary>
-                        /// Gets or sets the maximum amount of data that can be drained from responses in bytes.
+                        /// Gets or sets the maximum size of data that can be drained from responses in bytes.
                         /// The default value is <c>1024 * 1024</c>.
                         /// </summary>
                         public int? MaxResponseDrainSizeInBytes { get; set; }
@@ -239,6 +252,9 @@ namespace Cloudtoid.GatewayCore
 
                 public sealed class DownstreamResponseOptions
                 {
+                    /// <summary>
+                    /// Gets or sets the options that control the downstream response headers sent to the clients.
+                    /// </summary>
                     public HeadersOptions Headers { get; set; } = new HeadersOptions();
 
                     public sealed class HeadersOptions
@@ -281,27 +297,26 @@ namespace Cloudtoid.GatewayCore
                         public bool AddCorrelationId { get; set; }
 
                         /// <summary>
-                        /// Gets or sets if an <c>x-call-id</c> header should be added. This is a <c>guid</c> that is generated on each call.
+                        /// Gets or sets if a <c>x-call-id</c> header should be added. This is a <c>guid</c> that is generated on each call.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool AddCallId { get; set; }
 
                         /// <summary>
-                        /// Gets or sets if a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via"><c>via</c></a> header should be appended to the outbound response.
+                        /// Gets or sets if the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via"><c>via</c></a> header should be skipped from the outbound response.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool SkipVia { get; set; }
 
                         /// <summary>
-                        /// Gets or sets the list of cookie configurations that is applied to the
-                        /// <c>set-cookie</c> headers in the inbound upstream response. If the cookie name is
-                        /// symbol <c>'*'</c>, then the settings are applied to all <c>set-cookie</c> headers.
+                        /// Gets or sets the options that are applied to the <c>set-cookie</c> headers in the inbound upstream response.
+                        /// If the cookie name is symbol <c>'*'</c>, then the settings are applied to all <c>set-cookie</c> headers.
                         /// </summary>
                         public Dictionary<string, CookieOptions> Cookies { get; set; } = new Dictionary<string, CookieOptions>(StringComparer.OrdinalIgnoreCase);
 
                         /// <summary>
                         /// Gets or sets headers to be appended to the outbound downstream response, or
-                        /// if a header already exists, its value is replaced with the new value specified here.
+                        /// if the header already exists, its value is replaced with the new value specified here.
                         /// </summary>
                         public Dictionary<string, string[]> Overrides { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
 

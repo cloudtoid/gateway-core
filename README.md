@@ -481,6 +481,6 @@ When using the GatewayCore as a library within your .net core application, you h
 | `system` | | | This is the section that contains all system wide configurations. |
 | `system:routeCacheMaxCount` | | `100,000` cache entries| This is the maximum number of mappings between "inbound downstream request path" and "outbound upstream request URL" that can be cached in memory. |
 | `routes` | | | This is the section in which proxy routes are defined. |
-| `routes:<path>` | | | This is the url path pattern that if matched, the request is proxied to the address defined by it's `to` property. |
+| `routes:<path>` | | | This is the url path pattern that if matched, the request is proxied to the address defined by its `to` property. |
 | `routes:<path>:to` | :heavy_check_mark: | | This is an expression that defines the URL of the upstream server to which the downstream request is forwarded to. This is a required property. |
-| `routes:<path>:proxyName` | :heavy_check_mark: | `gwcore` | This is an expression that defines the name of this proxy. This value is used in the Via HTTP header send on the outbound upstream request, and also the outbound downstream response. If a value is specified, an `x-gwcore-proxy-name` header with this value is added to the outbound upstream request. |
+| `routes:<path>:proxyName` | :heavy_check_mark: | `gwcore` | This is an expression that defines the name of this proxy. This value is used in the Via HTTP header send on the outbound upstream request, and the outbound downstream response. If a value is specified, an `x-gwcore-proxy-name` header with this value is also added to the outbound upstream request. |

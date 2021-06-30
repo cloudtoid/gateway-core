@@ -7,7 +7,7 @@ namespace Cloudtoid.GatewayCore.Settings
     {
         internal UpstreamRequestSenderSettings(
             string httpClientName,
-            string? timeoutExpression,
+            string? timeoutInMillisecondsExpression,
             TimeSpan connectTimeout,
             TimeSpan expect100ContinueTimeout,
             TimeSpan pooledConnectionIdleTimeout,
@@ -21,7 +21,7 @@ namespace Cloudtoid.GatewayCore.Settings
             bool useCookies)
         {
             HttpClientName = httpClientName;
-            TimeoutExpression = timeoutExpression;
+            TimeoutInMillisecondsExpression = timeoutInMillisecondsExpression;
             ConnectTimeout = connectTimeout;
             Expect100ContinueTimeout = expect100ContinueTimeout;
             PooledConnectionIdleTimeout = pooledConnectionIdleTimeout;
@@ -43,7 +43,7 @@ namespace Cloudtoid.GatewayCore.Settings
         /// </summary>
         public string HttpClientName { get; }
 
-        public string? TimeoutExpression { get; }
+        public string? TimeoutInMillisecondsExpression { get; }
 
         public TimeSpan ConnectTimeout { get; }
 
@@ -69,7 +69,7 @@ namespace Cloudtoid.GatewayCore.Settings
 
         public TimeSpan EvaluateTimeout(ProxyContext context)
         {
-            var result = context.Evaluate(TimeoutExpression);
+            var result = context.Evaluate(TimeoutInMillisecondsExpression);
 
             return long.TryParse(result, out var timeout) && timeout > 0
                 ? TimeSpan.FromMilliseconds(timeout)
