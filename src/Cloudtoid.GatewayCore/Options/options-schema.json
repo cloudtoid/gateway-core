@@ -2,11 +2,12 @@
   "$id": "root",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
+  "additionalProperties": false,
   "properties": {
     "system": {
       "type": "object",
       "description": "This section that contains all system wide configurations.",
-      "additionalProperties": true,
+      "additionalProperties": false,
       "properties": {
         "routeCacheMaxCount": {
           "type": "integer",
@@ -89,7 +90,7 @@
                       },
                       "skipCorrelationId": {
                         "type": "boolean",
-                        "description": "Specifies if the `x-correlation-id` header should be skipped to the outbound upstream request if not already present. The actual name of this header can be changed using correlationIdHeader.",
+                        "description": "Specifies if the `x-correlation-id` header should be skipped from the outbound upstream request if not already present. The actual name of this header can be changed using correlationIdHeader.",
                         "default": false
                       },
                       "skipCallId": {
@@ -270,7 +271,7 @@
                             "sameSite": {
                               "type": "string",
                               "description": "It asserts that a cookie must not be sent with cross-origin requests, providing some protection against cross-site request forgery attacks. The valid values are `strict`, `lax`, and `none`.",
-                              "enum": ["none", "lax", "strict"],
+                              "enum": [ "none", "lax", "strict" ],
                               "default": "lax"
                             },
                             "domain": {
@@ -306,6 +307,5 @@
         }
       }
     }
-  },
-  "additionalProperties": false
+  }
 }
