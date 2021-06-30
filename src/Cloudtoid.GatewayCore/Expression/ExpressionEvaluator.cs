@@ -160,7 +160,7 @@ namespace Cloudtoid.GatewayCore.Expression
             => Environment.MachineName;
 
         /// <summary>
-        /// The protocol of the inbound downstream request, usually “HTTP/1.0”, “HTTP/1.1”, or “HTTP/2.0”.
+        /// The protocol of the inbound downstream request, usually "HTTP/1.0", "HTTP/1.1", or "HTTP/2.0".
         /// </summary>
         private static string? GetServerProtocol(ProxyContext context)
             => context.Request.Protocol;

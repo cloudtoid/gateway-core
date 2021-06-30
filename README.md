@@ -352,7 +352,7 @@ GatewayCore pools [`HttpMessageHandler`](https://docs.microsoft.com/en-us/dotnet
 
 In addition to the controls offered through explicit configuration options, GatewayCore makes it easy to add, change, or remove headers on both outbound requests to downstream systems, as well as responses to clients.
 
-### Adding headers
+### Add headers
 
 GatewayCore can add additional headers to requests sent to proxied servers, as well as responses forwarded to clients. In the example below, GatewayCore adds the `x-new-request-header` header with value `new-value` to proxied requests. A similar header is also added to responses with two values: `value-1` and `value-2`:
 
