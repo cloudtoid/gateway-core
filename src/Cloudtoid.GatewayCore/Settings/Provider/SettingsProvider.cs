@@ -55,7 +55,7 @@ namespace Cloudtoid.GatewayCore.Settings
             httpFactoryOptionsMonitorCache.TryAdd(settings.HttpClientName, options);
         }
 
-        private void ConfigureHttpMessageHandlerBuilder(HttpMessageHandlerBuilder builder, UpstreamRequestSenderSettings settings)
+        private static void ConfigureHttpMessageHandlerBuilder(HttpMessageHandlerBuilder builder, UpstreamRequestSenderSettings settings)
         {
             CheckEqual(builder.Name, settings.HttpClientName, nameof(builder.Name));
 

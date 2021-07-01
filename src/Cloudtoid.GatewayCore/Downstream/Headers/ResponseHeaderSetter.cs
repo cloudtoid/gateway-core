@@ -127,7 +127,7 @@ namespace Cloudtoid.GatewayCore.Downstream
                 values[i] = GetSetCookiesValue(context, values[i]);
         }
 
-        protected string GetSetCookiesValue(ProxyContext context, string value)
+        protected static string GetSetCookiesValue(ProxyContext context, string value)
         {
             if (!SetCookieHeaderValue.TryParse(value, out var cookie) || !cookie.Name.HasValue)
                 return value;

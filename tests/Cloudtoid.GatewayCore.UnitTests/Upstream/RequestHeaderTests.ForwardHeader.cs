@@ -617,7 +617,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
                 });
         }
 
-        private void GetCurrentForwardedHeaderValuesTest(string forwardedHeader, params ForwardedHeaderValue[] expectedValues)
+        private static void GetCurrentForwardedHeaderValuesTest(string forwardedHeader, params ForwardedHeaderValue[] expectedValues)
         {
             var headers = new HeaderDictionary
             {

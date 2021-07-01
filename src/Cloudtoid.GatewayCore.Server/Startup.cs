@@ -12,14 +12,14 @@ namespace Cloudtoid.GatewayCore.Server
 {
     internal sealed class Startup
     {
-        public void ConfigureServices(IServiceCollection services)
+        public static void ConfigureServices(IServiceCollection services)
         {
             CheckValue(services, nameof(services));
 
             services.AddGatewayCore();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             CheckValue(app, nameof(app));
             CheckValue(env, nameof(env));

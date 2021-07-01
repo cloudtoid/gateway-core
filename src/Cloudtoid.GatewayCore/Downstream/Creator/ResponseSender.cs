@@ -58,7 +58,7 @@ namespace Cloudtoid.GatewayCore.Downstream
             context.Response.StatusCode = (int)upstreamResponse.StatusCode;
         }
 
-        private void SetReasonPhrase(ProxyContext context, HttpResponseMessage upstreamResponse)
+        private static void SetReasonPhrase(ProxyContext context, HttpResponseMessage upstreamResponse)
         {
             if (context.RequestHttpVersion >= HttpVersion.Version20)
                 return; // Reason phrase is not supported by HTTP/2 and higher

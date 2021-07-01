@@ -10,14 +10,14 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
 {
     internal sealed class UpstreamStartup
     {
-        public void ConfigureServices(IServiceCollection services)
+        public static void ConfigureServices(IServiceCollection services)
         {
             CheckValue(services, nameof(services));
 
             _ = services.AddControllers();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             CheckValue(app, nameof(app));
             CheckValue(env, nameof(env));
