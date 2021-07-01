@@ -236,6 +236,21 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             return message;
         }
 
+        [HttpGet("append")]
+        public string AppendHeaderTest(string message)
+        {
+            var values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.OneValue);
+            values.Should().BeEquivalentTo(new[] { "one" });
+
+            values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.TwoValues);
+            values.Should().BeEquivalentTo(new[] { "one", "two" });
+
+            var headers = HttpContext.Response.Headers;
+            headers.Add(Constants.TwoValues, new[] { "one" });
+
+            return message;
+        }
+
         [HttpGet("addOverride")]
         public string AddOverrideTest(string message)
         {

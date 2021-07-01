@@ -350,6 +350,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task SetCookieTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "setCookie?message=test");
+
             await executor.ExecuteAsync(
                 "SetCookieTestOptions.json",
                 request,
@@ -370,10 +371,30 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 });
         }
 
-        [TestMethod("Should have newly added headers")]
+        [TestMethod("Should append headers")]
+        public async Task AppendHeadersTestAsync()
+        {
+            var request = new HttpRequestMessage(Method.Get, "append?message=test");
+            request.Headers.Add(Constants.TwoValues, new[] { "one" });
+
+            await executor.ExecuteAsync(
+                "AppendHeaderTestOptions.json",
+                request,
+                async response =>
+                {
+                    await EnsureResponseSucceededAsync(response);
+
+                    var headers = response.Headers;
+                    headers.GetValues(Constants.OneValue).Should().BeEquivalentTo(new[] { "one" });
+                    headers.GetValues(Constants.TwoValues).Should().BeEquivalentTo(new[] { "one", "two" });
+                });
+        }
+
+        [TestMethod("Should add new headers that do not exist")]
         public async Task AddOverrideTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "addOverride?message=test");
+
             await executor.ExecuteAsync(
                 "AddOverridesTestOptions.json",
                 request,
@@ -388,7 +409,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 });
         }
 
-        [TestMethod("Should have modified headers")]
+        [TestMethod("Should override existing headers")]
         public async Task UpdateOverrideTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "updateOverride?message=test");

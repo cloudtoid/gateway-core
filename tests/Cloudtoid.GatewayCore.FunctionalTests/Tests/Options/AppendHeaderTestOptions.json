@@ -1,0 +1,25 @@
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "https://localhost:$upstream-port/upstream/",
+        "upstreamRequest": {
+          "headers": {
+            "appends": {
+              "x-one-value": [ "one" ],
+              "x-two-values": [ "two" ]
+            }
+          }
+        },
+        "downstreamResponse": {
+          "headers": {
+            "appends": {
+              "x-one-value": [ "one" ],
+              "x-two-values": [ "two" ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
