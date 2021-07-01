@@ -366,7 +366,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                             {
                                 "sessionId=1234; expires=Tue, 01 Jan 2030 01:01:01 GMT; domain=new.com; path=/; secure; samesite=lax; httponly",
                                 "pxeId=exp12; domain=default.com; path=/; samesite=none",
-                                "emptyOut=empty; path=/",
+                                "emptyOut=empty; path=/; samesite=lax",
                             });
                 });
         }

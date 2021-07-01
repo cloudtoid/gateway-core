@@ -132,12 +132,13 @@ namespace Cloudtoid.GatewayCore.Downstream
             if (!SetCookieHeaderValue.TryParse(value, out var cookie) || !cookie.Name.HasValue)
                 return value;
 
-            var cookies = context.ProxyDownstreamResponseHeaderSettings.Cookies;
-            if (!cookies.TryGetValue(cookie.Name.Value, out var cookieSetting) &&
-                !cookies.TryGetValue(WildcardCookieName, out cookieSetting))
+            var cookieSettings = context.ProxyDownstreamResponseHeaderSettings.Cookies;
+            if (!cookieSettings.TryGetValue(cookie.Name.Value, out var cookieSetting) &&
+                !cookieSettings.TryGetValue(WildcardCookieName, out cookieSetting))
                 return value;
 
-            cookie.SameSite = cookieSetting.SameSite;
+            if (cookieSetting.SameSite != Microsoft.Net.Http.Headers.SameSiteMode.Unspecified)
+                cookie.SameSite = cookieSetting.SameSite;
 
             if (cookieSetting.Secure.HasValue)
                 cookie.Secure = cookieSetting.Secure.Value;

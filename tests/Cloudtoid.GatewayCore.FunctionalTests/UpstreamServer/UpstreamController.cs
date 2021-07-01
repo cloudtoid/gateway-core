@@ -231,6 +231,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                     Domain = "old.com",
                     HttpOnly = true,
                     Secure = true,
+                    SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax
                 });
 
             return message;

@@ -22,7 +22,6 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
         // - Auto redirects
         // - ProxyException and exception handling
         // - When no route is found, do not return 200
-        // - Extra (unknown) request and response headers are just forwarded
         // - Authentication
         // - Run nginx side by side and ensure all headers and other properties match.
 - Write documentation
@@ -44,7 +43,8 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 - Increase code coverage
 - Add support for modification of the Path attribute in the Set-Cookie header
 - Ensure that all 3 projects compile on macos and VS for Mac
-- Publish options-schema.json on a website so it can be referenced in JSON GatewayOptions files 
+- Publish options-schema.json on a website so it can be referenced in JSON GatewayOptions files
+- How to run the test server
 
 ## Future version
 
