@@ -24,6 +24,11 @@
             "skipForwarded": true,
             "useXForwarded": true,
 
+            "appends": {
+              "x-append-1": [ "value1_1", "value1_2" ],
+              "x-append-2": [ "value2_1", "value2_2" ]
+            },
+
             "overrides": {
               "x-extra-1": [ "value1_1", "value1_2" ],
               "x-extra-2": [ "value2_1", "value2_2" ]
@@ -78,6 +83,11 @@
               "testCookie": {
                 "domain": "test.com"
               }
+            },
+
+            "appends": {
+              "x-append-1": [ "value1_1", "value1_2" ],
+              "x-append-2": [ "value2_1", "value2_2" ]
             },
 
             "overrides": {

@@ -24,24 +24,26 @@ namespace Cloudtoid.GatewayCore.Settings
             bool discardInboundHeaders,
             bool discardEmpty,
             bool discardUnderscore,
-            ISet<string> discards,
             bool addServer,
             bool addCorrelationId,
             bool addCallId,
             bool skipVia,
             IReadOnlyDictionary<string, CookieSettings> cookies,
-            IReadOnlyDictionary<string, HeaderOverride> overrides)
+            IReadOnlyDictionary<string, HeaderSettings> appends,
+            IReadOnlyDictionary<string, HeaderSettings> overrides,
+            ISet<string> discards)
         {
             DiscardInboundHeaders = discardInboundHeaders;
             DiscardEmpty = discardEmpty;
             DiscardUnderscore = discardUnderscore;
-            Discards = discards;
             AddServer = addServer;
             AddCorrelationId = addCorrelationId;
             AddCallId = addCallId;
             SkipVia = skipVia;
             Cookies = cookies;
+            Appends = appends;
             Overrides = overrides;
+            Discards = discards;
 
             DoNotTransferHeaders = DoNotTransferBaseHeaders
                 .Concat(overrides.Keys)
@@ -55,8 +57,6 @@ namespace Cloudtoid.GatewayCore.Settings
 
         public bool DiscardUnderscore { get; }
 
-        public ISet<string> Discards { get; }
-
         public bool AddServer { get; }
 
         public bool AddCorrelationId { get; }
@@ -67,7 +67,11 @@ namespace Cloudtoid.GatewayCore.Settings
 
         public IReadOnlyDictionary<string, CookieSettings> Cookies { get; }
 
-        public IReadOnlyDictionary<string, HeaderOverride> Overrides { get; }
+        public IReadOnlyDictionary<string, HeaderSettings> Appends { get; }
+
+        public IReadOnlyDictionary<string, HeaderSettings> Overrides { get; }
+
+        public ISet<string> Discards { get; }
 
         /// <summary>
         /// This is a list of headers that should not be passed on to the downstream client as they are.

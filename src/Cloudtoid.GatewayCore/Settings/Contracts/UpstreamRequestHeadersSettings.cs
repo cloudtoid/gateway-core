@@ -29,7 +29,6 @@ namespace Cloudtoid.GatewayCore.Settings
             bool discardInboundHeaders,
             bool discardEmpty,
             bool discardUnderscore,
-            ISet<string> discards,
             bool addExternalAddress,
             bool addProxyName,
             bool skipCorrelationId,
@@ -37,7 +36,9 @@ namespace Cloudtoid.GatewayCore.Settings
             bool skipVia,
             bool skipForwarded,
             bool useXForwarded,
-            IReadOnlyDictionary<string, HeaderOverride> overrides)
+            IReadOnlyDictionary<string, HeaderSettings> appends,
+            IReadOnlyDictionary<string, HeaderSettings> overrides,
+            ISet<string> discards)
         {
             DiscardEmpty = discardEmpty;
             DiscardUnderscore = discardUnderscore;
@@ -49,6 +50,7 @@ namespace Cloudtoid.GatewayCore.Settings
             SkipCallId = skipCallId;
             SkipForwarded = skipForwarded;
             UseXForwarded = useXForwarded;
+            Appends = appends;
             Overrides = overrides;
             Discards = discards;
 
@@ -64,8 +66,6 @@ namespace Cloudtoid.GatewayCore.Settings
 
         public bool DiscardUnderscore { get; }
 
-        public ISet<string> Discards { get; }
-
         public bool AddExternalAddress { get; }
 
         public bool AddProxyName { get; }
@@ -80,7 +80,11 @@ namespace Cloudtoid.GatewayCore.Settings
 
         public bool UseXForwarded { get; }
 
-        public IReadOnlyDictionary<string, HeaderOverride> Overrides { get; }
+        public IReadOnlyDictionary<string, HeaderSettings> Appends { get; }
+
+        public IReadOnlyDictionary<string, HeaderSettings> Overrides { get; }
+
+        public ISet<string> Discards { get; }
 
         /// <summary>
         /// This is a list of headers that should not be passed on to the upstream system as they are.

@@ -164,8 +164,11 @@ namespace Cloudtoid.GatewayCore.Upstream
         {
             var headers = upstreamRequest.Headers;
 
-            foreach (var header in context.ProxyUpstreamRequestHeadersSettings.Overrides.Values)
-                headers.TryAddWithoutValidation(header.Name, header.EvaluateValues(context));
+            foreach (var (name, header) in context.ProxyUpstreamRequestHeadersSettings.Overrides)
+                headers.TryAddWithoutValidation(name, header.EvaluateValues(context));
+
+            foreach (var (name, header) in context.ProxyUpstreamRequestHeadersSettings.Appends)
+                headers.TryAddWithoutValidation(name, header.EvaluateValues(context));
         }
 
         protected virtual void AddHeaderValues(

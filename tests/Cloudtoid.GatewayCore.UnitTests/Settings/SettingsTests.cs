@@ -48,7 +48,17 @@ namespace Cloudtoid.GatewayCore.UnitTests
             requestHeaders.SkipForwarded.Should().BeTrue();
             requestHeaders.UseXForwarded.Should().BeTrue();
             requestHeaders.AddExternalAddress.Should().BeTrue();
-            requestHeaders.Overrides.Values.Select(h => (h.Name, Values: h.EvaluateValues(context)))
+
+            requestHeaders.Appends.Select(h => (Name: h.Key, Values: h.Value.EvaluateValues(context)))
+                .Should()
+                .BeEquivalentTo(
+                    new[]
+                    {
+                        (Name: "x-append-1", Values: new[] { "value1_1", "value1_2" }),
+                        (Name: "x-append-2", Values: new[] { "value2_1", "value2_2" })
+                    });
+
+            requestHeaders.Overrides.Select(h => (Name: h.Key, Values: h.Value.EvaluateValues(context)))
                 .Should()
                 .BeEquivalentTo(
                     new[]
@@ -56,6 +66,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
                         (Name: "x-extra-1", Values: new[] { "value1_1", "value1_2" }),
                         (Name: "x-extra-2", Values: new[] { "value2_1", "value2_2" })
                     });
+
             requestHeaders.Discards.Should().BeEquivalentTo("x-discard-1", "x-discard-2");
 
             var requestSender = request.Sender;
@@ -80,6 +91,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             responseHeaders.AddCorrelationId.Should().BeTrue();
             responseHeaders.AddCallId.Should().BeTrue();
             responseHeaders.AddServer.Should().BeTrue();
+
             responseHeaders.Cookies.Values
                 .Should()
                 .BeEquivalentTo(
@@ -110,7 +122,17 @@ namespace Cloudtoid.GatewayCore.UnitTests
                             Microsoft.Net.Http.Headers.SameSiteMode.Unspecified,
                             "test.com")
                     });
-            responseHeaders.Overrides.Values.Select(h => (h.Name, Values: h.EvaluateValues(context)))
+
+            requestHeaders.Appends.Select(h => (Name: h.Key, Values: h.Value.EvaluateValues(context)))
+                .Should()
+                .BeEquivalentTo(
+                    new[]
+                    {
+                        (Name: "x-append-1", Values: new[] { "value1_1", "value1_2" }),
+                        (Name: "x-append-2", Values: new[] { "value2_1", "value2_2" })
+                    });
+
+            requestHeaders.Overrides.Select(h => (Name: h.Key, Values: h.Value.EvaluateValues(context)))
                 .Should()
                 .BeEquivalentTo(
                     new[]
@@ -118,6 +140,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
                         (Name: "x-extra-1", Values: new[] { "value1_1", "value1_2" }),
                         (Name: "x-extra-2", Values: new[] { "value2_1", "value2_2" })
                     });
+
             responseHeaders.Discards.Should().BeEquivalentTo("x-discard-1", "x-discard-2");
         }
 
@@ -135,7 +158,17 @@ namespace Cloudtoid.GatewayCore.UnitTests
             request.EvaluateHttpVersion(context).Should().Be(HttpVersion.Version11);
 
             var requestHeaders = request.Headers;
-            requestHeaders.Overrides.Values.Select(h => (h.Name, Values: h.EvaluateValues(context)))
+
+            requestHeaders.Appends.Select(h => (Name: h.Key, Values: h.Value.EvaluateValues(context)))
+                .Should()
+                .BeEquivalentTo(
+                    new[]
+                    {
+                        (Name: "x-append-1", Values: new[] { "x-append-1:v1:" + expressionValue, "x-append-1:v2:" + expressionValue }),
+                        (Name: "x-append-2", Values: new[] { "x-append-2:v1:" + expressionValue, "x-append-2:v2:" + expressionValue })
+                    });
+
+            requestHeaders.Overrides.Select(h => (Name: h.Key, Values: h.Value.EvaluateValues(context)))
                 .Should()
                 .BeEquivalentTo(
                     new[]
@@ -149,7 +182,17 @@ namespace Cloudtoid.GatewayCore.UnitTests
 
             var response = settings.Proxy.DownstreamResponse;
             var responseHeaders = response.Headers;
-            responseHeaders.Overrides.Values.Select(h => (h.Name, Values: h.EvaluateValues(context)))
+
+            requestHeaders.Appends.Select(h => (Name: h.Key, Values: h.Value.EvaluateValues(context)))
+                .Should()
+                .BeEquivalentTo(
+                    new[]
+                    {
+                        (Name: "x-append-1", Values: new[] { "x-append-1:v1:" + expressionValue, "x-append-1:v2:" + expressionValue }),
+                        (Name: "x-append-2", Values: new[] { "x-append-2:v1:" + expressionValue, "x-append-2:v2:" + expressionValue })
+                    });
+
+            requestHeaders.Overrides.Select(h => (Name: h.Key, Values: h.Value.EvaluateValues(context)))
                 .Should()
                 .BeEquivalentTo(
                     new[]
@@ -184,6 +227,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             requestHeaders.SkipForwarded.Should().BeFalse();
             requestHeaders.UseXForwarded.Should().BeFalse();
             requestHeaders.AddExternalAddress.Should().BeFalse();
+            requestHeaders.Appends.Should().BeEmpty();
             requestHeaders.Overrides.Should().BeEmpty();
             requestHeaders.Discards.Should().BeEmpty();
 
@@ -212,6 +256,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             responseHeaders.AddCallId.Should().BeFalse();
             responseHeaders.AddServer.Should().BeFalse();
             responseHeaders.Cookies.Should().BeEmpty();
+            responseHeaders.Appends.Should().BeEmpty();
             responseHeaders.Overrides.Should().BeEmpty();
             responseHeaders.Discards.Should().BeEmpty();
         }

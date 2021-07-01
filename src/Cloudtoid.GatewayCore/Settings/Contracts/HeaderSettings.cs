@@ -3,17 +3,12 @@ using System.Linq;
 
 namespace Cloudtoid.GatewayCore.Settings
 {
-    public sealed class HeaderOverride
+    public sealed class HeaderSettings
     {
-        internal HeaderOverride(
-            string name,
-            string[] valueExpressions)
+        internal HeaderSettings(string[] valueExpressions)
         {
-            Name = name;
             ValueExpressions = valueExpressions;
         }
-
-        public string Name { get; }
 
         public string[] ValueExpressions { get; }
 

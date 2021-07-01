@@ -11,6 +11,7 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 - Add more functional tests:
         // Tests
         // - Need functional tests for the following settings:
+        // --- `appends`
         // --- "upstreamRequest" -> "httpVersion"
         // --- "upstreamRequest" -> "sender". Not sure how to test all of these. Maybe check the HTTP Client to see if the values are set correctly?
         // - Fix HTTPS so it also works on Mac and Linux!
@@ -45,6 +46,8 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 - Add support for modification of the Path attribute in the Set-Cookie header
 - Ensure that all 3 projects compile on macos and VS for Mac
 - Publish options-schema.json on a website so it can be referenced in JSON GatewayOptions files 
+- Add `appends` to the JSON schema and update all the comments.
+- Add` appends` to this document.
 
 ## Future version
 

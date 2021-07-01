@@ -108,11 +108,6 @@ namespace Cloudtoid.GatewayCore
                         public bool DiscardUnderscore { get; set; }
 
                         /// <summary>
-                        /// Gets or sets the inbound downstream headers that should be discarded.
-                        /// </summary>
-                        public HashSet<string> Discards { get; set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-                        /// <summary>
                         /// Gets or sets if a <c>x-gwcore-external-address</c> header with the IP address of the immediate caller should be added to the outbound upstream call.
                         /// The default value is <c>false</c>.
                         /// </summary>
@@ -160,11 +155,23 @@ namespace Cloudtoid.GatewayCore
                         public bool UseXForwarded { get; set; }
 
                         /// <summary>
-                        /// Gets or sets headers to be appended to the outbound upstream requests, or
+                        /// Gets or sets headers to be appended to the outbound upstream requests.
+                        /// If the header already exists, it is kept and  the new value is appended.
+                        /// The value can be either text or an expression.
+                        /// </summary>
+                        public Dictionary<string, string[]> Appends { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
+
+                        /// <summary>
+                        /// Gets or sets headers to be added to the outbound upstream requests, or
                         /// if the header already exists, its value is replaced with the new value specified here.
                         /// The value can be either text or an expression.
                         /// </summary>
                         public Dictionary<string, string[]> Overrides { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
+
+                        /// <summary>
+                        /// Gets or sets the inbound downstream headers that should be discarded.
+                        /// </summary>
+                        public HashSet<string> Discards { get; set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                     }
 
                     public sealed class SenderOptions
@@ -278,11 +285,6 @@ namespace Cloudtoid.GatewayCore
                         public bool DiscardUnderscore { get; set; }
 
                         /// <summary>
-                        /// Gets or sets the inbound upstream headers that should be discarded.
-                        /// </summary>
-                        public HashSet<string> Discards { get; set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-                        /// <summary>
                         /// Gets or sets if a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server"><c>server</c></a> header should be added. The value of this header is set to <c>gwcore</c>.
                         /// The default value is <c>false</c>.
                         /// </summary>
@@ -315,10 +317,23 @@ namespace Cloudtoid.GatewayCore
                         public Dictionary<string, CookieOptions> Cookies { get; set; } = new Dictionary<string, CookieOptions>(StringComparer.OrdinalIgnoreCase);
 
                         /// <summary>
-                        /// Gets or sets headers to be appended to the outbound downstream response, or
+                        /// Gets or sets headers to be appended to the outbound downstream response.
+                        /// If the header already exists, it is kept and  the new value is appended.
+                        /// The value can be either text or an expression.
+                        /// </summary>
+                        public Dictionary<string, string[]> Appends { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
+
+                        /// <summary>
+                        /// Gets or sets headers to be added to the outbound downstream response, or
                         /// if the header already exists, its value is replaced with the new value specified here.
+                        /// The value can be either text or an expression.
                         /// </summary>
                         public Dictionary<string, string[]> Overrides { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
+
+                        /// <summary>
+                        /// Gets or sets the inbound upstream headers that should be discarded.
+                        /// </summary>
+                        public HashSet<string> Discards { get; set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
                         public sealed class CookieOptions
                         {

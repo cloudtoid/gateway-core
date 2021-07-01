@@ -158,7 +158,6 @@ namespace Cloudtoid.GatewayCore.Settings
                 options.DiscardInboundHeaders,
                 options.DiscardEmpty,
                 options.DiscardUnderscore,
-                options.Discards,
                 options.AddExternalAddress,
                 addProxyName,
                 options.SkipCorrelationId,
@@ -166,7 +165,9 @@ namespace Cloudtoid.GatewayCore.Settings
                 options.SkipVia,
                 options.SkipForwarded,
                 options.UseXForwarded,
-                Create(route, options.Overrides));
+                Create(route, options.Appends),
+                Create(route, options.Overrides),
+                options.Discards);
         }
 
         private UpstreamRequestSenderSettings Create(
@@ -246,17 +247,22 @@ namespace Cloudtoid.GatewayCore.Settings
             return new CookieSettings(name, option.Secure, option.HttpOnly, sameSite, option.Domain);
         }
 
-        private IReadOnlyDictionary<string, HeaderOverride> Create(
+        private IReadOnlyDictionary<string, HeaderSettings> Create(
             string route,
             Dictionary<string, string[]> headers)
         {
             if (headers.Count == 0)
-                return ImmutableDictionary<string, HeaderOverride>.Empty;
+                return ImmutableDictionary<string, HeaderSettings>.Empty;
 
-            return headers
-                .Select(h => Create(route, h.Key, h.Value))
-                .WhereNotNull()
-                .ToDictionary(h => h.Name, StringComparer.OrdinalIgnoreCase);
+            var result = new Dictionary<string, HeaderSettings>(headers.Count, StringComparer.OrdinalIgnoreCase);
+            foreach (var header in headers)
+            {
+                var headerSettings = Create(route, header.Key, header.Value);
+                if (headerSettings is not null)
+                    result.Add(header.Key, headerSettings);
+            }
+
+            return result;
         }
 
         private DownstreamResponseSettings Create(
@@ -275,16 +281,17 @@ namespace Cloudtoid.GatewayCore.Settings
                 options.DiscardInboundHeaders,
                 options.DiscardEmpty,
                 options.DiscardUnderscore,
-                options.Discards,
                 options.AddServer,
                 options.AddCorrelationId,
                 options.AddCallId,
                 options.SkipVia,
                 Create(route, options.Cookies),
-                Create(route, options.Overrides));
+                Create(route, options.Appends),
+                Create(route, options.Overrides),
+                options.Discards);
         }
 
-        private HeaderOverride? Create(
+        private HeaderSettings? Create(
             string route,
             string headerName,
             string[] headerValuesExpressions)
@@ -301,9 +308,7 @@ namespace Cloudtoid.GatewayCore.Settings
                 return null;
             }
 
-            return new HeaderOverride(
-                headerName,
-                headerValuesExpressions);
+            return new HeaderSettings(headerValuesExpressions);
         }
 
         private void LogError(string message)
