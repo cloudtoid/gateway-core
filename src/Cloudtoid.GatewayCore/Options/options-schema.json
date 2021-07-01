@@ -53,7 +53,7 @@
                 "properties": {
                   "httpVersion": {
                     "type": "string",
-                    "description": "An expression that defines the HTTP protocol of outbound upstream requests.",
+                    "description": "An expression that defines the HTTP protocol version of outbound upstream requests.",
                     "default": "HTTP/2.0"
                   },
                   "headers": {
@@ -75,13 +75,6 @@
                         "type": "boolean",
                         "description": "Specifies if inbound headers with an underscore in their name should be discarded.",
                         "default": false
-                      },
-                      "discards": {
-                        "type": "array",
-                        "items": {
-                          "type": "string",
-                          "description": "Specifies the inbound downstream headers that should be discarded."
-                        }
                       },
                       "addExternalAddress": {
                         "type": "boolean",
@@ -113,15 +106,33 @@
                         "description": "Specifies if `x-forwarded-*` headers should be used instead of the standard `forwarded` header.",
                         "default": false
                       },
-                      "overrides": {
+                      "appends": {
                         "type": "object",
-                        "description": "The headers to be appended to the outbound upstream requests, or if the header already exists, its value is replaced with the new value specified here.",
+                        "description": "The headers to be appended to the outbound upstream requests. If the header already exists, it is kept and the new value is appended. The value can be either text or an expression.",
                         "additionalProperties": {
                           "type": "array",
                           "items": {
                             "type": "string",
                             "description": "The value can be either text or an expression."
                           }
+                        }
+                      },
+                      "overrides": {
+                        "type": "object",
+                        "description": "The headers to be added to the outbound upstream requests. If the header already exists, its value is replaced. The value can be either text or an expression.",
+                        "additionalProperties": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "description": "The value can be either text or an expression."
+                          }
+                        }
+                      },
+                      "discards": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "description": "Specifies the inbound downstream headers that should be discarded."
                         }
                       }
                     }
@@ -224,14 +235,6 @@
                         "description": "Specifies if inbound headers with an underscore in their name should be discarded.",
                         "default": false
                       },
-                      "discards": {
-                        "type": "array",
-                        "description": "The inbound upstream headers that should be discarded.",
-                        "items": {
-                          "type": "string",
-                          "description": "The name of the header to be discarded."
-                        }
-                      },
                       "addServer": {
                         "type": "boolean",
                         "description": "Specifies if a `server` header should be added. The value of this header is set to `gwcore`.",
@@ -284,15 +287,34 @@
                           }
                         }
                       },
-                      "overrides": {
+                      "appends": {
                         "type": "object",
-                        "description": "The headers to be appended to the outbound downstream response, or if the header already exists, its value is replaced with the new value specified here.",
+                        "description": "The headers to be appended to the outbound downstream response. If the header already exists, it is kept and the new value is appended. The value can be either text or an expression.",
                         "additionalProperties": {
                           "type": "array",
                           "items": {
                             "type": "string",
                             "description": "The value can be either text or an expression."
                           }
+                        }
+                      },
+                      "overrides": {
+                        "type": "object",
+                        "description": "The headers to be added to the outbound downstream response. If the header already exists, its value is replaced. The value can be either text or an expression.",
+                        "additionalProperties": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "description": "The value can be either text or an expression."
+                          }
+                        }
+                      },
+                      "discards": {
+                        "type": "array",
+                        "description": "The inbound upstream headers that should be discarded.",
+                        "items": {
+                          "type": "string",
+                          "description": "The name of the header to be discarded."
                         }
                       }
                     }

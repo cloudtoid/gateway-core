@@ -72,7 +72,7 @@ namespace Cloudtoid.GatewayCore
                 public sealed class UpstreamRequestOptions
                 {
                     /// <summary>
-                    /// Gets or sets an expression that defines the HTTP protocol of outbound upstream requests.
+                    /// Gets or sets an expression that defines the HTTP protocol version of outbound upstream requests.
                     /// The default value if HTTP/2.0.
                     /// </summary>
                     public string? HttpVersion { get; set; }
@@ -155,15 +155,15 @@ namespace Cloudtoid.GatewayCore
                         public bool UseXForwarded { get; set; }
 
                         /// <summary>
-                        /// Gets or sets headers to be appended to the outbound upstream requests.
-                        /// If the header already exists, it is kept and  the new value is appended.
+                        /// Gets or sets the headers to be appended to the outbound upstream requests.
+                        /// If the header already exists, it is kept and the new value is appended.
                         /// The value can be either text or an expression.
                         /// </summary>
                         public Dictionary<string, string[]> Appends { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
 
                         /// <summary>
-                        /// Gets or sets headers to be added to the outbound upstream requests, or
-                        /// if the header already exists, its value is replaced with the new value specified here.
+                        /// Gets or sets the headers to be added to the outbound upstream requests.
+                        /// If the header already exists, its value is replaced.
                         /// The value can be either text or an expression.
                         /// </summary>
                         public Dictionary<string, string[]> Overrides { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
@@ -317,15 +317,15 @@ namespace Cloudtoid.GatewayCore
                         public Dictionary<string, CookieOptions> Cookies { get; set; } = new Dictionary<string, CookieOptions>(StringComparer.OrdinalIgnoreCase);
 
                         /// <summary>
-                        /// Gets or sets headers to be appended to the outbound downstream response.
-                        /// If the header already exists, it is kept and  the new value is appended.
+                        /// Gets or sets the headers to be appended to the outbound downstream response.
+                        /// If the header already exists, it is kept and the new value is appended.
                         /// The value can be either text or an expression.
                         /// </summary>
                         public Dictionary<string, string[]> Appends { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
 
                         /// <summary>
-                        /// Gets or sets headers to be added to the outbound downstream response, or
-                        /// if the header already exists, its value is replaced with the new value specified here.
+                        /// Gets or sets the headers to be added to the outbound downstream response.
+                        /// If the header already exists, its value is replaced.
                         /// The value can be either text or an expression.
                         /// </summary>
                         public Dictionary<string, string[]> Overrides { get; set; } = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);

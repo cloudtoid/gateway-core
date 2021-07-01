@@ -11,7 +11,6 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 - Add more functional tests:
         // Tests
         // - Need functional tests for the following settings:
-        // --- `appends`
         // --- "upstreamRequest" -> "httpVersion"
         // --- "upstreamRequest" -> "sender". Not sure how to test all of these. Maybe check the HTTP Client to see if the values are set correctly?
         // - Fix HTTPS so it also works on Mac and Linux!
@@ -46,8 +45,6 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 - Add support for modification of the Path attribute in the Set-Cookie header
 - Ensure that all 3 projects compile on macos and VS for Mac
 - Publish options-schema.json on a website so it can be referenced in JSON GatewayOptions files 
-- Add `appends` to the JSON schema and update all the comments.
-- Add` appends` to this document.
 
 ## Future version
 
@@ -334,10 +331,33 @@ GatewayCore pools [`HttpMessageHandler`](https://docs.microsoft.com/en-us/dotnet
 
 > Avoid enabling `UseCookies` unless you are confident that this is the behavior that your application needs.
 
-## Add, update, or discard headers
+## Append, add, update, or discard headers
 
-In addition to the controls offered through explicit configuration options, GatewayCore makes it easy to add, change, or remove headers on both outbound requests to downstream systems, as well as responses to clients.
+In addition to the controls offered through explicit configuration options, GatewayCore makes it easy to append, add, update, or remove headers on both outbound requests to upstream systems, as well as responses to clients.
 
+### Append headers
+
+GatewayCore can append additional headers to requests sent to proxied servers, as well as responses forwarded to clients. In the example below, GatewayCore appends the `x-append-header` header with value `new-value` to proxied requests. A similar header is also added to responses with two values: `value-1` and `value-2`. If these headers already exist, these values are appended to the existing values:
+
+```json
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "upstreamRequest": {
+        "headers": {
+          "overrides": {
+            "x-append-header": [ "new-value" ]
+          }
+        }
+      },
+      "downstreamResponse": {
+        "headers": {
+          "overrides": {
+            "x-append-header": [ "value-1", "value-2" ]
+```
+
+> A header value can be text or an [expression](#Expressions).
 ### Add headers
 
 GatewayCore can add additional headers to requests sent to proxied servers, as well as responses forwarded to clients. In the example below, GatewayCore adds the `x-new-request-header` header with value `new-value` to proxied requests. A similar header is also added to responses with two values: `value-1` and `value-2`:
