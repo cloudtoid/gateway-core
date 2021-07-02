@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -38,8 +39,13 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                         port,
                         lo =>
                         {
-                            lo.Protocols = HttpProtocols.Http1AndHttp2;
-                            lo.UseHttps();
+                            lo.Protocols = HttpProtocols.Http2;
+
+                            // Kestrel on MacOS does not support TLS on HTTP/2.0
+                            // Follow the issue here: https://github.com/dotnet/runtime/issues/27727
+                            // TODO: Remove this once the issue is fixed.
+                            if (!OperatingSystem.IsMacOS())
+                                lo.UseHttps();
                         });
                 })
                 .UseStartup<UpstreamStartup>()
