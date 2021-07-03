@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
@@ -12,28 +11,16 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
     {
         private static volatile int port = 5000;
 
-        internal static Task ExecuteAsync(
+        internal static async Task ExecuteAsync(
             string gatewayConfigFile,
             HttpRequestMessage request,
             Func<HttpResponseMessage, Task> responseValidator)
         {
-            return ExecuteAsync(
-                request,
-                responseValidator,
-                LoadGatewayConfig(gatewayConfigFile));
-        }
-
-        internal static async Task ExecuteAsync(
-            HttpRequestMessage request,
-            Func<HttpResponseMessage, Task> responseValidator,
-            IConfiguration? gatewayConfig = null)
-        {
             var proxyPort = Interlocked.Increment(ref port);
             var upstreamPort = Interlocked.Increment(ref port);
 
-            gatewayConfig = gatewayConfig is null
-                ? GetDefaultOptions(upstreamPort)
-                : UpdateUpstreamPort(gatewayConfig, upstreamPort);
+            var gatewayConfig = LoadGatewayConfig(gatewayConfigFile);
+            gatewayConfig = UpdateUpstreamPort(gatewayConfig, upstreamPort);
 
             await using var pipeline = await StartPipelineAsync(proxyPort, upstreamPort, gatewayConfig);
             using var httpClient = CreateHttpClient(proxyPort);
@@ -54,16 +41,6 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             return pipeline;
         }
 
-        private static IConfiguration GetDefaultOptions(int upstreamPort)
-        {
-            var options = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-            {
-                ["routes:/api/:proxy:to"] = $"https://localhost:{upstreamPort}/upstream/"
-            };
-
-            return new ConfigurationBuilder().AddInMemoryCollection(options).Build();
-        }
-
         private static IConfiguration UpdateUpstreamPort(IConfiguration config, int upstreamPort)
         {
             var upstreamPortStr = upstreamPort.ToStringInvariant();
@@ -79,7 +56,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
 
         private static IConfiguration LoadGatewayConfig(string gatewayConfigFile)
         {
-            var file = new FileInfo("Tests/Options/" + gatewayConfigFile);
+            var file = new FileInfo("Tests/Header/ProxyOptions/" + gatewayConfigFile);
             if (!file.Exists)
                 throw new FileNotFoundException($"File '{gatewayConfigFile}' cannot be found.");
 

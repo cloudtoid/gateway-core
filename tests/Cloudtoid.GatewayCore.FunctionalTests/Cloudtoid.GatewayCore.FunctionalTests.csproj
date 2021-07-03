@@ -12,7 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Tests\Options\*.json" CopyToOutputDirectory="PreserveNewest" />
+    <PackageReference Include="Docker.DotNet" Version="3.125.*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Tests/**/ProxyOptions/*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>
