@@ -61,7 +61,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 throw new FileNotFoundException($"File '{gatewayConfigFile}' cannot be found.");
 
             var configBuilder = new ConfigurationBuilder()
-                .SetBasePath(file.Directory.FullName)
+                .SetBasePath(file.Directory!.FullName)
                 .AddJsonFile(file.Name, optional: false, reloadOnChange: false);
 
             return configBuilder.Build();

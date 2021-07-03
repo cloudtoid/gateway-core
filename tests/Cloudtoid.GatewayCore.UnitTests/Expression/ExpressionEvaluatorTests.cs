@@ -327,7 +327,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             Evaluate("abc", context).Should().Be("abc");
             Evaluate("abc", context).Should().Be("abc");
 
-            var logger = (Logger<ExpressionEvaluator>)serviceProvider.GetRequiredService<ILogger<ExpressionEvaluator>>();
+            var logger = (Logger<ExpressionEvaluator>)serviceProvider!.GetRequiredService<ILogger<ExpressionEvaluator>>();
             logger.Logs.Where(l => l.ContainsOrdinalIgnoreCase("Parsing an expression: abc")).Should().HaveCount(1);
         }
 

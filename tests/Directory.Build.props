@@ -4,7 +4,6 @@
 
   <PropertyGroup>
     <IsPackable>false</IsPackable>
-    <Nullable>annotations</Nullable>
   </PropertyGroup>
 
   <!-- Test Package Versions -->

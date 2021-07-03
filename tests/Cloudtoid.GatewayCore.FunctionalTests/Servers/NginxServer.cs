@@ -59,8 +59,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             if (containerId is not null)
                 await client.Containers.StopContainerAsync(containerId, null);
 
-            if (client is not null)
-                client.Dispose();
+            client.Dispose();
         }
     }
 }
