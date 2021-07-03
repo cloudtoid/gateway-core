@@ -1,55 +1,40 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Net.Http.Headers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using static Cloudtoid.GatewayCore.FunctionalTests.TestExecutor;
 using Method = System.Net.Http.HttpMethod;
 
 namespace Cloudtoid.GatewayCore.FunctionalTests
 {
     [TestClass]
-    public sealed class FunctionalTests
+    public sealed class HeaderTests
     {
-        private readonly TestExecutor executor = new();
-
-        [TestMethod("Basic plumbing")]
+        [TestMethod("Basic header plumbing test")]
         public async Task BasicPlumbingTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "echo?message=test");
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
+                "DefaultTestOptions.json",
                 request,
                 async response =>
                 {
                     await EnsureResponseSucceededAsync(response);
 
                     var headers = response.Headers;
-                    headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new[] { "2.0 gwcore" });
+                    headers.GetValues(HeaderNames.Via).Should().ContainSingle().And.ContainMatch("?.? gwcore");
                     headers.Contains(Constants.CorrelationId).Should().BeFalse();
                     headers.Contains(Constants.CallId).Should().BeFalse();
 
                     var contentHeaders = response.Content.Headers;
                     contentHeaders.ContentType.Should().NotBeNull();
-                    contentHeaders.ContentType.MediaType.Should().Be("text/plain");
+                    contentHeaders.ContentType!.MediaType.Should().Be("text/plain");
                     contentHeaders.ContentType.CharSet.Should().Be("utf-8");
                     contentHeaders.ContentLength.Should().Be(4);
-                });
-        }
-
-        [TestMethod("Should not return success when route doesn't exist.")]
-        public async Task NoRouteTestAsync()
-        {
-            var request = new HttpRequestMessage(Method.Get, "noRoute?message=test");
-            await executor.ExecuteAsync(
-                request,
-                response =>
-                {
-                    response.IsSuccessStatusCode.Should().BeFalse();
-                    response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-                    return Task.CompletedTask;
                 });
         }
 
@@ -57,7 +42,8 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task DefaultTraceTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "trace?message=test");
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
+                "DefaultTestOptions.json",
                 request,
                 async response =>
                 {
@@ -73,7 +59,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task TraceTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "trace?message=test");
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
                 "TraceTestOptions.json",
                 request,
                 async response =>
@@ -90,7 +76,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task NoTraceTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "noTrace?message=test");
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
                 "NoTraceTestOptions.json",
                 request,
                 async response =>
@@ -107,7 +93,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task CorrelationIdTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "customCorrelationId?message=test");
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
                 "CustomCorrelationIdTestOptions.json",
                 request,
                 async response =>
@@ -124,7 +110,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         {
             var request = new HttpRequestMessage(Method.Get, "originalCorrelationId?message=test");
             request.Headers.Add(Constants.CorrelationId, "corr-id-1");
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
                 "OriginalCorrelationIdTestOptions.json",
                 request,
                 async response =>
@@ -142,7 +128,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         {
             var request = new HttpRequestMessage(Method.Get, "callId?message=test");
             request.Headers.Add(Constants.CallId, "call-id-1");
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
                 "CallIdTestOptions.json",
                 request,
                 async response =>
@@ -151,7 +137,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
 
                     var headers = response.Headers;
                     headers.TryGetValues("x-proxy-call-id", out var values).Should().BeTrue();
-                    var callId = values.Single();
+                    var callId = values!.Single();
 
                     headers.TryGetValues(Constants.CallId, out values).Should().BeTrue();
                     values.Should().BeEquivalentTo(new[] { callId });
@@ -162,7 +148,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task ServerTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "server?message=test");
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
                 "ServerTestOptions.json",
                 request,
                 async response =>
@@ -179,7 +165,8 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task NoServerTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "server?message=test");
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
+                "DefaultTestOptions.json",
                 request,
                 async response =>
                 {
@@ -194,7 +181,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task ExternalAddressTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "externalAddress?message=test");
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
                 "ExternalAddressTestOptions.json",
                 request,
                 response => EnsureResponseSucceededAsync(response));
@@ -204,7 +191,8 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task NoExternalAddressTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "noExternalAddress?message=test");
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
+                "DefaultTestOptions.json",
                 request,
                 response => EnsureResponseSucceededAsync(response));
         }
@@ -213,14 +201,15 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task ViaTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "via?message=test");
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
+                "DefaultTestOptions.json",
                 request,
                 async response =>
                 {
                     await EnsureResponseSucceededAsync(response);
 
                     var headers = response.Headers;
-                    headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new[] { "2.0 gwcore" });
+                    headers.GetValues(HeaderNames.Via).Should().ContainSingle().And.ContainMatch("?.? gwcore");
                 });
         }
 
@@ -228,7 +217,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task NoViaTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "noVia?message=test");
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
                 "NoViaTestOptions.json",
                 request,
                 async response =>
@@ -244,7 +233,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task ViaCustomProxyNameTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "viaCustomProxyName?message=test");
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
                 "ViaCustomProxyNameTestOptions.json",
                 request,
                 async response =>
@@ -252,7 +241,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                     await EnsureResponseSucceededAsync(response);
 
                     var headers = response.Headers;
-                    headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new[] { "2.0 custom-proxy" });
+                    headers.GetValues(HeaderNames.Via).Should().ContainMatch("?.? custom-proxy");
                 });
         }
 
@@ -261,14 +250,18 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         {
             var request = new HttpRequestMessage(Method.Get, "viaTwoProxies?message=test");
             request.Headers.Via.Add(new ViaHeaderValue("1.1", "first-leg"));
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
+                "DefaultTestOptions.json",
                 request,
                 async response =>
                 {
                     await EnsureResponseSucceededAsync(response);
 
                     var headers = response.Headers;
-                    headers.GetValues(HeaderNames.Via).Should().BeEquivalentTo(new[] { "1.1 first-leg", "2.0 gwcore" });
+                    headers.GetValues(HeaderNames.Via).Should()
+                        .HaveCount(2)
+                        .And.Contain("1.1 first-leg")
+                        .And.ContainMatch("?.? gwcore");
                 });
         }
 
@@ -276,7 +269,8 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task ForwardedTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "forwarded?message=test");
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
+                "DefaultTestOptions.json",
                 request,
                 response => EnsureResponseSucceededAsync(response));
         }
@@ -290,7 +284,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             request.Headers.Add(Constants.XForwardedHost, "some-host");
             request.Headers.Add(Constants.XForwardedProto, "some-proto");
 
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
                 "NoXForwardedTestOptions.json",
                 request,
                 response => EnsureResponseSucceededAsync(response));
@@ -301,7 +295,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             request.Headers.Add(Constants.XForwardedHost, "some-host");
             request.Headers.Add(Constants.XForwardedProto, "some-proto");
 
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
                 "NoForwardedTestOptions.json",
                 request,
                 response => EnsureResponseSucceededAsync(response));
@@ -316,7 +310,8 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             request.Headers.Add(Constants.XForwardedHost, "some-host");
             request.Headers.Add(Constants.XForwardedProto, "some-proto");
 
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
+                "DefaultTestOptions.json",
                 request,
                 response => EnsureResponseSucceededAsync(response));
         }
@@ -325,7 +320,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task XForwardedTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "xForwarded?message=test");
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
                 "XForwardedTestOptions.json",
                 request,
                 response => EnsureResponseSucceededAsync(response));
@@ -340,7 +335,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             request.Headers.Add(Constants.XForwardedHost, "some-host");
             request.Headers.Add(Constants.XForwardedProto, "some-proto");
 
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
                 "XForwardedTestOptions.json",
                 request,
                 response => EnsureResponseSucceededAsync(response));
@@ -351,7 +346,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         {
             var request = new HttpRequestMessage(Method.Get, "setCookie?message=test");
 
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
                 "SetCookieTestOptions.json",
                 request,
                 async response =>
@@ -377,7 +372,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             var request = new HttpRequestMessage(Method.Get, "append?message=test");
             request.Headers.Add(Constants.TwoValues, new[] { "one" });
 
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
                 "AppendHeaderTestOptions.json",
                 request,
                 async response =>
@@ -395,7 +390,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         {
             var request = new HttpRequestMessage(Method.Get, "addOverride?message=test");
 
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
                 "AddOverridesTestOptions.json",
                 request,
                 async response =>
@@ -417,7 +412,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             request.Headers.Add(Constants.TwoValues, new[] { "one", "two" });
             request.Headers.Add(Constants.Expression, new[] { "one", "two" });
 
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
                 "UpdateOverridesTestOptions.json",
                 request,
                 async response =>
@@ -441,7 +436,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             request.Headers.Add(Constants.Underscore, "one");
             request.Headers.Add(Constants.Expression, string.Empty);
 
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
                 "DiscardTestOptions.json",
                 request,
                 async response =>
@@ -465,7 +460,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             request.Headers.Add(Constants.TwoValues, new[] { "one", "two" });
             request.Headers.Add(Constants.ThreeValues, new[] { "one", "two", "three" });
 
-            await executor.ExecuteAsync(
+            await ExecuteAsync(
                 "DiscardInboundTestOptions.json",
                 request,
                 async response =>

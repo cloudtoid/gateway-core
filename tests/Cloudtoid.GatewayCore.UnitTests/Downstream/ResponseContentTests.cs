@@ -94,7 +94,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
 
             // Assert
             response.Headers.ContainsKey(header).Should().BeFalse();
-            var logger = (Logger<ResponseContentSetter>)serviceProvider.GetRequiredService<ILogger<ResponseContentSetter>>();
+            var logger = (Logger<ResponseContentSetter>)serviceProvider!.GetRequiredService<ILogger<ResponseContentSetter>>();
             logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase("Header 'Content-MD5' is not added. This was instructed by IResponseContentHeaderValuesProvider.TryGetHeaderValues.")).Should().BeTrue();
         }
 

@@ -26,7 +26,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
         public void New_FullyPopulatedOptions_AllValuesAreReadCorrectly()
         {
             var context = GetProxyContext(@"Settings/OptionsFull.json");
-            var settings = serviceProvider.GetRequiredService<ISettingsProvider>();
+            var settings = serviceProvider!.GetRequiredService<ISettingsProvider>();
             settings.CurrentValue.System.RouteCacheMaxCount.Should().Be(1024);
 
             var routeSettings = context.Route.Settings;
@@ -208,7 +208,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
         public void New_EmptyOptions_AllValuesSetToDefault()
         {
             var context = GetProxyContext(@"Settings/OptionsEmpty.json");
-            var settings = serviceProvider.GetRequiredService<ISettingsProvider>();
+            var settings = serviceProvider!.GetRequiredService<ISettingsProvider>();
             settings.CurrentValue.System.RouteCacheMaxCount.Should().Be(100000);
 
             context.ProxyName.Should().Be("gwcore");
@@ -289,7 +289,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
 
                     monitor.OnChange(Reset);
 
-                    var sender = settingsProvider.CurrentValue.Routes[0].Proxy.UpstreamRequest.Sender;
+                    var sender = settingsProvider.CurrentValue.Routes[0].Proxy!.UpstreamRequest.Sender;
                     sender.EvaluateTimeout(context).TotalMilliseconds.Should().Be(5000);
                     sender.AllowAutoRedirect.Should().BeFalse();
                     sender.UseCookies.Should().BeTrue();
@@ -303,7 +303,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
                     changeEvent.WaitOne();
 
                     context = serviceProvider.GetProxyContext();
-                    sender = settingsProvider.CurrentValue.Routes[0].Proxy.UpstreamRequest.Sender;
+                    sender = settingsProvider.CurrentValue.Routes[0].Proxy!.UpstreamRequest.Sender;
                     sender.EvaluateTimeout(context).TotalMilliseconds.Should().Be(2000);
                     sender.AllowAutoRedirect.Should().BeTrue();
                     sender.UseCookies.Should().BeFalse();
@@ -316,7 +316,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
 
                     changeEvent.WaitOne();
                     context = serviceProvider.GetProxyContext();
-                    sender = settingsProvider.CurrentValue.Routes[0].Proxy.UpstreamRequest.Sender;
+                    sender = settingsProvider.CurrentValue.Routes[0].Proxy!.UpstreamRequest.Sender;
                     sender.EvaluateTimeout(context).TotalMilliseconds.Should().Be(5000);
                     sender.AllowAutoRedirect.Should().BeFalse();
                     sender.UseCookies.Should().BeTrue();
@@ -549,7 +549,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
                 () => throw new InvalidOperationException("Should never get here"))
                 .HandlerLifetime = TimeSpan.FromSeconds(1);
 
-            var factory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+            var factory = serviceProvider!.GetRequiredService<IHttpClientFactory>();
             var client = factory.CreateClient(httpClientName);
 
             // The only way I can check the socket handler is through reflection

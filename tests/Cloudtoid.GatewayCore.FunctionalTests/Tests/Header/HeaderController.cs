@@ -9,7 +9,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
 {
     [ApiController]
     [Route("[controller]")]
-    public class UpstreamController : ControllerBase
+    public class HeaderController : ControllerBase
     {
         [HttpGet("echo")]
         public string Echo(string message) => message;

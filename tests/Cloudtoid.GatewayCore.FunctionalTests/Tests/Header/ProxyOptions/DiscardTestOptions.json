@@ -1,8 +1,8 @@
-{
+﻿{
   "routes": {
     "/api/": {
       "proxy": {
-        "to": "https://localhost:$upstream-port/upstream/",
+        "to": "https://localhost:$upstream-port/header/",
         "upstreamRequest": {
           "headers": {
             "discardEmpty": true,

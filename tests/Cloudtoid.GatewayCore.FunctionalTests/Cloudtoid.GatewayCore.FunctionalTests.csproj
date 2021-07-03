@@ -4,8 +4,18 @@
     <ProjectReference Include="..\..\src\Cloudtoid.GatewayCore\Cloudtoid.GatewayCore.csproj" />
   </ItemGroup>
 
+  <!-- 
+    This is only needed because of a bug in VS for Mac: https://developercommunity.visualstudio.com/t/mstest-tests-not-discovered-in-VS-for-ma/482408.
+    TODO: Remove this once the issue is fully resolved. -->
   <ItemGroup>
-    <None Update="Tests\Options\*.json" CopyToOutputDirectory="PreserveNewest" />
+    <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestVersion)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Docker.DotNet" Version="3.125.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Tests/**/ProxyOptions/*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

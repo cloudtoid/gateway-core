@@ -4,6 +4,14 @@
     <ProjectReference Include="..\..\src\Cloudtoid.GatewayCore\Cloudtoid.GatewayCore.csproj" />
   </ItemGroup>
 
+  <!-- 
+    This is only needed because of a bug in VS for Mac: https://developercommunity.visualstudio.com/t/mstest-tests-not-discovered-in-VS-for-ma/482408.
+    TODO: Remove this once the issue is fully resolved. -->
+  <ItemGroup>
+    <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestVersion)" />
+  </ItemGroup>
+
+
   <ItemGroup>
     <None Update="Settings\OptionsSenderHttpClient.json" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Settings\OptionsFull.json" CopyToOutputDirectory="PreserveNewest" />

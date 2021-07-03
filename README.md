@@ -26,6 +26,7 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
   - Add a table of all config values with a description and links/anchors from the rest of the doc.
   - Mention the options-schema.json and how it can be used.
   - URL Pattern Matching
+  - How to run teh test server
 - Add unit tests for trailing TrailingHeaderSetter
 - Enable github build actions
 - Publish NuGet
@@ -36,13 +37,13 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
   - Use of options
   - Named HttpClient Management from the outside
 - Side by side tests with nginx
-- Kestrel should only listen on relevant routes defined in Options
+- Kestrel should only listen on relevant exact routes defined in Options
 - Benchmark
 - Increase code coverage
 - Add support for modification of the Path attribute in the Set-Cookie header
-- Ensure that all 3 projects compile on macos and VS for Mac
 - Publish options-schema.json on a website so it can be referenced in JSON GatewayOptions files
-- How to run the test server
+- Build and test on Linux & MacOS
+- Right now, all upstream HTTP errors are simply converted to 502/BadGateway. Look into the options here:  
 
 ## Future version
 
@@ -58,6 +59,9 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 - Platforms
   - Kubernetes
   - Service Fabric
+- Fixes
+  - Search for `TODO`s and remove the ones that are fixed.
+  -
 
 ## Getting Started
 

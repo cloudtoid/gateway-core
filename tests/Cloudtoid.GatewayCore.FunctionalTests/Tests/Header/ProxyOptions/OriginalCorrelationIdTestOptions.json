@@ -1,9 +1,8 @@
-{
+﻿{
   "routes": {
     "/api/": {
       "proxy": {
-        "to": "https://localhost:$upstream-port/upstream/",
-        "correlationIdHeader": "x-c-custom",
+        "to": "https://localhost:$upstream-port/header/",
         "downstreamResponse": {
           "headers": {
             "addCorrelationId": true

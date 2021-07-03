@@ -32,8 +32,8 @@ namespace Cloudtoid.GatewayCore.UnitTests
             var message = await SetContentAsync(context);
 
             // Assert
-            message.Content.Headers.TryGetValues(header, out var headers).Should().BeTrue();
-            headers.Should().HaveCount(1);
+            message.Content!.Headers.TryGetValues(header, out var headers).Should().BeTrue();
+            headers.Should().ContainSingle();
         }
 
         [TestMethod]
@@ -48,7 +48,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             var message = await SetContentAsync(context);
 
             // Assert
-            message.Content.Headers.TryGetValues(header, out _).Should().BeFalse();
+            message.Content!.Headers.TryGetValues(header, out _).Should().BeFalse();
         }
 
         [TestMethod]
@@ -63,8 +63,8 @@ namespace Cloudtoid.GatewayCore.UnitTests
             var message = await SetContentAsync(context);
 
             // Assert
-            message.Content.Headers.TryGetValues(header, out var headers).Should().BeTrue();
-            headers.Should().HaveCount(1);
+            message.Content!.Headers.TryGetValues(header, out var headers).Should().BeTrue();
+            headers.Should().ContainSingle();
         }
 
         [TestMethod]
@@ -82,7 +82,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             var message = await SetContentAsync(context, options: options);
 
             // Assert
-            message.Content.Headers.TryGetValues(header, out _).Should().BeFalse();
+            message.Content!.Headers.TryGetValues(header, out _).Should().BeFalse();
         }
 
         [TestMethod]
@@ -97,7 +97,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             var message = await SetContentAsync(context);
 
             // Assert
-            message.Content.Headers.TryGetValues(header, out _).Should().BeFalse();
+            message.Content!.Headers.TryGetValues(header, out _).Should().BeFalse();
         }
 
         [TestMethod]
@@ -105,13 +105,13 @@ namespace Cloudtoid.GatewayCore.UnitTests
         {
             // Arrange
             var context = new DefaultHttpContext();
-            context.Request.Body = null;
+            context.Request.Body = null!;
 
             // Act
             await SetContentAsync(context);
 
             // Assert
-            var logger = (Logger<RequestContentSetter>)serviceProvider.GetRequiredService<ILogger<RequestContentSetter>>();
+            var logger = (Logger<RequestContentSetter>)serviceProvider!.GetRequiredService<ILogger<RequestContentSetter>>();
             logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase("The inbound downstream request does not have a content body")).Should().BeTrue();
         }
 
@@ -142,7 +142,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             await SetContentAsync(context);
 
             // Assert
-            var logger = (Logger<RequestContentSetter>)serviceProvider.GetRequiredService<ILogger<RequestContentSetter>>();
+            var logger = (Logger<RequestContentSetter>)serviceProvider!.GetRequiredService<ILogger<RequestContentSetter>>();
             logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase("The inbound downstream request has a seek-able body stream. Resetting the stream to the beginning.")).Should().BeTrue();
         }
 
@@ -156,7 +156,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             await SetContentAsync(context, contentLength: null);
 
             // Assert
-            var logger = (Logger<RequestContentSetter>)serviceProvider.GetRequiredService<ILogger<RequestContentSetter>>();
+            var logger = (Logger<RequestContentSetter>)serviceProvider!.GetRequiredService<ILogger<RequestContentSetter>>();
             logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase("The inbound downstream request does not specify a 'Content-Length'.")).Should().BeTrue();
         }
 
@@ -172,7 +172,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             await SetContentAsync(context, provider: provider);
 
             // Assert
-            var logger = (Logger<RequestContentSetter>)serviceProvider.GetRequiredService<ILogger<RequestContentSetter>>();
+            var logger = (Logger<RequestContentSetter>)serviceProvider!.GetRequiredService<ILogger<RequestContentSetter>>();
             logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase("Header 'Content-MD5' is not added. This was instructed by IRequestContentHeaderValuesProvider.TryGetHeaderValues.")).Should().BeTrue();
         }
 

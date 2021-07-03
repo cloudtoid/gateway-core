@@ -21,15 +21,6 @@
     <MicrosoftExtensionsVersion>5.0.*</MicrosoftExtensionsVersion>
   </PropertyGroup>
 
-  <!-- Test Package Versions -->
-  <PropertyGroup>
-    <MicrosoftDotNetTestSdk>16.10.*</MicrosoftDotNetTestSdk>
-    <MSTestVersion>2.2.*</MSTestVersion>
-    <NSubstituteVersion>4.2.*</NSubstituteVersion>
-    <FluentAssertionsVersion>5.10.*</FluentAssertionsVersion>
-    <CoverletVersion>3.0.*</CoverletVersion>
-  </PropertyGroup>
-
   <!-- Package dependencies -->
   <ItemGroup>
     <PackageReference Include="Cloudtoid.CodeAnalysis" Version="$(CloudtoidCodeAnalysisVersion)" />

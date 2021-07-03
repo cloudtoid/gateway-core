@@ -4,7 +4,17 @@
 
   <PropertyGroup>
     <IsPackable>false</IsPackable>
-    <Nullable>annotations</Nullable>
+  </PropertyGroup>
+
+  <!-- Test Package Versions -->
+  <PropertyGroup>
+    <!-- TODO: Using an exact version here because of this bug in VS for Mac: https://developercommunity.visualstudio.com/t/mstest-tests-not-discovered-in-VS-for-ma/1467015-->
+    <MSTestVersion>2.2.4</MSTestVersion>
+    <MicrosoftDotNetTestSdk>16.10.*</MicrosoftDotNetTestSdk>
+    <NSubstituteVersion>4.2.*</NSubstituteVersion>
+    <FluentAssertionsVersion>5.10.*</FluentAssertionsVersion>
+    <FluentAssertionsAnalyzersVersion>0.11.*</FluentAssertionsAnalyzersVersion>
+    <CoverletVersion>3.0.*</CoverletVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +23,7 @@
     <PackageReference Include="MSTest.TestFramework" Version="$(MSTestVersion)" />
     <PackageReference Include="NSubstitute" Version="$(NSubstituteVersion)" />
     <PackageReference Include="FluentAssertions" Version="$(FluentAssertionsVersion)" />
+    <PackageReference Include="FluentAssertions.Analyzers" Version="$(FluentAssertionsAnalyzersVersion)" />
     <PackageReference Include="coverlet.msbuild" Version="$(CoverletVersion)" />
   </ItemGroup>
 
