@@ -200,12 +200,13 @@ namespace Cloudtoid.GatewayCore.Downstream
 
         protected virtual void AddExtraHeaders(ProxyContext context)
         {
+            var settings = context.ProxyDownstreamResponseHeaderSettings;
             var headers = context.Response.Headers;
 
-            foreach (var (name, header) in context.ProxyDownstreamResponseHeaderSettings.Overrides)
+            foreach (var (name, header) in settings.Overrides)
                 headers.Append(name, header.EvaluateValues(context).AsStringValues());
 
-            foreach (var (name, header) in context.ProxyDownstreamResponseHeaderSettings.Appends)
+            foreach (var (name, header) in settings.Appends)
                 headers.Append(name, header.EvaluateValues(context).AsStringValues());
         }
 

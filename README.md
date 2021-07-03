@@ -9,21 +9,19 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 ## V1 - TODOs
 
 - Add more functional tests:
-        // Tests
-        // - Need functional tests for the following settings:
-        // --- "upstreamRequest" -> "httpVersion"
-        // --- "upstreamRequest" -> "sender". Not sure how to test all of these. Maybe check the HTTP Client to see if the values are set correctly?
-        // - Fix HTTPS so it also works on Mac and Linux!
-        // - All HTTP methods (POST, DELETE, etc)
-        // - HttpClientName
-        // - Routing
-        // - Failed HTTP requests with and without content/body
-        // - Timeout (both at httpClient to upstream and inside of proxy)
-        // - Auto redirects
-        // - ProxyException and exception handling
-        // - When no route is found, do not return 200
-        // - Authentication
-        // - Run nginx side by side and ensure all headers and other properties match.
+  - "upstreamRequest" -> "httpVersion" add a functional test that tests this setting.
+  - "upstreamRequest" -> "sender". Not sure how to test all of these. Maybe check the HTTP Client to see if the values are set correctly?
+  - Add tests for all HTTP methods (POST, DELETE, etc)
+  - Fix HTTPS so it also works on Mac and Linux!
+  - HttpClientName
+  - Routing
+  - Failed HTTP requests with and without content/body
+  - Timeout (both at httpClient to upstream and inside of proxy)
+  - Auto redirects
+  - ProxyException and exception handling
+  - When no route is found, do not return 200
+  - Authentication
+  - Run nginx side by side and ensure all headers and other properties match.
 - Write documentation
   - Add a table of all config values with a description and links/anchors from the rest of the doc.
   - Mention the options-schema.json and how it can be used.
@@ -33,7 +31,7 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 - Publish NuGet
 - Add multiple Sample Projects
   - Basic/simple
-  - Multiple kestrel servers
+  - Multiple kestrel servers in a single project
   - Advanced extensibility
   - Use of options
   - Named HttpClient Management from the outside
