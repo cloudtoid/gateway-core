@@ -9,7 +9,7 @@ using static Cloudtoid.Contract;
 
 namespace Cloudtoid.GatewayCore.FunctionalTests
 {
-    internal sealed class ProxyStartup
+    internal sealed class GatewayCoreStartup
     {
         public static void ConfigureServices(IServiceCollection services)
         {
@@ -38,7 +38,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                     o.ListenLocalhost(port, lo => lo.Protocols = HttpProtocols.Http1AndHttp2);
                     o.AddServerHeader = false;
                 })
-                .UseStartup<ProxyStartup>()
+                .UseStartup<GatewayCoreStartup>()
                 .Build();
         }
     }

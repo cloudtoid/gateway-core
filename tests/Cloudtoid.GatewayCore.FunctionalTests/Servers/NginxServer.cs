@@ -11,18 +11,21 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
     internal sealed class NginxServer : IAsyncDisposable
     {
         private const string Image = "nginx:1.21";
+        private static readonly IReadOnlySet<string> DockerProcessNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "docker",
+            "dockerd"
+        };
+        private readonly string configFile;
+        private readonly int port;
         private readonly DockerClient client;
         private string? containerId;
 
-        public NginxServer()
+        internal NginxServer(string configFile, int port)
         {
-            var running = Process.GetProcesses().Any(
-                p => p.ProcessName.EqualsOrdinalIgnoreCase("docker")
-                || p.ProcessName.EqualsOrdinalIgnoreCase("dockerd"));
-
-            if (!running)
-                throw new InvalidOperationException("Docker is not running!");
-
+            EnsureDockerIsRunning();
+            this.configFile = configFile;
+            this.port = port;
             client = new DockerClientConfiguration().CreateClient();
         }
 
@@ -35,8 +38,8 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 {
                     FromImage = Image,
                 },
-                new AuthConfig(),
-                new Progress<JSONMessage>());
+                null,
+                null);
 
             var response = await client.Containers.CreateContainerAsync(
                 new CreateContainerParameters
@@ -45,8 +48,8 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                     Name = "nginx-gwcore",
                     ExposedPorts = new Dictionary<string, EmptyStruct>
                     {
-                        ["8000"] = default
-                    }
+                        [port.ToStringInvariant() + ":80"] = default
+                    },
                 });
 
             containerId = response.ID;
@@ -60,6 +63,12 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 await client.Containers.StopContainerAsync(containerId, null);
 
             client.Dispose();
+        }
+
+        private static void EnsureDockerIsRunning()
+        {
+            if (!Process.GetProcesses().Any(p => DockerProcessNames.Contains(p.ProcessName)))
+                throw new InvalidOperationException("Docker desktop is not running!");
         }
     }
 }

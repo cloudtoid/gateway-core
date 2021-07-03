@@ -43,7 +43,7 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 - Add support for modification of the Path attribute in the Set-Cookie header
 - Publish options-schema.json on a website so it can be referenced in JSON GatewayOptions files
 - Build and test on Linux & MacOS
-- Right now, all upstream HTTP errors are simply converted to 502/BadGateway. Look into the options here:  
+- Right now, some upstream HTTP errors are simply converted to 502/BadGateway. Look into the options here.
 
 ## Future version
 
