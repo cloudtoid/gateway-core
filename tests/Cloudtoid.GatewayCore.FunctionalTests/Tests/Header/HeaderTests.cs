@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -475,6 +476,21 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 });
         }
 
+        [TestMethod("Should not return success when route doesn't exist.")]
+        public async Task NoRouteTestAsync()
+        {
+            var request = new HttpRequestMessage(Method.Get, "noRoute?message=test");
+            await ExecuteAsync(
+                "DefaultTestOptions.json",
+                request,
+                response =>
+                {
+                    response.IsSuccessStatusCode.Should().BeFalse();
+                    response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+                    return Task.CompletedTask;
+                });
+        }
+
         private static async Task EnsureResponseSucceededAsync(HttpResponseMessage response)
         {
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -482,7 +498,16 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             result.Should().Be("test");
         }
 
-        private static async Task ExecuteAsync(string config, HttpRequestMessage request, Func<HttpResponseMessage, Task> responseValidator)
-            => await TestExecutor.ExecuteAsync("Tests/Header/GatewayCoreOptions/" + config, request, responseValidator);
+        private static async Task ExecuteAsync(
+            string config,
+            HttpRequestMessage request,
+            Func<HttpResponseMessage, Task> responseValidator)
+        {
+            await using var pipeline = new Pipeline("Tests/Header/GatewayCoreOptions/" + config);
+            await pipeline.StartAsync();
+            using var httpClient = pipeline.CreateGatewayCoreClient();
+            using var response = await httpClient.SendAsync(request);
+            await responseValidator(response);
+        }
     }
 }
