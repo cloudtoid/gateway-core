@@ -61,7 +61,7 @@
             "addCorrelationId": true,
             "addCallId": true,
 
-            "skipVia": true,
+            "addVia": true,
 
             "cookies": {
               "*": {

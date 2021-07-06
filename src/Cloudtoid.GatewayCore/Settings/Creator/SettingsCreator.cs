@@ -284,7 +284,7 @@ namespace Cloudtoid.GatewayCore.Settings
                 options.AddServer,
                 options.AddCorrelationId,
                 options.AddCallId,
-                options.SkipVia,
+                options.AddVia,
                 Create(route, options.Cookies),
                 Create(route, options.Appends),
                 Create(route, options.Overrides),

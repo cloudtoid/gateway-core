@@ -10,7 +10,7 @@
         },
         "downstreamResponse": {
           "headers": {
-            "skipVia": true
+            "addVia": false
           }
         }
       }

@@ -27,7 +27,7 @@ namespace Cloudtoid.GatewayCore.Settings
             bool addServer,
             bool addCorrelationId,
             bool addCallId,
-            bool skipVia,
+            bool addVia,
             IReadOnlyDictionary<string, CookieSettings> cookies,
             IReadOnlyDictionary<string, HeaderSettings> appends,
             IReadOnlyDictionary<string, HeaderSettings> overrides,
@@ -39,7 +39,7 @@ namespace Cloudtoid.GatewayCore.Settings
             AddServer = addServer;
             AddCorrelationId = addCorrelationId;
             AddCallId = addCallId;
-            SkipVia = skipVia;
+            AddVia = addVia;
             Cookies = cookies;
             Appends = appends;
             Overrides = overrides;
@@ -63,7 +63,7 @@ namespace Cloudtoid.GatewayCore.Settings
 
         public bool AddCallId { get; }
 
-        public bool SkipVia { get; }
+        public bool AddVia { get; }
 
         public IReadOnlyDictionary<string, CookieSettings> Cookies { get; }
 

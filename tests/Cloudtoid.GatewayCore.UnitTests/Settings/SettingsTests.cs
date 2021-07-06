@@ -87,7 +87,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             var response = routeSettings.Proxy.DownstreamResponse;
             var responseHeaders = response.Headers;
             responseHeaders.DiscardInboundHeaders.Should().BeTrue();
-            responseHeaders.SkipVia.Should().BeTrue();
+            responseHeaders.AddVia.Should().BeTrue();
             responseHeaders.AddCorrelationId.Should().BeTrue();
             responseHeaders.AddCallId.Should().BeTrue();
             responseHeaders.AddServer.Should().BeTrue();
@@ -251,7 +251,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             responseHeaders.DiscardEmpty.Should().BeFalse();
             responseHeaders.DiscardUnderscore.Should().BeFalse();
             responseHeaders.DiscardInboundHeaders.Should().BeFalse();
-            responseHeaders.SkipVia.Should().BeFalse();
+            responseHeaders.AddVia.Should().BeFalse();
             responseHeaders.AddCorrelationId.Should().BeFalse();
             responseHeaders.AddCallId.Should().BeFalse();
             responseHeaders.AddServer.Should().BeFalse();

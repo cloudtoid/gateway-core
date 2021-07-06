@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Tests/**/ProxyOptions/*.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Tests/**/GatewayCoreOptions/*.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Tests/**/NginxConfigs/*.conf" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

@@ -61,7 +61,7 @@ namespace Cloudtoid.GatewayCore.Downstream
             if (!settings.DiscardInboundHeaders)
                 AddUpstreamResponseHeadersToDownstream(context, upstreamResponse);
 
-            if (!settings.SkipVia)
+            if (settings.AddVia)
                 AddViaHeader(context, upstreamResponse);
 
             if (settings.AddCorrelationId)

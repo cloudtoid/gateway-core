@@ -14,7 +14,14 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [TestMethod("Basic HTTP Status plumbing test")]
         public async Task BasicPlumbingTestAsync()
         {
-            await Task.Delay(10);
+            await new Pipeline(
+                "Tests/HttpStatus/GatewayCoreOptions/DefaultTestOptions.json",
+                "Tests/HttpStatus/NginxConfigs/default.conf").StartAsync();
+
+            while (true)
+            {
+                await Task.Delay(10);
+            }
         }
 
         [TestMethod("Should not return success when route doesn't exist.")]

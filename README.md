@@ -61,7 +61,6 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
   - Service Fabric
 - Fixes
   - Search for `TODO`s and remove the ones that are fixed.
-  -
 
 ## Getting Started
 
@@ -145,6 +144,8 @@ There are four types of route tracking: two that offer information on proxies, a
 
 A proxy typically uses the [`Via`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via) header for tracking message forwards, avoiding request loops, and identifying the protocol capabilities of senders along the request/response chain.
 
+According to [RFC7230](https://datatracker.ietf.org/doc/html/rfc7230#section-5.7.1), a proxy must send an appropriate `Via` header field in each message that it forwards. An HTTP-to-HTTP gateway must send an appropriate `Via` header field in each inbound request message and may send a `Via` header field in forwarded response messages.
+
 This header is a comma-separated list of proxies along the message chain with the closest proxy to the sender being the left-most value.
 
 The value added by GatewayCore includes the pseudonym of the proxy. This default name is `gwcore` but can be customized with `proxyName`:
@@ -169,7 +170,7 @@ GatewayCore appends one of the following values:
 
 > As illustrated above, GatewayCore omits the protocol for HTTP requests and responses.
 
-The `Via` header is included by default on both requests to proxied servers, as well as responses to clients. You can change this behavior using `skipVia` as shown below:
+The `Via` header is included by default in requests to proxied servers but not in forwarded responses. You can change this behavior using `skipVia` and `addVia` as shown below:
 
 ```json
 "routes": {
@@ -184,15 +185,15 @@ The `Via` header is included by default on both requests to proxied servers, as 
       },
       "downstreamResponse": {
         "headers": {
-          "skipVia": true
+          "addVia": true
 ```
 
 ### Forwarded category of headers
 
-The forwared class of headers contains information from the client-facing side of proxy servers that is altered or lost when a proxy is involved in the path of the request. This information is passed on using one of these techniques:
+The `forwarded` class of headers contains information from the client-facing side of proxy servers that is altered or lost when a proxy is involved in the path of the request. This information is passed on using one of these techniques:
 
 1. The [`Forwarded`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded) header is what GatewayCore uses by default. This is the standardized version of the header.
-1. The [`X-Forwarded-For`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For), [`X-Forwarded-Host`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Host), and [`X-Forwarded-Proto`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Proto) headers which are considered the [de-facto standard](https://en.wikipedia.org/wiki/De_facto_standard) versions of the [`Forwared`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded) header.
+1. The [`X-Forwarded-For`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For), [`X-Forwarded-Host`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Host), and [`X-Forwarded-Proto`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Proto) headers which are considered the [de-facto standard](https://en.wikipedia.org/wiki/De_facto_standard) versions of the [`Forwarded`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded) header.
 
 The information included in these headers typically consists of the IP address of the client, the IP address where the request came into the proxy server, the [`Host`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Host) request header field as received by the proxy, and the protocol used by the request (typically "http" or "https").
 
@@ -360,6 +361,7 @@ GatewayCore can append additional headers to requests sent to proxied servers, a
 ```
 
 > A header value can be text or an [expression](#Expressions).
+
 ### Add headers
 
 GatewayCore can add additional headers to requests sent to proxied servers, as well as responses forwarded to clients. In the example below, GatewayCore adds the `x-new-request-header` header with value `new-value` to proxied requests. A similar header is also added to responses with two values: `value-1` and `value-2`:
@@ -530,7 +532,6 @@ When using the GatewayCore as a library within your .net core application, you h
 ## Upstream request http client
 
 TODO
-
 
 ## Gateway settings and options
 

@@ -250,9 +250,9 @@
                         "description": "Specifies if a `x-call-id` header should be added. This is a unique value that is generated on each call.",
                         "default": false
                       },
-                      "skipVia": {
+                      "addVia": {
                         "type": "boolean",
-                        "description": "Specifies if the `via` header should be skipped from the outbound response.",
+                        "description": "Specifies if the `via` header should be added to the outbound response.",
                         "default": false
                       },
                       "cookies": {

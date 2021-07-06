@@ -127,7 +127,12 @@ namespace Cloudtoid.GatewayCore
                         public bool SkipCallId { get; set; }
 
                         /// <summary>
-                        /// Gets or sets if a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via"><c>via</c></a> header should be skipped from the outbound request.
+                        /// Gets or sets if a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via"><c>via</c></a>
+                        /// header should be skipped from the outbound request.
+                        ///
+                        /// According to <a href="https://datatracker.ietf.org/doc/html/rfc7230#section-5.7.1">RFC7230</a>, a proxy must send an appropriate
+                        /// Via header field in each message that it forwards. An HTTP-to-HTTP gateway must send an appropriate Via header field in each
+                        /// inbound request message and may send a Via header field in forwarded response messages.
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool SkipVia { get; set; }
@@ -305,10 +310,14 @@ namespace Cloudtoid.GatewayCore
                         public bool AddCallId { get; set; }
 
                         /// <summary>
-                        /// Gets or sets if the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via"><c>via</c></a> header should be skipped from the outbound response.
+                        /// Gets or sets if a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via"><c>via</c></a> header should be added to outbound responses.
+                        ///
+                        /// According to <a href="https://datatracker.ietf.org/doc/html/rfc7230#section-5.7.1">RFC7230</a>, a proxy must send an appropriate
+                        /// Via header field in each message that it forwards. An HTTP-to-HTTP gateway must send an appropriate Via header field in each
+                        /// inbound request message and may send a Via header field in forwarded response messages.
                         /// The default value is <c>false</c>.
                         /// </summary>
-                        public bool SkipVia { get; set; }
+                        public bool AddVia { get; set; }
 
                         /// <summary>
                         /// Gets or sets the options that are applied to the <c>set-cookie</c> headers in the inbound upstream response.

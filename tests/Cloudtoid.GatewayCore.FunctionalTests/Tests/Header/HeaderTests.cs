@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Net.Http.Headers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static Cloudtoid.GatewayCore.FunctionalTests.TestExecutor;
 using Method = System.Net.Http.HttpMethod;
 
 namespace Cloudtoid.GatewayCore.FunctionalTests
@@ -26,11 +25,13 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                     await EnsureResponseSucceededAsync(response);
 
                     var headers = response.Headers;
-                    headers.GetValues(HeaderNames.Via).Should().ContainSingle().And.ContainMatch("?.? gwcore");
+                    headers.Should().ContainSingle();
+                    headers.Contains(HeaderNames.Via).Should().BeFalse();
                     headers.Contains(Constants.CorrelationId).Should().BeFalse();
                     headers.Contains(Constants.CallId).Should().BeFalse();
 
                     var contentHeaders = response.Content.Headers;
+                    contentHeaders.Should().HaveCount(2);
                     contentHeaders.ContentType.Should().NotBeNull();
                     contentHeaders.ContentType!.MediaType.Should().Be("text/plain");
                     contentHeaders.ContentType.CharSet.Should().Be("utf-8");
@@ -202,7 +203,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         {
             var request = new HttpRequestMessage(Method.Get, "via?message=test");
             await ExecuteAsync(
-                "DefaultTestOptions.json",
+                "ViaTestOptions.json",
                 request,
                 async response =>
                 {
@@ -251,7 +252,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             var request = new HttpRequestMessage(Method.Get, "viaTwoProxies?message=test");
             request.Headers.Via.Add(new ViaHeaderValue("1.1", "first-leg"));
             await ExecuteAsync(
-                "DefaultTestOptions.json",
+                "ViaTestOptions.json",
                 request,
                 async response =>
                 {
@@ -480,5 +481,8 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             var result = await response.Content.ReadAsStringAsync();
             result.Should().Be("test");
         }
+
+        private static async Task ExecuteAsync(string config, HttpRequestMessage request, Func<HttpResponseMessage, Task> responseValidator)
+            => await TestExecutor.ExecuteAsync("Tests/Header/GatewayCoreOptions/" + config, request, responseValidator);
     }
 }

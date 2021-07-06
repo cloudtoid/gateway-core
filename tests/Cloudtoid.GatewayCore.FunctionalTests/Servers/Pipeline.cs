@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
@@ -11,7 +12,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
     internal sealed class Pipeline : IAsyncDisposable
     {
         private static readonly Version Http2Version = new(2, 0);
-        private static volatile int port = 5000;
+        private static volatile int port = 8080;
         private readonly int gatewayCorePort;
         private readonly int upstreamPort;
         private readonly int nginxPort;
@@ -20,7 +21,9 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         private IWebHost? upstream;
         private IWebHost? gatewayCore;
 
-        internal Pipeline(string gatewayConfigFile, string? nginxConfigFile = null)
+        internal Pipeline(
+            string gatewayConfigFile,
+            string? nginxConfigFile = null)
         {
             gatewayCorePort = Interlocked.Increment(ref port);
             upstreamPort = Interlocked.Increment(ref port);
@@ -28,6 +31,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
 
             if (nginxConfigFile is not null)
             {
+                nginxConfigFile = GetNginxConfigFile(nginxConfigFile, upstreamPort);
                 nginxPort = Interlocked.Increment(ref port);
                 nginx = new NginxServer(nginxConfigFile, nginxPort);
             }
@@ -79,7 +83,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
 
         private static IConfiguration LoadGatewayConfig(string gatewayConfigFile, int upstreamPort)
         {
-            var file = new FileInfo("Tests/Header/ProxyOptions/" + gatewayConfigFile);
+            var file = new FileInfo(gatewayConfigFile);
             if (!file.Exists)
                 throw new FileNotFoundException($"File '{gatewayConfigFile}' cannot be found.");
 
@@ -99,6 +103,17 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             }
 
             return config;
+        }
+
+        private static string GetNginxConfigFile(string nginxConfigFile, int upstreamPort)
+        {
+            var config = File.ReadAllText(nginxConfigFile)
+                .ReplaceOrdinal("$upstream-port", upstreamPort.ToStringInvariant())
+                .ReplaceOrdinal("\r\n", "\n");
+
+            var path = Path.GetTempFileName();
+            File.WriteAllText(path, config, Encoding.Latin1);
+            return path;
         }
     }
 }

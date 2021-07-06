@@ -1,0 +1,15 @@
+﻿{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "https://localhost:$upstream-port/header/",
+        "proxyName": "custom-proxy",
+        "downstreamResponse": {
+          "headers": {
+            "addVia": true
+          }
+        }
+      }
+    }
+  }
+}

@@ -34,7 +34,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             return WebHost.CreateDefaultBuilder()
                 .ConfigureKestrel(o =>
                 {
-                    o.ListenLocalhost(
+                    o.ListenAnyIP(
                         port,
                         lo =>
                         {

@@ -426,7 +426,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = null;
             proxy.DownstreamResponse.Headers.DiscardInboundHeaders = false;
-            proxy.DownstreamResponse.Headers.SkipVia = false;
+            proxy.DownstreamResponse.Headers.AddVia = true;
 
             var message = new HttpResponseMessage();
             message.Version = new System.Version(2, 0);
@@ -446,7 +446,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = "some-proxy";
             proxy.DownstreamResponse.Headers.DiscardInboundHeaders = false;
-            proxy.DownstreamResponse.Headers.SkipVia = false;
+            proxy.DownstreamResponse.Headers.AddVia = true;
 
             var message = new HttpResponseMessage();
 
@@ -465,7 +465,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = "some-proxy";
             proxy.DownstreamResponse.Headers.DiscardInboundHeaders = false;
-            proxy.DownstreamResponse.Headers.SkipVia = false;
+            proxy.DownstreamResponse.Headers.AddVia = true;
 
             var message = new HttpResponseMessage();
             message.Version = new System.Version(2, 0);
@@ -486,7 +486,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = "some-proxy";
             proxy.DownstreamResponse.Headers.DiscardInboundHeaders = false;
-            proxy.DownstreamResponse.Headers.SkipVia = false;
+            proxy.DownstreamResponse.Headers.AddVia = true;
 
             var message = new HttpResponseMessage();
             message.Version = new System.Version(2, 0);
@@ -507,7 +507,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = "some-proxy";
             proxy.DownstreamResponse.Headers.DiscardInboundHeaders = false;
-            proxy.DownstreamResponse.Headers.SkipVia = true;
+            proxy.DownstreamResponse.Headers.AddVia = false;
 
             var message = new HttpResponseMessage();
             message.Version = new System.Version(2, 0);
@@ -528,7 +528,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = "some-proxy";
             proxy.DownstreamResponse.Headers.DiscardInboundHeaders = true;
-            proxy.DownstreamResponse.Headers.SkipVia = false;
+            proxy.DownstreamResponse.Headers.AddVia = true;
 
             var message = new HttpResponseMessage();
             message.Version = new System.Version(2, 0);
@@ -549,7 +549,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             var proxy = options.Routes["/api/"].Proxy!;
             proxy.ProxyName = "some-proxy";
             proxy.DownstreamResponse.Headers.DiscardInboundHeaders = false;
-            proxy.DownstreamResponse.Headers.SkipVia = false;
+            proxy.DownstreamResponse.Headers.AddVia = true;
 
             var message = new HttpResponseMessage();
             message.Version = new System.Version(2, 0);
