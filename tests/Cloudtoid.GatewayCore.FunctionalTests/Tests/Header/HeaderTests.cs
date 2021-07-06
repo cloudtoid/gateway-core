@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -473,21 +472,6 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                     headers.Contains(Constants.OneValue).Should().BeFalse();
                     headers.Contains(Constants.TwoValues).Should().BeFalse();
                     headers.Contains(Constants.ThreeValues).Should().BeFalse();
-                });
-        }
-
-        [TestMethod("Should not return success when route doesn't exist.")]
-        public async Task NoRouteTestAsync()
-        {
-            var request = new HttpRequestMessage(Method.Get, "noRoute?message=test");
-            await ExecuteAsync(
-                "DefaultTestOptions.json",
-                request,
-                response =>
-                {
-                    response.IsSuccessStatusCode.Should().BeFalse();
-                    response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-                    return Task.CompletedTask;
                 });
         }
 

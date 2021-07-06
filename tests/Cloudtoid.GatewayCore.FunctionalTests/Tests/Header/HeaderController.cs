@@ -18,10 +18,10 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public string TraceTest(string message)
         {
             HttpContext.Request.Headers.TryGetValue(Constants.CorrelationId, out var values).Should().BeTrue();
-            values.Should().HaveCount(1);
+            values.Should().ContainSingle();
 
             HttpContext.Request.Headers.TryGetValue(Constants.CallId, out values).Should().BeTrue();
-            values.Should().HaveCount(1);
+            values.Should().ContainSingle();
 
             return message;
         }
@@ -38,7 +38,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public string CustomCorrelationIdTest(string message)
         {
             HttpContext.Request.Headers.TryGetValue("x-c-custom", out var values).Should().BeTrue();
-            values.Should().HaveCount(1);
+            values.Should().ContainSingle();
             return message;
         }
 
@@ -74,7 +74,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public string ExternalAddressTest(string message)
         {
             HttpContext.Request.Headers.TryGetValue(Constants.ExternalAddress, out var values).Should().BeTrue();
-            values.Should().HaveCount(1);
+            values.Should().ContainSingle();
             return message;
         }
 
