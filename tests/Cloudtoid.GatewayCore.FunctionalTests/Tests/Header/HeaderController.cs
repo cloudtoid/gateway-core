@@ -11,16 +11,20 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
     [Route("[controller]")]
     public class HeaderController : ControllerBase
     {
+        private IHeaderDictionary RequestHeaders
+            => HttpContext.Request.Headers;
+
         [HttpGet("echo")]
-        public string Echo(string message) => message;
+        public string Echo(string message)
+            => message;
 
         [HttpGet("trace")]
         public string TraceTest(string message)
         {
-            HttpContext.Request.Headers.TryGetValue(Constants.CorrelationId, out var values).Should().BeTrue();
+            RequestHeaders.TryGetValue(Constants.CorrelationId, out var values).Should().BeTrue();
             values.Should().ContainSingle();
 
-            HttpContext.Request.Headers.TryGetValue(Constants.CallId, out values).Should().BeTrue();
+            RequestHeaders.TryGetValue(Constants.CallId, out values).Should().BeTrue();
             values.Should().ContainSingle();
 
             return message;
@@ -29,15 +33,15 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [HttpGet("noTrace")]
         public string NoTraceTest(string message)
         {
-            HttpContext.Request.Headers.ContainsKey(Constants.CorrelationId).Should().BeFalse();
-            HttpContext.Request.Headers.ContainsKey(Constants.CallId).Should().BeFalse();
+            RequestHeaders.ContainsKey(Constants.CorrelationId).Should().BeFalse();
+            RequestHeaders.ContainsKey(Constants.CallId).Should().BeFalse();
             return message;
         }
 
         [HttpGet("customCorrelationId")]
         public string CustomCorrelationIdTest(string message)
         {
-            HttpContext.Request.Headers.TryGetValue("x-c-custom", out var values).Should().BeTrue();
+            RequestHeaders.TryGetValue("x-c-custom", out var values).Should().BeTrue();
             values.Should().ContainSingle();
             return message;
         }
@@ -45,7 +49,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [HttpGet("originalCorrelationId")]
         public string OriginalCorrelationIdTest(string message)
         {
-            HttpContext.Request.Headers.TryGetValue(Constants.CorrelationId, out var values).Should().BeTrue();
+            RequestHeaders.TryGetValue(Constants.CorrelationId, out var values).Should().BeTrue();
             values.Should().BeEquivalentTo(new[] { "corr-id-1" });
 
             return message;
@@ -54,7 +58,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [HttpGet("callId")]
         public string CallIdTest(string message)
         {
-            HttpContext.Request.Headers.TryGetValue(Constants.CallId, out var values).Should().BeTrue();
+            RequestHeaders.TryGetValue(Constants.CallId, out var values).Should().BeTrue();
             var callId = values.Single();
             callId.Should().NotBe("call-id-1");
 
@@ -73,7 +77,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [HttpGet("externalAddress")]
         public string ExternalAddressTest(string message)
         {
-            HttpContext.Request.Headers.TryGetValue(Constants.ExternalAddress, out var values).Should().BeTrue();
+            RequestHeaders.TryGetValue(Constants.ExternalAddress, out var values).Should().BeTrue();
             values.Should().ContainSingle();
             return message;
         }
@@ -81,32 +85,32 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [HttpGet("noExternalAddress")]
         public string NoExternalAddressTest(string message)
         {
-            HttpContext.Request.Headers.ContainsKey(Constants.ExternalAddress).Should().BeFalse();
+            RequestHeaders.ContainsKey(Constants.ExternalAddress).Should().BeFalse();
             return message;
         }
 
         [HttpGet("via")]
         public string ViaTest(string message)
         {
-            HttpContext.Request.Headers.TryGetValue(HeaderNames.Via, out var values).Should().BeTrue();
-            values.Should().BeEquivalentTo(new[] { "1.1 gwcore" });
+            RequestHeaders.TryGetValue(HeaderNames.Via, out var values).Should().BeTrue();
+            values.Should().BeEquivalentTo(new[] { "1.1 " + GatewayCore.Constants.ServerName });
             return message;
         }
 
         [HttpGet("noVia")]
         public string NoViaTest(string message)
         {
-            HttpContext.Request.Headers.ContainsKey(HeaderNames.Via).Should().BeFalse();
+            RequestHeaders.ContainsKey(HeaderNames.Via).Should().BeFalse();
             return message;
         }
 
         [HttpGet("viaCustomProxyName")]
         public string ViaCustomProxyTest(string message)
         {
-            HttpContext.Request.Headers.TryGetValue(HeaderNames.Via, out var values).Should().BeTrue();
+            RequestHeaders.TryGetValue(HeaderNames.Via, out var values).Should().BeTrue();
             values.Should().BeEquivalentTo(new[] { "1.1 custom-proxy" });
 
-            HttpContext.Request.Headers.TryGetValue(Constants.ProxyName, out values).Should().BeTrue();
+            RequestHeaders.TryGetValue(Constants.ProxyName, out values).Should().BeTrue();
             values.Should().BeEquivalentTo(new[] { "custom-proxy" });
 
             return message;
@@ -115,8 +119,8 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [HttpGet("viaTwoProxies")]
         public string ViaTwoProxiesTest(string message)
         {
-            var values = HttpContext.Request.Headers.GetCommaSeparatedValues(HeaderNames.Via);
-            values.Should().BeEquivalentTo(new[] { "1.1 first-leg", "1.1 gwcore" });
+            var values = RequestHeaders.GetCommaSeparatedValues(HeaderNames.Via);
+            values.Should().BeEquivalentTo(new[] { "1.1 first-leg", "1.1 " + GatewayCore.Constants.ServerName });
 
             HttpContext.Response.Headers.Add(HeaderNames.Via, "1.1 first-leg");
             return message;
@@ -125,13 +129,13 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [HttpGet("forwarded")]
         public string ForwardedTest(string message)
         {
-            var values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.Forwarded);
+            var values = RequestHeaders.GetCommaSeparatedValues(Constants.Forwarded);
             var forwarded = RemovePortFromHostInForwarded(values.Single());
             forwarded.Should().Be("by=\"[::1]\";for=\"[::1]\";host=localhost;proto=http");
 
-            HttpContext.Request.Headers.ContainsKey(Constants.XForwardedFor).Should().BeFalse();
-            HttpContext.Request.Headers.ContainsKey(Constants.XForwardedHost).Should().BeFalse();
-            HttpContext.Request.Headers.ContainsKey(Constants.XForwardedProto).Should().BeFalse();
+            RequestHeaders.ContainsKey(Constants.XForwardedFor).Should().BeFalse();
+            RequestHeaders.ContainsKey(Constants.XForwardedHost).Should().BeFalse();
+            RequestHeaders.ContainsKey(Constants.XForwardedProto).Should().BeFalse();
 
             return message;
         }
@@ -139,10 +143,10 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [HttpGet("noForwarded")]
         public string NoForwardedTest(string message)
         {
-            HttpContext.Request.Headers.ContainsKey(Constants.Forwarded).Should().BeFalse();
-            HttpContext.Request.Headers.ContainsKey(Constants.XForwardedFor).Should().BeFalse();
-            HttpContext.Request.Headers.ContainsKey(Constants.XForwardedHost).Should().BeFalse();
-            HttpContext.Request.Headers.ContainsKey(Constants.XForwardedProto).Should().BeFalse();
+            RequestHeaders.ContainsKey(Constants.Forwarded).Should().BeFalse();
+            RequestHeaders.ContainsKey(Constants.XForwardedFor).Should().BeFalse();
+            RequestHeaders.ContainsKey(Constants.XForwardedHost).Should().BeFalse();
+            RequestHeaders.ContainsKey(Constants.XForwardedProto).Should().BeFalse();
 
             return message;
         }
@@ -150,16 +154,16 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [HttpGet("forwardedMultiProxies")]
         public string ForwardedMultiProxiesTest(string message)
         {
-            var values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.Forwarded);
+            var values = RequestHeaders.GetCommaSeparatedValues(Constants.Forwarded);
             values.Should().HaveCount(4);
             values[0].Should().Be("for=some-for;host=some-host;proto=some-proto");
             values[1].Should().Be("by=203.0.113.43;for=192.0.2.60;host=test;proto=http");
             values[2].Should().Be("by=203.0.113.43;for=192.0.2.12;host=test2;proto=https");
             RemovePortFromHostInForwarded(values[3]).Should().Be("by=\"[::1]\";for=\"[::1]\";host=localhost;proto=http");
 
-            HttpContext.Request.Headers.ContainsKey(Constants.XForwardedFor).Should().BeFalse();
-            HttpContext.Request.Headers.ContainsKey(Constants.XForwardedHost).Should().BeFalse();
-            HttpContext.Request.Headers.ContainsKey(Constants.XForwardedProto).Should().BeFalse();
+            RequestHeaders.ContainsKey(Constants.XForwardedFor).Should().BeFalse();
+            RequestHeaders.ContainsKey(Constants.XForwardedHost).Should().BeFalse();
+            RequestHeaders.ContainsKey(Constants.XForwardedProto).Should().BeFalse();
 
             return message;
         }
@@ -167,16 +171,16 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [HttpGet("xForwarded")]
         public string XForwardedTest(string message)
         {
-            HttpContext.Request.Headers.TryGetValue(Constants.XForwardedFor, out var values).Should().BeTrue();
+            RequestHeaders.TryGetValue(Constants.XForwardedFor, out var values).Should().BeTrue();
             values.Single().Should().Be("::1");
 
-            HttpContext.Request.Headers.TryGetValue(Constants.XForwardedHost, out values).Should().BeTrue();
+            RequestHeaders.TryGetValue(Constants.XForwardedHost, out values).Should().BeTrue();
             values.Single().StartsWithOrdinalIgnoreCase("localhost").Should().BeTrue();
 
-            HttpContext.Request.Headers.TryGetValue(Constants.XForwardedProto, out values).Should().BeTrue();
+            RequestHeaders.TryGetValue(Constants.XForwardedProto, out values).Should().BeTrue();
             values.Single().Should().Be("http");
 
-            HttpContext.Request.Headers.ContainsKey(Constants.Forwarded).Should().BeFalse();
+            RequestHeaders.ContainsKey(Constants.Forwarded).Should().BeFalse();
 
             return message;
         }
@@ -184,16 +188,16 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [HttpGet("xForwardedMultiProxies")]
         public string XForwardedMultiProxiesTest(string message)
         {
-            var values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.XForwardedFor);
+            var values = RequestHeaders.GetCommaSeparatedValues(Constants.XForwardedFor);
             values.Should().BeEquivalentTo(new[] { "some-for", "192.0.2.60", "1020:3040:5060:7080:9010:1112:1314:1516", "::1" });
 
-            values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.XForwardedHost);
+            values = RequestHeaders.GetCommaSeparatedValues(Constants.XForwardedHost);
             values.Should().BeEquivalentTo(new[] { "some-host" });
 
-            values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.XForwardedProto);
+            values = RequestHeaders.GetCommaSeparatedValues(Constants.XForwardedProto);
             values.Should().BeEquivalentTo(new[] { "some-proto" });
 
-            HttpContext.Request.Headers.ContainsKey(Constants.Forwarded).Should().BeFalse();
+            RequestHeaders.ContainsKey(Constants.Forwarded).Should().BeFalse();
 
             return message;
         }
@@ -240,10 +244,10 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [HttpGet("append")]
         public string AppendHeaderTest(string message)
         {
-            var values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.OneValue);
+            var values = RequestHeaders.GetCommaSeparatedValues(Constants.OneValue);
             values.Should().BeEquivalentTo(new[] { "one" });
 
-            values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.TwoValues);
+            values = RequestHeaders.GetCommaSeparatedValues(Constants.TwoValues);
             values.Should().BeEquivalentTo(new[] { "one", "two" });
 
             var headers = HttpContext.Response.Headers;
@@ -255,13 +259,13 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [HttpGet("addOverride")]
         public string AddOverrideTest(string message)
         {
-            var values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.OneValue);
+            var values = RequestHeaders.GetCommaSeparatedValues(Constants.OneValue);
             values.Should().BeEquivalentTo(new[] { "one" });
 
-            values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.TwoValues);
+            values = RequestHeaders.GetCommaSeparatedValues(Constants.TwoValues);
             values.Should().BeEquivalentTo(new[] { "one", "two" });
 
-            values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.Expression);
+            values = RequestHeaders.GetCommaSeparatedValues(Constants.Expression);
             values.Should().BeEquivalentTo(new[] { Environment.MachineName + "/gwcore", "m:GET" });
 
             return message;
@@ -270,13 +274,13 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [HttpGet("updateOverride")]
         public string UpdateOverrideTest(string message)
         {
-            var values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.OneValue);
+            var values = RequestHeaders.GetCommaSeparatedValues(Constants.OneValue);
             values.Should().BeEquivalentTo(new[] { "one-updated" });
 
-            values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.TwoValues);
+            values = RequestHeaders.GetCommaSeparatedValues(Constants.TwoValues);
             values.Should().BeEquivalentTo(new[] { "one-updated", "two-updated" });
 
-            values = HttpContext.Request.Headers.GetCommaSeparatedValues(Constants.Expression);
+            values = RequestHeaders.GetCommaSeparatedValues(Constants.Expression);
             values.Should().BeEquivalentTo(new[] { Environment.MachineName + "/gwcore", "m:GET" });
 
             var headers = HttpContext.Response.Headers;
@@ -290,7 +294,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [HttpGet("discard")]
         public string DiscardTest(string message)
         {
-            var headers = HttpContext.Request.Headers;
+            var headers = RequestHeaders;
             headers.ContainsKey(Constants.OneValue).Should().BeFalse();
             headers.ContainsKey(Constants.TwoValues).Should().BeFalse();
             headers.ContainsKey(Constants.ThreeValues).Should().BeTrue();
@@ -309,7 +313,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [HttpGet("discardInbound")]
         public string DiscardInbondTest(string message)
         {
-            var headers = HttpContext.Request.Headers;
+            var headers = RequestHeaders;
             headers.ContainsKey(Constants.OneValue).Should().BeFalse();
             headers.ContainsKey(Constants.TwoValues).Should().BeFalse();
             headers.ContainsKey(Constants.ThreeValues).Should().BeFalse();

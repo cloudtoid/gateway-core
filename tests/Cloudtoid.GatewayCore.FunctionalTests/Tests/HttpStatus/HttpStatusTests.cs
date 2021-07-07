@@ -17,7 +17,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task BasicPlumbingTestAsync()
         {
             await ExecuteAsync(
-                () => new HttpRequestMessage(Method.Get, "echo?message=test"),
+                () => new HttpRequestMessage(Method.Get, "basic?message=test"),
                 async (nginxResponse, response) =>
                 {
                     await EnsureResponseSucceededAsync(nginxResponse);
@@ -48,8 +48,8 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                     return Task.CompletedTask;
                 });
 
-            while (true)
-                await Task.Delay(1000);
+            ////while (true)
+            ////    await Task.Delay(1000);
         }
 
         private static async Task EnsureResponseSucceededAsync(HttpResponseMessage response)

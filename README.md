@@ -44,6 +44,8 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 - Publish options-schema.json on a website so it can be referenced in JSON GatewayOptions files
 - Build and test on Linux & MacOS
 - Right now, some upstream HTTP errors are simply converted to 502/BadGateway. Look into the options here.
+- Implement the proxy OPTIONS section: [here](https://datatracker.ietf.org/doc/html/rfc7230#section-5.3.4)
+- 
 
 ## Future version
 

@@ -438,7 +438,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             var message = await SetHeadersAsync(context, options);
 
             // Assert
-            message.Headers.GetValues(HeaderNames.Via).SingleOrDefault().Should().Be("1.1 gwcore");
+            message.Headers.GetValues(HeaderNames.Via).SingleOrDefault().Should().Be("1.1 " + Constants.ServerName);
         }
 
         [TestMethod]

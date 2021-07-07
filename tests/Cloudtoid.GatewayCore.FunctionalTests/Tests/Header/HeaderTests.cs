@@ -158,7 +158,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
 
                     var headers = response.Headers;
                     headers.TryGetValues(HeaderNames.Server, out var values).Should().BeTrue();
-                    values.Should().BeEquivalentTo(new[] { "gwcore" });
+                    values.Should().BeEquivalentTo(new[] { GatewayCore.Constants.ServerName });
                 });
         }
 
@@ -210,7 +210,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                     await EnsureResponseSucceededAsync(response);
 
                     var headers = response.Headers;
-                    headers.GetValues(HeaderNames.Via).Should().ContainSingle().And.ContainMatch("?.? gwcore");
+                    headers.GetValues(HeaderNames.Via).Should().ContainSingle().And.ContainMatch("?.? " + GatewayCore.Constants.ServerName);
                 });
         }
 
@@ -262,7 +262,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                     headers.GetValues(HeaderNames.Via).Should()
                         .HaveCount(2)
                         .And.Contain("1.1 first-leg")
-                        .And.ContainMatch("?.? gwcore");
+                        .And.ContainMatch("?.? " + GatewayCore.Constants.ServerName);
                 });
         }
 

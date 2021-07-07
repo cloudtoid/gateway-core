@@ -211,7 +211,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             var settings = serviceProvider!.GetRequiredService<ISettingsProvider>();
             settings.CurrentValue.System.RouteCacheMaxCount.Should().Be(100000);
 
-            context.ProxyName.Should().Be("gwcore");
+            context.ProxyName.Should().Be(Constants.ServerName);
             var routeSettings = context.Route.Settings;
 
             var request = routeSettings.Proxy!.UpstreamRequest;

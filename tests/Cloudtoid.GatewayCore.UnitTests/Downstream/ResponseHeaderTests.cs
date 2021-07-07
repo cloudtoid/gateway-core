@@ -277,7 +277,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             var response = await SetHeadersAsync(message, options);
 
             // Assert
-            response.Headers[HeaderNames.Server].Should().BeEquivalentTo("gwcore");
+            response.Headers[HeaderNames.Server].Should().BeEquivalentTo(Constants.ServerName);
         }
 
         [TestMethod]
@@ -435,7 +435,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             var response = await SetHeadersAsync(message, options);
 
             // Assert
-            response.Headers[HeaderNames.Via].Should().BeEquivalentTo(new[] { "2.0 gwcore" });
+            response.Headers[HeaderNames.Via].Should().BeEquivalentTo(new[] { "2.0 " + Constants.ServerName });
         }
 
         [TestMethod]
