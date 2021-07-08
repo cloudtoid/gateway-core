@@ -93,7 +93,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public string ViaTest(string message)
         {
             RequestHeaders.TryGetValue(HeaderNames.Via, out var values).Should().BeTrue();
-            values.Should().BeEquivalentTo(new[] { "1.1 " + GatewayCore.Constants.ServerName });
+            values.Should().ContainSingle().And.ContainMatch("?.? " + GatewayCore.Constants.ServerName);
             return message;
         }
 
@@ -108,7 +108,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public string ViaCustomProxyTest(string message)
         {
             RequestHeaders.TryGetValue(HeaderNames.Via, out var values).Should().BeTrue();
-            values.Should().BeEquivalentTo(new[] { "1.1 custom-proxy" });
+            values.Should().ContainSingle().And.ContainMatch("?.? custom-proxy");
 
             RequestHeaders.TryGetValue(Constants.ProxyName, out values).Should().BeTrue();
             values.Should().BeEquivalentTo(new[] { "custom-proxy" });

@@ -258,8 +258,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 {
                     await EnsureResponseSucceededAsync(response);
 
-                    var headers = response.Headers;
-                    headers.GetValues(HeaderNames.Via).Should()
+                    response.Headers.GetValues(HeaderNames.Via).Should()
                         .HaveCount(2)
                         .And.Contain("1.1 first-leg")
                         .And.ContainMatch("?.? " + GatewayCore.Constants.ServerName);
