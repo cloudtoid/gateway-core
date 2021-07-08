@@ -45,7 +45,8 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 - Build and test on Linux & MacOS
 - Right now, some upstream HTTP errors are simply converted to 502/BadGateway. Look into the options here.
 - Implement the proxy OPTIONS section: [here](https://datatracker.ietf.org/doc/html/rfc7230#section-5.3.4)
-- 
+- Add host filtering to the proxy. Something like this but not a middleware: https://github.com/dotnet/aspnetcore/blob/6427d9cc718f8093c506b62b6fd12544411b477f/src/Middleware/HostFiltering/src/HostFilteringMiddleware.cs
+
 
 ## Future version
 

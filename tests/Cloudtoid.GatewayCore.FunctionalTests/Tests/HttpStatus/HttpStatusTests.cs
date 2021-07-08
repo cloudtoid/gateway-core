@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -16,7 +17,11 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [TestMethod("Basic HTTP status plumbing test")]
         public async Task BasicPlumbingTestAsync()
         {
-            await ExecuteAsync(
+            var activity = new Activity("CallToBackend").Start();
+
+            try
+            {
+                await ExecuteAsync(
                 () => new HttpRequestMessage(Method.Get, "basic?message=test"),
                 async (nginxResponse, response) =>
                 {
@@ -26,6 +31,11 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                     response.Content.Headers.ContentType
                         .Should().Be(nginxResponse.Content.Headers.ContentType);
                 });
+            }
+            finally
+            {
+                activity.Stop();
+            }
         }
 
         [TestMethod("Should not return success when route doesn't exist.")]
