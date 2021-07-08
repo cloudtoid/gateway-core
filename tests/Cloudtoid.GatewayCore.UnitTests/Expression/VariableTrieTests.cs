@@ -49,8 +49,6 @@ namespace Cloudtoid.GatewayCore.UnitTests
             {
                 SystemVariableNames.ContentLength,
                 SystemVariableNames.ContentType,
-                SystemVariableNames.CorrelationId,
-                SystemVariableNames.CallId,
                 SystemVariableNames.Host,
                 SystemVariableNames.RequestMethod,
                 SystemVariableNames.RequestScheme,

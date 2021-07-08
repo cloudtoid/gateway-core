@@ -73,12 +73,6 @@ namespace Cloudtoid.GatewayCore.Upstream
             if (!settings.SkipForwarded)
                 AddForwardedHeaders(context, upstreamRequest);
 
-            if (!settings.SkipCorrelationId)
-                AddCorrelationIdHeader(context, upstreamRequest);
-
-            if (!settings.SkipCallId)
-                AddCallIdHeader(context, upstreamRequest);
-
             AddExtraHeaders(context, upstreamRequest);
 
             return Task.CompletedTask;
@@ -94,7 +88,6 @@ namespace Cloudtoid.GatewayCore.Upstream
             var discardUnderscore = options.DiscardUnderscore;
             var doNotTransferHeaders = options.DoNotTransferHeaders;
             var nonStandardHopByHopHeaders = GetNonStandardHopByHopHeaders(context);
-            var correlationIdHeader = context.CorrelationIdHeader;
 
             foreach (var header in headers)
             {
@@ -113,9 +106,6 @@ namespace Cloudtoid.GatewayCore.Upstream
                 if (nonStandardHopByHopHeaders.Contains(name))
                     continue;
 
-                if (name.EqualsOrdinalIgnoreCase(correlationIdHeader))
-                    continue;
-
                 AddHeaderValues(context, upstreamRequest, name, header.Value);
             }
         }
@@ -131,24 +121,6 @@ namespace Cloudtoid.GatewayCore.Upstream
                 upstreamRequest,
                 Names.ExternalAddress,
                 clientAddress);
-        }
-
-        protected virtual void AddCorrelationIdHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
-        {
-            AddHeaderValues(
-                context,
-                upstreamRequest,
-                context.CorrelationIdHeader,
-                context.CorrelationId);
-        }
-
-        protected virtual void AddCallIdHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
-        {
-            AddHeaderValues(
-                context,
-                upstreamRequest,
-                Names.CallId,
-                context.CallId);
         }
 
         protected virtual void AddProxyNameHeader(ProxyContext context, HttpRequestMessage upstreamRequest)

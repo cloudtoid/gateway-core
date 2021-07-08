@@ -126,16 +126,11 @@ namespace Cloudtoid.GatewayCore.Settings
                 return null;
             }
 
-            var correlationIdHeader = string.IsNullOrWhiteSpace(options.CorrelationIdHeader)
-                ? null
-                : options.CorrelationIdHeader;
-
             return new ProxySettings(
-                options.To,
-                options.ProxyName,
-                correlationIdHeader,
-                Create(route, options.UpstreamRequest, options.ProxyName is not null),
-                Create(route, options.DownstreamResponse));
+                 options.To,
+                 options.ProxyName,
+                 Create(route, options.UpstreamRequest, options.ProxyName is not null),
+                 Create(route, options.DownstreamResponse));
         }
 
         private UpstreamRequestSettings Create(
@@ -160,8 +155,6 @@ namespace Cloudtoid.GatewayCore.Settings
                 options.DiscardUnderscore,
                 options.AddExternalAddress,
                 addProxyName,
-                options.SkipCorrelationId,
-                options.SkipCallId,
                 options.SkipVia,
                 options.SkipForwarded,
                 options.UseXForwarded,
@@ -282,8 +275,6 @@ namespace Cloudtoid.GatewayCore.Settings
                 options.DiscardEmpty,
                 options.DiscardUnderscore,
                 options.AddServer,
-                options.AddCorrelationId,
-                options.AddCallId,
                 options.AddVia,
                 Create(route, options.Cookies),
                 Create(route, options.Appends),

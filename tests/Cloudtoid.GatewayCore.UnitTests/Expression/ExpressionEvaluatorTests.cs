@@ -97,21 +97,6 @@ namespace Cloudtoid.GatewayCore.UnitTests
         }
 
         [TestMethod]
-        public void Evaluate_CorrelationIdVariable_Evaluated()
-        {
-            const string value = "abc";
-            var context = new DefaultHttpContext();
-            context.Request.Headers.Add("x-correlation-id", value);
-            Evaluate(GetVarName(SystemVariableNames.CorrelationId), context).Should().Be(value);
-        }
-
-        [TestMethod]
-        public void Evaluate_CallIdVariable_Evaluated()
-        {
-            Evaluate(GetVarName(SystemVariableNames.CallId)).Should().Be(GuidProvider.Value.ToStringInvariant("N"));
-        }
-
-        [TestMethod]
         public void Evaluate_HostVariable_Evaluated()
         {
             const string value = "abc";

@@ -52,7 +52,6 @@ namespace Cloudtoid.GatewayCore
                 .AddUrlPattern()
                 .TryAddSingleton<Settings.ISettingsCreator, Settings.SettingsCreator>()
                 .TryAddSingleton<Settings.ISettingsProvider, Settings.SettingsProvider>()
-                .TryAddSingleton<Trace.ITraceIdProvider, Trace.TraceIdProvider>()
                 .TryAddSingleton<Expression.IExpressionEvaluator, Expression.ExpressionEvaluator>()
                 .TryAddSingleton<Routes.IRouteResolver, Routes.RouteResolver>()
                 .TryAddSingleton<IUpstreamUrlCreator, UpstreamUrlCreator>()

@@ -69,20 +69,6 @@ namespace Cloudtoid.GatewayCore.Expression
             => context.Request.ContentType;
 
         /// <summary>
-        /// The value of the correlation identifier header if present or a newly generated one.
-        /// The default header name of correlation identifier is "x-correlation-id" but this can be changed
-        /// using the CorrelationIdHeader option.
-        /// </summary>
-        private static string? GetCorrelationId(ProxyContext context)
-            => context.CorrelationId;
-
-        /// <summary>
-        /// The value the call identifier header.
-        /// </summary>
-        private static string? GetCallId(ProxyContext context)
-            => context.CallId;
-
-        /// <summary>
         /// The value of the "Host" request header.
         /// </summary>
         private static string? GetHost(ProxyContext context)
@@ -246,8 +232,6 @@ namespace Cloudtoid.GatewayCore.Expression
             return new VariableTrie<SystemVariableEvaluator>()
                 .AddValue(SystemVariableNames.ContentLength, GetContentLength)
                 .AddValue(SystemVariableNames.ContentType, GetContentType)
-                .AddValue(SystemVariableNames.CorrelationId, GetCorrelationId)
-                .AddValue(SystemVariableNames.CallId, GetCallId)
                 .AddValue(SystemVariableNames.Host, GetHost)
                 .AddValue(SystemVariableNames.RequestMethod, GetRequestMethod)
                 .AddValue(SystemVariableNames.RequestScheme, GetRequestScheme)

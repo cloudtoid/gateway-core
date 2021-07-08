@@ -17,7 +17,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [TestMethod("Basic HTTP status plumbing test")]
         public async Task BasicPlumbingTestAsync()
         {
-            var activity = new Activity("CallToBackend").Start();
+            var activity = new Activity("BasicProxy").Start();
 
             try
             {

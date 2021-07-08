@@ -4,7 +4,6 @@
       "proxy": {
         "to": "http://localhost:85/upstream/",
         "proxyName": "ProxyName:$server_name",
-        "correlationIdHeader": "CorrelationIdHeader:$server_name",
         "upstreamRequest": {
           "httpVersion": "$server_name/1.1",
           "headers": {

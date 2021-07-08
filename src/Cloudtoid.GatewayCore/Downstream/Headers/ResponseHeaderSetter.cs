@@ -64,12 +64,6 @@ namespace Cloudtoid.GatewayCore.Downstream
             if (settings.AddVia)
                 AddViaHeader(context, upstreamResponse);
 
-            if (settings.AddCorrelationId)
-                AddCorrelationIdHeader(context, upstreamResponse);
-
-            if (settings.AddCallId)
-                AddCallIdHeader(context, upstreamResponse);
-
             if (settings.AddServer)
                 AddServerHeader(context, upstreamResponse);
 
@@ -88,7 +82,6 @@ namespace Cloudtoid.GatewayCore.Downstream
             var options = context.ProxyDownstreamResponseHeaderSettings;
             var discardEmpty = options.DiscardEmpty;
             var discardUnderscore = options.DiscardUnderscore;
-            var correlationIdHeader = context.CorrelationIdHeader;
             var doNotTransferHeaders = options.DoNotTransferHeaders;
 
             foreach (var header in upstreamResponse.Headers)
@@ -100,9 +93,6 @@ namespace Cloudtoid.GatewayCore.Downstream
                     header.Value,
                     discardEmpty,
                     discardUnderscore))
-                    continue;
-
-                if (name.EqualsOrdinalIgnoreCase(correlationIdHeader))
                     continue;
 
                 if (doNotTransferHeaders.Contains(name))
@@ -180,22 +170,6 @@ namespace Cloudtoid.GatewayCore.Downstream
                 context,
                 HeaderNames.Server,
                 Constants.ServerName);
-        }
-
-        protected virtual void AddCorrelationIdHeader(ProxyContext context, HttpResponseMessage upstreamResponse)
-        {
-            AddHeaderValues(
-                context,
-                context.CorrelationIdHeader,
-                context.CorrelationId);
-        }
-
-        protected virtual void AddCallIdHeader(ProxyContext context, HttpResponseMessage upstreamResponse)
-        {
-            AddHeaderValues(
-                context,
-                Names.CallId,
-                context.CallId);
         }
 
         protected virtual void AddExtraHeaders(ProxyContext context)

@@ -41,11 +41,6 @@
                 "description": "This is an expression that defines the name of this proxy. This value is used in the Via HTTP header send on the outbound upstream request, and the outbound downstream response. If a value is specified, an `x-gwcore-proxy-name` header with this value is also added to the outbound upstream request.",
                 "default": "gwcore"
               },
-              "correlationIdHeader": {
-                "type": "string",
-                "description": "The name of headers that hold correlation identifiers.",
-                "default": "x-correlation-id"
-              },
               "upstreamRequest": {
                 "type": "object",
                 "description": "The options that control the upstream requests.",
@@ -79,16 +74,6 @@
                       "addExternalAddress": {
                         "type": "boolean",
                         "description": "Specifies if a `x-gwcore-external-address` header with the IP address of the immediate caller should be added to the outbound upstream request.",
-                        "default": false
-                      },
-                      "skipCorrelationId": {
-                        "type": "boolean",
-                        "description": "Specifies if the `x-correlation-id` header should be skipped from the outbound upstream request if not already present. The actual name of this header can be changed using correlationIdHeader.",
-                        "default": false
-                      },
-                      "skipCallId": {
-                        "type": "boolean",
-                        "description": "Specifies if the `x-call-id` header should be skipped. This is a unique if that is generated on each call.",
                         "default": false
                       },
                       "skipVia": {
@@ -238,16 +223,6 @@
                       "addServer": {
                         "type": "boolean",
                         "description": "Specifies if a `server` header should be added. The value of this header is set to `gwcore`.",
-                        "default": false
-                      },
-                      "addCorrelationId": {
-                        "type": "boolean",
-                        "description": "Specifies if a correlation identifier header, if not present on the inbound response, should be added to the outbound response. The name of this header is `x-correlation-id`, but it can be altered using correlationIdHeader.",
-                        "default": false
-                      },
-                      "addCallId": {
-                        "type": "boolean",
-                        "description": "Specifies if a `x-call-id` header should be added. This is a unique value that is generated on each call.",
                         "default": false
                       },
                       "addVia": {

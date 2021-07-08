@@ -15,7 +15,6 @@ namespace Cloudtoid.GatewayCore.Settings
                 HeaderNames.Via,
                 Names.ExternalAddress,
                 Names.ProxyName,
-                Names.CallId,
                 Names.Forwarded,
                 Names.XForwardedFor,
                 Names.XForwardedHost,
@@ -31,8 +30,6 @@ namespace Cloudtoid.GatewayCore.Settings
             bool discardUnderscore,
             bool addExternalAddress,
             bool addProxyName,
-            bool skipCorrelationId,
-            bool skipCallId,
             bool skipVia,
             bool skipForwarded,
             bool useXForwarded,
@@ -46,8 +43,6 @@ namespace Cloudtoid.GatewayCore.Settings
             AddProxyName = addProxyName;
             DiscardInboundHeaders = discardInboundHeaders;
             SkipVia = skipVia;
-            SkipCorrelationId = skipCorrelationId;
-            SkipCallId = skipCallId;
             SkipForwarded = skipForwarded;
             UseXForwarded = useXForwarded;
             Appends = appends;
@@ -69,10 +64,6 @@ namespace Cloudtoid.GatewayCore.Settings
         public bool AddExternalAddress { get; }
 
         public bool AddProxyName { get; }
-
-        public bool SkipCorrelationId { get; }
-
-        public bool SkipCallId { get; }
 
         public bool SkipVia { get; }
 

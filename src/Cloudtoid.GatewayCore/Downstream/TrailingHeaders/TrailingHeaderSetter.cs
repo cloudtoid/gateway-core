@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Cloudtoid.GatewayCore.Headers;
@@ -29,11 +27,6 @@ namespace Cloudtoid.GatewayCore.Downstream
     /// </example>
     public class TrailingHeaderSetter : ITrailingHeaderSetter
     {
-        private static readonly ISet<string> HeaderTransferBlacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            Names.CallId,
-        };
-
         private readonly HeaderSanetizer sanetizer;
 
         public TrailingHeaderSetter(

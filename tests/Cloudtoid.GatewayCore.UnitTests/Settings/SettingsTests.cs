@@ -33,9 +33,8 @@ namespace Cloudtoid.GatewayCore.UnitTests
             routeSettings.Route.Should().Be("/api/");
 
             context.ProxyName.Should().Be("some-proxy-name");
-            routeSettings.Proxy!.EvaluateCorrelationIdHeader(context).Should().Be("x-request-id");
 
-            var request = routeSettings.Proxy.UpstreamRequest;
+            var request = routeSettings.Proxy!.UpstreamRequest;
             request.EvaluateHttpVersion(context).Should().Be(HttpVersion.Version30);
 
             var requestHeaders = request.Headers;
@@ -43,8 +42,6 @@ namespace Cloudtoid.GatewayCore.UnitTests
             requestHeaders.DiscardUnderscore.Should().BeTrue();
             requestHeaders.DiscardInboundHeaders.Should().BeTrue();
             requestHeaders.SkipVia.Should().BeTrue();
-            requestHeaders.SkipCorrelationId.Should().BeTrue();
-            requestHeaders.SkipCallId.Should().BeTrue();
             requestHeaders.SkipForwarded.Should().BeTrue();
             requestHeaders.UseXForwarded.Should().BeTrue();
             requestHeaders.AddExternalAddress.Should().BeTrue();
@@ -88,8 +85,6 @@ namespace Cloudtoid.GatewayCore.UnitTests
             var responseHeaders = response.Headers;
             responseHeaders.DiscardInboundHeaders.Should().BeTrue();
             responseHeaders.AddVia.Should().BeTrue();
-            responseHeaders.AddCorrelationId.Should().BeTrue();
-            responseHeaders.AddCallId.Should().BeTrue();
             responseHeaders.AddServer.Should().BeTrue();
 
             responseHeaders.Cookies.Values
@@ -152,9 +147,8 @@ namespace Cloudtoid.GatewayCore.UnitTests
 
             var expressionValue = Environment.MachineName;
             context.ProxyName.Should().Be("ProxyName:" + expressionValue);
-            settings.Proxy!.EvaluateCorrelationIdHeader(context).Should().Be("CorrelationIdHeader:" + expressionValue);
 
-            var request = settings.Proxy.UpstreamRequest;
+            var request = settings.Proxy!.UpstreamRequest;
             request.EvaluateHttpVersion(context).Should().Be(HttpVersion.Version11);
 
             var requestHeaders = request.Headers;
@@ -222,8 +216,6 @@ namespace Cloudtoid.GatewayCore.UnitTests
             requestHeaders.DiscardUnderscore.Should().BeFalse();
             requestHeaders.DiscardInboundHeaders.Should().BeFalse();
             requestHeaders.SkipVia.Should().BeFalse();
-            requestHeaders.SkipCorrelationId.Should().BeFalse();
-            requestHeaders.SkipCallId.Should().BeFalse();
             requestHeaders.SkipForwarded.Should().BeFalse();
             requestHeaders.UseXForwarded.Should().BeFalse();
             requestHeaders.AddExternalAddress.Should().BeFalse();
@@ -252,8 +244,6 @@ namespace Cloudtoid.GatewayCore.UnitTests
             responseHeaders.DiscardUnderscore.Should().BeFalse();
             responseHeaders.DiscardInboundHeaders.Should().BeFalse();
             responseHeaders.AddVia.Should().BeFalse();
-            responseHeaders.AddCorrelationId.Should().BeFalse();
-            responseHeaders.AddCallId.Should().BeFalse();
             responseHeaders.AddServer.Should().BeFalse();
             responseHeaders.Cookies.Should().BeEmpty();
             responseHeaders.Appends.Should().BeEmpty();

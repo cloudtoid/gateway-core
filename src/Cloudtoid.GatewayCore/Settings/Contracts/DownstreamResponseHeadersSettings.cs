@@ -15,7 +15,6 @@ namespace Cloudtoid.GatewayCore.Settings
                 HeaderNames.Server,
                 Names.ExternalAddress,
                 Names.ProxyName,
-                Names.CallId
             }
             .Concat(HeaderTypes.StandardHopByHopeHeaders)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -25,8 +24,6 @@ namespace Cloudtoid.GatewayCore.Settings
             bool discardEmpty,
             bool discardUnderscore,
             bool addServer,
-            bool addCorrelationId,
-            bool addCallId,
             bool addVia,
             IReadOnlyDictionary<string, CookieSettings> cookies,
             IReadOnlyDictionary<string, HeaderSettings> appends,
@@ -37,8 +34,6 @@ namespace Cloudtoid.GatewayCore.Settings
             DiscardEmpty = discardEmpty;
             DiscardUnderscore = discardUnderscore;
             AddServer = addServer;
-            AddCorrelationId = addCorrelationId;
-            AddCallId = addCallId;
             AddVia = addVia;
             Cookies = cookies;
             Appends = appends;
@@ -58,10 +53,6 @@ namespace Cloudtoid.GatewayCore.Settings
         public bool DiscardUnderscore { get; }
 
         public bool AddServer { get; }
-
-        public bool AddCorrelationId { get; }
-
-        public bool AddCallId { get; }
 
         public bool AddVia { get; }
 

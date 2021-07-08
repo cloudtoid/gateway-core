@@ -46,6 +46,7 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 - Right now, some upstream HTTP errors are simply converted to 502/BadGateway. Look into the options here.
 - Implement the proxy OPTIONS section: [here](https://datatracker.ietf.org/doc/html/rfc7230#section-5.3.4)
 - Add host filtering to the proxy. Something like this but not a middleware: https://github.com/dotnet/aspnetcore/blob/6427d9cc718f8093c506b62b6fd12544411b477f/src/Middleware/HostFiltering/src/HostFilteringMiddleware.cs
+- Ensure there is full support and tests for W3C Trace Context: https://www.w3.org/TR/trace-context/ (It should just work in theory because of ASP.NET Core and changes they made to the HTTP Client for Distributed Tracing: https://devblogs.microsoft.com/aspnet/improvements-in-net-core-3-0-for-troubleshooting-and-monitoring-distributed-apps/)
 
 
 ## Future version
@@ -68,76 +69,6 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 ## Getting Started
 
 > TODO
-
-## Tracing
-
-GatewayCore uses two headers to relay trace identifiers to servers, as well as clients:
-
-### Correlation-id header
-
-Requests originated from clients can include a correlation-id header that is forwarded unchanged to proxied servers. The default correlation-id header is `x-correlation-id`, but it can be renamed as shown here:
-
-```json
-"routes": {
-  "/api/": {
-    "proxy": {
-      "to": "http://upstream/v1/",
-      "correlationIdHeader": "x-request-id",
-```
-
-> GatewayCore generates a unique correlation identifier for requests that do not have a correlation-id header.
-
-The correlation-id header is not included in response messages, but you can add it by explicitly enabling `addCorrelationId`.
-
-```json
-"routes": {
-  "/api/": {
-    "proxy": {
-      "to": "http://upstream/v1/",
-      "downstreamResponse": {
-        "headers": {
-          "addCorrelationId": true
-```
-
-It is also possible to omit the correlation-id header from outbound requests using `skipCorrelationId` as shown below:
-
-```json
-"routes": {
-  "/api/": {
-    "proxy": {
-      "to": "http://upstream/v1/",
-      "upstreamRequest": {
-        "headers": {
-          "skipCorrelationId": true,
-```
-
-### Call-id header
-
-A unique call-id is generated and forwarded on every request received by GatewayCore. The header with this unique id is `x-call-id` and can be dropped from outbound upstream requests using `skipCallId`:
-
-```json
-"routes": {
-  "/api/": {
-    "proxy": {
-      "to": "http://upstream/v1/",
-      "upstreamRequest": {
-        "headers": {
-          "skipCallId": true
-```
-
-The `x-call-id` header can also be included in responses sent to clients if `addCallId` is explicitly enabled:
-
-```json
-"routes": {
-  "/api/": {
-    "proxy": {
-      "to": "http://upstream/v1/",
-      "downstreamResponse": {
-        "headers": {
-          "addCallId": true
-```
-
-> All inbound call-id headers are silently ignored.
 
 ## Route tracking
 
@@ -497,7 +428,6 @@ Some of the configurations support the use of variables. These variables are:
 |:--- |:--- |
 |`$content_length`|The value of the `Content-Length` request header.|
 |`$content_type`|The value of the `Content-Type` request header.|
-|`$correlation_id`|The value of the correlation identifier header if present or a newly generated one. The default header is `x-correlation-id` but the name of this header can be altered through the settings.|
 |`$call_id`|The value the `x-call-id` header that is added to all outbound requests.|
 |`$host`|The value of the `Host` request header.|
 |`$request_method`|The HTTP method of the inbound downstream request.|

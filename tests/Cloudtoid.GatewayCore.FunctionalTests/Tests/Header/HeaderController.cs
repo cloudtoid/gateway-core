@@ -18,55 +18,6 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public string Echo(string message)
             => message;
 
-        [HttpGet("trace")]
-        public string TraceTest(string message)
-        {
-            RequestHeaders.TryGetValue(Constants.CorrelationId, out var values).Should().BeTrue();
-            values.Should().ContainSingle();
-
-            RequestHeaders.TryGetValue(Constants.CallId, out values).Should().BeTrue();
-            values.Should().ContainSingle();
-
-            return message;
-        }
-
-        [HttpGet("noTrace")]
-        public string NoTraceTest(string message)
-        {
-            RequestHeaders.ContainsKey(Constants.CorrelationId).Should().BeFalse();
-            RequestHeaders.ContainsKey(Constants.CallId).Should().BeFalse();
-            return message;
-        }
-
-        [HttpGet("customCorrelationId")]
-        public string CustomCorrelationIdTest(string message)
-        {
-            RequestHeaders.TryGetValue("x-c-custom", out var values).Should().BeTrue();
-            values.Should().ContainSingle();
-            return message;
-        }
-
-        [HttpGet("originalCorrelationId")]
-        public string OriginalCorrelationIdTest(string message)
-        {
-            RequestHeaders.TryGetValue(Constants.CorrelationId, out var values).Should().BeTrue();
-            values.Should().BeEquivalentTo(new[] { "corr-id-1" });
-
-            return message;
-        }
-
-        [HttpGet("callId")]
-        public string CallIdTest(string message)
-        {
-            RequestHeaders.TryGetValue(Constants.CallId, out var values).Should().BeTrue();
-            var callId = values.Single();
-            callId.Should().NotBe("call-id-1");
-
-            HttpContext.Response.Headers.Add("x-proxy-call-id", callId);
-            HttpContext.Response.Headers.Add(Constants.CallId, "call-id-2");
-            return message;
-        }
-
         [HttpGet("server")]
         public string ServerTest(string message)
         {

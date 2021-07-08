@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using Cloudtoid.GatewayCore.Expression;
 using Cloudtoid.GatewayCore.Settings;
-using Cloudtoid.GatewayCore.Trace;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -70,7 +69,6 @@ namespace Cloudtoid.GatewayCore.UnitTests
 
             return new ProxyContext(
                 provider.GetRequiredService<IExpressionEvaluator>(),
-                provider.GetRequiredService<ITraceIdProvider>(),
                 httpContext ?? new DefaultHttpContext(),
                 route);
         }

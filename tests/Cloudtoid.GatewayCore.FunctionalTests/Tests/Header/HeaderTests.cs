@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -27,8 +26,6 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                     var headers = response.Headers;
                     headers.Should().ContainSingle();
                     headers.Contains(HeaderNames.Via).Should().BeFalse();
-                    headers.Contains(Constants.CorrelationId).Should().BeFalse();
-                    headers.Contains(Constants.CallId).Should().BeFalse();
 
                     var contentHeaders = response.Content.Headers;
                     contentHeaders.Should().HaveCount(2);
@@ -36,112 +33,6 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                     contentHeaders.ContentType!.MediaType.Should().Be("text/plain");
                     contentHeaders.ContentType.CharSet.Should().Be("utf-8");
                     contentHeaders.ContentLength.Should().Be(4);
-                });
-        }
-
-        [TestMethod("Should have correlation id and call id headers on request but not response")]
-        public async Task DefaultTraceTestAsync()
-        {
-            var request = new HttpRequestMessage(Method.Get, "trace?message=test");
-            await ExecuteAsync(
-                "DefaultTestOptions.json",
-                request,
-                async response =>
-                {
-                    await EnsureResponseSucceededAsync(response);
-
-                    var headers = response.Headers;
-                    headers.Contains(Constants.CorrelationId).Should().BeFalse();
-                    headers.Contains(Constants.CallId).Should().BeFalse();
-                });
-        }
-
-        [TestMethod("Should have correlation id and call id headers on both request and response")]
-        public async Task TraceTestAsync()
-        {
-            var request = new HttpRequestMessage(Method.Get, "trace?message=test");
-            await ExecuteAsync(
-                "TraceTestOptions.json",
-                request,
-                async response =>
-                {
-                    await EnsureResponseSucceededAsync(response);
-
-                    var headers = response.Headers;
-                    headers.Contains(Constants.CorrelationId).Should().BeTrue();
-                    headers.Contains(Constants.CallId).Should().BeTrue();
-                });
-        }
-
-        [TestMethod("Should have correlation id and call id headers on response but not request")]
-        public async Task NoTraceTestAsync()
-        {
-            var request = new HttpRequestMessage(Method.Get, "noTrace?message=test");
-            await ExecuteAsync(
-                "NoTraceTestOptions.json",
-                request,
-                async response =>
-                {
-                    await EnsureResponseSucceededAsync(response);
-
-                    var headers = response.Headers;
-                    headers.Contains(Constants.CorrelationId).Should().BeTrue();
-                    headers.Contains(Constants.CallId).Should().BeTrue();
-                });
-        }
-
-        [TestMethod("Should have a custom correlation id header on both request and response")]
-        public async Task CorrelationIdTestAsync()
-        {
-            var request = new HttpRequestMessage(Method.Get, "customCorrelationId?message=test");
-            await ExecuteAsync(
-                "CustomCorrelationIdTestOptions.json",
-                request,
-                async response =>
-                {
-                    await EnsureResponseSucceededAsync(response);
-
-                    var headers = response.Headers;
-                    headers.Contains("x-c-custom").Should().BeTrue();
-                });
-        }
-
-        [TestMethod("Should boomerang the client's correlation id")]
-        public async Task OriginalCorrelationIdTestAsync()
-        {
-            var request = new HttpRequestMessage(Method.Get, "originalCorrelationId?message=test");
-            request.Headers.Add(Constants.CorrelationId, "corr-id-1");
-            await ExecuteAsync(
-                "OriginalCorrelationIdTestOptions.json",
-                request,
-                async response =>
-                {
-                    await EnsureResponseSucceededAsync(response);
-
-                    var headers = response.Headers;
-                    headers.TryGetValues(Constants.CorrelationId, out var values).Should().BeTrue();
-                    values.Should().BeEquivalentTo(new[] { "corr-id-1" });
-                });
-        }
-
-        [TestMethod("Should boomerang gateway's newly generated call id and drop the one provided on both request and response")]
-        public async Task CallIdTestAsync()
-        {
-            var request = new HttpRequestMessage(Method.Get, "callId?message=test");
-            request.Headers.Add(Constants.CallId, "call-id-1");
-            await ExecuteAsync(
-                "CallIdTestOptions.json",
-                request,
-                async response =>
-                {
-                    await EnsureResponseSucceededAsync(response);
-
-                    var headers = response.Headers;
-                    headers.TryGetValues("x-proxy-call-id", out var values).Should().BeTrue();
-                    var callId = values!.Single();
-
-                    headers.TryGetValues(Constants.CallId, out values).Should().BeTrue();
-                    values.Should().BeEquivalentTo(new[] { callId });
                 });
         }
 

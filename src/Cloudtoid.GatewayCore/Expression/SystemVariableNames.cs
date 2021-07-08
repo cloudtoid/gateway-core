@@ -8,8 +8,6 @@ namespace Cloudtoid.GatewayCore.Expression
     {
         public const string ContentLength = "content_length";
         public const string ContentType = "content_type";
-        public const string CorrelationId = "correlation_id";
-        public const string CallId = "call_id";
         public const string Host = "host";
         public const string RequestMethod = "request_method";
         public const string RequestScheme = "request_scheme";
@@ -28,8 +26,6 @@ namespace Cloudtoid.GatewayCore.Expression
         {
             ContentLength,
             ContentType,
-            CorrelationId,
-            CallId,
             Host,
             RequestMethod,
             RequestScheme,

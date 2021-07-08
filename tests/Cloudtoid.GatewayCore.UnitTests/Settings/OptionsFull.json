@@ -7,7 +7,6 @@
       "proxy": {
         "to": "http://localhost:85/upstream/",
         "proxyName": "some-proxy-name",
-        "correlationIdHeader": "x-request-id",
         "upstreamRequest": {
           "httpVersion": "3.0",
           "headers": {
@@ -18,8 +17,6 @@
 
             "addExternalAddress": true,
 
-            "skipCorrelationId": true,
-            "skipCallId": true,
             "skipVia": true,
             "skipForwarded": true,
             "useXForwarded": true,
@@ -56,11 +53,8 @@
             "discardEmpty": true,
             "discardUnderscore": true,
             "discards": [ "x-discard-1", "x-discard-2" ],
-
+            
             "addServer": true,
-            "addCorrelationId": true,
-            "addCallId": true,
-
             "addVia": true,
 
             "cookies": {

@@ -22,11 +22,6 @@ namespace Cloudtoid.GatewayCore.Settings
                     {
                         internal static Version HttpVersion { get; } = Cloudtoid.HttpVersion.Version20;
 
-                        internal static class Headers
-                        {
-                            internal const string CorrelationIdHeader = GatewayCore.Headers.Names.CorrelationId;
-                        }
-
                         internal static class Sender
                         {
                             internal static TimeSpan Timeout { get; } = TimeSpan.FromMinutes(4);

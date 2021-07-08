@@ -54,12 +54,6 @@ namespace Cloudtoid.GatewayCore
                 public string? ProxyName { get; set; }
 
                 /// <summary>
-                /// Gets or sets the name of headers that hold correlation identifiers.
-                /// The default value is <c>x-correlation-id</c> and it can be an expression.
-                /// </summary>
-                public string? CorrelationIdHeader { get; set; }
-
-                /// <summary>
                 /// Gets or sets the options that control the upstream requests.
                 /// </summary>
                 public UpstreamRequestOptions UpstreamRequest { get; set; } = new UpstreamRequestOptions();
@@ -112,19 +106,6 @@ namespace Cloudtoid.GatewayCore
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool AddExternalAddress { get; set; }
-
-                        /// <summary>
-                        /// Gets or sets if a `x-correlation-id` header should be skipped from the outbound upstream request if not already present.
-                        /// The default value is <c>false</c>, meaning that a correlation identifier header is included.
-                        /// The name of this header is <c>x-correlation-id</c>, but it can be altered using <see cref="CorrelationIdHeader"/>.
-                        /// </summary>
-                        public bool SkipCorrelationId { get; set; }
-
-                        /// <summary>
-                        /// Gets or sets if an <c>x-call-id</c> header should be skipped. This is a <c>guid</c> that is generated on each call.
-                        /// The default value is <c>false</c>.
-                        /// </summary>
-                        public bool SkipCallId { get; set; }
 
                         /// <summary>
                         /// Gets or sets if a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via"><c>via</c></a>
@@ -294,20 +275,6 @@ namespace Cloudtoid.GatewayCore
                         /// The default value is <c>false</c>.
                         /// </summary>
                         public bool AddServer { get; set; }
-
-                        /// <summary>
-                        /// Gets or sets if a correlation identifier header, if not present on the inbound response, should be added
-                        /// to the outbound response. The default value is <c>false</c>, meaning that a correlation identifier header
-                        /// is not included.
-                        /// The name of this header is <c>x-correlation-id</c>, but it can be altered using <see cref="CorrelationIdHeader"/>.
-                        /// </summary>
-                        public bool AddCorrelationId { get; set; }
-
-                        /// <summary>
-                        /// Gets or sets if a <c>x-call-id</c> header should be added. This is a <c>guid</c> that is generated on each call.
-                        /// The default value is <c>false</c>.
-                        /// </summary>
-                        public bool AddCallId { get; set; }
 
                         /// <summary>
                         /// Gets or sets if a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via"><c>via</c></a> header should be added to outbound responses.
