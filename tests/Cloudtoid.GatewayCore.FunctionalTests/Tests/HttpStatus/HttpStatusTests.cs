@@ -17,25 +17,19 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [TestMethod("Basic HTTP status plumbing test")]
         public async Task BasicPlumbingTestAsync()
         {
-            var activity = new Activity("BasicProxy").Start();
+            using var activity = new Activity("BasicProxy").Start();
+            activity.TraceStateString = "some-state";
 
-            try
+            await ExecuteAsync(
+            () => new HttpRequestMessage(Method.Get, "basic?message=test"),
+            async (nginxResponse, response) =>
             {
-                await ExecuteAsync(
-                () => new HttpRequestMessage(Method.Get, "basic?message=test"),
-                async (nginxResponse, response) =>
-                {
-                    await EnsureResponseSucceededAsync(nginxResponse);
-                    await EnsureResponseSucceededAsync(response);
+                await EnsureResponseSucceededAsync(nginxResponse);
+                await EnsureResponseSucceededAsync(response);
 
-                    response.Content.Headers.ContentType
-                        .Should().Be(nginxResponse.Content.Headers.ContentType);
-                });
-            }
-            finally
-            {
-                activity.Stop();
-            }
+                response.Content.Headers.ContentType
+                    .Should().Be(nginxResponse.Content.Headers.ContentType);
+            });
         }
 
         [TestMethod("Should not return success when route doesn't exist.")]

@@ -1,6 +1,8 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,14 +27,14 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             string gatewayConfigFile,
             string? nginxConfigFile = null)
         {
-            gatewayCorePort = Interlocked.Increment(ref port);
-            upstreamPort = Interlocked.Increment(ref port);
+            gatewayCorePort = GetAvailablePort();
+            upstreamPort = GetAvailablePort();
             gatewayConfig = LoadGatewayConfig(gatewayConfigFile, upstreamPort);
 
             if (nginxConfigFile is not null)
             {
                 nginxConfigFile = GetNginxConfigFile(nginxConfigFile, upstreamPort);
-                nginxPort = Interlocked.Increment(ref port);
+                nginxPort = GetAvailablePort();
                 nginx = new NginxServer(nginxConfigFile, nginxPort);
             }
         }
@@ -114,6 +116,17 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             var path = Path.GetTempFileName();
             File.WriteAllText(path, config, Encoding.Latin1);
             return path;
+        }
+
+        private static int GetAvailablePort()
+        {
+            var listeners = IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners();
+
+            var p = port;
+            do { p = Interlocked.Increment(ref port); }
+            while (listeners.Any(ip => ip.Port == p));
+
+            return p;
         }
     }
 }

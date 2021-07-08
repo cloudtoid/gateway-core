@@ -19,6 +19,12 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [HttpGet("basic")]
         public string? BasicTest(string? message)
         {
+            RequestHeaders.TryGetValue(HeaderNames.TraceParent, out var traceparents).Should().BeTrue();
+            traceparents.Should().ContainSingle();
+
+            RequestHeaders.TryGetValue(HeaderNames.TraceState, out var tracestate).Should().BeTrue();
+            tracestate.Should().ContainSingle();
+
             if (IsGatewayCore)
             {
                 RequestHeaders.TryGetValue(HeaderNames.Via, out var values).Should().BeTrue();

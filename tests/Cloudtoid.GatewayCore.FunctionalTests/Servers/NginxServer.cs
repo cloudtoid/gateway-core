@@ -51,6 +51,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                     Name = containerName,
                     HostConfig = new()
                     {
+                        AutoRemove = true,
                         Mounts = new Mount[]
                         {
                             new()
@@ -67,7 +68,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                             {
                                 new() { HostPort = portStr }
                             }
-                        },
+                        }
                     }
                 });
 
