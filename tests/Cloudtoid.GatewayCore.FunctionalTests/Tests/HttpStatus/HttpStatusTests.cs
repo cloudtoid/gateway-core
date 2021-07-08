@@ -84,7 +84,6 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
 
             using var nginxResponse = await nginxTask;
             using var gatewayCoreResponse = await gatewayCoreTask;
-
             await responseValidator(nginxResponse, gatewayCoreResponse);
         }
 
@@ -99,6 +98,9 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 "Tests/HttpStatus/NginxConfigs/default.conf");
 
             await pipeline.StartAsync();
+
+            // need to wait for nginx to get up and running in the docker container.
+            await Task.Delay(1000);
         }
 
         [ClassCleanup]
