@@ -46,8 +46,6 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 - Right now, some upstream HTTP errors are simply converted to 502/BadGateway. Look into the options here.
 - Implement the proxy OPTIONS section: [here](https://datatracker.ietf.org/doc/html/rfc7230#section-5.3.4)
 - Add host filtering to the proxy. Something like this but not a middleware: https://github.com/dotnet/aspnetcore/blob/6427d9cc718f8093c506b62b6fd12544411b477f/src/Middleware/HostFiltering/src/HostFilteringMiddleware.cs
-- Ensure there is full support and tests for W3C Trace Context: https://www.w3.org/TR/trace-context/ (It should just work in theory because of ASP.NET Core and changes they made to the HTTP Client for Distributed Tracing: https://devblogs.microsoft.com/aspnet/improvements-in-net-core-3-0-for-troubleshooting-and-monitoring-distributed-apps/)
-
 
 ## Future version
 
@@ -268,6 +266,10 @@ GatewayCore pools [`HttpMessageHandler`](https://docs.microsoft.com/en-us/dotnet
 
 > Avoid enabling `UseCookies` unless you are confident that this is the behavior that your application needs.
 
+## Trace Context
+
+GatewayCore passes forward the [W3C ratified](https://www.w3.org/TR/trace-context/) `traceparent` and `tracestate` headers with no modifications. It uses the activity model in .NET as described [here](https://devblogs.microsoft.com/aspnet/improvements-in-net-core-3-0-for-troubleshooting-and-monitoring-distributed-apps/).
+
 ## Append, add, update, or discard headers
 
 In addition to the controls offered through explicit configuration options, GatewayCore makes it easy to append, add, update, or remove headers on both outbound requests to upstream systems, as well as responses to clients.
@@ -458,15 +460,15 @@ For example, the following configuration adds `x-my-custom-header` HTTP header t
 
 The header will like this:`x-my-custom-header: HTTP/1.1 : 5099`
 
-# Advanced extensibility and configuration
+## Advanced extensibility and configuration
 
 When using the GatewayCore as a library within your .net core application, you have full control over most portions of the proxy pipeline and other gateway components.
 
-## Upstream request http client
+### Upstream request http client
 
 TODO
 
-## Gateway settings and options
+### Gateway settings and options
 
 TODO
 
