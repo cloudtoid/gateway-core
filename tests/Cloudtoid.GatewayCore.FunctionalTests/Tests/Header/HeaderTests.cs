@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -33,6 +34,52 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                     contentHeaders.ContentType!.MediaType.Should().Be("text/plain");
                     contentHeaders.ContentType.CharSet.Should().Be("utf-8");
                     contentHeaders.ContentLength.Should().Be(4);
+                });
+        }
+
+        [TestMethod("Should propagate W3C trace context upstream")]
+        public async Task TraceContextTestAsync()
+        {
+            using var activity = new Activity("TraceContextTestActivity").Start();
+            activity.TraceStateString = "some-state";
+
+            var request = new HttpRequestMessage(Method.Get, "traceContext?message=test");
+            await ExecuteAsync(
+                "DefaultTestOptions.json",
+                request,
+                async response =>
+                {
+                    await EnsureResponseSucceededAsync(response);
+
+                    var headers = response.Headers;
+
+                    headers.TryGetValues(HeaderNames.TraceParent, out var _).Should().BeFalse();
+                    headers.TryGetValues(HeaderNames.TraceState, out var _).Should().BeFalse();
+
+                    headers.TryGetValues(Constants.OneValue, out var traceparent).Should().BeTrue();
+                    traceparent.Should().ContainSingle().And.ContainMatch($"??-{Activity.Current!.TraceId}-*");
+
+                    headers.TryGetValues(Constants.TwoValues, out var tracestate).Should().BeTrue();
+                    tracestate.Should().BeEquivalentTo(new[] { "some-state" });
+                });
+        }
+
+        [TestMethod("Should not have W3C trace context")]
+        public async Task NoTraceContextTestAsync()
+        {
+            Activity.Current = null;
+
+            var request = new HttpRequestMessage(Method.Get, "noTraceContext?message=test");
+            await ExecuteAsync(
+                "DefaultTestOptions.json",
+                request,
+                async response =>
+                {
+                    await EnsureResponseSucceededAsync(response);
+
+                    var headers = response.Headers;
+                    headers.TryGetValues(HeaderNames.TraceParent, out var _).Should().BeFalse();
+                    headers.TryGetValues(HeaderNames.TraceState, out var _).Should().BeFalse();
                 });
         }
 

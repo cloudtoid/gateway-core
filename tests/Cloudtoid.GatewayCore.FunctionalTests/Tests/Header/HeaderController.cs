@@ -18,6 +18,28 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public string Echo(string message)
             => message;
 
+        [HttpGet("traceContext")]
+        public string TraceContextTest(string message)
+        {
+            RequestHeaders.TryGetValue(HeaderNames.TraceParent, out var traceparents).Should().BeTrue();
+            traceparents.Should().ContainSingle();
+
+            RequestHeaders.TryGetValue(HeaderNames.TraceState, out var tracestate).Should().BeTrue();
+            tracestate.Should().ContainSingle();
+
+            HttpContext.Response.Headers.Add(Constants.OneValue, traceparents[0]);
+            HttpContext.Response.Headers.Add(Constants.TwoValues, tracestate[0]);
+            return message;
+        }
+
+        [HttpGet("noTraceContext")]
+        public string NoTraceContextTest(string message)
+        {
+            RequestHeaders.TryGetValue(HeaderNames.TraceParent, out var _).Should().BeFalse();
+            RequestHeaders.TryGetValue(HeaderNames.TraceState, out var _).Should().BeFalse();
+            return message;
+        }
+
         [HttpGet("server")]
         public string ServerTest(string message)
         {
