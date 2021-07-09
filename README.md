@@ -2,7 +2,7 @@
 
 # Gateway Core
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/cloudtoid/url-patterns/blob/master/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)][License]
 
 A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 
@@ -87,7 +87,7 @@ The default HTTP protocol version for upstream requests is `HTTP/2`. This can be
 
 ### Request headers
 
-- The values of `Host` and `:authority` headers are redefined as the name and port of the upstream server. This can be changed as shown below:
+- The values of [`Host`][HostHeader] and `:authority` headers are redefined as the name and port of the upstream server. This can be changed as shown below:
 
   ```json
   "routes": {
@@ -100,15 +100,15 @@ The default HTTP protocol version for upstream requests is `HTTP/2`. This can be
                 "Host": [ "$host" ]
   ```
 
-- A `Via` header is added. See [this](#via-header) for more information.
-- A `Forwarded` header is added/appended/redefined. See [this](#forwarded-category-of-headers) for more information.
+- A [`Via`][ViaHeader] header is added. See [this](#via-header) for more information.
+- A [`Forwarded`][ForwardedHeader] header is added/appended/redefined. See [this](#forwarded-category-of-headers) for more information.
 - The following headers are discarded:
   - Headers with an empty value
   - Headers with an underscore (`_`) in their name
   - GatewayCore headers: `x-gwcore-external-address`, `x-gwcore-proxy-name`
-  - HTTP/2 [Pseudo Headers](https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2.3): `:method`, `:authority`, `scheme`, and `:path`
+  - HTTP/2 [Pseudo Headers][RequestPseudoHeaders]: `:method`, `:authority`, `scheme`, and `:path`
   - Standard hop-by-hop headers: `Keep-Alive`, `Transfer-Encoding`, `TE`, `Connection`, `Trailer`, `Upgrade`, `Proxy-Authorization`, and `Proxy-Authentication`.
-  - Non-standard hop-by-hop headers defined by the [`Connection` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Connection).
+  - Non-standard hop-by-hop headers defined by the [`Connection`][ConnectionHeader] header.
 - All other headers from the downstream are typically passed as they are.
 
 ### Response headers
@@ -116,11 +116,11 @@ The default HTTP protocol version for upstream requests is `HTTP/2`. This can be
 - The following headers are discarded:
   - Headers with an empty value
   - Headers with an underscore (`_`) in their name
-  - Standard headers: `Via` and `Server`
+  - Standard headers: [`Via`][ViaHeader] and [`Server`][ServerHeader]
   - GatewayCore headers: `x-gwcore-external-address`, `x-gwcore-proxy-name`
-  - HTTP/2 [Pseudo Header](https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2.4): `:status`
+  - HTTP/2 [Pseudo Header][ResponsePseudoHeaders]: `:status`
   - Standard hop-by-hop headers: `Keep-Alive`, `Transfer-Encoding`, `TE`, `Connection`, `Trailer`, `Upgrade`, `Proxy-Authorization`, and `Proxy-Authentication`.
-  - Non-standard hop-by-hop headers defined by the [`Connection` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Connection).
+  - Non-standard hop-by-hop headers defined by the [`Connection`][ConnectionHeader] header.
 - All other headers from the upstream are typically passed as they are.
 
 ## Route tracking
@@ -129,9 +129,9 @@ There are four types of route tracking: two that offer information on proxies, a
 
 ### Via header
 
-A proxy typically uses the [`Via`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via) header for tracking message forwards, avoiding request loops, and identifying the protocol capabilities of senders along the request/response chain.
+A proxy typically uses the [`Via`][ViaHeader] header for tracking message forwards, avoiding request loops, and identifying the protocol capabilities of senders along the request/response chain.
 
-According to [RFC7230](https://datatracker.ietf.org/doc/html/rfc7230#section-5.7.1), a proxy must send an appropriate `Via` header field in each message that it forwards. An HTTP-to-HTTP gateway must send an appropriate `Via` header field in each inbound request message and may send a `Via` header field in forwarded response messages.
+According to [RFC7230][ViaHeaderSpec], a proxy must send an appropriate [`Via`][ViaHeader] header field in each message that it forwards. An HTTP-to-HTTP gateway must send an appropriate [`Via`][ViaHeader] header field in each inbound request message and may send a [`Via`][ViaHeader] header field in forwarded response messages.
 
 This header is a comma-separated list of proxies along the message chain with the closest proxy to the sender being the left-most value.
 
@@ -157,7 +157,7 @@ GatewayCore appends one of the following values:
 
 > As illustrated above, GatewayCore omits the protocol for HTTP requests and responses.
 
-The `Via` header is included by default in requests to proxied servers but not in forwarded responses. You can change this behavior using `skipVia` and `addVia` as shown below:
+The [`Via`][ViaHeader] header is included by default in requests to proxied servers but not in forwarded responses. You can change this behavior using `skipVia` and `addVia` as shown below:
 
 ```json
 "routes": {
@@ -177,16 +177,16 @@ The `Via` header is included by default in requests to proxied servers but not i
 
 ### Forwarded category of headers
 
-The `forwarded` class of headers contains information from the client-facing side of proxy servers that is altered or lost when a proxy is involved in the path of the request. This information is passed on using one of these techniques:
+The [`Forwarded`][ForwardedHeader] class of headers contains information from the client-facing side of proxy servers that is altered or lost when a proxy is involved in the path of the request. This information is passed on using one of these techniques:
 
-1. The [`Forwarded`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded) header is what GatewayCore uses by default. This is the standardized version of the header.
-1. The [`X-Forwarded-For`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For), [`X-Forwarded-Host`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Host), and [`X-Forwarded-Proto`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Proto) headers which are considered the [de-facto standard](https://en.wikipedia.org/wiki/De_facto_standard) versions of the [`Forwarded`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded) header.
+1. The [[`Forwarded`][ForwardedHeader]][ForwardedHeader] header is what GatewayCore uses by default. This is the standardized version of the header.
+1. The [`X-Forwarded-For`][XForwardedForHeader], [`X-Forwarded-Host`][XForwardedHostHeader], and [`X-Forwarded-Proto`][XForwardedProtoHeader] headers which are considered the [de-facto standard][DefactoWiki] versions of the [[`Forwarded`][ForwardedHeader]][ForwardedHeader] header.
 
-The information included in these headers typically consists of the IP address of the client, the IP address where the request came into the proxy server, the [`Host`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Host) request header field as received by the proxy, and the protocol used by the request (typically "http" or "https").
+The information included in these headers typically consists of the IP address of the client, the IP address where the request came into the proxy server, the [`Host`][HostHeader] request header field as received by the proxy, and the protocol used by the request (typically "http" or "https").
 
 > IP V6 addresses are quoted and enclosed in square brackets.
 
-GatewayCore uses the `Forwarded` header by default and replaces all inbound `X-Forwarded-*` headers. You can enable `useXForwarded` to reverse this behavior and prefer `X-Forwarded-*` headers instead:
+GatewayCore uses the [`Forwarded`][ForwardedHeader] header by default and replaces all inbound `X-Forwarded-*` headers. You can enable `useXForwarded` to reverse this behavior and prefer `X-Forwarded-*` headers instead:
 
 ```json
 "routes": {
@@ -212,9 +212,9 @@ It is also possible to omit these headers on outbound requests by using `skipFor
 
 ### Server header
 
-The ['Server'](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server) HTTP response header describes the software used by the upstream server that handled the request and generated a response.
+The [`Server`][ServerHeader] HTTP response header describes the software used by the upstream server that handled the request and generated a response.
 
-GatewayCore discards inbound `Server` headers and does not include a `Server` header on its outbound responses to clients. This default behavior can be changed to include a `Server` header with `gwcore` as its value:
+GatewayCore discards inbound [`Server`][ServerHeader] headers and does not include a [`Server`][ServerHeader] header on its outbound responses to clients. This default behavior can be changed to include a [`Server`][ServerHeader] header with `gwcore` as its value:
 
 ```json
 "routes": {
@@ -226,8 +226,8 @@ GatewayCore discards inbound `Server` headers and does not include a `Server` he
           "addServer": true
 ```
 
-> [Security through obscurity](https://en.wikipedia.org/wiki/Security_through_obscurity): A `Server` header can reveal information that might make it easier for attackers to exploit known security holes. It is recommended not to include this header.
-> An upstream specified `Server` header is always ignored.
+> [Security through obscurity][Obscurity]: A [`Server`][ServerHeader] header can reveal information that might make it easier for attackers to exploit known security holes. It is recommended not to include this header.
+> An upstream specified [`Server`][ServerHeader] header is always ignored.
 
 ### External address header
 
@@ -245,14 +245,14 @@ GatewayCore can forward the IP address of an immediate downstream client. This I
 
 ## Cookie handling
 
-The [`Set-Cookie`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie) HTTP response header is used to send cookies from the server to the client so that the client can send them back to the server later. To send multiple cookies, multiple `Set-Cookie` headers can be sent in the same response.
+The [`Set-Cookie`][SetCookieHeader] HTTP response header is used to send cookies from the server to the client so that the client can send them back to the server later. To send multiple cookies, multiple [`Set-Cookie`][SetCookieHeader] headers can be sent in the same response.
 
 This header can include attributes such as:
 
 - `Expires`: The maximum lifetime of the cookie as an HTTP-date timestamp.
 - `Max-Age`: Number of seconds until the cookie expires. A zero or negative number will expire the cookie immediately. `Max-Age` has precedence over `Expires`.
 - `Domain`: Host to which the cookie will be sent on subsequent calls.
-- `Path`: A path that must exist in the requested URL, or the client won't send the `Cookie` header on subsequent requests.
+- `Path`: A path that must exist in the requested URL, or the client won't send the cookie header on subsequent requests.
 - `Secure`: A secure cookie is only sent to the server when a request is made with the `https:` scheme.
 - `HttpOnly`: Limits the scope of the cookie to HTTP
 requests. In particular, the attribute instructs the client to omit the cookie when providing access to cookies via "non-HTTP" APIs such as JavaScript's `Document.cookie` API.
@@ -278,14 +278,14 @@ A reverse proxy such as GatewayCore often modifies the domain, path, and scheme 
               "domain": "example.com"
 ```
 
-In the example above, GatewayCore ensures that the `Set-Cookie` response header for a cookie named `sessionId` is modified such that:
+In the example above, GatewayCore ensures that the [`Set-Cookie`][SetCookieHeader] response header for a cookie named `sessionId` is modified such that:
 
 - the `Secure` attribute is set,
 - the `HttpOnly` attribute is removed if it was specified,
 - the value of `SameSite` is changed to `lax`, and
 - the `Domain` attribute is updated to `example.com`
 
-> Set `domain` to an empty text (`"domain": ""`) if the `Domain` attribute should be fully removed from the `Set-Cookie` header.
+> Set `domain` to an empty text (`"domain": ""`) if the `Domain` attribute should be fully removed from the [`Set-Cookie`][SetCookieHeader] header.
 > The `domain` value can be text or an [expression](#Expressions).
 
 It is also possible to use the wildcard symbol `"*"` to provide a rule that applies to all cookies as shown below:
@@ -307,7 +307,7 @@ It is also possible to use the wildcard symbol `"*"` to provide a rule that appl
 
 > A match of a non-wildcard rule supersedes a wildcard match.
 
-GatewayCore pools [`HttpMessageHandler`](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpmessagehandler) instances and can reuse them for outbound upstream requests. Thus, local cookie handling is disabled by default as unanticipated [`CookieContainer`](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.socketshttphandler.cookiecontainer) object sharing often results in incorrect behavior. Although strongly discouraged, it is possible to change this behavior using `UseCookie`, as shown below.
+GatewayCore pools [`HttpMessageHandler`][HttpMessageHandler] instances and can reuse them for outbound upstream requests. Thus, local cookie handling is disabled by default as unanticipated [`CookieContainer`][CookieContainer] object sharing often results in incorrect behavior. Although strongly discouraged, it is possible to change this behavior using `UseCookie`, as shown below.
 
 ```json
 "routes": {
@@ -323,7 +323,7 @@ GatewayCore pools [`HttpMessageHandler`](https://docs.microsoft.com/en-us/dotnet
 
 ## Trace Context
 
-GatewayCore passes forward the [W3C ratified](https://www.w3.org/TR/trace-context/) `traceparent` and `tracestate` headers with no modifications. It uses the activity model in .NET as described [here](https://devblogs.microsoft.com/aspnet/improvements-in-net-core-3-0-for-troubleshooting-and-monitoring-distributed-apps/).
+GatewayCore passes forward the [W3C ratified][TraceContext] `traceparent` and `tracestate` headers with no modifications. It uses the activity model in .NET as described [here][DistributedTracing].
 
 ## Append, add, update, or discard headers
 
@@ -485,8 +485,7 @@ Some of the configurations support the use of variables. These variables are:
 |:--- |:--- |
 |`$content_length`|The value of the `Content-Length` request header.|
 |`$content_type`|The value of the `Content-Type` request header.|
-|`$call_id`|The value the `x-call-id` header that is added to all outbound requests.|
-|`$host`|The value of the `Host` request header.|
+|`$host`|The value of the [`Host`][HostHeader] request header.|
 |`$request_method`|The HTTP method of the inbound downstream request.|
 |`$request_scheme`|The scheme (`HTTP` or `HTTPS`) used by the inbound downstream request.|
 |`$request_path_base`|The unescaped path base value.|
@@ -539,3 +538,25 @@ TODO
 | `routes:<path>:proxy` | | | This is the proxy configuration section for this url pattern match. |
 | `routes:<path>:proxy:to` | :heavy_check_mark: | | This is an expression that defines the URL of the upstream server to which the downstream request is forwarded to. This is a required property. |
 | `routes:<path>:proxy:proxyName` | :heavy_check_mark: | `gwcore` | This is an expression that defines the name of this proxy. This value is used in the Via HTTP header send on the outbound upstream request, and the outbound downstream response. If a value is specified, an `x-gwcore-proxy-name` header with this value is also added to the outbound upstream request. |
+
+[ConnectionHeader]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Connection
+[ViaHeader]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Via
+[ViaHeaderSpec]:https://datatracker.ietf.org/doc/html/rfc7230#section-5.7.1
+[ForwardedHeader]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded
+[XForwardedForHeader]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For
+[XForwardedHostHeader]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Host
+[XForwardedProtoHeader]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Proto
+[HostHeader]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Host
+[ServerHeader]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server
+[SetCookieHeader]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
+[RequestPseudoHeaders]:https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2.3
+[ResponsePseudoHeaders]:https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2.4
+
+[DefactoWiki]:https://en.wikipedia.org/wiki/De_facto_standard
+[ObscurityWiki]:https://en.wikipedia.org/wiki/Security_through_obscurity
+
+[License]:https://github.com/cloudtoid/gateway-core/blob/master/LICENSE
+[HttpMessageHandler]:https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpmessagehandler
+[CookieContainer]:https://docs.microsoft.com/en-us/dotnet/api/system.net.http.socketshttphandler.cookiecontainer
+[TraceContext]:https://www.w3.org/TR/trace-context/
+[DistributedTracing]:https://devblogs.microsoft.com/aspnet/improvements-in-net-core-3-0-for-troubleshooting-and-monitoring-distributed-apps/
