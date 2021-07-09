@@ -2,7 +2,7 @@
 
 # Gateway Core
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)][License]
+[![License: MIT][MITLicense]][License]
 
 A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 
@@ -107,7 +107,7 @@ The default HTTP protocol version for upstream requests is `HTTP/2`. This can be
   - Headers with an underscore (`_`) in their name
   - GatewayCore headers: `x-gwcore-external-address`, `x-gwcore-proxy-name`
   - HTTP/2 [Pseudo Headers][RequestPseudoHeaders]: `:method`, `:authority`, `scheme`, and `:path`
-  - Standard hop-by-hop headers: `Keep-Alive`, `Transfer-Encoding`, `TE`, `Connection`, `Trailer`, `Upgrade`, `Proxy-Authorization`, and `Proxy-Authentication`.
+  - Standard hop-by-hop headers: [`Keep-Alive`][KeepAliveHeader], [`Transfer-Encoding`][TransferEncodingHeader], [`TE`][TEHeader], [`Connection`][ConnectionHeader], [`Trailer`][TrailerHeader], [`Upgrade`][UpgradeHeader], [`Proxy-Authorization`][ProxyAuthorizationHeader], and [`Proxy-Authenticate`][ProxyAuthenticateHeader]
   - Non-standard hop-by-hop headers defined by the [`Connection`][ConnectionHeader] header.
 - All other headers from the downstream are typically passed as they are.
 
@@ -119,7 +119,7 @@ The default HTTP protocol version for upstream requests is `HTTP/2`. This can be
   - Standard headers: [`Via`][ViaHeader] and [`Server`][ServerHeader]
   - GatewayCore headers: `x-gwcore-external-address`, `x-gwcore-proxy-name`
   - HTTP/2 [Pseudo Header][ResponsePseudoHeaders]: `:status`
-  - Standard hop-by-hop headers: `Keep-Alive`, `Transfer-Encoding`, `TE`, `Connection`, `Trailer`, `Upgrade`, `Proxy-Authorization`, and `Proxy-Authentication`.
+  - Standard hop-by-hop headers: [`Keep-Alive`][KeepAliveHeader], [`Transfer-Encoding`][TransferEncodingHeader], [`TE`][TEHeader], [`Connection`][ConnectionHeader], [`Trailer`][TrailerHeader], [`Upgrade`][UpgradeHeader], [`Proxy-Authorization`][ProxyAuthorizationHeader], and [`Proxy-Authenticate`][ProxyAuthenticateHeader]
   - Non-standard hop-by-hop headers defined by the [`Connection`][ConnectionHeader] header.
 - All other headers from the upstream are typically passed as they are.
 
@@ -549,6 +549,13 @@ TODO
 [HostHeader]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Host
 [ServerHeader]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server
 [SetCookieHeader]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
+[KeepAliveHeader]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive
+[TransferEncodingHeader]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
+[TEHeader]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/TE
+[TrailerHeader]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Trailer
+[UpgradeHeader]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Upgrade
+[ProxyAuthorizationHeader]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Proxy-Authorization
+[ProxyAuthenticateHeader]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Proxy-Authenticate
 [RequestPseudoHeaders]:https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2.3
 [ResponsePseudoHeaders]:https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2.4
 
@@ -560,3 +567,5 @@ TODO
 [CookieContainer]:https://docs.microsoft.com/en-us/dotnet/api/system.net.http.socketshttphandler.cookiecontainer
 [TraceContext]:https://www.w3.org/TR/trace-context/
 [DistributedTracing]:https://devblogs.microsoft.com/aspnet/improvements-in-net-core-3-0-for-troubleshooting-and-monitoring-distributed-apps/
+
+[MITLicense]:https://img.shields.io/badge/License-MIT-blue.svg
