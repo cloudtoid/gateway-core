@@ -1,4 +1,6 @@
-![](CloudtoidLogo =100x)
+[![][CloudtoidLogo =100x]][Cloudtoid]
+
+<a href="https://github.com/cloudtoid"><img src="https://raw.githubusercontent.com/cloudtoid/assets/master/logos/cloudtoid-black-red.png" width="100"></a>
 
 # Gateway Core
 
@@ -539,6 +541,7 @@ TODO
 | `routes:<path>:proxy:to` | :heavy_check_mark: | | This is an expression that defines the URL of the upstream server to which the downstream request is forwarded to. This is a required property. |
 | `routes:<path>:proxy:proxyName` | :heavy_check_mark: | `gwcore` | This is an expression that defines the name of this proxy. This value is used in the Via HTTP header send on the outbound upstream request, and the outbound downstream response. If a value is specified, an `x-gwcore-proxy-name` header with this value is also added to the outbound upstream request. |
 
+[Cloudtoid]:https://github.com/cloudtoid
 [CloudtoidLogo]:https://raw.githubusercontent.com/cloudtoid/assets/master/logos/cloudtoid-white-red.png
 
 [ConnectionHeader]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Connection
