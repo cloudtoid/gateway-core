@@ -179,8 +179,8 @@ The [`Via`][ViaHeader] header is included by default in requests to proxied serv
 
 The [`Forwarded`][ForwardedHeader] class of headers contains information from the client-facing side of proxy servers that is altered or lost when a proxy is involved in the path of the request. This information is passed on using one of these techniques:
 
-1. The [[`Forwarded`][ForwardedHeader]][ForwardedHeader] header is what GatewayCore uses by default. This is the standardized version of the header.
-1. The [`X-Forwarded-For`][XForwardedForHeader], [`X-Forwarded-Host`][XForwardedHostHeader], and [`X-Forwarded-Proto`][XForwardedProtoHeader] headers which are considered the [de-facto standard][DefactoWiki] versions of the [[`Forwarded`][ForwardedHeader]][ForwardedHeader] header.
+1. The [`Forwarded`][ForwardedHeader] header is what GatewayCore uses by default. This is the standardized version of the header.
+1. The [`X-Forwarded-For`][XForwardedForHeader], [`X-Forwarded-Host`][XForwardedHostHeader], and [`X-Forwarded-Proto`][XForwardedProtoHeader] headers which are considered the [de-facto standard][DefactoWiki] versions of the [`Forwarded`][ForwardedHeader] header.
 
 The information included in these headers typically consists of the IP address of the client, the IP address where the request came into the proxy server, the [`Host`][HostHeader] request header field as received by the proxy, and the protocol used by the request (typically "http" or "https").
 
@@ -226,7 +226,7 @@ GatewayCore discards inbound [`Server`][ServerHeader] headers and does not inclu
           "addServer": true
 ```
 
-> [Security through obscurity][Obscurity]: A [`Server`][ServerHeader] header can reveal information that might make it easier for attackers to exploit known security holes. It is recommended not to include this header.
+> [Security through obscurity][ObscurityWiki]: A [`Server`][ServerHeader] header can reveal information that might make it easier for attackers to exploit known security holes. It is recommended not to include this header.
 > An upstream specified [`Server`][ServerHeader] header is always ignored.
 
 ### External address header
