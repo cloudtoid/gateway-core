@@ -324,6 +324,24 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 });
         }
 
+        [TestMethod("Should not have hop-by-hop headers")]
+        public async Task NoHopByHopHeadersTestAsync()
+        {
+            var request = new HttpRequestMessage(Method.Get, "hopByHop?message=test");
+            request.Headers.Add(HeaderNames.Connection, new[] { Constants.OneValue });
+            request.Headers.Add(Constants.OneValue, new[] { "one" });
+
+            await ExecuteAsync(
+                "DefaultTestOptions.json",
+                request,
+                async response =>
+                {
+                    await EnsureResponseSucceededAsync(response);
+                    response.Headers.TryGetValues(Constants.OneValue, out var _).Should().BeFalse();
+                },
+                HttpVersion.Version11);
+        }
+
         [TestMethod("Should append headers")]
         public async Task AppendHeadersTestAsync()
         {

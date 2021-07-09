@@ -27,7 +27,7 @@ namespace Cloudtoid.GatewayCore.Downstream
     /// </example>
     public class TrailingHeaderSetter : ITrailingHeaderSetter
     {
-        private readonly HeaderSanetizer sanetizer;
+        private readonly HeaderSanitizer sanitizer;
 
         public TrailingHeaderSetter(
             ITrailingHeaderValuesProvider provider,
@@ -35,7 +35,7 @@ namespace Cloudtoid.GatewayCore.Downstream
         {
             Provider = CheckValue(provider, nameof(provider));
             Logger = CheckValue(logger, nameof(logger));
-            sanetizer = new HeaderSanetizer(logger);
+            sanitizer = new HeaderSanitizer(logger);
         }
 
         protected ITrailingHeaderValuesProvider Provider { get; }
@@ -68,7 +68,7 @@ namespace Cloudtoid.GatewayCore.Downstream
 
             foreach (var header in headers)
             {
-                if (!sanetizer.IsValid(
+                if (!sanitizer.IsValid(
                     header.Key,
                     header.Value,
                     discardEmpty,

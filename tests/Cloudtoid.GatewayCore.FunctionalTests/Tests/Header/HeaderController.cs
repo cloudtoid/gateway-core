@@ -232,6 +232,17 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             return message;
         }
 
+        [HttpGet("hopByHop")]
+        public string NoHopByHopHeadersTest(string message)
+        {
+            RequestHeaders.Should().NotContainKey(Constants.OneValue);
+            var headers = HttpContext.Response.Headers;
+            headers.Add(HeaderNames.Connection, Constants.OneValue);
+            headers.Add(Constants.OneValue, "one");
+
+            return message;
+        }
+
         [HttpGet("append")]
         public string AppendHeaderTest(string message)
         {

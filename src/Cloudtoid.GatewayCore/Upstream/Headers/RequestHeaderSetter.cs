@@ -31,7 +31,7 @@ namespace Cloudtoid.GatewayCore.Upstream
     /// </example>
     public partial class RequestHeaderSetter : IRequestHeaderSetter
     {
-        private readonly HeaderSanetizer sanetizer;
+        private readonly HeaderSanitizer sanitizer;
 
         public RequestHeaderSetter(
             IRequestHeaderValuesProvider provider,
@@ -39,7 +39,7 @@ namespace Cloudtoid.GatewayCore.Upstream
         {
             Provider = CheckValue(provider, nameof(provider));
             Logger = CheckValue(logger, nameof(logger));
-            sanetizer = new HeaderSanetizer(logger);
+            sanitizer = new HeaderSanitizer(logger);
         }
 
         protected IRequestHeaderValuesProvider Provider { get; }
@@ -87,13 +87,13 @@ namespace Cloudtoid.GatewayCore.Upstream
             var discardEmpty = options.DiscardEmpty;
             var discardUnderscore = options.DiscardUnderscore;
             var doNotTransferHeaders = options.DoNotTransferHeaders;
-            var nonStandardHopByHopHeaders = GetNonStandardHopByHopHeaders(context);
+            ISet<string>? nonStandardHopByHopHeaders = null; // lazy instantiate if and only if needed
 
             foreach (var header in headers)
             {
                 var name = header.Key;
 
-                if (!sanetizer.IsValid(
+                if (!sanitizer.IsValid(
                     name,
                     header.Value,
                     discardEmpty,
@@ -102,6 +102,9 @@ namespace Cloudtoid.GatewayCore.Upstream
 
                 if (doNotTransferHeaders.Contains(name))
                     continue;
+
+                if (nonStandardHopByHopHeaders is null)
+                    nonStandardHopByHopHeaders = GetNonStandardHopByHopHeaders(headers);
 
                 if (nonStandardHopByHopHeaders.Contains(name))
                     continue;
@@ -162,6 +165,9 @@ namespace Cloudtoid.GatewayCore.Upstream
                 nameof(IRequestHeaderValuesProvider.TryGetHeaderValues));
         }
 
+        private static string? GetRemoteIpAddressOrDefault(ProxyContext context)
+            => context.HttpContext.Connection.RemoteIpAddress?.ToString();
+
         /// <summary>
         /// Except for the standard hop-by-hop headers (Keep-Alive, Transfer-Encoding, TE, Connection, Trailer, Upgrade,
         /// Proxy-Authorization and Proxy-Authenticate), any hop-by-hop headers used by the message must be listed in the
@@ -169,16 +175,16 @@ namespace Cloudtoid.GatewayCore.Upstream
         /// Standard hop-by-hop headers can be listed too (it is often the case of Keep-Alive, but this is not mandatory).
         /// See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Connection">here</a> for more information.
         /// </summary>
-        private static ISet<string> GetNonStandardHopByHopHeaders(ProxyContext context)
+        private static ISet<string> GetNonStandardHopByHopHeaders(IHeaderDictionary headers)
         {
-            var values = context.Request.Headers.GetCommaSeparatedValues(HeaderNames.Connection);
+            if (!headers.ContainsKey(HeaderNames.Connection))
+                return ImmutableHashSet<string>.Empty;
+
+            var values = headers.GetCommaSeparatedValues(HeaderNames.Connection);
             if (values.Length == 0)
                 return ImmutableHashSet<string>.Empty;
 
             return new HashSet<string>(values, StringComparer.OrdinalIgnoreCase);
         }
-
-        private static string? GetRemoteIpAddressOrDefault(ProxyContext context)
-            => context.HttpContext.Connection.RemoteIpAddress?.ToString();
     }
 }

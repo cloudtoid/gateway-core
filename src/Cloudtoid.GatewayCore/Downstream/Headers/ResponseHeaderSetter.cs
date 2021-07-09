@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Cloudtoid.GatewayCore.Headers;
@@ -31,7 +33,7 @@ namespace Cloudtoid.GatewayCore.Downstream
     public class ResponseHeaderSetter : IResponseHeaderSetter
     {
         private const string WildcardCookieName = "*";
-        private readonly HeaderSanetizer sanetizer;
+        private readonly HeaderSanitizer sanitizer;
 
         public ResponseHeaderSetter(
             IResponseHeaderValuesProvider provider,
@@ -39,7 +41,7 @@ namespace Cloudtoid.GatewayCore.Downstream
         {
             Provider = CheckValue(provider, nameof(provider));
             Logger = CheckValue(logger, nameof(logger));
-            sanetizer = new HeaderSanetizer(logger);
+            sanitizer = new HeaderSanitizer(logger);
         }
 
         protected IResponseHeaderValuesProvider Provider { get; }
@@ -76,19 +78,21 @@ namespace Cloudtoid.GatewayCore.Downstream
             ProxyContext context,
             HttpResponseMessage upstreamResponse)
         {
-            if (upstreamResponse.Headers is null)
+            var headers = upstreamResponse.Headers;
+            if (headers is null)
                 return;
 
             var options = context.ProxyDownstreamResponseHeaderSettings;
             var discardEmpty = options.DiscardEmpty;
             var discardUnderscore = options.DiscardUnderscore;
             var doNotTransferHeaders = options.DoNotTransferHeaders;
+            ICollection<string>? nonStandardHopByHopHeaders = null; // lazy instantiate if and only if needed
 
-            foreach (var header in upstreamResponse.Headers)
+            foreach (var header in headers)
             {
                 var name = header.Key;
 
-                if (!sanetizer.IsValid(
+                if (!sanitizer.IsValid(
                     name,
                     header.Value,
                     discardEmpty,
@@ -101,7 +105,17 @@ namespace Cloudtoid.GatewayCore.Downstream
                 var values = header.Value.AsStringValues();
 
                 if (name.EqualsOrdinalIgnoreCase(HeaderNames.SetCookie))
+                {
                     UpdateSetCookiesValues(context, values);
+                }
+                else
+                {
+                    if (nonStandardHopByHopHeaders is null)
+                        nonStandardHopByHopHeaders = GetNonStandardHopByHopHeaders(headers);
+
+                    if (nonStandardHopByHopHeaders.Contains(name))
+                        continue;
+                }
 
                 AddHeaderValues(context, name, values);
             }
@@ -201,5 +215,15 @@ namespace Cloudtoid.GatewayCore.Downstream
                 nameof(IResponseHeaderValuesProvider),
                 nameof(IResponseHeaderValuesProvider.TryGetHeaderValues));
         }
+
+        /// <summary>
+        /// Except for the standard hop-by-hop headers (Keep-Alive, Transfer-Encoding, TE, Connection, Trailer, Upgrade,
+        /// Proxy-Authorization and Proxy-Authenticate), any hop-by-hop headers used by the message must be listed in the
+        /// Connection header, so that the first proxy knows it has to consume them and not forward them further.
+        /// Standard hop-by-hop headers can be listed too (it is often the case of Keep-Alive, but this is not mandatory).
+        /// See <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Connection">here</a> for more information.
+        /// </summary>
+        private static ICollection<string> GetNonStandardHopByHopHeaders(HttpResponseHeaders headers)
+            => headers.Contains(HeaderNames.Connection) ? headers.Connection : ImmutableList<string>.Empty;
     }
 }

@@ -107,8 +107,9 @@ The default HTTP protocol version for upstream requests is `HTTP/2`. This can be
   - Headers with an underscore (`_`) in their name
   - GatewayCore headers: `x-gwcore-external-address`, `x-gwcore-proxy-name`
   - HTTP/2 [Pseudo Headers](https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2.3): `:method`, `:authority`, `scheme`, and `:path`
-  - All `Connection` related headers. See [this](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Connection) for more information. This includes these standard hop-by-hop headers: `Keep-Alive`, `Transfer-Encoding`, `TE`, `Connection`, `Trailer`, `Upgrade`, `Proxy-Authorization`, and `Proxy-Authentication`.
-- All other headers passed by he client are typically passed as they are.
+  - Standard hop-by-hop headers: `Keep-Alive`, `Transfer-Encoding`, `TE`, `Connection`, `Trailer`, `Upgrade`, `Proxy-Authorization`, and `Proxy-Authentication`.
+  - Non-standard hop-by-hop headers defined by the [`Connection` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Connection).
+- All other headers from the downstream are typically passed as they are.
 
 ### Response headers
 
@@ -118,7 +119,9 @@ The default HTTP protocol version for upstream requests is `HTTP/2`. This can be
   - Standard headers: `Via` and `Server`
   - GatewayCore headers: `x-gwcore-external-address`, `x-gwcore-proxy-name`
   - HTTP/2 [Pseudo Header](https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2.4): `:status`
-  - All `Connection` related headers. See [this](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Connection) for more information. This includes these standard hop-by-hop headers: `Keep-Alive`, `Transfer-Encoding`, `TE`, `Connection`, `Trailer`, `Upgrade`, `Proxy-Authorization`, and `Proxy-Authentication`.
+  - Standard hop-by-hop headers: `Keep-Alive`, `Transfer-Encoding`, `TE`, `Connection`, `Trailer`, `Upgrade`, `Proxy-Authorization`, and `Proxy-Authentication`.
+  - Non-standard hop-by-hop headers defined by the [`Connection` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Connection).
+- All other headers from the upstream are typically passed as they are.
 
 ## Route tracking
 

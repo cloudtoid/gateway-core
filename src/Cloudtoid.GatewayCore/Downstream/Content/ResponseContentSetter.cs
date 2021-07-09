@@ -34,7 +34,7 @@ namespace Cloudtoid.GatewayCore.Downstream
             HeaderNames.TransferEncoding,
         };
 
-        private readonly HeaderSanetizer sanetizer;
+        private readonly HeaderSanitizer sanitizer;
 
         public ResponseContentSetter(
             IResponseContentHeaderValuesProvider provider,
@@ -42,7 +42,7 @@ namespace Cloudtoid.GatewayCore.Downstream
         {
             Provider = CheckValue(provider, nameof(provider));
             Logger = CheckValue(logger, nameof(logger));
-            sanetizer = new HeaderSanetizer(logger);
+            sanitizer = new HeaderSanitizer(logger);
         }
 
         protected IResponseContentHeaderValuesProvider Provider { get; }
@@ -108,7 +108,7 @@ namespace Cloudtoid.GatewayCore.Downstream
             {
                 var name = header.Key;
 
-                if (!sanetizer.IsValid(
+                if (!sanitizer.IsValid(
                     name,
                     header.Value,
                     discardEmpty,

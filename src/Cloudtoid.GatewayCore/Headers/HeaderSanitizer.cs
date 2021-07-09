@@ -6,12 +6,12 @@ using static Cloudtoid.Contract;
 
 namespace Cloudtoid.GatewayCore.Headers
 {
-    internal sealed class HeaderSanetizer
+    internal sealed class HeaderSanitizer
     {
         private static readonly Func<string, bool> NotNullOrEmpty = s => !string.IsNullOrEmpty(s);
         private readonly ILogger logger;
 
-        internal HeaderSanetizer(ILogger logger)
+        internal HeaderSanitizer(ILogger logger)
         {
             this.logger = CheckValue(logger, nameof(logger));
         }
