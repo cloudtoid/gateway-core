@@ -51,9 +51,6 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
 
                     return Task.CompletedTask;
                 });
-
-            ////while (true)
-            ////    await Task.Delay(1000);
         }
 
         private static async Task EnsureResponseSucceededAsync(HttpResponseMessage response)

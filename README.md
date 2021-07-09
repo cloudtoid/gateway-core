@@ -46,6 +46,10 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 - Right now, some upstream HTTP errors are simply converted to 502/BadGateway. Look into the options here.
 - Implement the proxy OPTIONS section: [here](https://datatracker.ietf.org/doc/html/rfc7230#section-5.3.4)
 - Add host filtering to the proxy. Something like this but not a middleware: https://github.com/dotnet/aspnetcore/blob/6427d9cc718f8093c506b62b6fd12544411b477f/src/Middleware/HostFiltering/src/HostFilteringMiddleware.cs
+- HTTP2 Client Push
+- Wire up more of SocketsHttpHandler properties in SettingsProvider.
+- Add tests for content headers both for requests and also responses. Right now, we are only using GET requests that don't really have content length.
+- Default timeout for upstream requests is set to 100 seconds. Should these be changed?
 
 ## Future version
 
@@ -67,6 +71,54 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 ## Getting Started
 
 > TODO
+
+## Default proxy behavior
+
+The default HTTP protocol version for upstream requests is `HTTP/2`. This can be changed as shown below:
+
+```json
+"routes": {
+  "/api/": {
+    "proxy": {
+      "to": "http://upstream/v1/",
+      "upstreamRequest": {
+          "httpVersion": "1.1"
+```
+
+### Request headers
+
+- The values of `Host` and `:authority` headers are redefined as the name and port of the upstream server. This can be changed as shown below:
+
+  ```json
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "http://upstream/v1/",
+        "upstreamRequest": {
+            "headers": {
+              "overrides": {
+                "Host": [ "$host" ]
+  ```
+
+- A `Via` header is added. See [this](#via-header) for more information.
+- A `Forwarded` header is added/appended/redefined. See [this](#forwarded-category-of-headers) for more information.
+- The following headers are discarded:
+  - Headers with an empty value
+  - Headers with an underscore (`_`) in their name
+  - GatewayCore headers: `x-gwcore-external-address`, `x-gwcore-proxy-name`
+  - HTTP/2 [Pseudo Headers](https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2.3): `:method`, `:authority`, `scheme`, and `:path`
+  - All `Connection` related headers. See [this](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Connection) for more information. This includes these standard hop-by-hop headers: `Keep-Alive`, `Transfer-Encoding`, `TE`, `Connection`, `Trailer`, `Upgrade`, `Proxy-Authorization`, and `Proxy-Authentication`.
+- All other headers passed by he client are typically passed as they are.
+
+### Response headers
+
+- The following headers are discarded:
+  - Headers with an empty value
+  - Headers with an underscore (`_`) in their name
+  - Standard headers: `Via` and `Server`
+  - GatewayCore headers: `x-gwcore-external-address`, `x-gwcore-proxy-name`
+  - HTTP/2 [Pseudo Header](https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2.4): `:status`
+  - All `Connection` related headers. See [this](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Connection) for more information. This includes these standard hop-by-hop headers: `Keep-Alive`, `Transfer-Encoding`, `TE`, `Connection`, `Trailer`, `Upgrade`, `Proxy-Authorization`, and `Proxy-Authentication`.
 
 ## Route tracking
 

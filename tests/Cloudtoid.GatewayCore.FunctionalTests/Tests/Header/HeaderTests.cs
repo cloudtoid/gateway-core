@@ -83,6 +83,26 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 });
         }
 
+        [TestMethod("Should redefine the value of host header")]
+        public async Task RedefineHostTestAsync()
+        {
+            var request = new HttpRequestMessage(Method.Get, "redefineHost?message=test");
+            await ExecuteAsync(
+                "defaultTestOptions.json",
+                request,
+                EnsureResponseSucceededAsync);
+        }
+
+        [TestMethod("Should keep downstream's host header value")]
+        public async Task KeepHostTestAsync()
+        {
+            var request = new HttpRequestMessage(Method.Get, "keepHost?message=test");
+            await ExecuteAsync(
+                "KeepHostTestOptions.json",
+                request,
+                EnsureResponseSucceededAsync);
+        }
+
         [TestMethod("Should have server header that ignores the upstream server header")]
         public async Task ServerTestAsync()
         {
@@ -412,6 +432,25 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 });
         }
 
+        [TestMethod("Should convert headers from HTTP/2 to HTTP/1.1 headers")]
+        public async Task Http2To1TestAsync()
+        {
+            var request = new HttpRequestMessage(Method.Get, "http2To1?message=test");
+
+            await ExecuteAsync(
+                "Http2To1TestOptions.json",
+                request,
+                async response =>
+                {
+                    await EnsureResponseSucceededAsync(response);
+
+                    var headers = response.Headers;
+                    headers.Contains(Constants.OneValue).Should().BeFalse();
+                    headers.Contains(Constants.TwoValues).Should().BeFalse();
+                    headers.Contains(Constants.ThreeValues).Should().BeFalse();
+                });
+        }
+
         private static async Task EnsureResponseSucceededAsync(HttpResponseMessage response)
         {
             response.IsSuccessStatusCode.Should().BeTrue();
@@ -422,8 +461,12 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         private static async Task ExecuteAsync(
             string config,
             HttpRequestMessage request,
-            Func<HttpResponseMessage, Task> responseValidator)
+            Func<HttpResponseMessage, Task> responseValidator,
+            Version? httpVersion = null)
         {
+            request.Version = httpVersion ?? HttpVersion.Version20;
+            request.VersionPolicy = HttpVersionPolicy.RequestVersionExact;
+
             await using var pipeline = new Pipeline("Tests/Header/GatewayCoreOptions/" + config);
             await pipeline.StartAsync();
             using var httpClient = pipeline.CreateGatewayCoreClient();

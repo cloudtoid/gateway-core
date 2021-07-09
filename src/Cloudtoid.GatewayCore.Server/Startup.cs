@@ -29,12 +29,14 @@ namespace Cloudtoid.GatewayCore.Server
             var gatewayConfig = config.GetSection("gateway");
             var kestrelConfig = config.GetSection("server");
 
-            // This is peered down version of Kestrel
+            // This is a small portion of Kestrel that does what we need and no more.
             return new WebHostBuilder()
                 .ConfigureServices(s => s.Configure<GatewayOptions>(gatewayConfig))
-                .UseKestrel((c, o) => o.Configure(kestrelConfig, reloadOnChange: true))
-                .UseIIS()
-                .UseIISIntegration()
+                .UseKestrel((c, o) =>
+                {
+                    o.AddServerHeader = false;
+                    o.Configure(kestrelConfig, reloadOnChange: true);
+                })
                 .UseStartup<Startup>()
                 .Build()
                 .StartAsync();

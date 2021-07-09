@@ -1,0 +1,12 @@
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "https://localhost:$upstream-port/header/",
+        "upstreamRequest": {
+          "httpVersion": "1.1"
+        }
+      }
+    }
+  }
+}

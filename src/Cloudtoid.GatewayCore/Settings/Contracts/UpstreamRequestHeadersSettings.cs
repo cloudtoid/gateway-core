@@ -11,14 +11,23 @@ namespace Cloudtoid.GatewayCore.Settings
         private static readonly ISet<string> DoNotTransferBaseHeaders =
             new[]
             {
+                // standard headers
                 HeaderNames.Host,
                 HeaderNames.Via,
-                Names.ExternalAddress,
-                Names.ProxyName,
                 Names.Forwarded,
                 Names.XForwardedFor,
                 Names.XForwardedHost,
-                Names.XForwardedProto
+                Names.XForwardedProto,
+
+                // HTTP/2 pseudo headers (https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2.3)
+                HeaderNames.Method,
+                HeaderNames.Authority,
+                HeaderNames.Scheme,
+                HeaderNames.Path,
+
+                // Gateway Core headers
+                Names.ExternalAddress,
+                Names.ProxyName
             }
             .Concat(HeaderTypes.StandardHopByHopeHeaders)
             .Concat(HeaderTypes.ContentHeaders)

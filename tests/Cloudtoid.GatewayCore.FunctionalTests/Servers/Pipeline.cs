@@ -13,7 +13,6 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
 {
     internal sealed class Pipeline : IAsyncDisposable
     {
-        private static readonly Version Http2Version = new(2, 0);
         private static volatile int port = 8080;
         private readonly int gatewayCorePort;
         private readonly int upstreamPort;
@@ -73,14 +72,12 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
 
         internal HttpClient CreateGatewayCoreClient() => new()
         {
-            BaseAddress = new Uri($"http://localhost:{gatewayCorePort}/api/"),
-            DefaultRequestVersion = Http2Version,
+            BaseAddress = new Uri($"https://localhost:{gatewayCorePort}/api/")
         };
 
         internal HttpClient CreateNginxClient() => new()
         {
-            BaseAddress = new Uri($"http://localhost:{nginxPort}/api/"),
-            DefaultRequestVersion = Http2Version,
+            BaseAddress = new Uri($"http://localhost:{nginxPort}/api/")
         };
 
         private static IConfiguration LoadGatewayConfig(string gatewayConfigFile, int upstreamPort)

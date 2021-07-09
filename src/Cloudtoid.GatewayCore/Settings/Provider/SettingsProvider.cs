@@ -38,10 +38,8 @@ namespace Cloudtoid.GatewayCore.Settings
         {
             foreach (var route in routes)
             {
-                if (route.Proxy is null)
-                    continue;
-
-                CreateHttpClientFactoryOptions(route.Proxy.UpstreamRequest.Sender);
+                if (route.Proxy is not null)
+                    CreateHttpClientFactoryOptions(route.Proxy.UpstreamRequest.Sender);
             }
         }
 
@@ -72,6 +70,8 @@ namespace Cloudtoid.GatewayCore.Settings
                 MaxResponseHeadersLength = settings.MaxResponseHeadersLengthInKilobytes,
                 AllowAutoRedirect = settings.AllowAutoRedirect,
                 UseCookies = settings.UseCookies,
+                UseProxy = false,
+                EnableMultipleHttp2Connections = true,
             };
         }
     }
