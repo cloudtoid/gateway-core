@@ -1,4 +1,4 @@
-[![](https://raw.githubusercontent.com/cloudtoid/assets/master/logos/cloudtoid-white-red.png|width=100px)][Cloudtoid]
+[![img|100x100](https://raw.githubusercontent.com/cloudtoid/assets/master/logos/cloudtoid-white-red.png)][Cloudtoid]
 
 # Gateway Core
 
