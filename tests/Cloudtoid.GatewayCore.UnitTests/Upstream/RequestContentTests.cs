@@ -9,7 +9,6 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -19,22 +18,6 @@ namespace Cloudtoid.GatewayCore.UnitTests
     public sealed class RequestContentTests
     {
         private IServiceProvider? serviceProvider;
-
-        [TestMethod]
-        public async Task SetContentAsync_HasContentHeaders_ContentHeadersIncludedAsync()
-        {
-            // Arrange
-            var context = new DefaultHttpContext();
-            var header = HeaderNames.ContentDisposition;
-            context.Request.Headers.Add(header, "some-value");
-
-            // Act
-            var message = await SetContentAsync(context);
-
-            // Assert
-            message.Content!.Headers.TryGetValues(header, out var headers).Should().BeTrue();
-            headers.Should().ContainSingle();
-        }
 
         [TestMethod]
         public async Task SetContentAsync_HasCustomContentHeader_ContentHeaderIsIgnoredAsync()
@@ -49,22 +32,6 @@ namespace Cloudtoid.GatewayCore.UnitTests
 
             // Assert
             message.Content!.Headers.TryGetValues(header, out _).Should().BeFalse();
-        }
-
-        [TestMethod]
-        public async Task SetContentAsync_HasContentTypeHeader_ContentTypeHeadersIncludedOnlyOnceAsync()
-        {
-            // Arrange
-            var context = new DefaultHttpContext();
-            var header = HeaderNames.ContentType;
-            context.Request.Headers.Add(header, "some-value");
-
-            // Act
-            var message = await SetContentAsync(context);
-
-            // Assert
-            message.Content!.Headers.TryGetValues(header, out var headers).Should().BeTrue();
-            headers.Should().ContainSingle();
         }
 
         [TestMethod]
@@ -160,32 +127,12 @@ namespace Cloudtoid.GatewayCore.UnitTests
             logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase("The inbound downstream request does not specify a 'Content-Length'.")).Should().BeTrue();
         }
 
-        [TestMethod]
-        public async Task SetContentAsync_HeaderRejectedByIRequestContentHeaderValuesProvider_LogsInfoAsync()
-        {
-            // Arrange
-            var context = new DefaultHttpContext();
-            context.Request.Headers.Add(HeaderNames.ContentMD5, "Q2hlY2sgSW50ZWdyaXR5IQ==");
-            var provider = new DropContentHeaderValuesProvider();
-
-            // Act
-            await SetContentAsync(context, provider: provider);
-
-            // Assert
-            var logger = (Logger<RequestContentSetter>)serviceProvider!.GetRequiredService<ILogger<RequestContentSetter>>();
-            logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase("Header 'Content-MD5' is not added. This was instructed by IRequestContentHeaderValuesProvider.TryGetHeaderValues.")).Should().BeTrue();
-        }
-
         private async Task<HttpRequestMessage> SetContentAsync(
             HttpContext httpContext,
             long? contentLength = 10,
-            GatewayOptions? options = null,
-            IRequestContentHeaderValuesProvider? provider = null)
+            GatewayOptions? options = null)
         {
             var services = new ServiceCollection();
-
-            if (provider is not null)
-                services.TryAddSingleton(provider);
 
             services.AddTest(gatewayOptions: options);
             serviceProvider = services.BuildServiceProvider();
@@ -195,24 +142,6 @@ namespace Cloudtoid.GatewayCore.UnitTests
             var message = new HttpRequestMessage();
             await setter.SetContentAsync(context, message, default);
             return message;
-        }
-
-        private sealed class DropContentHeaderValuesProvider : RequestContentHeaderValuesProvider
-        {
-            public override bool TryGetHeaderValues(
-                ProxyContext context,
-                string name,
-                StringValues downstreamValues,
-                out StringValues upstreamValues)
-            {
-                if (name.EqualsOrdinalIgnoreCase(HeaderNames.ContentMD5))
-                {
-                    upstreamValues = StringValues.Empty;
-                    return false;
-                }
-
-                return base.TryGetHeaderValues(context, name, downstreamValues, out upstreamValues);
-            }
         }
 
         private sealed class NonSeekableStream : Stream

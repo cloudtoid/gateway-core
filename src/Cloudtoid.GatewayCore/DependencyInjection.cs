@@ -58,7 +58,6 @@ namespace Cloudtoid.GatewayCore
                 .TryAddSingleton<IRequestHeaderSetter, RequestHeaderSetter>()
                 .TryAddSingleton<IRequestHeaderValuesProvider, RequestHeaderValuesProvider>()
                 .TryAddSingleton<IRequestContentSetter, RequestContentSetter>()
-                .TryAddSingleton<IRequestContentHeaderValuesProvider, RequestContentHeaderValuesProvider>()
                 .TryAddSingleton<IRequestSender, RequestSender>()
                 .TryAddSingleton<IRequestCreator, RequestCreator>()
                 .TryAddSingleton<IResponseSender, ResponseSender>()

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -28,6 +30,38 @@ namespace Cloudtoid.GatewayCore.UnitTests
 
             // Assert
             message.Headers.Contains(HeaderNames.Host).Should().BeFalse();
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_HasContentHeaders_ContentHeadersIncludedAsync()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            var header = HeaderNames.ContentDisposition;
+            context.Request.Headers.Add(header, "some-value");
+
+            // Act
+            var message = await SetHeadersAsync(context);
+
+            // Assert
+            message.Content!.Headers.TryGetValues(header, out var headers).Should().BeTrue();
+            headers.Should().ContainSingle();
+        }
+
+        [TestMethod]
+        public async Task SetHeadersAsync_HasContentTypeHeader_ContentTypeHeadersIncludedOnlyOnceAsync()
+        {
+            // Arrange
+            var context = new DefaultHttpContext();
+            var header = HeaderNames.ContentType;
+            context.Request.Headers.Add(header, "some-value");
+
+            // Act
+            var message = await SetHeadersAsync(context);
+
+            // Assert
+            message.Content!.Headers.TryGetValues(header, out var headers).Should().BeTrue();
+            headers.Should().ContainSingle();
         }
 
         [TestMethod]
@@ -536,7 +570,9 @@ namespace Cloudtoid.GatewayCore.UnitTests
             var serviceProvider = services.AddTest(gatewayOptions: options).BuildServiceProvider();
             var setter = serviceProvider.GetRequiredService<IRequestHeaderSetter>();
             var context = serviceProvider.GetProxyContext(httpContext);
+            context.Request.ContentLength = 10;
             var message = new HttpRequestMessage();
+            message.Content = new StreamContent(new MemoryStream(Array.Empty<byte>()));
             await setter.SetHeadersAsync(context, message, default);
             return message;
         }

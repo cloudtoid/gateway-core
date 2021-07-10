@@ -40,8 +40,8 @@ namespace Cloudtoid.GatewayCore.Upstream
             SetHttpMethod(context, upstreamRequest);
             SetHttpVersion(context, upstreamRequest);
             await SetUrlAsync(context, upstreamRequest, cancellationToken);
-            await SetHeadersAsync(context, upstreamRequest, cancellationToken);
             await SetContentAsync(context, upstreamRequest, cancellationToken);
+            await SetHeadersAsync(context, upstreamRequest, cancellationToken);
 
             logger.LogDebug("Created an outbound upstream request based on the inbound downstream request.");
 
@@ -69,20 +69,6 @@ namespace Cloudtoid.GatewayCore.Upstream
             logger.LogDebug("Created the upstream request URL by calling an instance of {0}", type);
         }
 
-        private async Task SetHeadersAsync(
-            ProxyContext context,
-            HttpRequestMessage upstreamRequest,
-            CancellationToken cancellationToken)
-        {
-            logger.LogDebug("Appending the HTTP headers to the outbound upstream request");
-
-            await headerSetter
-                .SetHeadersAsync(context, upstreamRequest, cancellationToken)
-                .TraceOnFaulted(logger, "Failed to set the content body of the outbound upstream request", cancellationToken);
-
-            logger.LogDebug("Appended the HTTP headers to the outbound upstream request");
-        }
-
         private async Task SetContentAsync(
             ProxyContext context,
             HttpRequestMessage upstreamRequest,
@@ -95,6 +81,20 @@ namespace Cloudtoid.GatewayCore.Upstream
                 .TraceOnFaulted(logger, "Failed to set the outbound upstream content", cancellationToken);
 
             logger.LogDebug("Transferred the content of the inbound downstream request to the outbound upstream request");
+        }
+
+        private async Task SetHeadersAsync(
+            ProxyContext context,
+            HttpRequestMessage upstreamRequest,
+            CancellationToken cancellationToken)
+        {
+            logger.LogDebug("Appending the HTTP headers to the outbound upstream request");
+
+            await headerSetter
+                .SetHeadersAsync(context, upstreamRequest, cancellationToken)
+                .TraceOnFaulted(logger, "Failed to set the content body of the outbound upstream request", cancellationToken);
+
+            logger.LogDebug("Appended the HTTP headers to the outbound upstream request");
         }
     }
 }

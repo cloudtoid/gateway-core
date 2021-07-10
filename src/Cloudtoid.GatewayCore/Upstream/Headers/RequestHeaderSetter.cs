@@ -152,17 +152,35 @@ namespace Cloudtoid.GatewayCore.Upstream
             string name,
             StringValues downstreamValues)
         {
-            if (Provider.TryGetHeaderValues(context, name, downstreamValues, out var upstreamValues) && upstreamValues.Count > 0)
+            if (!Provider.TryGetHeaderValues(context, name, downstreamValues, out var upstreamValues))
             {
-                upstreamRequest.Headers.TryAddWithoutValidation(name, (IEnumerable<string>)upstreamValues);
+                Logger.LogInformation(
+                    "Header '{0}' is not added. This was instructed by {1}.{2}.",
+                    name,
+                    nameof(IRequestHeaderValuesProvider),
+                    nameof(IRequestHeaderValuesProvider.TryGetHeaderValues));
+
                 return;
             }
 
-            Logger.LogInformation(
-                "Header '{0}' is not added. This was instructed by {1}.{2}.",
-                name,
-                nameof(IRequestHeaderValuesProvider),
-                nameof(IRequestHeaderValuesProvider.TryGetHeaderValues));
+            // Perf: for perf reasons, we are casting below.
+            if (StringValues.IsNullOrEmpty(upstreamValues))
+            {
+                if (!upstreamRequest.Headers.TryAddWithoutValidation(name, string.Empty) && upstreamRequest.Content is not null)
+                    upstreamRequest.Content.Headers.TryAddWithoutValidation(name, string.Empty);
+            }
+            else if (upstreamValues.Count == 1)
+            {
+                var value = (string)upstreamValues;
+                if (!upstreamRequest.Headers.TryAddWithoutValidation(name, value) && upstreamRequest.Content is not null)
+                    upstreamRequest.Content.Headers.TryAddWithoutValidation(name, value);
+            }
+            else if (upstreamValues.Count > 1)
+            {
+                var values = (string[])upstreamValues;
+                if (!upstreamRequest.Headers.TryAddWithoutValidation(name, values) && upstreamRequest.Content is not null)
+                    upstreamRequest.Content.Headers.TryAddWithoutValidation(name, values);
+            }
         }
 
         private static string? GetRemoteIpAddressOrDefault(ProxyContext context)
