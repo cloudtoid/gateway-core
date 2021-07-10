@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Cloudtoid.GatewayCore.Headers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
-using Microsoft.Net.Http.Headers;
 using static Cloudtoid.Contract;
 
 namespace Cloudtoid.GatewayCore.Downstream
@@ -29,11 +26,6 @@ namespace Cloudtoid.GatewayCore.Downstream
     /// </example>
     public class ResponseContentSetter : IResponseContentSetter
     {
-        private static readonly ISet<string> HeaderTransferBlacklist = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            HeaderNames.TransferEncoding,
-        };
-
         private readonly HeaderSanitizer sanitizer;
 
         public ResponseContentSetter(
@@ -113,9 +105,6 @@ namespace Cloudtoid.GatewayCore.Downstream
                     header.Value,
                     discardEmpty,
                     discardUnderscore))
-                    continue;
-
-                if (HeaderTransferBlacklist.Contains(name))
                     continue;
 
                 AddHeaderValues(
