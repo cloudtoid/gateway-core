@@ -17,7 +17,6 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
   - Routing
   - Failed HTTP requests with and without content/body
   - Timeout (both at httpClient to upstream and inside of proxy)
-  - Auto redirects
   - ProxyException and exception handling
   - When no route is found, do not return 200
   - Authentication

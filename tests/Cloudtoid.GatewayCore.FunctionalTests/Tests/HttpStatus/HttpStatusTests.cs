@@ -21,15 +21,15 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             activity.TraceStateString = "some-state";
 
             await ExecuteAsync(
-            () => new HttpRequestMessage(Method.Get, "basic?message=test"),
-            async (nginxResponse, response) =>
-            {
-                await EnsureResponseSucceededAsync(nginxResponse);
-                await EnsureResponseSucceededAsync(response);
+                () => new HttpRequestMessage(Method.Get, "basic?message=test"),
+                async (nginxResponse, response) =>
+                {
+                    await EnsureResponseSucceededAsync(nginxResponse);
+                    await EnsureResponseSucceededAsync(response);
 
-                response.Content.Headers.ContentType
-                    .Should().Be(nginxResponse.Content.Headers.ContentType);
-            });
+                    response.Content.Headers.ContentType
+                        .Should().Be(nginxResponse.Content.Headers.ContentType);
+                });
         }
 
         [TestMethod("Should not return success when route doesn't exist.")]
@@ -49,6 +49,80 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                     response.Content.Headers.ContentLength
                         .Should().Be(nginxResponse.Content.Headers.ContentLength);
 
+                    return Task.CompletedTask;
+                });
+        }
+
+        [TestMethod("Should redirect with 302-Found")]
+        public async Task RedirectTestAsync()
+        {
+            await ExecuteAsync(
+                () => new HttpRequestMessage(Method.Get, "redirect?message=test"),
+                async (nginxResponse, response) =>
+                {
+                    await EnsureResponseSucceededAsync(nginxResponse);
+                    await EnsureResponseSucceededAsync(response);
+                });
+        }
+
+        [TestMethod("Should redirect with 301 - permanent")]
+        public async Task RedirectPermanentTestAsync()
+        {
+            await ExecuteAsync(
+                () => new HttpRequestMessage(Method.Get, "redirectPermanent?message=test"),
+                async (nginxResponse, response) =>
+                {
+                    await EnsureResponseSucceededAsync(nginxResponse);
+                    await EnsureResponseSucceededAsync(response);
+                });
+        }
+
+        [TestMethod("Should redirect with 307 - temporary")]
+        public async Task RedirectPreserveMethodTestAsync()
+        {
+            await ExecuteAsync(
+                () => new HttpRequestMessage(Method.Get, "redirectPreserveMethod?message=test"),
+                async (nginxResponse, response) =>
+                {
+                    await EnsureResponseSucceededAsync(nginxResponse);
+                    await EnsureResponseSucceededAsync(response);
+                });
+        }
+
+        [TestMethod("Should redirect with 308 - permanent and preserve method")]
+        public async Task RedirectPermanentPreserveMethodTestAsync()
+        {
+            await ExecuteAsync(
+                () => new HttpRequestMessage(Method.Get, "redirectPermanentPreserveMethod?message=test"),
+                async (nginxResponse, response) =>
+                {
+                    await EnsureResponseSucceededAsync(nginxResponse);
+                    await EnsureResponseSucceededAsync(response);
+                });
+        }
+
+        [TestMethod("Should redirect with 300")]
+        public async Task Redirect300TestAsync()
+        {
+            await ExecuteAsync(
+                () => new HttpRequestMessage(Method.Get, "redirect300?message=test"),
+                (nginxResponse, response) =>
+                {
+                    nginxResponse.StatusCode.Should().Be(HttpStatusCode.Ambiguous);
+                    response.StatusCode.Should().Be(HttpStatusCode.Ambiguous);
+                    return Task.CompletedTask;
+                });
+        }
+
+        [TestMethod("Should return not modified")]
+        public async Task NotModifiedTestAsync()
+        {
+            await ExecuteAsync(
+                () => new HttpRequestMessage(Method.Get, "notModified"),
+                (nginxResponse, response) =>
+                {
+                    nginxResponse.StatusCode.Should().Be(HttpStatusCode.NotModified);
+                    response.StatusCode.Should().Be(HttpStatusCode.NotModified);
                     return Task.CompletedTask;
                 });
         }
