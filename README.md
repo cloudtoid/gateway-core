@@ -49,7 +49,6 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 - Wire up more of SocketsHttpHandler properties in SettingsProvider.
 - Add tests for content headers both for requests and also responses. Right now, we are only using GET requests that don't really have content length.
 - Default timeout for upstream requests is set to 100 seconds. Should these be changed?
-- Add a test that ensure a Custom header as specified in the HeaderTypes.CustomHeaders is not added both to the Response.Headers and Response.Content.Headers. 
 
 ## Future version
 
@@ -58,7 +57,7 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
   - Test gRPC
   - Test SignalR
 - Features
-  - Request Aggregation
+- Request Aggregation
   - Caching
   - Retry policies / QoS
   - Load Balancing

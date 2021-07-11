@@ -1,6 +1,8 @@
 {
-  "$id": "root",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "id": "https://json.schemastore.org/gatewaycore-options-2021-07",
+  "title": "Cloudtoid GatewayCore Options",
+  "description": "Root Schema of options for Cloudtoid GatewayCore",
   "type": "object",
   "additionalProperties": false,
   "properties": {
