@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/cloudtoid/gateway-core/master/src/Cloudtoid.GatewayCore/Options/Schema/2021-07.json",
   "system": {
     "routeCacheMaxCount": 1024
   },

@@ -49,6 +49,8 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 - Wire up more of SocketsHttpHandler properties in SettingsProvider.
 - Add tests for content headers both for requests and also responses. Right now, we are only using GET requests that don't really have content length.
 - Default timeout for upstream requests is set to 100 seconds. Should these be changed?
+- Once this JSON Schema is up and running, update all the schema URIs: https://github.com/SchemaStore/schemastore/pull/1727
+- Add the new schema URI to this readme so folks can validate their options.  
 
 ## Future version
 
