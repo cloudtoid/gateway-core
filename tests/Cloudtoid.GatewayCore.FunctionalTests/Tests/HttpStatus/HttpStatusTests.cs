@@ -24,8 +24,8 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 () => new HttpRequestMessage(Method.Get, "basic?message=test"),
                 async (nginxResponse, response) =>
                 {
-                    await EnsureResponseSucceededAsync(nginxResponse);
-                    await EnsureResponseSucceededAsync(response);
+                    await EnsureSuccessAsync(nginxResponse);
+                    await EnsureSuccessAsync(response);
 
                     response.Content.Headers.ContentType
                         .Should().Be(nginxResponse.Content.Headers.ContentType);
@@ -60,8 +60,8 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 () => new HttpRequestMessage(Method.Get, "redirect?message=test"),
                 async (nginxResponse, response) =>
                 {
-                    await EnsureResponseSucceededAsync(nginxResponse);
-                    await EnsureResponseSucceededAsync(response);
+                    await EnsureSuccessAsync(nginxResponse);
+                    await EnsureSuccessAsync(response);
                 });
         }
 
@@ -72,8 +72,8 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 () => new HttpRequestMessage(Method.Get, "redirectPermanent?message=test"),
                 async (nginxResponse, response) =>
                 {
-                    await EnsureResponseSucceededAsync(nginxResponse);
-                    await EnsureResponseSucceededAsync(response);
+                    await EnsureSuccessAsync(nginxResponse);
+                    await EnsureSuccessAsync(response);
                 });
         }
 
@@ -84,8 +84,8 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 () => new HttpRequestMessage(Method.Get, "redirectPreserveMethod?message=test"),
                 async (nginxResponse, response) =>
                 {
-                    await EnsureResponseSucceededAsync(nginxResponse);
-                    await EnsureResponseSucceededAsync(response);
+                    await EnsureSuccessAsync(nginxResponse);
+                    await EnsureSuccessAsync(response);
                 });
         }
 
@@ -96,8 +96,8 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 () => new HttpRequestMessage(Method.Get, "redirectPermanentPreserveMethod?message=test"),
                 async (nginxResponse, response) =>
                 {
-                    await EnsureResponseSucceededAsync(nginxResponse);
-                    await EnsureResponseSucceededAsync(response);
+                    await EnsureSuccessAsync(nginxResponse);
+                    await EnsureSuccessAsync(response);
                 });
         }
 
@@ -127,7 +127,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 });
         }
 
-        private static async Task EnsureResponseSucceededAsync(HttpResponseMessage response)
+        private static async Task EnsureSuccessAsync(HttpResponseMessage response)
         {
             response.IsSuccessStatusCode.Should().BeTrue();
             var result = await response.Content.ReadAsStringAsync();

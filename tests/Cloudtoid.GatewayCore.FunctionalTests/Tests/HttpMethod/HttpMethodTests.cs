@@ -20,11 +20,8 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 () => new HttpRequestMessage(Method.Get, "get200?message=test"),
                 async (nginxResponse, response) =>
                 {
-                    nginxResponse.IsSuccessStatusCode.Should().BeTrue();
-                    (await nginxResponse.Content.ReadAsStringAsync()).Should().Be("test");
-
-                    response.IsSuccessStatusCode.Should().BeTrue();
-                    (await response.Content.ReadAsStringAsync()).Should().Be("test");
+                    await EnsureSuccessAsync(nginxResponse);
+                    await EnsureSuccessAsync(response);
                 });
         }
 
@@ -52,11 +49,8 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 () => new HttpRequestMessage(Method.Post, "post200") { Content = JsonContent.Create("test") },
                 async (nginxResponse, response) =>
                 {
-                    nginxResponse.IsSuccessStatusCode.Should().BeTrue();
-                    (await nginxResponse.Content.ReadAsStringAsync()).Should().Be("test");
-
-                    response.IsSuccessStatusCode.Should().BeTrue();
-                    (await response.Content.ReadAsStringAsync()).Should().Be("test");
+                    await EnsureSuccessAsync(nginxResponse);
+                    await EnsureSuccessAsync(response);
                 });
         }
 
@@ -73,6 +67,42 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                     response.IsSuccessStatusCode.Should().BeFalse();
                     (await response.Content.ReadAsStringAsync()).Should().Be("test");
                 });
+        }
+
+        [TestMethod("DELETE: Should return 200")]
+        public async Task HttpDeleteTestAsync()
+        {
+            await ExecuteAsync(
+                () => new HttpRequestMessage(Method.Delete, "delete200?message=test"),
+                async (nginxResponse, response) =>
+                {
+                    await EnsureSuccessAsync(nginxResponse);
+                    await EnsureSuccessAsync(response);
+                });
+        }
+
+        [TestMethod("DELETE: Should return 500 and content body")]
+        public async Task HttpDelete500TestAsync()
+        {
+            await ExecuteAsync(
+                () => new HttpRequestMessage(Method.Delete, "delete500?message=test"),
+                async (nginxResponse, response) =>
+                {
+                    nginxResponse.StatusCode.Should().Be(500);
+                    var result = await nginxResponse.Content.ReadAsStringAsync();
+                    result.Should().Be("test");
+
+                    response.StatusCode.Should().Be(500);
+                    result = await response.Content.ReadAsStringAsync();
+                    result.Should().Be("test");
+                });
+        }
+
+        private static async Task EnsureSuccessAsync(HttpResponseMessage response)
+        {
+            response.IsSuccessStatusCode.Should().BeTrue();
+            var result = await response.Content.ReadAsStringAsync();
+            result.Should().Be("test");
         }
 
         private static async Task ExecuteAsync(

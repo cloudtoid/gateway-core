@@ -21,5 +21,13 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [HttpPost("post500")]
         public IActionResult Post500([FromBody] string message)
             => StatusCode(500, message);
+
+        [HttpDelete("delete200")]
+        public string Delete200(string message)
+            => message;
+
+        [HttpDelete("delete500")]
+        public IActionResult Delete500(string message)
+            => StatusCode(500, message);
     }
 }
