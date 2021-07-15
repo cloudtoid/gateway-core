@@ -6,12 +6,18 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
     [Route("[controller]")]
     public class HttpMethodController : ControllerBase
     {
-        [HttpGet("get200")]
-        public string Get200(string message)
+        [HttpGet("200")]
+        [HttpDelete("200")]
+        [HttpHead("200")]
+        [HttpOptions("200")]
+        public string Echo200(string message)
             => message;
 
-        [HttpGet("get500")]
-        public IActionResult Get500(string message)
+        [HttpGet("500")]
+        [HttpDelete("500")]
+        [HttpHead("500")]
+        [HttpOptions("500")]
+        public IActionResult Echo500(string message)
             => StatusCode(500, message);
 
         [HttpPost("post200")]
@@ -20,14 +26,6 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
 
         [HttpPost("post500")]
         public IActionResult Post500([FromBody] string message)
-            => StatusCode(500, message);
-
-        [HttpDelete("delete200")]
-        public string Delete200(string message)
-            => message;
-
-        [HttpDelete("delete500")]
-        public IActionResult Delete500(string message)
             => StatusCode(500, message);
     }
 }

@@ -14,33 +14,28 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         private static Pipeline? pipeline;
 
         [TestMethod("GET: Should return 200")]
-        public async Task HttpGetTestAsync()
-        {
-            await ExecuteAsync(
-                () => new HttpRequestMessage(Method.Get, "get200?message=test"),
-                async (nginxResponse, response) =>
-                {
-                    await EnsureSuccessAsync(nginxResponse);
-                    await EnsureSuccessAsync(response);
-                });
-        }
+        public Task HttpGetTestAsync()
+            => NoRequestBodySuccessTestAsync(Method.Get);
 
         [TestMethod("GET: Should return 500 and content body")]
-        public async Task HttpGet500TestAsync()
-        {
-            await ExecuteAsync(
-                () => new HttpRequestMessage(Method.Get, "get500?message=test"),
-                async (nginxResponse, response) =>
-                {
-                    nginxResponse.StatusCode.Should().Be(500);
-                    var result = await nginxResponse.Content.ReadAsStringAsync();
-                    result.Should().Be("test");
+        public Task HttpGet500TestAsync()
+            => NoRequestBodyFailTestAsync(Method.Get);
 
-                    response.StatusCode.Should().Be(500);
-                    result = await response.Content.ReadAsStringAsync();
-                    result.Should().Be("test");
-                });
-        }
+        [TestMethod("DELETE: Should return 200")]
+        public Task HttpDeleteTestAsync()
+            => NoRequestBodySuccessTestAsync(Method.Delete);
+
+        [TestMethod("DELETE: Should return 500 and content body")]
+        public Task HttpDelete500TestAsync()
+            => NoRequestBodyFailTestAsync(Method.Delete);
+
+        [TestMethod("HEAD: Should return 200")]
+        public Task HttpHeadTestAsync()
+            => NoRequestBodySuccessTestAsync(Method.Head);
+
+        [TestMethod("HEAD: Should return 500 and content body")]
+        public Task HttpHead500TestAsync()
+            => NoRequestBodyFailTestAsync(Method.Head);
 
         [TestMethod("POST: Should return 200")]
         public async Task HttpPostTestAsync()
@@ -69,40 +64,36 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 });
         }
 
-        [TestMethod("DELETE: Should return 200")]
-        public async Task HttpDeleteTestAsync()
-        {
-            await ExecuteAsync(
-                () => new HttpRequestMessage(Method.Delete, "delete200?message=test"),
+        private static Task NoRequestBodySuccessTestAsync(Method method)
+            => ExecuteAsync(
+                () => new HttpRequestMessage(method, "200?message=test"),
                 async (nginxResponse, response) =>
                 {
-                    await EnsureSuccessAsync(nginxResponse);
-                    await EnsureSuccessAsync(response);
-                });
-        }
+                    var expectedContent = method == Method.Head ? string.Empty : "test";
 
-        [TestMethod("DELETE: Should return 500 and content body")]
-        public async Task HttpDelete500TestAsync()
-        {
-            await ExecuteAsync(
-                () => new HttpRequestMessage(Method.Delete, "delete500?message=test"),
+                    await EnsureSuccessAsync(nginxResponse, expectedContent);
+                    await EnsureSuccessAsync(response, expectedContent);
+                });
+
+        private static Task NoRequestBodyFailTestAsync(Method method)
+            => ExecuteAsync(
+                () => new HttpRequestMessage(method, "500?message=test"),
                 async (nginxResponse, response) =>
                 {
-                    nginxResponse.StatusCode.Should().Be(500);
-                    var result = await nginxResponse.Content.ReadAsStringAsync();
-                    result.Should().Be("test");
+                    var expectedContent = method == Method.Head ? string.Empty : "test";
 
-                    response.StatusCode.Should().Be(500);
-                    result = await response.Content.ReadAsStringAsync();
-                    result.Should().Be("test");
+                    nginxResponse.IsSuccessStatusCode.Should().BeFalse();
+                    (await nginxResponse.Content.ReadAsStringAsync()).Should().Be(expectedContent);
+
+                    response.IsSuccessStatusCode.Should().BeFalse();
+                    (await response.Content.ReadAsStringAsync()).Should().Be(expectedContent);
                 });
-        }
 
-        private static async Task EnsureSuccessAsync(HttpResponseMessage response)
+        private static async Task EnsureSuccessAsync(HttpResponseMessage response, string expectedContent = "test")
         {
             response.IsSuccessStatusCode.Should().BeTrue();
             var result = await response.Content.ReadAsStringAsync();
-            result.Should().Be("test");
+            result.Should().Be(expectedContent);
         }
 
         private static async Task ExecuteAsync(
