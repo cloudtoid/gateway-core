@@ -113,20 +113,6 @@ namespace Cloudtoid.GatewayCore.UnitTests
             logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase("The inbound downstream request has a seek-able body stream. Resetting the stream to the beginning.")).Should().BeTrue();
         }
 
-        [TestMethod]
-        public async Task SetContentAsync_NoContentLength_LogsDebugAsync()
-        {
-            // Arrange
-            var context = new DefaultHttpContext();
-
-            // Act
-            await SetContentAsync(context, contentLength: null);
-
-            // Assert
-            var logger = (Logger<RequestContentSetter>)serviceProvider!.GetRequiredService<ILogger<RequestContentSetter>>();
-            logger.Logs.Any(l => l.ContainsOrdinalIgnoreCase("The inbound downstream request does not specify a 'Content-Length'.")).Should().BeTrue();
-        }
-
         private async Task<HttpRequestMessage> SetContentAsync(
             HttpContext httpContext,
             long? contentLength = 10,

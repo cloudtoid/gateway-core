@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace Cloudtoid.GatewayCore.FunctionalTests
 {
@@ -8,15 +6,20 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
     [Route("[controller]")]
     public class HttpMethodController : ControllerBase
     {
-        private IHeaderDictionary RequestHeaders
-            => HttpContext.Request.Headers;
-
-        private bool IsGatewayCore
-            => RequestHeaders.TryGetValue(HeaderNames.Via, out var values)
-            && values.ToString().ContainsOrdinalIgnoreCase(GatewayCore.Constants.ServerName);
-
-        [HttpGet("echo")]
-        public string Echo(string message)
+        [HttpGet("get200")]
+        public string Get200(string message)
             => message;
+
+        [HttpGet("get500")]
+        public IActionResult Get500(string message)
+            => StatusCode(500, message);
+
+        [HttpPost("post200")]
+        public string Post200([FromBody] string message)
+            => message;
+
+        [HttpPost("post500")]
+        public IActionResult Post500([FromBody] string message)
+            => StatusCode(500, message);
     }
 }

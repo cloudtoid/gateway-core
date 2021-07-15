@@ -45,12 +45,6 @@ namespace Cloudtoid.GatewayCore.Upstream
                 return Task.CompletedTask;
             }
 
-            if (!context.Request.ContentLength.HasValue)
-            {
-                Logger.LogDebug("The inbound downstream request does not specify a 'Content-Length'.");
-                return Task.CompletedTask;
-            }
-
             if (!body.CanRead)
             {
                 Logger.LogError("The inbound downstream request does not have a readable request body.");

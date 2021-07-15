@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,20 +13,65 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
     {
         private static Pipeline? pipeline;
 
-        [TestMethod("Basic HTTP status plumbing test")]
-        public async Task BasicPlumbingTestAsync()
+        [TestMethod("GET: Should return 200")]
+        public async Task HttpGetTestAsync()
         {
             await ExecuteAsync(
-                () => new HttpRequestMessage(Method.Get, "echo?message=test"),
-                (nginxResponse, response) =>
+                () => new HttpRequestMessage(Method.Get, "get200?message=test"),
+                async (nginxResponse, response) =>
                 {
                     nginxResponse.IsSuccessStatusCode.Should().BeTrue();
+                    (await nginxResponse.Content.ReadAsStringAsync()).Should().Be("test");
+
                     response.IsSuccessStatusCode.Should().BeTrue();
+                    (await response.Content.ReadAsStringAsync()).Should().Be("test");
+                });
+        }
 
-                    response.Content.Headers.ContentType
-                        .Should().Be(nginxResponse.Content.Headers.ContentType);
+        [TestMethod("GET: Should return 500 and content body")]
+        public async Task HttpGet500TestAsync()
+        {
+            await ExecuteAsync(
+                () => new HttpRequestMessage(Method.Get, "get500?message=test"),
+                async (nginxResponse, response) =>
+                {
+                    nginxResponse.StatusCode.Should().Be(500);
+                    var result = await nginxResponse.Content.ReadAsStringAsync();
+                    result.Should().Be("test");
 
-                    return Task.CompletedTask;
+                    response.StatusCode.Should().Be(500);
+                    result = await response.Content.ReadAsStringAsync();
+                    result.Should().Be("test");
+                });
+        }
+
+        [TestMethod("POST: Should return 200")]
+        public async Task HttpPostTestAsync()
+        {
+            await ExecuteAsync(
+                () => new HttpRequestMessage(Method.Post, "post200") { Content = JsonContent.Create("test") },
+                async (nginxResponse, response) =>
+                {
+                    nginxResponse.IsSuccessStatusCode.Should().BeTrue();
+                    (await nginxResponse.Content.ReadAsStringAsync()).Should().Be("test");
+
+                    response.IsSuccessStatusCode.Should().BeTrue();
+                    (await response.Content.ReadAsStringAsync()).Should().Be("test");
+                });
+        }
+
+        [TestMethod("POST: Should return 500 and content body")]
+        public async Task HttpPost500TestAsync()
+        {
+            await ExecuteAsync(
+                () => new HttpRequestMessage(Method.Post, "post500") { Content = JsonContent.Create("test") },
+                async (nginxResponse, response) =>
+                {
+                    nginxResponse.IsSuccessStatusCode.Should().BeFalse();
+                    (await nginxResponse.Content.ReadAsStringAsync()).Should().Be("test");
+
+                    response.IsSuccessStatusCode.Should().BeFalse();
+                    (await response.Content.ReadAsStringAsync()).Should().Be("test");
                 });
         }
 
