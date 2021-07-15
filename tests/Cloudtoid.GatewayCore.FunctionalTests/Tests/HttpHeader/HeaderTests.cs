@@ -485,7 +485,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             request.Version = httpVersion ?? HttpVersion.Version20;
             request.VersionPolicy = HttpVersionPolicy.RequestVersionExact;
 
-            await using var pipeline = new Pipeline("Tests/Header/GatewayCoreOptions/" + config);
+            await using var pipeline = new Pipeline("Tests/HttpHeader/GatewayCoreOptions/" + config);
             await pipeline.StartAsync();
             using var httpClient = pipeline.CreateGatewayCoreClient();
             using var response = await httpClient.SendAsync(request);

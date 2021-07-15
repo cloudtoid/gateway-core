@@ -2,7 +2,7 @@
 
 # Gateway Core
 
-[![License: MIT][MITLicense]][License]
+[![License: MIT][LicenseBadge]][License]
 
 A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 
@@ -566,9 +566,9 @@ TODO
 [ObscurityWiki]:https://en.wikipedia.org/wiki/Security_through_obscurity
 
 [License]:https://github.com/cloudtoid/gateway-core/blob/master/LICENSE
+[LicenseBadge]:https://img.shields.io/badge/License-MIT-blue.svg
+
 [HttpMessageHandler]:https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpmessagehandler
 [CookieContainer]:https://docs.microsoft.com/en-us/dotnet/api/system.net.http.socketshttphandler.cookiecontainer
 [TraceContext]:https://www.w3.org/TR/trace-context/
 [DistributedTracing]:https://devblogs.microsoft.com/aspnet/improvements-in-net-core-3-0-for-troubleshooting-and-monitoring-distributed-apps/
-
-[MITLicense]:https://img.shields.io/badge/License-MIT-blue.svg

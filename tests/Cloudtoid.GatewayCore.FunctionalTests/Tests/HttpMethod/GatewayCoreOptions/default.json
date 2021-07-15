@@ -1,0 +1,9 @@
+{
+  "routes": {
+    "/api/": {
+      "proxy": {
+        "to": "https://localhost:$upstream-port/httpMethod/"
+      }
+    }
+  }
+}

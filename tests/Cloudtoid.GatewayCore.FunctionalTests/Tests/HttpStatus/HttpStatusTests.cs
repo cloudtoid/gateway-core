@@ -114,7 +114,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 });
         }
 
-        [TestMethod("Should return not modified")]
+        [TestMethod("Should return not-modified HTTP status code (304)")]
         public async Task NotModifiedTestAsync()
         {
             await ExecuteAsync(
