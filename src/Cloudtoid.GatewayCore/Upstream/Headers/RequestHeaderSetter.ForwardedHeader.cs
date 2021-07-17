@@ -124,7 +124,9 @@ namespace Cloudtoid.GatewayCore.Upstream
             HttpRequestMessage upstreamRequest,
             in ReadOnlyValueList<ForwardedHeaderValue> forwardedHeaderValues)
         {
-            var proto = forwardedHeaderValues.FirstOrDefault(v => !string.IsNullOrEmpty(v.Proto)).Proto ?? context.Request.Scheme;
+            var proto = forwardedHeaderValues.FirstOrDefault(v => !string.IsNullOrEmpty(v.Proto)).Proto
+                ?? context.Request.Scheme;
+
             if (string.IsNullOrEmpty(proto))
                 return;
 
@@ -141,7 +143,9 @@ namespace Cloudtoid.GatewayCore.Upstream
             HttpRequestMessage upstreamRequest,
             in ReadOnlyValueList<ForwardedHeaderValue> forwardedHeaderValues)
         {
-            var host = forwardedHeaderValues.FirstOrDefault(v => !string.IsNullOrEmpty(v.Host)).Host ?? context.Request.Host.Value;
+            var host = forwardedHeaderValues.FirstOrDefault(v => !string.IsNullOrEmpty(v.Host)).Host
+                ?? context.Request.Host.Value;
+
             if (string.IsNullOrEmpty(host))
                 return;
 
@@ -285,39 +289,30 @@ namespace Cloudtoid.GatewayCore.Upstream
         // internal for testing
         internal static IEnumerable<ForwardedHeaderValue> GetCurrentForwardedHeaderValues(IHeaderDictionary headers)
         {
-            if (headers.TryGetValue(Names.XForwardedFor, out var forValues) && forValues.Count > 0)
+            bool isFirst = true;
+            foreach (var @for in headers.GetCommaSeparatedHeaderValues(Names.XForwardedFor))
             {
-                bool isFirst = true;
-                foreach (var @for in forValues)
+                if (string.IsNullOrEmpty(@for))
+                    continue;
+
+                if (!isFirst)
                 {
-                    if (string.IsNullOrEmpty(@for))
-                        continue;
-
-                    if (!isFirst)
-                    {
-                        yield return new ForwardedHeaderValue(@for: @for);
-                        continue;
-                    }
-
-                    isFirst = false;
-                    headers.TryGetValue(Names.XForwardedHost, out var hostValues);
-                    headers.TryGetValue(Names.XForwardedProto, out var protoValues);
-
-                    yield return new ForwardedHeaderValue(
-                        @for: @for,
-                        host: hostValues.FirstOrDefault(),
-                        proto: protoValues.FirstOrDefault());
+                    yield return new ForwardedHeaderValue(@for: @for);
+                    continue;
                 }
+
+                isFirst = false;
+
+                yield return new ForwardedHeaderValue(
+                    @for: @for,
+                    host: headers.GetCommaSeparatedHeaderValues(Names.XForwardedHost).FirstOrDefault(),
+                    proto: headers.GetCommaSeparatedHeaderValues(Names.XForwardedProto).FirstOrDefault());
             }
 
-            var forwardedValues = headers.GetCommaSeparatedValues(Names.Forwarded);
-            if (forwardedValues.Length > 0)
+            foreach (var value in headers.GetCommaSeparatedHeaderValues(Names.Forwarded))
             {
-                foreach (var value in forwardedValues)
-                {
-                    if (TryParseForwardedHeaderValue(value, out var forwardedValue))
-                        yield return forwardedValue;
-                }
+                if (TryParseForwardedHeaderValue(value, out var forwardedValue))
+                    yield return forwardedValue;
             }
         }
 
@@ -356,13 +351,20 @@ namespace Cloudtoid.GatewayCore.Upstream
 
         // internal for testing
         internal static bool TryParseIpV6Address(
-            string value,
+            ReadOnlySpan<char> value,
             [NotNullWhen(true)] out IPAddress? ip)
         {
-            if (value.Length > 6 && value.StartsWithOrdinal("\"[") && value[^1] == '"')
+            if (value.Length > 6)
             {
-                var end = value.IndexOfOrdinal(']');
-                value = value[2..end];
+                if (value[0] == '"' && value[^1] == '"')
+                    value = value[1..^1];
+
+                if (value[0] == '[')
+                {
+                    var end = value.IndexOf(']');
+                    if (end != -1)
+                        value = value[1..end];
+                }
             }
 
             if (IPAddress.TryParse(value, out ip) && ip.AddressFamily == AddressFamily.InterNetworkV6)

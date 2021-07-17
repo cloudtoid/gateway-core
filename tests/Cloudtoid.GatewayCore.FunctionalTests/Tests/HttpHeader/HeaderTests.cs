@@ -264,9 +264,11 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         {
             var request = new HttpRequestMessage(Method.Get, "forwardedMultiProxies?message=test");
             request.Headers.Add(Constants.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=test, for=192.0.2.12;proto=https;by=203.0.113.43;host=test2");
-            request.Headers.Add(Constants.XForwardedFor, "some-for");
+            request.Headers.Add(Constants.XForwardedFor, "some-for, 10.10.10.10, [0020:0020:0020:0020:0020:0020:0020:0020], \"[0030:0030:0030:0030:0030:0030:0030:0030]\"");
             request.Headers.Add(Constants.XForwardedHost, "some-host");
+            request.Headers.Add(Constants.XForwardedHost, "some-host-again");
             request.Headers.Add(Constants.XForwardedProto, "some-proto");
+            request.Headers.Add(Constants.XForwardedProto, "some-proto-again");
 
             await ExecuteAsync(
                 "DefaultTestOptions.json",
@@ -288,8 +290,9 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task XForwardedMultiProxiesTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "xForwardedMultiProxies?message=test");
-            request.Headers.Add(Constants.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host-test, for=[1020:3040:5060:7080:9010:1112:1314:1516]:10;proto=https;by=203.0.113.43;host=test2");
-            request.Headers.Add(Constants.XForwardedFor, "some-for");
+            request.Headers.Add(Constants.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host-test, for=[1020:1020:1020:1020:1020:1020:1020:1020]:10;proto=https;by=203.0.113.43;host=test2, , for=\"[a020:a020:a020:a020:a020:a020:a020:a020]:20\";proto=http;by=103.0.113.43;host=test3");
+            request.Headers.Add(Constants.XForwardedFor, "some-for, 10.10.10.10, [0020:0020:0020:0020:0020:0020:0020:0020], \"[0030:0030:0030:0030:0030:0030:0030:0030]\"");
+            request.Headers.Add(Constants.XForwardedFor, "some-for-again");
             request.Headers.Add(Constants.XForwardedHost, "some-host");
             request.Headers.Add(Constants.XForwardedProto, "some-proto");
 

@@ -198,10 +198,7 @@ namespace Cloudtoid.GatewayCore.Upstream
             if (!headers.ContainsKey(HeaderNames.Connection))
                 return ImmutableHashSet<string>.Empty;
 
-            var values = headers.GetCommaSeparatedValues(HeaderNames.Connection);
-            if (values.Length == 0)
-                return ImmutableHashSet<string>.Empty;
-
+            var values = headers.GetCommaSeparatedHeaderValues(HeaderNames.Connection);
             return new HashSet<string>(values, StringComparer.OrdinalIgnoreCase);
         }
     }

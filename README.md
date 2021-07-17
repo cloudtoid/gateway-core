@@ -55,7 +55,7 @@ A modern API Gateway library for .NET Core and beyond.
 - Not sure how to test the TRACE HTTP method: https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/TRACE
 - Implement Gateway Timeout (504) based on this spec: https://datatracker.ietf.org/doc/html/rfc2616#section-10.5.5
 - Add a test that Content-MD5 is kept unchanged and is proxied https://datatracker.ietf.org/doc/html/rfc2616#section-14.15 
-- 
+- Ensure that we can parse both types of IPv6 in x-forward-for
 
 ## Future version
 

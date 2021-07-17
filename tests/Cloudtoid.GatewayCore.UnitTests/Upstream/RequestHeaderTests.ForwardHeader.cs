@@ -109,6 +109,9 @@ namespace Cloudtoid.GatewayCore.UnitTests
             TryParseIpV6Address("\"[2001:db8:cafe::17]:4711\"", out var ip).Should().BeTrue();
             ip!.ToString().Should().Be("2001:db8:cafe::17");
 
+            TryParseIpV6Address("[2001:db8:cafe::17]:4711", out ip).Should().BeTrue();
+            ip!.ToString().Should().Be("2001:db8:cafe::17");
+
             TryParseIpV6Address("\"[2001:db8:cafe::17]\"", out ip).Should().BeTrue();
             ip!.ToString().Should().Be("2001:db8:cafe::17");
 
