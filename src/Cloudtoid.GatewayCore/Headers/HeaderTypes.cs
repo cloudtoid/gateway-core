@@ -36,6 +36,7 @@ namespace Cloudtoid.GatewayCore.Headers
             HeaderNames.Via,
             Names.Forwarded,
             Names.XForwardedFor,
+            Names.XForwardedBy,
             Names.XForwardedHost,
             Names.XForwardedProto,
 
