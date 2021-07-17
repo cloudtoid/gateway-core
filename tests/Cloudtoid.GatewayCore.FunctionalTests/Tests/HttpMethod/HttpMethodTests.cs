@@ -72,7 +72,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
 
         private static Task NoRequestBodySuccessTestAsync(Method method)
             => ExecuteAsync(
-                () => new HttpRequestMessage(method, "200?message=test"),
+                () => new HttpRequestMessage(method, $"200?message={Value}"),
                 async (nginxResponse, response) =>
                 {
                     var expectedContent = method == Method.Head ? string.Empty : Value;
@@ -83,7 +83,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
 
         private static Task NoRequestBodyFailTestAsync(Method method)
             => ExecuteAsync(
-                () => new HttpRequestMessage(method, "500?message=test"),
+                () => new HttpRequestMessage(method, $"500?message={Value}"),
                 async (nginxResponse, response) =>
                 {
                     var expectedContent = method == Method.Head ? string.Empty : Value;

@@ -53,7 +53,6 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 - Add the new schema URI to this readme so folks can validate their options.
 - Not sure how to implement the CONNECT HTTP method: https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/CONNECT
 - Not sure how to test the TRACE HTTP method: https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/TRACE
-- Implement the Max-Forwards header
 
 ## Future version
 
@@ -213,6 +212,12 @@ It is also possible to omit these headers on outbound requests by using `skipFor
         "headers": {
           "skipForwarded": true
 ```
+
+### Max-Forwards header
+
+According to [RFC2616][MaxForwardsHeader], the [`Max-Forwards`][MaxForwardsHeader], gateway recipient of a HTTP [`TRACE`][TraceMethod] or [`OPTIONS`][OptionsMethod] request containing a [`Max-Forwards`][MaxForwardsHeader] header field must check and update its value prior to forwarding the request. If the received value is zero, the recipient must not forward the request; instead, it must respond as the final recipient. If the received [`Max-Forwards`][MaxForwardsHeader] value is greater than zero, then the forwarded message must contain an updated [`Max-Forwards`][MaxForwardsHeader] field with a value decremented by one `1`.
+
+This behavior can be reversed engineered by malicious actors to discover the existence of a gateway or proxy, and as such, GatewayCore does not follow the specification for [`Max-Forwards`][MaxForwardsHeader].
 
 ### Server header
 
@@ -564,6 +569,10 @@ TODO
 [ProxyAuthenticateHeader]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Proxy-Authenticate
 [RequestPseudoHeaders]:https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2.3
 [ResponsePseudoHeaders]:https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2.4
+[MaxForwardsHeader]:https://datatracker.ietf.org/doc/html/rfc2616#section-14.31
+
+[TraceMethod]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/TRACE
+[OptionsMethod]:https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/OPTIONS
 
 [DefactoWiki]:https://en.wikipedia.org/wiki/De_facto_standard
 [ObscurityWiki]:https://en.wikipedia.org/wiki/Security_through_obscurity

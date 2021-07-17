@@ -12,6 +12,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
     [TestClass]
     public sealed class HttpStatusTests
     {
+        private const string Value = "test";
         private static Pipeline? pipeline;
 
         [TestMethod("Basic HTTP status plumbing test")]
@@ -21,7 +22,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             activity.TraceStateString = "some-state";
 
             await ExecuteAsync(
-                () => new HttpRequestMessage(Method.Get, "basic?message=test"),
+                () => new HttpRequestMessage(Method.Get, $"basic?message={Value}"),
                 async (nginxResponse, response) =>
                 {
                     await EnsureSuccessAsync(nginxResponse);
@@ -36,7 +37,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task NoRouteTestAsync()
         {
             await ExecuteAsync(
-                () => new HttpRequestMessage(Method.Get, "noRoute?message=test"),
+                () => new HttpRequestMessage(Method.Get, $"noRoute?message={Value}"),
                 (nginxResponse, response) =>
                 {
                     response.IsSuccessStatusCode
@@ -57,7 +58,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task RedirectTestAsync()
         {
             await ExecuteAsync(
-                () => new HttpRequestMessage(Method.Get, "redirect?message=test"),
+                () => new HttpRequestMessage(Method.Get, $"redirect?message={Value}"),
                 async (nginxResponse, response) =>
                 {
                     await EnsureSuccessAsync(nginxResponse);
@@ -69,7 +70,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task RedirectPermanentTestAsync()
         {
             await ExecuteAsync(
-                () => new HttpRequestMessage(Method.Get, "redirectPermanent?message=test"),
+                () => new HttpRequestMessage(Method.Get, $"redirectPermanent?message={Value}"),
                 async (nginxResponse, response) =>
                 {
                     await EnsureSuccessAsync(nginxResponse);
@@ -81,7 +82,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task RedirectPreserveMethodTestAsync()
         {
             await ExecuteAsync(
-                () => new HttpRequestMessage(Method.Get, "redirectPreserveMethod?message=test"),
+                () => new HttpRequestMessage(Method.Get, $"redirectPreserveMethod?message={Value}"),
                 async (nginxResponse, response) =>
                 {
                     await EnsureSuccessAsync(nginxResponse);
@@ -93,7 +94,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task RedirectPermanentPreserveMethodTestAsync()
         {
             await ExecuteAsync(
-                () => new HttpRequestMessage(Method.Get, "redirectPermanentPreserveMethod?message=test"),
+                () => new HttpRequestMessage(Method.Get, $"redirectPermanentPreserveMethod?message={Value}"),
                 async (nginxResponse, response) =>
                 {
                     await EnsureSuccessAsync(nginxResponse);
@@ -105,7 +106,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public async Task Redirect300TestAsync()
         {
             await ExecuteAsync(
-                () => new HttpRequestMessage(Method.Get, "redirect300?message=test"),
+                () => new HttpRequestMessage(Method.Get, $"redirect300?message={Value}"),
                 (nginxResponse, response) =>
                 {
                     nginxResponse.StatusCode.Should().Be(HttpStatusCode.Ambiguous);
@@ -131,7 +132,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         {
             response.IsSuccessStatusCode.Should().BeTrue();
             var result = await response.Content.ReadAsStringAsync();
-            result.Should().Be("test");
+            result.Should().Be(Value);
         }
 
         private static async Task ExecuteAsync(
