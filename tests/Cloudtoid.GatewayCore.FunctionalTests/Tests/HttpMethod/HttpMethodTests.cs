@@ -54,6 +54,14 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public Task HttpPut500TestAsync()
             => WithRequestBodyFailTestAsync(Method.Put);
 
+        [TestMethod("PATCH: Should return 200")]
+        public Task HttpPatchTestAsync()
+            => WithRequestBodySuccessTestAsync(Method.Patch);
+
+        [TestMethod("PATCH: Should return 500 and content body")]
+        public Task HttpPatch500TestAsync()
+            => WithRequestBodyFailTestAsync(Method.Patch);
+
         [TestMethod("OPTIONS: Should return 200")]
         public Task HttpOptionsTestAsync()
             => WithRequestBodySuccessTestAsync(Method.Options);

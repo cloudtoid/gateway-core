@@ -19,18 +19,19 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [HttpGet("500")]
         [HttpDelete("500")]
         [HttpHead("500")]
-        [HttpOptions("500")]
         public IActionResult Echo500(string message)
             => StatusCode(500, message);
 
         [HttpPost("b200")]
         [HttpPut("b200")]
+        [HttpPatch("b200")]
         [HttpOptions("b200")]
         public string Post200([FromBody] string message)
             => message;
 
         [HttpPost("b500")]
         [HttpPut("b500")]
+        [HttpPatch("b500")]
         [HttpOptions("b500")]
         public IActionResult Post500([FromBody] string message)
             => StatusCode(500, message);
