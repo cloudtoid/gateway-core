@@ -4,7 +4,7 @@
 
 [![License: MIT][LicenseBadge]][License]
 
-A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
+A modern API Gateway library for .NET Core and beyond.
 
 ## V1 - TODOs
 
@@ -53,6 +53,9 @@ A modern API Gateway and Reverse Proxy library for .NET Core and beyond.
 - Add the new schema URI to this readme so folks can validate their options.
 - Not sure how to implement the CONNECT HTTP method: https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/CONNECT
 - Not sure how to test the TRACE HTTP method: https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/TRACE
+- Implement Gateway Timeout (504) based on this spec: https://datatracker.ietf.org/doc/html/rfc2616#section-10.5.5
+- Add a test that Content-MD5 is kept unchanged and is proxied https://datatracker.ietf.org/doc/html/rfc2616#section-14.15 
+- 
 
 ## Future version
 
