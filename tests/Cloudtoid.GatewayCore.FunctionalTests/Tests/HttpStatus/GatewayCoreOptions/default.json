@@ -2,7 +2,7 @@
   "routes": {
     "/api/": {
       "proxy": {
-        "to": "https://localhost:$upstream-port/httpStatus/"
+        "to": "https://localhost:$upstream-port/status/"
       }
     }
   }

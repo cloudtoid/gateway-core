@@ -4,7 +4,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
 {
     [ApiController]
     [Route("[controller]")]
-    public class HttpMethodController : ControllerBase
+    public class MethodController : ControllerBase
     {
         // TODO:
         // 1- Get with body - not common but it should just work. (both on request and response). We might want to make this configurable.

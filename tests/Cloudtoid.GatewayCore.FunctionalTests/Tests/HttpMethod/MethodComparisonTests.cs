@@ -8,8 +8,11 @@ using Method = System.Net.Http.HttpMethod;
 
 namespace Cloudtoid.GatewayCore.FunctionalTests
 {
+    /// <summary>
+    /// Compares GatewayCore with Nginx in form of a set of tests
+    /// </summary>
     [TestClass]
-    public sealed class HttpMethodTests
+    public sealed class MethodComparisonTests
     {
         private const string Value = "test";
         private static Pipeline? pipeline;

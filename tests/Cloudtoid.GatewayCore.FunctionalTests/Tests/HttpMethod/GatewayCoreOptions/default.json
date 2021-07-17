@@ -2,7 +2,7 @@
   "routes": {
     "/api/": {
       "proxy": {
-        "to": "https://localhost:$upstream-port/httpMethod/"
+        "to": "https://localhost:$upstream-port/method/"
       }
     }
   }

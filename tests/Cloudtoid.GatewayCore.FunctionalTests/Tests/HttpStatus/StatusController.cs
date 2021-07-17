@@ -7,7 +7,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
 {
     [ApiController]
     [Route("[controller]")]
-    public class HttpStatusController : ControllerBase
+    public class StatusController : ControllerBase
     {
         private IHeaderDictionary RequestHeaders
             => HttpContext.Request.Headers;
