@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using Cloudtoid.GatewayCore.Expression;
 using Cloudtoid.GatewayCore.Settings;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -67,9 +68,17 @@ namespace Cloudtoid.GatewayCore.UnitTests
                 pathSuffix ?? string.Empty,
                 variables ?? ImmutableDictionary<string, string>.Empty);
 
+            if (httpContext is null)
+            {
+                httpContext = new DefaultHttpContext();
+                var feature = Substitute.For<IHttpResponseTrailersFeature>();
+                feature.Trailers.Returns(new HeaderDictionary());
+                httpContext.Features.Set(feature);
+            }
+
             return new ProxyContext(
                 provider.GetRequiredService<IExpressionEvaluator>(),
-                httpContext ?? new DefaultHttpContext(),
+                httpContext,
                 route);
         }
 

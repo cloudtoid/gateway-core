@@ -23,7 +23,6 @@ namespace Cloudtoid.GatewayCore.Headers
             HeaderNames.TransferEncoding,
             HeaderNames.TE,
             HeaderNames.Connection,
-            HeaderNames.Trailer,
             HeaderNames.Upgrade,
             HeaderNames.ProxyAuthenticate,
             HeaderNames.ProxyAuthorization,
@@ -34,6 +33,7 @@ namespace Cloudtoid.GatewayCore.Headers
             // standard headers
             HeaderNames.Host,
             HeaderNames.Via,
+            HeaderNames.Trailer,
             Names.Forwarded,
             Names.XForwardedFor,
             Names.XForwardedBy,
