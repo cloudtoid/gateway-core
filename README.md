@@ -183,7 +183,7 @@ The [`Via`][ViaHeader] header is included by default in requests to proxied serv
 
 ### Forwarded category of headers
 
-The [`Forwarded`][ForwardedHeader] class of headers contains information from the client-facing side of proxy servers that is altered or lost when a proxy is involved in the path of the request. This information is passed on using one of these techniques:
+The [`Forwarded`][ForwardedHeader] class of headers contains information from the client facing side of proxy servers that is altered or lost when a proxy is involved in the path of the request. This information is passed on using one of these techniques:
 
 1. The [`Forwarded`][ForwardedHeader] header is what GatewayCore uses by default. This is the standardized version of the header.
 1. The [`X-Forwarded-For`][XForwardedForHeader], [`X-Forwarded-Host`][XForwardedHostHeader], and [`X-Forwarded-Proto`][XForwardedProtoHeader] headers which are considered the [de-facto standard][DefactoWiki] versions of the [`Forwarded`][ForwardedHeader] header.
@@ -192,19 +192,9 @@ The information included in these headers typically consists of the IP address o
 
 > IP V6 addresses are quoted and enclosed in square brackets.
 
-GatewayCore uses the [`Forwarded`][ForwardedHeader] header by default and replaces all inbound `X-Forwarded-*` headers. You can enable `useXForwarded` to reverse this behavior and prefer `X-Forwarded-*` headers instead:
+GatewayCore uses the standard [`Forwarded`][ForwardedHeader] header. If such a header is not present on the inbound request but [`X-Forwarded-For`][XForwardedForHeader] exists, it is converted to a [`Forwarded`][ForwardedHeader] header.
 
-```json
-"routes": {
-  "/api/": {
-    "proxy": {
-      "to": "http://upstream/v1/",
-      "upstreamRequest": {
-        "headers": {
-          "useXForwarded": true
-```
-
-It is also possible to omit these headers on outbound requests by using `skipForwarded`:
+It is also possible to omit the [`Forwarded`][ForwardedHeader] header on outbound requests by using `skipForwarded`:
 
 ```json
 "routes": {

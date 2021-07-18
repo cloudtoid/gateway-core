@@ -88,11 +88,6 @@
                         "description": "Specifies if `forwarded` header and `x-forwarded-*` headers should be skipped from the outbound requests.",
                         "default": false
                       },
-                      "useXForwarded": {
-                        "type": "boolean",
-                        "description": "Specifies if `x-forwarded-*` headers should be used instead of the standard `forwarded` header.",
-                        "default": false
-                      },
                       "appends": {
                         "type": "object",
                         "description": "The headers to be appended to the outbound upstream requests. If the header already exists, it is kept and the new value is appended. The value can be either text or an expression.",

@@ -71,7 +71,7 @@ namespace Cloudtoid.GatewayCore.Upstream
                 AddProxyNameHeader(context, upstreamRequest);
 
             if (!settings.SkipForwarded)
-                AddForwardedHeaders(context, upstreamRequest);
+                AddForwardedHeader(context, upstreamRequest);
 
             AddExtraHeaders(context, upstreamRequest);
 

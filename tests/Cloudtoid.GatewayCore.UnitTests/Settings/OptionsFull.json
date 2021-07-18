@@ -20,7 +20,6 @@
 
             "skipVia": true,
             "skipForwarded": true,
-            "useXForwarded": true,
 
             "appends": {
               "x-append-1": [ "value1_1", "value1_2" ],
@@ -54,7 +53,7 @@
             "discardEmpty": true,
             "discardUnderscore": true,
             "discards": [ "x-discard-1", "x-discard-2" ],
-            
+
             "addServer": true,
             "addVia": true,
 

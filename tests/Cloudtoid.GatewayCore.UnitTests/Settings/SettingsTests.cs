@@ -43,7 +43,6 @@ namespace Cloudtoid.GatewayCore.UnitTests
             requestHeaders.DiscardInboundHeaders.Should().BeTrue();
             requestHeaders.SkipVia.Should().BeTrue();
             requestHeaders.SkipForwarded.Should().BeTrue();
-            requestHeaders.UseXForwarded.Should().BeTrue();
             requestHeaders.AddExternalAddress.Should().BeTrue();
 
             requestHeaders.Appends.Select(h => (Name: h.Key, Values: h.Value.EvaluateValues(context)))
@@ -217,7 +216,6 @@ namespace Cloudtoid.GatewayCore.UnitTests
             requestHeaders.DiscardInboundHeaders.Should().BeFalse();
             requestHeaders.SkipVia.Should().BeFalse();
             requestHeaders.SkipForwarded.Should().BeFalse();
-            requestHeaders.UseXForwarded.Should().BeFalse();
             requestHeaders.AddExternalAddress.Should().BeFalse();
             requestHeaders.Appends.Should().BeEmpty();
             requestHeaders.Overrides.Should().BeEmpty();

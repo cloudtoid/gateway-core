@@ -15,7 +15,6 @@ namespace Cloudtoid.GatewayCore.Settings
             bool addProxyName,
             bool skipVia,
             bool skipForwarded,
-            bool useXForwarded,
             IReadOnlyDictionary<string, HeaderSettings> appends,
             IReadOnlyDictionary<string, HeaderSettings> overrides,
             ISet<string> discards)
@@ -27,7 +26,6 @@ namespace Cloudtoid.GatewayCore.Settings
             DiscardInboundHeaders = discardInboundHeaders;
             SkipVia = skipVia;
             SkipForwarded = skipForwarded;
-            UseXForwarded = useXForwarded;
             Appends = appends;
             Overrides = overrides;
             Discards = discards;
@@ -65,8 +63,6 @@ namespace Cloudtoid.GatewayCore.Settings
         public bool SkipVia { get; }
 
         public bool SkipForwarded { get; }
-
-        public bool UseXForwarded { get; }
 
         public IReadOnlyDictionary<string, HeaderSettings> Appends { get; }
 

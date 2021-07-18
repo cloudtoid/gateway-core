@@ -243,17 +243,6 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             request.Headers.Add(Constants.XForwardedProto, "some-proto");
 
             await ExecuteAsync(
-                "NoXForwardedTestOptions.json",
-                request,
-                response => EnsureResponseSucceededAsync(response));
-
-            request = new HttpRequestMessage(Method.Get, "noForwarded?message=test");
-            request.Headers.Add(Constants.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=test");
-            request.Headers.Add(Constants.XForwardedFor, "some-for");
-            request.Headers.Add(Constants.XForwardedHost, "some-host");
-            request.Headers.Add(Constants.XForwardedProto, "some-proto");
-
-            await ExecuteAsync(
                 "NoForwardedTestOptions.json",
                 request,
                 response => EnsureResponseSucceededAsync(response));
@@ -272,32 +261,6 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
 
             await ExecuteAsync(
                 "DefaultTestOptions.json",
-                request,
-                response => EnsureResponseSucceededAsync(response));
-        }
-
-        [TestMethod("Should have x-forwarded headers")]
-        public async Task XForwardedTestAsync()
-        {
-            var request = new HttpRequestMessage(Method.Get, "xForwarded?message=test");
-            await ExecuteAsync(
-                "XForwardedTestOptions.json",
-                request,
-                response => EnsureResponseSucceededAsync(response));
-        }
-
-        [TestMethod("Should have x-forwarded headers that include earlier forwarded and x-forwarded header values")]
-        public async Task XForwardedMultiProxiesTestAsync()
-        {
-            var request = new HttpRequestMessage(Method.Get, "xForwardedMultiProxies?message=test");
-            request.Headers.Add(Constants.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host-test, for=[1020:1020:1020:1020:1020:1020:1020:1020]:10;proto=https;by=203.0.113.43;host=test2, , for=\"[a020:a020:a020:a020:a020:a020:a020:a020]:20\";proto=http;by=103.0.113.43;host=test3");
-            request.Headers.Add(Constants.XForwardedFor, "some-for, 10.10.10.10, [0020:0020:0020:0020:0020:0020:0020:0020], \"[0030:0030:0030:0030:0030:0030:0030:0030]\"");
-            request.Headers.Add(Constants.XForwardedFor, "some-for-again");
-            request.Headers.Add(Constants.XForwardedHost, "some-host");
-            request.Headers.Add(Constants.XForwardedProto, "some-proto");
-
-            await ExecuteAsync(
-                "XForwardedTestOptions.json",
                 request,
                 response => EnsureResponseSucceededAsync(response));
         }

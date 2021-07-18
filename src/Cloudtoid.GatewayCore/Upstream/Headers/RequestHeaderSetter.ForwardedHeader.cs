@@ -26,14 +26,6 @@ namespace Cloudtoid.GatewayCore.Upstream
             "unknown"
         };
 
-        protected virtual void AddForwardedHeaders(ProxyContext context, HttpRequestMessage upstreamRequest)
-        {
-            if (context.ProxyUpstreamRequestHeadersSettings.UseXForwarded)
-                AddXForwardedHeaders(context, upstreamRequest);
-            else
-                AddForwardedHeader(context, upstreamRequest);
-        }
-
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded
         protected virtual void AddForwardedHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
         {
@@ -51,109 +43,6 @@ namespace Cloudtoid.GatewayCore.Upstream
                 upstreamRequest,
                 Names.Forwarded,
                 value);
-        }
-
-        private void AddXForwardedHeaders(ProxyContext context, HttpRequestMessage upstreamRequest)
-        {
-            var forwardedHeaderValues =
-                context.ProxyUpstreamRequestHeadersSettings.DiscardInboundHeaders
-                ? ReadOnlyValueList<ForwardedHeaderValue>.Empty
-                : new ReadOnlyValueList<ForwardedHeaderValue>(GetCurrentForwardedHeaderValues(context.Request.Headers));
-
-            AddXForwardedForHeader(context, upstreamRequest, in forwardedHeaderValues);
-            AddXForwardedProtocolHeader(context, upstreamRequest, in forwardedHeaderValues);
-            AddXForwardedHostHeader(context, upstreamRequest, in forwardedHeaderValues);
-        }
-
-        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For
-        protected virtual void AddXForwardedForHeader(
-            ProxyContext context,
-            HttpRequestMessage upstreamRequest,
-            in ReadOnlyValueList<ForwardedHeaderValue> forwardedHeaderValues)
-        {
-            var @for = CreateXForwardedForHeader(context, in forwardedHeaderValues);
-            if (@for is null)
-                return;
-
-            AddHeaderValues(
-                context,
-                upstreamRequest,
-                Names.XForwardedFor,
-                @for);
-        }
-
-        private static string? CreateXForwardedForHeader(
-            ProxyContext context,
-            in ReadOnlyValueList<ForwardedHeaderValue> forwardedHeaderValues)
-        {
-            var result = GetRemoteIpAddressOrDefault(context);
-            if (string.IsNullOrEmpty(result))
-                return null;
-
-            if (forwardedHeaderValues.Count == 0)
-                return result;
-
-            StringBuilder? builder = null;
-
-            foreach (var value in forwardedHeaderValues)
-            {
-                var @for = value.For;
-                if (!string.IsNullOrEmpty(@for))
-                {
-                    if (builder is null)
-                        builder = new StringBuilder();
-                    else
-                        builder.Append(CommaAndSpace);
-
-                    if (TryParseIpV6Address(@for, out var ip))
-                        @for = ip.ToString();
-
-                    builder.Append(@for);
-                }
-            }
-
-            if (builder is not null)
-                result = builder.Append(CommaAndSpace).Append(result).ToString();
-
-            return result;
-        }
-
-        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Proto
-        protected virtual void AddXForwardedProtocolHeader(
-            ProxyContext context,
-            HttpRequestMessage upstreamRequest,
-            in ReadOnlyValueList<ForwardedHeaderValue> forwardedHeaderValues)
-        {
-            var proto = forwardedHeaderValues.FirstOrDefault(v => !string.IsNullOrEmpty(v.Proto)).Proto
-                ?? context.Request.Scheme;
-
-            if (string.IsNullOrEmpty(proto))
-                return;
-
-            AddHeaderValues(
-                context,
-                upstreamRequest,
-                Names.XForwardedProto,
-                proto);
-        }
-
-        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Host
-        protected virtual void AddXForwardedHostHeader(
-            ProxyContext context,
-            HttpRequestMessage upstreamRequest,
-            in ReadOnlyValueList<ForwardedHeaderValue> forwardedHeaderValues)
-        {
-            var host = forwardedHeaderValues.FirstOrDefault(v => !string.IsNullOrEmpty(v.Host)).Host
-                ?? context.Request.Host.Value;
-
-            if (string.IsNullOrEmpty(host))
-                return;
-
-            AddHeaderValues(
-                context,
-                upstreamRequest,
-                Names.XForwardedHost,
-                host);
         }
 
         private static ForwardedHeaderValue CreateLatestForwardHeaderValue(ProxyContext context)

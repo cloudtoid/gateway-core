@@ -121,8 +121,8 @@ namespace Cloudtoid.GatewayCore
                         /// <summary>
                         /// Gets or sets if <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded"><c>forwarded</c></a>
                         /// or <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For"><c>x-forwarded-*</c></a> headers
-                        /// should be skipped from the outbound requests. The default value is <c>false</c> and the final header is decided based on the value of
-                        /// <see cref="UseXForwarded"/>.
+                        /// should be skipped from the outbound requests. The default value is <c>false</c> and, if possible, x-forwarded-* headers
+                        /// are converted to the <c>forwarded</c> header.
                         /// The information captured by these headers consist of:
                         /// <list type="bullet">
                         /// <item><term>By</term><description>The interface where the request came in to the proxy server.</description></item>
@@ -132,13 +132,6 @@ namespace Cloudtoid.GatewayCore
                         /// </list>
                         /// </summary>
                         public bool SkipForwarded { get; set; }
-
-                        /// <summary>
-                        /// Gets or sets if <c>x-forwarded-*</c> headers should be used instead of the standard
-                        /// <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded"><c>forwarded</c></a> header.
-                        /// The default value is <c>false</c>.
-                        /// </summary>
-                        public bool UseXForwarded { get; set; }
 
                         /// <summary>
                         /// Gets or sets the headers to be appended to the outbound upstream requests.

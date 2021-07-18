@@ -157,7 +157,6 @@ namespace Cloudtoid.GatewayCore.Settings
                 addProxyName,
                 options.SkipVia,
                 options.SkipForwarded,
-                options.UseXForwarded,
                 Create(route, options.Appends),
                 Create(route, options.Overrides),
                 options.Discards);

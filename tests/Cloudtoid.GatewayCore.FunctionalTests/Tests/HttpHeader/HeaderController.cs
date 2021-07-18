@@ -161,51 +161,6 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             return message;
         }
 
-        [HttpGet("xForwarded")]
-        public string XForwardedTest(string message)
-        {
-            RequestHeaders.TryGetValue(Constants.XForwardedFor, out var values).Should().BeTrue();
-            values.Single().Should().Be("::1");
-
-            RequestHeaders.TryGetValue(Constants.XForwardedHost, out values).Should().BeTrue();
-            values.Single().StartsWithOrdinalIgnoreCase("localhost").Should().BeTrue();
-
-            RequestHeaders.TryGetValue(Constants.XForwardedProto, out values).Should().BeTrue();
-            values.Single().Should().Be("https");
-
-            RequestHeaders.Should().NotContainKey(Constants.Forwarded);
-
-            return message;
-        }
-
-        [HttpGet("xForwardedMultiProxies")]
-        public string XForwardedMultiProxiesTest(string message)
-        {
-            var values = RequestHeaders.GetCommaSeparatedHeaderValues(Constants.XForwardedFor);
-            values.Should().BeEquivalentTo(new[]
-            {
-                "some-for",
-                "10.10.10.10",
-                "20:20:20:20:20:20:20:20",
-                "30:30:30:30:30:30:30:30",
-                "some-for-again",
-                "192.0.2.60",
-                "1020:1020:1020:1020:1020:1020:1020:1020",
-                "a020:a020:a020:a020:a020:a020:a020:a020",
-                "::1"
-            });
-
-            values = RequestHeaders.GetCommaSeparatedHeaderValues(Constants.XForwardedHost);
-            values.Should().BeEquivalentTo(new[] { "some-host" });
-
-            values = RequestHeaders.GetCommaSeparatedHeaderValues(Constants.XForwardedProto);
-            values.Should().BeEquivalentTo(new[] { "some-proto" });
-
-            RequestHeaders.Should().NotContainKey(Constants.Forwarded);
-
-            return message;
-        }
-
         [HttpGet("setCookie")]
         public string SetCookieTest(string message)
         {
