@@ -4,6 +4,7 @@
     {
         internal const string Forwarded = "Forwarded";
         internal const string XForwardedFor = "x-forwarded-for";
+        internal const string XForwardedBy = "x-forwarded-by";
         internal const string XForwardedProto = "x-forwarded-proto";
         internal const string XForwardedHost = "x-forwarded-host";
         internal const string ExternalAddress = "x-gwcore-external-address";

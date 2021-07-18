@@ -192,7 +192,7 @@ The information included in these headers typically consists of the IP address o
 
 > IP V6 addresses are quoted and enclosed in square brackets.
 
-GatewayCore uses the standard [`Forwarded`][ForwardedHeader] header. If such a header is not present on the inbound request but [`X-Forwarded-For`][XForwardedForHeader] exists, it is converted to a [`Forwarded`][ForwardedHeader] header.
+GatewayCore emits the standard [`Forwarded`][ForwardedHeader] header. If such a header is not present on the inbound request, but a [`X-Forwarded-For`][XForwardedForHeader] header exists, it is converted to a [`Forwarded`][ForwardedHeader] header.
 
 It is also possible to omit the [`Forwarded`][ForwardedHeader] header on outbound requests by using `skipForwarded`:
 

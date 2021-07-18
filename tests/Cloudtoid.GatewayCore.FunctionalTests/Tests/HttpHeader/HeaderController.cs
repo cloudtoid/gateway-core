@@ -124,9 +124,11 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             var forwarded = RemovePortFromHostInForwarded(values.Single());
             forwarded.Should().Be("by=\"[::1]\";for=\"[::1]\";host=localhost;proto=https");
 
-            RequestHeaders.Should().NotContainKey(Constants.XForwardedFor)
+            RequestHeaders
+                .Should().NotContainKey(Constants.XForwardedFor)
                 .And.NotContainKey(Constants.XForwardedHost)
-                .And.NotContainKey(Constants.XForwardedProto);
+                .And.NotContainKey(Constants.XForwardedProto)
+                .And.NotContainKey(Constants.XForwardedBy);
 
             return message;
         }
@@ -134,7 +136,9 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         [HttpGet("noForwarded")]
         public string NoForwardedTest(string message)
         {
-            RequestHeaders.Should().NotContainKey(Constants.Forwarded)
+            RequestHeaders
+                .Should().NotContainKey(Constants.Forwarded)
+                .And.NotContainKey(Constants.XForwardedBy)
                 .And.NotContainKey(Constants.XForwardedFor)
                 .And.NotContainKey(Constants.XForwardedHost)
                 .And.NotContainKey(Constants.XForwardedProto);
@@ -146,15 +150,40 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
         public string ForwardedMultiProxiesTest(string message)
         {
             var values = RequestHeaders.GetCommaSeparatedHeaderValues(Constants.Forwarded).ToArray();
-            values.Should().HaveCount(4)
-                .And.HaveElementAt(0, "for=some-for;host=some-host;proto=some-proto")
-                .And.HaveElementAt(1, "by=203.0.113.43;for=192.0.2.60;host=test;proto=http")
-                .And.HaveElementAt(2, "by=203.0.113.43;for=192.0.2.12;host=test2;proto=https");
+            values.Should().HaveCount(3)
+                .And.HaveElementAt(0, "by=203.0.113.43;for=192.0.2.60;host=test;proto=http")
+                .And.HaveElementAt(1, "by=203.0.113.43;for=192.0.2.12;host=test2;proto=https");
 
-            RemovePortFromHostInForwarded(values[3]).Should().Be("by=\"[::1]\";for=\"[::1]\";host=localhost;proto=https");
+            RemovePortFromHostInForwarded(values[2]).Should().Be("by=\"[::1]\";for=\"[::1]\";host=localhost;proto=https");
 
             RequestHeaders
                 .Should().NotContainKey(Constants.XForwardedFor)
+                .And.NotContainKey(Constants.XForwardedBy)
+                .And.NotContainKey(Constants.XForwardedHost)
+                .And.NotContainKey(Constants.XForwardedProto);
+
+            return message;
+        }
+
+        [HttpGet("xForwardedMultiProxies")]
+        public string SForwardedMultiProxiesTest(string message)
+        {
+            RequestHeaders.GetHeaderUnmodified(Constants.Forwarded)[0].Should()
+                .StartWith("for=some-for, for=10.10.10.10, for=\"[20:20:20:20:20:20:20:20]\", for=\"[30:30:30:30:30:30:30:30]\", for=\"[40:40:40:40:40:40:40:40]\"");
+
+            var values = RequestHeaders.GetCommaSeparatedHeaderValues(Constants.Forwarded).ToArray();
+            values.Should().HaveCount(6)
+                .And.HaveElementAt(0, "for=some-for")
+                .And.HaveElementAt(1, "for=10.10.10.10")
+                .And.HaveElementAt(2, "for=\"[20:20:20:20:20:20:20:20]\"")
+                .And.HaveElementAt(3, "for=\"[30:30:30:30:30:30:30:30]\"")
+                .And.HaveElementAt(4, "for=\"[40:40:40:40:40:40:40:40]\"");
+
+            RemovePortFromHostInForwarded(values[5]).Should().Be("by=\"[::1]\";for=\"[::1]\";host=localhost;proto=https");
+
+            RequestHeaders
+                .Should().NotContainKey(Constants.XForwardedFor)
+                .And.NotContainKey(Constants.XForwardedBy)
                 .And.NotContainKey(Constants.XForwardedHost)
                 .And.NotContainKey(Constants.XForwardedProto);
 

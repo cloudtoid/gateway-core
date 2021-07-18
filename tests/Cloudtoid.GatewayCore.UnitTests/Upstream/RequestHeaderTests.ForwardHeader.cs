@@ -31,7 +31,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
 
             GetCurrentForwardedHeaderValues(headers).Should().BeEquivalentTo(new[]
             {
-                new ForwardedHeaderValue(@for: IpV4Sample.ToString(), proto: "http", host: "some-host")
+                new ForwardedHeaderValue(@for: IpV4Sample.ToString())
             });
 
             headers = new HeaderDictionary
@@ -43,7 +43,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
 
             GetCurrentForwardedHeaderValues(headers).Should().BeEquivalentTo(new[]
             {
-                new ForwardedHeaderValue(@for: IpV4Sample.ToString(), proto: "http", host: "some-host"),
+                new ForwardedHeaderValue(@for: IpV4Sample.ToString()),
                 new ForwardedHeaderValue(@for: IpV4Sample2.ToString()),
             });
 
@@ -67,8 +67,6 @@ namespace Cloudtoid.GatewayCore.UnitTests
 
             GetCurrentForwardedHeaderValues(headers).Should().BeEquivalentTo(new[]
             {
-                new ForwardedHeaderValue(@for: IpV4Sample.ToString(), proto: "http", host: "some-host"),
-                new ForwardedHeaderValue(@for: IpV4Sample2.ToString()),
                 new ForwardedHeaderValue(by: "6.5.4.3", @for: "9.8.7.6", proto: "https", host: "new-host"),
             });
 
@@ -82,22 +80,21 @@ namespace Cloudtoid.GatewayCore.UnitTests
 
             GetCurrentForwardedHeaderValues(headers).Should().BeEquivalentTo(new[]
             {
-                new ForwardedHeaderValue(@for: IpV4Sample.ToString(), proto: "http", host: "some-host"),
-                new ForwardedHeaderValue(@for: IpV4Sample2.ToString()),
                 new ForwardedHeaderValue("203.0.113.43", "192.0.2.60", "abc", "http"),
                 new ForwardedHeaderValue("203.0.113.43", "192.0.2.60", "efg", "https")
             });
 
             headers = new HeaderDictionary
             {
-                { XForwardedForHeader, IpV4Sample.ToString() },
+                { XForwardedForHeader, new StringValues(new[] { IpV4Sample.ToString(), IpV6Sample.ToString() }) },
                 { XForwardedProtoHeader, new StringValues(new[] { "http", "https" }) },
                 { XForwardedHostHeader, new StringValues(new[] { "some-host", "some-host-2" }) }
             };
 
             GetCurrentForwardedHeaderValues(headers).Should().BeEquivalentTo(new[]
             {
-                new ForwardedHeaderValue(@for: IpV4Sample.ToString(), proto: "http", host: "some-host")
+                new ForwardedHeaderValue(@for: IpV4Sample.ToString()),
+                new ForwardedHeaderValue(@for: IpV6Sample.ToString())
             });
         }
 
@@ -297,7 +294,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             message.Headers.GetValues(Names.Forwarded).Should().BeEquivalentTo(
                 new[]
                 {
-                    "for=some-for;host=some-host;proto=some-proto, by=4.5.6.7;for=0.1.2.3;host=some-new-host;proto=https"
+                    "for=some-for, by=4.5.6.7;for=0.1.2.3;host=some-new-host;proto=https"
                 });
         }
 
@@ -327,7 +324,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             message.Headers.GetValues(Names.Forwarded).Should().BeEquivalentTo(
                 new[]
                 {
-                    "for=some-for;host=some-host;proto=some-proto, by=203.0.113.43;for=192.0.2.60;host=abc;proto=http, by=203.0.113.43;for=192.0.2.12;host=efg;proto=https, by=4.5.6.7;for=0.1.2.3;host=some-new-host;proto=https"
+                    "by=203.0.113.43;for=192.0.2.60;host=abc;proto=http, by=203.0.113.43;for=192.0.2.12;host=efg;proto=https, by=4.5.6.7;for=0.1.2.3;host=some-new-host;proto=https"
                 });
         }
 
@@ -357,7 +354,7 @@ namespace Cloudtoid.GatewayCore.UnitTests
             message.Headers.GetValues(Names.Forwarded).Should().BeEquivalentTo(
                 new[]
                 {
-                    "for=\"[1020:3040:5060:7080:9010:1112:1314:1516]\";host=some-host;proto=some-proto, by=\"[1020:3040:5060:7080:9010:1112:1314:1516]:50\";for=192.0.2.60;host=abc;proto=http, by=203.0.113.43;for=\"[1020:3040:5060:7080:9010:1112:1314:1516]\";host=efg;proto=https, for=\"[1020:3040:5060:7080:9010:1112:1314:1516]\", by=4.5.6.7;for=0.1.2.3;host=some-new-host;proto=https"
+                    "by=\"[1020:3040:5060:7080:9010:1112:1314:1516]:50\";for=192.0.2.60;host=abc;proto=http, by=203.0.113.43;for=\"[1020:3040:5060:7080:9010:1112:1314:1516]\";host=efg;proto=https, for=\"[1020:3040:5060:7080:9010:1112:1314:1516]\", by=4.5.6.7;for=0.1.2.3;host=some-new-host;proto=https"
                 });
         }
 

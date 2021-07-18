@@ -239,6 +239,7 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
             var request = new HttpRequestMessage(Method.Get, "noForwarded?message=test");
             request.Headers.Add(Constants.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=test");
             request.Headers.Add(Constants.XForwardedFor, "some-for");
+            request.Headers.Add(Constants.XForwardedFor, "some-by");
             request.Headers.Add(Constants.XForwardedHost, "some-host");
             request.Headers.Add(Constants.XForwardedProto, "some-proto");
 
@@ -248,12 +249,29 @@ namespace Cloudtoid.GatewayCore.FunctionalTests
                 response => EnsureResponseSucceededAsync(response));
         }
 
-        [TestMethod("Should have a Forwarded header that includes earlier forwarded and x-forwarded header values")]
+        [TestMethod("Should have a Forwarded header that includes earlier forwarded header values")]
         public async Task ForwardedMultiProxiesTestAsync()
         {
             var request = new HttpRequestMessage(Method.Get, "forwardedMultiProxies?message=test");
             request.Headers.Add(Constants.Forwarded, "for=192.0.2.60;proto=http;by=203.0.113.43;host=test, for=192.0.2.12;proto=https;by=203.0.113.43;host=test2");
             request.Headers.Add(Constants.XForwardedFor, "some-for, 10.10.10.10, [0020:0020:0020:0020:0020:0020:0020:0020], \"[0030:0030:0030:0030:0030:0030:0030:0030]\"");
+            request.Headers.Add(Constants.XForwardedHost, "some-host");
+            request.Headers.Add(Constants.XForwardedHost, "some-host-again");
+            request.Headers.Add(Constants.XForwardedProto, "some-proto");
+            request.Headers.Add(Constants.XForwardedProto, "some-proto-again");
+
+            await ExecuteAsync(
+                "DefaultTestOptions.json",
+                request,
+                response => EnsureResponseSucceededAsync(response));
+        }
+
+        [TestMethod("Should have a Forwarded header that includes earlier x-forwarded header values")]
+        public async Task XForwardedMultiProxiesTestAsync()
+        {
+            var request = new HttpRequestMessage(Method.Get, "xForwardedMultiProxies?message=test");
+            request.Headers.Add(Constants.XForwardedFor, "some-for, 10.10.10.10, [0020:0020:0020:0020:0020:0020:0020:0020], \"[0030:0030:0030:0030:0030:0030:0030:0030]\", \"[0040:0040:0040:0040:0040:0040:0040:0040]:40\"");
+            request.Headers.Add(Constants.XForwardedBy, "some-by");
             request.Headers.Add(Constants.XForwardedHost, "some-host");
             request.Headers.Add(Constants.XForwardedHost, "some-host-again");
             request.Headers.Add(Constants.XForwardedProto, "some-proto");

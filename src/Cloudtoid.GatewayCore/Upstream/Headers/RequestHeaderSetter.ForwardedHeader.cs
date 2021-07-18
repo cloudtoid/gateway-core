@@ -19,12 +19,6 @@ namespace Cloudtoid.GatewayCore.Upstream
         private const string ForwardedHost = "host=";
         private const string CommaAndSpace = ", ";
         private const char Semicolon = ';';
-        private static readonly HashSet<string> ValidWellKnownForwardedIdentifers = new(StringComparer.OrdinalIgnoreCase)
-        {
-            "_hidden",
-            "_secret",
-            "unknown"
-        };
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded
         protected virtual void AddForwardedHeader(ProxyContext context, HttpRequestMessage upstreamRequest)
@@ -178,31 +172,21 @@ namespace Cloudtoid.GatewayCore.Upstream
         // internal for testing
         internal static IEnumerable<ForwardedHeaderValue> GetCurrentForwardedHeaderValues(IHeaderDictionary headers)
         {
-            bool isFirst = true;
-            foreach (var @for in headers.GetCommaSeparatedHeaderValues(Names.XForwardedFor))
-            {
-                if (string.IsNullOrEmpty(@for))
-                    continue;
-
-                if (!isFirst)
-                {
-                    yield return new ForwardedHeaderValue(@for: @for);
-                    continue;
-                }
-
-                isFirst = false;
-
-                yield return new ForwardedHeaderValue(
-                    @for: @for,
-                    host: headers.GetCommaSeparatedHeaderValues(Names.XForwardedHost).FirstOrDefault(),
-                    proto: headers.GetCommaSeparatedHeaderValues(Names.XForwardedProto).FirstOrDefault());
-            }
-
+            bool hasForwarded = false;
             foreach (var value in headers.GetCommaSeparatedHeaderValues(Names.Forwarded))
             {
                 if (TryParseForwardedHeaderValue(value, out var forwardedValue))
+                {
+                    hasForwarded = true;
                     yield return forwardedValue;
+                }
             }
+
+            if (hasForwarded)
+                yield break;
+
+            foreach (var @for in headers.GetCommaSeparatedHeaderValues(Names.XForwardedFor))
+                yield return new ForwardedHeaderValue(@for: @for);
         }
 
         private static bool TryParseForwardedHeaderValue(
